@@ -1,0 +1,14 @@
+# Common Build arguments
+
+-cp src
+-cp test
+-dce full
+
+--macro nullSafety("firedancer", Strict)
+-main Main
+
+-lib broker
+-lib firedancer
+-lib heaps
+
+--debug

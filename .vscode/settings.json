@@ -1,0 +1,14 @@
+{
+  "editor.tabSize": 2,
+  "editor.insertSpaces": false,
+  "files.eol": "\n",
+  "files.trimTrailingWhitespace": true,
+  "files.trimFinalNewlines": true,
+  "files.insertFinalNewline": true,
+  "codedox": {
+    "commentbegin": "/**",
+    "commentprefix": "\t",
+    "commentend": "**/",
+    "autoPrefixOnEnter": false
+  }
+}

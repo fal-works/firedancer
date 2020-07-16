@@ -1,0 +1,12 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Test HashLink (HL/JIT)",
+			"request": "launch",
+			"type": "hl",
+			"cwd": "${workspaceRoot}",
+			"preLaunchTask": "Build"
+		}
+	]
+}

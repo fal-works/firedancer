@@ -1,0 +1,18 @@
+{
+	"name": "firedancer",
+	"url": "https://github.com/fal-works/firedancer/",
+	"license": "MIT",
+	"tags": ["game"],
+	"description": "Define, compile and run bullet hell patterns.",
+	"version": "0.1.0-alpha",
+	"classPath": "src/",
+	"releasenote": "Initial release. Everything may change in future.",
+	"contributors": [
+		"fal-works"
+	],
+	"dependencies": {
+		"sinker": "",
+		"sneaker": "",
+		"banker": ""
+	}
+}

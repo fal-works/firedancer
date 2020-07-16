@@ -1,0 +1,4 @@
+# Build with JavaScript
+
+common.hxml
+-js out/main.js

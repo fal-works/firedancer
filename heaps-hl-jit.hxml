@@ -1,0 +1,4 @@
+# Build with HL/JIT
+
+common-heaps-hl.hxml
+-hl out/main.hl
