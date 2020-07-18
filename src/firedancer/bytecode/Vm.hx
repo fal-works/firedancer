@@ -30,18 +30,12 @@ class Vm {
 
 		var stackSize = stackSizeVec[vecIndex];
 
-		var opcode: Opcode;
 		var intValue: Int32;
 		var floatValue: Float;
 
-		inline function peekOp(): Opcode {
-			opcode = Opcode.from(code.getI32(codePos));
-			print("\n" + opcode.toString());
-			return opcode;
-		}
-
-		inline function readOp(): Opcode {
-			opcode = peekOp();
+		inline function readOp(): Int32 {
+			final opcode = code.getI32(codePos);
+			print("\n" + Opcode.from(opcode).toString());
 			codePos += LEN32;
 			return opcode;
 		}
@@ -130,6 +124,10 @@ class Vm {
 					final vy = readCodeF64();
 					vxVec[vecIndex] = vx;
 					vyVec[vecIndex] = vy;
+				case other:
+					#if debug
+					throw 'Unknown opcode: $other';
+					#end
 			}
 		} while (codePos < codeLength);
 
