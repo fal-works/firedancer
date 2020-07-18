@@ -22,7 +22,8 @@ enum abstract Opcode(Int) to Int to Int32 {
 			case Opcode.CountDown: CountDown;
 			case Opcode.PushInt: PushInt;
 			case Opcode.Decrement: Decrement;
-			case Opcode.SetVelocity: SetVelocity;
+			case Opcode.SetPositionC: SetPositionC;
+			case Opcode.SetVelocityC: SetVelocityC;
 			default: throw error(value);
 		}
 	}
@@ -31,17 +32,19 @@ enum abstract Opcode(Int) to Int to Int32 {
 	final CountDown;
 	final PushInt = 20;
 	final Decrement = 30;
-	final SetVelocity = 50;
+	final SetPositionC = 50;
+	final SetVelocityC;
 }
 
 class OpcodeExtension {
 	public static inline function toString(code: Opcode): String {
 		return switch code {
 			case Break: "BREAK";
-			case CountDown: "COUNT DOWN";
-			case PushInt: "PUSH INT";
+			case CountDown: "COUNT_DOWN";
+			case PushInt: "PUSH_INT";
 			case Decrement: "DECREMENT";
-			case SetVelocity: "SET VELOCITY";
+			case SetPositionC: "SET_POSITION_CONST";
+			case SetVelocityC: "SET_VELOCITY_CONST";
 		}
 	}
 }

@@ -9,29 +9,32 @@ import firedancer.bytecode.internal.Constants.*;
 /**
 	(WIP)
 
-	Virtual machine for executing `Bytecode`.
+	Virtual machine for executing bytecode.
 **/
 class Vm {
 	public static function run(
-		bytecode: Bytecode,
+		code: BytecodeData,
+		codeLength: UInt,
 		codePosVec: Vec<UInt>,
 		stack: ByteStackData,
 		stackSizeVec: Vec<UInt>,
+		xVec: Vec<Float>,
+		yVec: Vec<Float>,
+		vxVec: Vec<Float>,
+		vyVec: Vec<Float>,
 		vecIndex: UInt
 	): Void {
 		var codePos = codePosVec[vecIndex];
-		final endPos = bytecode.length;
-		if (endPos <= codePos) return;
+		if (codeLength <= codePos) return;
 
 		var stackSize = stackSizeVec[vecIndex];
 
-		final data = bytecode.data;
 		var opcode: Opcode;
 		var intValue: Int32;
 		var floatValue: Float;
 
 		inline function peekOp(): Opcode {
-			opcode = Opcode.from(data.getI32(codePos));
+			opcode = Opcode.from(code.getI32(codePos));
 			print("\n" + opcode.toString());
 			return opcode;
 		}
@@ -43,14 +46,14 @@ class Vm {
 		}
 
 		inline function readCodeI32(): Int32 {
-			intValue = data.getI32(codePos);
+			intValue = code.getI32(codePos);
 			codePos += LEN32;
 			print(' $intValue');
 			return intValue;
 		}
 
 		inline function readCodeF64(): Float {
-			floatValue = data.getF64(codePos);
+			floatValue = code.getF64(codePos);
 			codePos += LEN64;
 			print(' $floatValue');
 			return floatValue;
@@ -116,16 +119,54 @@ class Vm {
 					break;
 				case Decrement:
 					decrement();
-				case SetVelocity:
+				case SetPositionC:
+					final x = readCodeF64();
+					final y = readCodeF64();
+					xVec[vecIndex] = x;
+					yVec[vecIndex] = y;
+				case SetVelocityC:
 					final vx = readCodeF64();
 					final vy = readCodeF64();
-					// vx[vecIndex] = vx;
-					// vy[vecIndex] = vy;
-				}
-		} while (codePos < endPos);
+					vxVec[vecIndex] = vx;
+					vyVec[vecIndex] = vy;
+			}
+		} while (codePos < codeLength);
 
 		codePosVec[vecIndex] = codePos;
 		stackSizeVec[vecIndex] = stackSize;
 		print('\n\n');
+	}
+
+	public static function dryRun(bytecode: Bytecode): Void {
+		final code = bytecode.data;
+		final codeLength = bytecode.length;
+		final codePosVec = Vec.fromArrayCopy([UInt.zero]);
+		final stack = ByteStackData.alloc(256);
+		final stackSizeVec = Vec.fromArrayCopy([UInt.zero]);
+		final xVec = Vec.fromArrayCopy([0.0]);
+		final yVec = Vec.fromArrayCopy([0.0]);
+		final vxVec = Vec.fromArrayCopy([0.0]);
+		final vyVec = Vec.fromArrayCopy([0.0]);
+		final vecIndex = UInt.zero;
+		var frame = UInt.zero;
+
+		while (codePosVec[UInt.zero] < bytecode.length) {
+			if (600 < frame) throw "Exceeded 600 frames."; // infinite loop check
+
+			print('[frame $frame]\n');
+			Vm.run(
+				code,
+				codeLength,
+				codePosVec,
+				stack,
+				stackSizeVec,
+				xVec,
+				yVec,
+				vxVec,
+				vyVec,
+				vecIndex
+			);
+			++frame;
+		}
 	}
 }

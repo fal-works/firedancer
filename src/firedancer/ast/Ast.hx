@@ -13,10 +13,16 @@ enum Ast {
 		Waits `frames`.
 	**/
 	Wait(frames: NInt);
+
 	/**
-		Set velocity to `(x, y)`.
+		Set position to `(x, y)`.
 	**/
-	SetVelocity(x: Float, y: Float);
+	SetPosition(x: Float, y: Float);
+
+	/**
+		Set velocity to `(vx, vy)`.
+	**/
+	SetVelocity(vx: Float, vy: Float);
 
 	/**
 		Runs `astList` sequentially.
@@ -33,12 +39,22 @@ class AstExtension {
 	public static inline function toWordArray(ast: Ast): WordArray {
 		return switch ast {
 			case Wait(frames):
-				[Opcode(PushInt), Int(frames), Opcode(CountDown)];
-			case SetVelocity(x, y):
 				[
-					Opcode(SetVelocity),
+					Opcode(PushInt),
+					Int(frames),
+					Opcode(CountDown)
+				];
+			case SetPosition(x, y):
+				[
+					Opcode(SetPositionC),
 					Float(x),
 					Float(y)
+				];
+			case SetVelocity(vx, vy):
+				[
+					Opcode(SetVelocityC),
+					Float(vx),
+					Float(vy)
 				];
 			case List(nodes):
 				nodes.map(toWordArrayCallback).flatten();
