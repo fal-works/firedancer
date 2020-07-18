@@ -1,5 +1,6 @@
 package firedancer.bytecode;
 
+import haxe.Int32;
 import firedancer.assembly.Opcode;
 
 /**
@@ -14,7 +15,7 @@ enum Word {
 	/**
 		Integer operand.
 	**/
-	Int(value: Int);
+	Int(value: Int32);
 
 	/**
 		Float operand.

@@ -1,5 +1,6 @@
 package firedancer.bytecode;
 
+import haxe.Int32;
 import banker.binary.Bytes;
 import firedancer.assembly.Opcode;
 import firedancer.bytecode.internal.Constants.*;
@@ -42,7 +43,7 @@ abstract WordArray(Data) from Data to Data {
 			pos += LEN32;
 		}
 
-		inline function int32(v: Int): Void {
+		inline function int32(v: Int32): Void {
 			data.setI32(pos, v);
 			pos += LEN32;
 		}
