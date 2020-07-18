@@ -2,7 +2,7 @@ package firedancer;
 
 import firedancer.types.NInt;
 import firedancer.ast.Ast;
-import firedancer.ast.AstList;
+import firedancer.ast.AstNode;
 import firedancer.bytecode.Bytecode;
 
 class Main {
@@ -24,14 +24,14 @@ class Main {
 	/**
 		Waits `frames`.
 	**/
-	public static inline function wait(frames: NInt): Ast
+	public static inline function wait(frames: NInt): AstNode
 		return Wait(frames);
 
 	/**
-		Compiles `Ast` or `AstList` into `Bytecode`.
+		Compiles `Ast` or `AstNode` into `Bytecode`.
 	**/
-	public static function compile(astList: AstList): Bytecode
-		return astList.toAst().compile();
+	public static function compile(ast: Ast): Bytecode
+		return ast.compile();
 }
 
 private class Position {
@@ -40,7 +40,7 @@ private class Position {
 	/**
 		Sets position to `(x, y)`.
 	**/
-	public inline function set(x: Float, y: Float): Ast
+	public inline function set(x: Float, y: Float): AstNode
 		return SetPosition(x, y);
 }
 
@@ -50,7 +50,7 @@ private class Velocity {
 	/**
 		Sets velocity to `(vx, vy)`.
 	**/
-	public inline function set(vx: Float, vy: Float): Ast
+	public inline function set(vx: Float, vy: Float): AstNode
 		return SetVelocity(vx, vy);
 }
 
@@ -74,7 +74,7 @@ private class ShotPosition {
 	/**
 		Sets shot position to `(x, y)`.
 	**/
-	public inline function set(x: Float, y: Float): Ast
+	public inline function set(x: Float, y: Float): AstNode
 		throw "Not yet implemented."; // TODO: implement
 }
 
@@ -84,6 +84,6 @@ private class ShotVelocity {
 	/**
 		Sets shot velocity to `(vx, vy)`.
 	**/
-	public inline function set(vx: Float, vy: Float): Ast
+	public inline function set(vx: Float, vy: Float): AstNode
 		throw "Not yet implemented."; // TODO: implement
 }
