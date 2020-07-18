@@ -1,6 +1,7 @@
 package firedancer.ast;
 
 import firedancer.bytecode.Bytecode;
+import firedancer.ast.nodes.List;
 
 /**
 	AST (abstract syntax tree) that represents a bullet hell pattern.
@@ -11,7 +12,7 @@ abstract Ast(AstNode) from AstNode {
 		Converts `nodes` to `Ast`.
 	**/
 	@:from public static inline function fromArray(nodes: std.Array<AstNode>): Ast
-		return AstNode.List(nodes);
+		return new List(nodes);
 
 	/**
 		Compiles `this` into `Bytecode`.
