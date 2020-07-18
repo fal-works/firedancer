@@ -34,8 +34,7 @@ class ArmyBuilder {
 			chunkCount,
 			batch,
 			spriteFactory,
-			fireCallback,
-			ByteStackData.alloc(64)
+			fireCallback
 		);
 		return aosoa;
 	}

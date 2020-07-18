@@ -32,6 +32,7 @@ class Actor extends broker.entity.BasicBatchEntity {
 	/**
 		`firedancer` data stack.
 	**/
+	@:banker.factory(() -> ByteStackData.alloc(64))
 	var fdStack: ByteStackData;
 
 	/**
