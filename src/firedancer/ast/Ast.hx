@@ -1,7 +1,8 @@
 package firedancer.ast;
 
+import firedancer.assembly.AssemblyCode;
+import firedancer.assembly.AssemblyStatement.create as statement;
 import firedancer.bytecode.Bytecode;
-import firedancer.bytecode.WordArray;
 import firedancer.types.NInt;
 
 /**
@@ -31,33 +32,19 @@ enum Ast {
 }
 
 class AstExtension {
-	static final toWordArrayCallback = toWordArray;
-
 	/**
 		Converts `Ast` to `Bytecode` words.
 	**/
-	public static inline function toWordArray(ast: Ast): WordArray {
+	public static inline function toAssembly(ast: Ast): AssemblyCode {
 		return switch ast {
 			case Wait(frames):
-				[
-					Opcode(PushInt),
-					Int(frames),
-					Opcode(CountDown)
-				];
+				[statement(PushInt, [Int(frames)]), statement(CountDown)];
 			case SetPosition(x, y):
-				[
-					Opcode(SetPositionC),
-					Float(x),
-					Float(y)
-				];
+				statement(SetPositionConst, [Vec(x, y)]);
 			case SetVelocity(vx, vy):
-				[
-					Opcode(SetVelocityC),
-					Float(vx),
-					Float(vy)
-				];
+				statement(SetVelocityConst, [Vec(vx, vy)]);
 			case List(nodes):
-				nodes.map(toWordArrayCallback).flatten();
+				nodes.map(node -> node.toAssembly()).flatten();
 		}
 	}
 
@@ -65,5 +52,5 @@ class AstExtension {
 		Compiles `Ast` into `Bytecode`.
 	**/
 	public static inline function compile(ast: Ast): Bytecode
-		return toWordArray(ast).toBytecode();
+		return toAssembly(ast).compile();
 }

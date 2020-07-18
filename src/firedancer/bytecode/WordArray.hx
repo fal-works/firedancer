@@ -1,6 +1,7 @@
 package firedancer.bytecode;
 
 import banker.binary.Bytes;
+import firedancer.assembly.Opcode;
 import firedancer.bytecode.internal.Constants.*;
 
 private typedef Data = Array<Word>;

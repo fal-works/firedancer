@@ -1,5 +1,7 @@
 package firedancer.bytecode;
 
+import firedancer.assembly.Opcode;
+
 /**
 	Data unit in `Bytecode`.
 **/

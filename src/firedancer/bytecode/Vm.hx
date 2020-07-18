@@ -4,6 +4,7 @@ import haxe.Int32;
 import banker.binary.ByteStackData;
 import banker.vector.WritableVector as Vec;
 import sneaker.print.Printer.print;
+import firedancer.assembly.Opcode;
 import firedancer.bytecode.internal.Constants.*;
 
 /**
@@ -119,12 +120,12 @@ class Vm {
 					break;
 				case Decrement:
 					decrement();
-				case SetPositionC:
+				case SetPositionConst:
 					final x = readCodeF64();
 					final y = readCodeF64();
 					xVec[vecIndex] = x;
 					yVec[vecIndex] = y;
-				case SetVelocityC:
+				case SetVelocityConst:
 					final vx = readCodeF64();
 					final vy = readCodeF64();
 					vxVec[vecIndex] = vx;
