@@ -8,7 +8,11 @@ import banker.binary.Bytes;
 **/
 @:notNull @:forward(length)
 abstract Bytecode(Bytes) from Bytes to Bytes {
-	public static final empty = Bytes.alloc(UInt.zero);
+	/**
+		@return Null object for `Bytecode`.
+	**/
+	public static function createEmpty()
+		return Bytes.alloc(UInt.zero);
 
 	/**
 		Provides access to the bytecode.

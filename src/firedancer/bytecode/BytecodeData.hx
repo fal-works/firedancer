@@ -7,6 +7,4 @@ import banker.binary.BytesData;
 	This does not have the `length` property (use `Bytecode` if you need it).
 **/
 @:notNull @:forward
-abstract BytecodeData(BytesData) from BytesData to BytesData {
-	public static final empty = Bytecode.empty.data;
-}
+abstract BytecodeData(BytesData) from BytesData to BytesData {}
