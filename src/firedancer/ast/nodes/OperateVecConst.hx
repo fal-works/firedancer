@@ -1,13 +1,10 @@
 package firedancer.ast.nodes;
 
-import firedancer.assembly.Opcode;
-
 /**
-	Super class of `SetPositionConst` and `SetVelocityConst`.
+	Sets actor's position to specific constant values.
 **/
 @:ripper_verified
-private class OperateVecConst implements ripper.Data implements AstNode {
-	public final opcode: Opcode;
+class SetPositionConst implements ripper.Data implements AstNode {
 	public final x: Float;
 	public final y: Float;
 
@@ -15,19 +12,20 @@ private class OperateVecConst implements ripper.Data implements AstNode {
 		return false;
 
 	public function toAssembly(): AssemblyCode
-		return statement(opcode, [Vec(x, y)]);
+		return setPositionConst(x, y);
 }
 
+/**
+	Sets actor's velocity to specific constant values.
+**/
 @:ripper_verified
-class SetPositionConst extends OperateVecConst {
-	public function new(x: Float, y: Float) {
-		super(SetPositionConst, x, y);
-	}
-}
+class SetVelocityConst implements ripper.Data implements AstNode {
+	public final x: Float;
+	public final y: Float;
 
-@:ripper_verified
-class SetVelocityConst extends OperateVecConst {
-	public function new(x: Float, y: Float) {
-		super(SetVelocityConst, x, y);
-	}
+	public inline function containsWait(): Bool
+		return false;
+
+	public function toAssembly(): AssemblyCode
+		return setVelocityConst(x, y);
 }

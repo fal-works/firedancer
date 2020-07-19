@@ -16,14 +16,32 @@ abstract AssemblyStatement(Data) from Data {
 		opcode: Opcode,
 		?operands: Array<Operand>
 	): AssemblyStatement {
-		return new Data(opcode, operands.orNew());
+		return new AssemblyStatement(opcode, operands.orNew());
 	}
 
 	/**
 		Implicitly converts `opcode` to `AssemblyStatement`.
 	**/
 	@:from static extern inline function fromOpcode(opcode: Opcode): AssemblyStatement {
-		return new Data(opcode, []);
+		return new AssemblyStatement(opcode, []);
+	}
+
+	public extern inline function new(opcode: Opcode, operands: Array<Operand>) {
+		#if debug
+		// validate operands
+		final operandTypes = opcode.toStatementType().operandTypes();
+		for (i in 0...operands.length) {
+			final operandType = operandTypes[i];
+			final valid = switch operands[i] {
+				case Int(_): operandType == Int;
+				case Float(_): operandType == Float;
+				case Vec(_, _): operandType == Vec;
+			}
+			if (!valid) throw "";
+		}
+		#end
+
+		this = new Data(opcode, operands);
 	}
 }
 

@@ -1,7 +1,5 @@
 package firedancer.ast.nodes;
 
-import firedancer.bytecode.internal.Constants.*;
-
 /**
 	Repeats the provided `AstNode`.
 **/
@@ -21,14 +19,8 @@ class Loop implements ripper.Data implements AstNode {
 		if (!this.containsWait()) throw "Infinite loop must contain Wait.";
 
 		final body = this.node.toAssembly();
+		body.push(jumpBack(body.bytecodeLength()));
 
-		final jumpBackBytecodeLength = 2 * LEN32;
-		final jumpBack = statement(
-			Jump,
-			[Int(-jumpBackBytecodeLength - body.bytecodeLength().int())]
-		);
-
-		body.push(jumpBack);
 		return body;
 	}
 }
@@ -55,21 +47,15 @@ class FiniteLoop extends Loop {
 			return [for (i in 0...count) body.copy()].flatten();
 		}
 
-		final pushCount = statement(PushInt, [Int(count.int())]);
-		final countDownJumpBytecodeLength = 2 * LEN32;
-		final jumpBackBytecodeLength = 2 * LEN32;
-		final countDownJump = statement(
-			CountDownJump,
-			[Int(bodyLength + jumpBackBytecodeLength)]
-		);
-		final jumpBack = statement(Jump, [
-			Int(-jumpBackBytecodeLength - bodyLength - countDownJumpBytecodeLength)
-		]);
-
 		return [
-			[pushCount, countDownJump],
+			[
+				pushInt(count),
+				countDownJump(bodyLength + Opcode.Jump.getBytecodeLength())
+			],
 			body,
-			[jumpBack]
+			[
+				jumpBack(body.bytecodeLength() + Opcode.CountDownJump.getBytecodeLength())
+			]
 		].flatten();
 	}
 }

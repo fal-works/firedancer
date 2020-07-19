@@ -54,4 +54,26 @@ class OpcodeExtension {
 			case SetVelocityConst: "set_velocity_const";
 		}
 	}
+
+	/**
+		Creates a `StatementType` instance that corresponds to `opcode`.
+	**/
+	public static inline function toStatementType(opcode: Opcode): StatementType {
+		return switch opcode {
+			case Break: [];
+			case CountDown: [];
+			case Jump: [Int];
+			case CountDownJump: [Int];
+			case PushInt: [Int];
+			case Decrement: [];
+			case SetPositionConst: [Vec];
+			case SetVelocityConst: [Vec];
+		}
+	}
+
+	/**
+		@return The bytecode length in bytes required for a statement with `opcode`.
+	**/
+	public static inline function getBytecodeLength(opcode: Opcode): UInt
+		return toStatementType(opcode).bytecodeLength();
 }

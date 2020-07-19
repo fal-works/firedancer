@@ -13,5 +13,5 @@ class Wait implements ripper.Data implements AstNode {
 		return true;
 
 	public function toAssembly(): AssemblyCode
-		return [statement(PushInt, [Int(frames)]), statement(CountDown)];
+		return [pushInt(frames), countDown()];
 }
