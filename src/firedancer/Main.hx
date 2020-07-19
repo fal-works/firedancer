@@ -2,6 +2,7 @@ package firedancer;
 
 import sneaker.print.Printer.println;
 import firedancer.types.NInt;
+import firedancer.types.Azimuth;
 import firedancer.ast.Ast;
 import firedancer.ast.nodes.*;
 import firedancer.ast.nodes.OperateVecConst;
@@ -51,6 +52,11 @@ class Main {
 }
 
 private class Position {
+	/**
+		Provides functions for operating position in polar coordinates.
+	**/
+	public final polar = new PolarPosition();
+
 	public function new() {}
 
 	/**
@@ -60,7 +66,26 @@ private class Position {
 		return new SetPositionConst(x, y);
 }
 
+private class PolarPosition {
+	public function new() {}
+
+	/**
+		Sets position to `(distance, bearing)`.
+	**/
+	public inline function set(distance: Float, bearing: Azimuth) {
+		return new SetPositionConst(
+			distance * bearing.cos(),
+			distance * bearing.sin()
+		);
+	}
+}
+
 private class Velocity {
+	/**
+		Provides functions for operating velocity in polar coordinates.
+	**/
+	public final polar = new PolarVelocity();
+
 	public function new() {}
 
 	/**
@@ -68,6 +93,20 @@ private class Velocity {
 	**/
 	public inline function set(vx: Float, vy: Float)
 		return new SetVelocityConst(vx, vy);
+}
+
+private class PolarVelocity {
+	public function new() {}
+
+	/**
+		Sets velocity to `(speed, direction)`.
+	**/
+	public inline function set(speed: Float, direction: Azimuth) {
+		return new SetVelocityConst(
+			speed * direction.cos(),
+			speed * direction.sin()
+		);
+	}
 }
 
 private class Shot {
@@ -85,6 +124,11 @@ private class Shot {
 }
 
 private class ShotPosition {
+	/**
+		Provides functions for operating shot position in polar coordinates.
+	**/
+	public final polar = new PolarShotPosition();
+
 	public function new() {}
 
 	/**
@@ -94,7 +138,23 @@ private class ShotPosition {
 		throw "Not yet implemented."; // TODO: implement
 }
 
+private class PolarShotPosition {
+	public function new() {}
+
+	/**
+		Sets shot position to `(distance, bearing)`.
+	**/
+	public inline function set(distance: Float, bearing: Azimuth) {
+		throw "Not yet implemented."; // TODO: implement
+	}
+}
+
 private class ShotVelocity {
+	/**
+		Provides functions for operating shot velocity in polar coordinates.
+	**/
+	public final polar = new PolarShotVelocity();
+
 	public function new() {}
 
 	/**
@@ -102,4 +162,15 @@ private class ShotVelocity {
 	**/
 	public inline function set(vx: Float, vy: Float)
 		throw "Not yet implemented."; // TODO: implement
+}
+
+private class PolarShotVelocity {
+	public function new() {}
+
+	/**
+		Sets shot velocity to `(speed, direction)`.
+	**/
+	public inline function set(speed: Float, direction: Azimuth) {
+		throw "Not yet implemented."; // TODO: implement
+	}
 }
