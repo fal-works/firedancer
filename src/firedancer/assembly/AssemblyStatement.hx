@@ -2,6 +2,7 @@ package firedancer.assembly;
 
 import sneaker.string_buffer.StringBuffer;
 import firedancer.bytecode.WordArray;
+import firedancer.bytecode.internal.Constants.*;
 
 /**
 	A single statement in bullet pattern code written in a virtual assembly language.
@@ -29,6 +30,20 @@ abstract AssemblyStatement(Data) from Data {
 private class Data implements ripper.Data {
 	public final opcode: Opcode;
 	public final operands: Array<Operand>;
+
+	public function bytecodeLength(): UInt {
+		var len = LEN32;
+
+		for (i in 0...operands.length) {
+			len += switch operands[i] {
+				case Int(_): LEN32;
+				case Float(_): LEN64;
+				case Vec(_, _): LEN64 + LEN64;
+			}
+		}
+
+		return len;
+	}
 
 	public function toWordArray(): WordArray {
 		final opcode = this.opcode;

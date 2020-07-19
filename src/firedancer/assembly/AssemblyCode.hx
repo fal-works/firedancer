@@ -14,6 +14,15 @@ abstract AssemblyCode(Data) from Data to Data {
 		return [statement];
 
 	/**
+		@return The bytecode length in bytes after compiled.
+	**/
+	public function bytecodeLength(): UInt {
+		var len = UInt.zero;
+		for (i in 0...this.length) len += this[i].bytecodeLength();
+		return len;
+	}
+
+	/**
 		Compiles `this` code into `Bytecode`.
 	**/
 	public function compile(): Bytecode {

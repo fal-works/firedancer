@@ -8,6 +8,9 @@ import firedancer.types.NInt;
 class Wait implements ripper.Data implements AstNode {
 	public final frames: NInt;
 
+	public inline function containsWait(): Bool
+		return true;
+
 	public function toAssembly(): AssemblyCode
 		return [statement(PushInt, [Int(frames)]), statement(CountDown)];
 }

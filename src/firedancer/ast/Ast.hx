@@ -7,7 +7,7 @@ import firedancer.ast.nodes.List;
 	AST (abstract syntax tree) that represents a bullet hell pattern.
 **/
 @:notNull @:forward
-abstract Ast(AstNode) from AstNode {
+abstract Ast(AstNode) from AstNode to AstNode {
 	/**
 		Converts `nodes` to `Ast`.
 	**/

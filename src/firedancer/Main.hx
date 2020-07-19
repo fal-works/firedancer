@@ -1,5 +1,6 @@
 package firedancer;
 
+import sneaker.print.Printer.println;
 import firedancer.types.NInt;
 import firedancer.ast.Ast;
 import firedancer.ast.nodes.*;
@@ -29,10 +30,22 @@ class Main {
 		return new Wait(frames);
 
 	/**
+		Repeats the given pattern.
+		Use `count()` to make a finite loop. Otherwise the loop runs endlessly.
+	**/
+	public static inline function loop(ast: Ast): Loop
+		return new Loop(ast);
+
+	/**
 		Compiles `Ast` or `AstNode` into `Bytecode`.
 	**/
-	public static inline function compile(ast: Ast): Bytecode
-		return ast.compile();
+	public static inline function compile(ast: Ast): Bytecode {
+		final code = ast.toAssembly();
+		#if debug
+		println('[COMPILED]\n${code.toString()}\n');
+		#end
+		return code.compile();
+	}
 }
 
 private class Position {

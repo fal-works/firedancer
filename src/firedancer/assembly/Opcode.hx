@@ -18,6 +18,8 @@ enum abstract Opcode(Int32) to Int to Int32 {
 		return switch value {
 			case Opcode.Break: Break;
 			case Opcode.CountDown: CountDown;
+			case Opcode.Jump: Jump;
+			case Opcode.CountDownJump: CountDownJump;
 			case Opcode.PushInt: PushInt;
 			case Opcode.Decrement: Decrement;
 			case Opcode.SetPositionConst: SetPositionConst;
@@ -28,6 +30,8 @@ enum abstract Opcode(Int32) to Int to Int32 {
 
 	final Break = 10;
 	final CountDown;
+	final Jump;
+	final CountDownJump;
 	final PushInt = 20;
 	final Decrement = 30;
 	final SetPositionConst = 50;
@@ -42,6 +46,8 @@ class OpcodeExtension {
 		return switch code {
 			case Break: "break";
 			case CountDown: "count_down";
+			case Jump: "jump";
+			case CountDownJump: "count_down_jump";
 			case PushInt: "push_int";
 			case Decrement: "decrement";
 			case SetPositionConst: "set_position_const";

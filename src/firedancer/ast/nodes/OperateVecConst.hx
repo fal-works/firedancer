@@ -10,6 +10,9 @@ private class OperateVecConst implements ripper.Data implements AstNode {
 	public final x: Float;
 	public final y: Float;
 
+	public inline function containsWait(): Bool
+		return false;
+
 	public function toAssembly(): AssemblyCode
 		return statement(opcode, [Vec(x, y)]);
 }
