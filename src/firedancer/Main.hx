@@ -40,11 +40,13 @@ class Main {
 		Compiles `Ast` or `AstNode` into `Bytecode`.
 	**/
 	public static inline function compile(ast: Ast): Bytecode {
-		final code = ast.toAssembly();
+		final assemblyCode = ast.toAssembly();
+		final bytecode = assemblyCode.compile();
 		#if debug
-		println('[COMPILED]\n${code.toString()}\n');
+		println('[ASSEMBLY]\n${assemblyCode.toString()}\n');
+		println('[BYTECODE]\n${bytecode.toHex()}\n');
 		#end
-		return code.compile();
+		return bytecode;
 	}
 }
 

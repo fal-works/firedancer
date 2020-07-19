@@ -6,7 +6,7 @@ import banker.binary.Bytes;
 	Bytecode that represents a bullet pattern.
 	You can also use `BytecodeData` directly if you store the entire `length` externally.
 **/
-@:notNull @:forward(length)
+@:notNull @:forward(length, toHex)
 abstract Bytecode(Bytes) from Bytes to Bytes {
 	/**
 		@return Null object for `Bytecode`.
