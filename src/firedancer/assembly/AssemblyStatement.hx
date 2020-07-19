@@ -27,6 +27,7 @@ abstract AssemblyStatement(Data) from Data {
 	}
 }
 
+@:ripper_verified
 private class Data implements ripper.Data {
 	public final opcode: Opcode;
 	public final operands: Array<Operand>;

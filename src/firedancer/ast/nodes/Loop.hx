@@ -5,6 +5,7 @@ import firedancer.bytecode.internal.Constants.*;
 /**
 	Repeats the provided `AstNode`.
 **/
+@:ripper_verified
 class Loop implements ripper.Data implements AstNode {
 	public final node: AstNode;
 
@@ -32,6 +33,7 @@ class Loop implements ripper.Data implements AstNode {
 	}
 }
 
+@:ripper_verified
 class FiniteLoop extends Loop {
 	public final loopCount: UInt;
 	public var isInlined: Bool = false;

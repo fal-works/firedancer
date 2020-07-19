@@ -3,6 +3,7 @@ package firedancer.ast.nodes;
 /**
 	List of `AstNode` to be run sequentially.
 **/
+@:ripper_verified
 class List implements ripper.Data implements AstNode {
 	public final nodes: Array<AstNode>;
 
