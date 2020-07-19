@@ -33,12 +33,21 @@ class World {
 		armies.setFilter(filter);
 
 		army = WorldBuilder.createArmy(armies);
+
+		// first agent
+		army.newAgent(
+			0.5 * worldWidth,
+			-32,
+			3,
+			0.5 * Math.PI,
+			BulletPatterns.typeA
+		);
 	}
 
 	public function update(): Void {
 		army.update();
 
-		if (Math.random() < 0.03) newAgent();
+		// if (Math.random() < 0.03) newAgent();
 
 		army.synchronize();
 	}
