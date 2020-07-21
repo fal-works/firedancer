@@ -43,29 +43,137 @@ enum abstract Opcode(Int32) to Int to Int32 {
 		}
 	}
 
-	final Break = 10;
+	// ---- control flow --------------------------------------------------------
+
+	/**
+		Breaks the current frame.
+	**/
+	final Break = 1;
+
+	/**
+		Peeks the top integer (which should be the remaining loop count) from the stack
+		and checks if it is zero.
+		- If not zero, decrements the loop counter at the stack top and breaks the current frame.
+		  The next frame will begin with this `CountDownBreak` opcode again.
+		- If zero, drops the loop counter from the stack and goes to next.
+	**/
 	final CountDownBreak;
+
+	/**
+		Adds a given constant value to the current bytecode position.
+	**/
 	final Jump;
+
+	/**
+		Peeks the top integer (which should be the remaining loop count) from the stack
+		and checks if it is zero.
+		- If not zero, decrements the loop counter at the stack top and goes to next.
+		- If zero, drops the loop counter from the stack and
+			adds a given constant value to the current bytecode position.
+	**/
 	final CountDownJump;
-	final PushInt = 20;
+
+	// ---- read/write/calc values ----------------------------------------------
+
+	/**
+		Pushes a given constant integer to the stack top.
+	**/
+	final PushInt;
+
+	/**
+		Reads a vector at the stack top (skipping a given constant bytes from the top)
+		and assigns it to the volatile vector.
+	**/
 	final PeekVec;
+
+	/**
+		Drops vector from the stack top.
+	**/
 	final DropVec;
-	final Decrement = 30;
-	final SetPositionC = 50;
-	final AddPositionC;
-	final SetVelocityC;
-	final AddVelocityC;
-	final SetPositionS;
-	final AddPositionS;
-	final SetVelocityS;
-	final AddVelocityS;
-	final SetPositionV;
-	final AddPositionV;
-	final SetVelocityV;
-	final AddVelocityV;
-	final CalcRelativePositionCV = 70;
-	final CalcRelativeVelocityCV;
+
+	/**
+		Decrements the integer at the stack top.
+	**/
+	final Decrement;
+
+	/**
+		Multiplicates the current volatile vector by a given constant float and pushes it to the stack top.
+	**/
 	final MultVecVCS;
+
+	// ---- read/write/calc actor data ------------------------------------------
+
+	/**
+		Sets actor's position to a given constant vector.
+	**/
+	final SetPositionC;
+
+	/**
+		Adds a given constant vector to actor's position.
+	**/
+	final AddPositionC;
+
+	/**
+		Sets actor's velocity to a given constant vector.
+	**/
+	final SetVelocityC;
+
+	/**
+		Adds a given constant vector to actor's velocity.
+	**/
+	final AddVelocityC;
+
+	/**
+		Sets actor's position to the vector at the stack top.
+	**/
+	final SetPositionS;
+
+	/**
+		Adds the vector at the stack top to actor's position.
+	**/
+	final AddPositionS;
+
+	/**
+		Sets actor's velocity to the vector at the stack top.
+	**/
+	final SetVelocityS;
+
+	/**
+		Adds the vector at the stack top to actor's velocity.
+	**/
+	final AddVelocityS;
+
+	/**
+		Sets actor's position to the current volatile vector.
+	**/
+	final SetPositionV;
+
+	/**
+		Adds the current volatile vector to actor's position.
+	**/
+	final AddPositionV;
+
+	/**
+		Sets actor's velocity to the current volatile vector.
+	**/
+	final SetVelocityV;
+
+	/**
+		Adds the current volatile vector to actor's velocity.
+	**/
+	final AddVelocityV;
+
+	/**
+		Converts a given constant vector (which should be an absolute position)
+		to a relative one from actor's current position and assigns it to the volatile vector.
+	**/
+	final CalcRelativePositionCV;
+
+	/**
+		Converts a given constant vector (which should be an absolute velocity)
+		to a relative one from actor's current velocity and assigns it to the volatile vector.
+	**/
+	final CalcRelativeVelocityCV;
 }
 
 class OpcodeExtension {
@@ -107,17 +215,17 @@ class OpcodeExtension {
 		return switch opcode {
 			case Break: [];
 			case CountDownBreak: [];
-			case Jump: [Int];
-			case CountDownJump: [Int];
-			case PushInt: [Int];
-			case PeekVec: [Int]; // operand: bytes to be skipped from the stack top
+			case Jump: [Int]; // bytecode length to jump
+			case CountDownJump: [Int]; // bytecode length to jump
+			case PushInt: [Int]; // integer to push
+			case PeekVec: [Int]; // bytes to be skipped from the stack top
 			case DropVec: [];
 			case Decrement: [];
 			case SetPositionC | AddPositionC | SetVelocityC | AddVelocityC: [Vec];
 			case SetPositionS | AddPositionS | SetVelocityS | AddVelocityS: [];
 			case SetPositionV | AddPositionV | SetVelocityV | AddVelocityV: [];
-			case CalcRelativePositionCV | CalcRelativeVelocityCV: [Vec];
-			case MultVecVCS: [Float];
+			case CalcRelativePositionCV | CalcRelativeVelocityCV: [Vec]; // absolute vector
+			case MultVecVCS: [Float]; // multiplier value
 		}
 	}
 
