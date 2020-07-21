@@ -17,7 +17,7 @@ enum abstract Opcode(Int32) to Int to Int32 {
 	public static inline function from(value: Int32): Opcode {
 		return switch value {
 			case Opcode.Break: Break;
-			case Opcode.CountDown: CountDown;
+			case Opcode.CountDownBreak: CountDownBreak;
 			case Opcode.Jump: Jump;
 			case Opcode.CountDownJump: CountDownJump;
 			case Opcode.PushInt: PushInt;
@@ -44,7 +44,7 @@ enum abstract Opcode(Int32) to Int to Int32 {
 	}
 
 	final Break = 10;
-	final CountDown;
+	final CountDownBreak;
 	final Jump;
 	final CountDownJump;
 	final PushInt = 20;
@@ -75,7 +75,7 @@ class OpcodeExtension {
 	public static inline function toString(code: Opcode): String {
 		return switch code {
 			case Break: "break";
-			case CountDown: "count_down";
+			case CountDownBreak: "count_down_break";
 			case Jump: "jump";
 			case CountDownJump: "count_down_jump";
 			case PushInt: "push_int";
@@ -106,7 +106,7 @@ class OpcodeExtension {
 	public static inline function toStatementType(opcode: Opcode): StatementType {
 		return switch opcode {
 			case Break: [];
-			case CountDown: [];
+			case CountDownBreak: [];
 			case Jump: [Int];
 			case CountDownJump: [Int];
 			case PushInt: [Int];

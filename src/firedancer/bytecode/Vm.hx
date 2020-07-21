@@ -139,7 +139,7 @@ class Vm {
 					volY = vec.y;
 				case DropVec:
 					dropVec();
-				case CountDown:
+				case CountDownBreak:
 					if (0 != peekInt()) {
 						decrement();
 						codePos -= LEN32;

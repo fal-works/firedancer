@@ -34,10 +34,10 @@ class Builder {
 	}
 
 	/**
-		Creates a `CountDown` statement.
+		Creates a `CountDownBreak` statement.
 	**/
-	public static inline function countDown(): AssemblyStatement {
-		return new AssemblyStatement(CountDown, []);
+	public static inline function countDownbreak(): AssemblyStatement {
+		return new AssemblyStatement(CountDownBreak, []);
 	}
 
 	/**
