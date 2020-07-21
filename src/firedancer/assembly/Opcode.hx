@@ -39,6 +39,7 @@ enum abstract Opcode(Int32) to Int to Int32 {
 			case Opcode.CalcRelativePositionCV: CalcRelativePositionCV;
 			case Opcode.CalcRelativeVelocityCV: CalcRelativeVelocityCV;
 			case Opcode.MultVecVCS: MultVecVCS;
+			case Opcode.Fire: Fire;
 			default: throw error(value);
 		}
 	}
@@ -174,6 +175,10 @@ enum abstract Opcode(Int32) to Int to Int32 {
 		to a relative one from actor's current velocity and assigns it to the volatile vector.
 	**/
 	final CalcRelativeVelocityCV;
+
+	// ---- other operations ----------------------------------------------------
+
+	final Fire;
 }
 
 class OpcodeExtension {
@@ -205,6 +210,7 @@ class OpcodeExtension {
 			case CalcRelativePositionCV: "calc_rel_position_cv";
 			case CalcRelativeVelocityCV: "calc_rel_velocity_cv";
 			case MultVecVCS: "mult_vec_vcs";
+			case Fire: "fire";
 		}
 	}
 
@@ -226,6 +232,7 @@ class OpcodeExtension {
 			case SetPositionV | AddPositionV | SetVelocityV | AddVelocityV: [];
 			case CalcRelativePositionCV | CalcRelativeVelocityCV: [Vec]; // absolute vector
 			case MultVecVCS: [Float]; // multiplier value
+			case Fire: [Int]; // bytecode ID
 		}
 	}
 

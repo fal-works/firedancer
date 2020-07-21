@@ -121,14 +121,15 @@ class Actor extends broker.entity.BasicBatchEntity {
 		disusedSprites: WVec<BatchSprite>,
 		disusedCount: Int,
 		dead: WVec<Bool>,
-		rotationVelocity: Float
+		rotationVelocity: Float,
+		emitter: Emitter
 	): Void {
 		if (dead[i] || !HabitableZone.containsPoint(x[i], y[i])) {
 			disuse = true;
 			disusedSprites[disusedCount] = sprite;
 			++disusedCount;
 		} else {
-			Vm.run(thread, x, y, vx, vy, i);
+			Vm.run(thread, x, y, vx, vy, i, emitter);
 			x[i] += vx[i];
 			y[i] += vy[i];
 		}

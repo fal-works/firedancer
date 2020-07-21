@@ -155,4 +155,8 @@ class Builder {
 	public static inline function multVecVCS(multiplier: Float): AssemblyStatement {
 		return new AssemblyStatement(MultVecVCS, [Float(multiplier)]);
 	}
+
+	public static inline function fire(bytecodeId: Int): AssemblyStatement {
+		return new AssemblyStatement(Fire, [Int(bytecodeId)]);
+	}
 }

@@ -92,6 +92,18 @@ class Thread {
 	}
 
 	/**
+		Updates values of `this` thread.
+		Called in `Vm.run()`.
+	**/
+	public extern inline function update(
+		codePos: UInt,
+		stackSize: UInt
+	): Void {
+		this.codePos = codePos;
+		this.stackSize = stackSize;
+	}
+
+	/**
 		Resets `this` thread.
 	**/
 	public extern inline function reset(): Void {

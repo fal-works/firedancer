@@ -38,6 +38,13 @@ class Main {
 		return new Loop(ast);
 
 	/**
+		Emits a new actor with a pattern represented by the given `ast`.
+	**/
+	public static inline function fire(?ast: Ast): Fire {
+		return new Fire(Maybe.from(ast));
+	}
+
+	/**
 		Compiles `Ast` or `AstNode` into `Bytecode`.
 	**/
 	public static inline function compile(ast: Ast): Bytecode {

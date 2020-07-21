@@ -4,6 +4,7 @@ import haxe.Int32;
 import banker.vector.WritableVector as Vec;
 import sneaker.print.Printer.println;
 import firedancer.assembly.Opcode;
+import firedancer.types.Emitter;
 import firedancer.bytecode.internal.Constants.*;
 
 /**
@@ -18,7 +19,8 @@ class Vm {
 		yVec: Vec<Float>,
 		vxVec: Vec<Float>,
 		vyVec: Vec<Float>,
-		vecIndex: UInt
+		vecIndex: UInt,
+		emitter: Emitter
 	): Void {
 		final maybeCode = thread.code;
 		if (maybeCode.isNone()) return;
@@ -209,6 +211,17 @@ class Vm {
 				case MultVecVCS:
 					final multiplier = readCodeF64();
 					pushVec(volX * multiplier, volY * multiplier);
+				case Fire:
+					final bytecodeId = readCodeI32();
+					final bytecode = if (bytecodeId < 0) Maybe.none() else
+						Maybe.none(); // TODO: see table or some kind of that
+					emitter.emit(
+						xVec[vecIndex] + thread.shotX,
+						yVec[vecIndex] + thread.shotY,
+						thread.shotVx,
+						thread.shotVy,
+						bytecode
+					);
 				case other:
 					#if debug
 					throw 'Unknown opcode: $other';
@@ -221,8 +234,7 @@ class Vm {
 			}
 		}
 
-		thread.codePos = codePos;
-		thread.stackSize = stackSize;
+		thread.update(codePos, stackSize);
 
 		println("");
 	}
@@ -234,8 +246,9 @@ class Vm {
 		final yVec = Vec.fromArrayCopy([0.0]);
 		final vxVec = Vec.fromArrayCopy([0.0]);
 		final vyVec = Vec.fromArrayCopy([0.0]);
-
 		final vecIndex = UInt.zero;
+		final emitter = new NullEmitter();
+
 		var frame = UInt.zero;
 
 		while (thread.code.isSome()) {
@@ -243,15 +256,20 @@ class Vm {
 				throw 'Exceeded $infiniteLoopCheckThreshold frames.';
 
 			println('[frame $frame]');
-			Vm.run(
-				thread,
-				xVec,
-				yVec,
-				vxVec,
-				vyVec,
-				vecIndex
-			);
+			Vm.run(thread, xVec, yVec, vxVec, vyVec, vecIndex, emitter);
 			++frame;
 		}
 	}
+}
+
+private class NullEmitter implements Emitter {
+	public function new() {}
+
+	public function emit(
+		x: Float,
+		y: Float,
+		vx: Float,
+		vy: Float,
+		code: Maybe<Bytecode>
+	): Void {}
 }
