@@ -3,10 +3,10 @@ package actor;
 @:banker_verified
 class Actor extends broker.entity.BasicBatchEntity {
 	/**
-		Clojure function for emitting a new bullet.
+		Object for emitting new bullet.
 	**/
 	@:banker_chunkLevelFinal
-	var fire: FireCallback;
+	var emitter: Emitter;
 
 	/**
 		Rotation velocity.
@@ -32,6 +32,36 @@ class Actor extends broker.entity.BasicBatchEntity {
 	var dead: Bool = false;
 
 	@:banker_useEntity
+	static function use(
+		sprite: BatchSprite,
+		x: WVec<Float>,
+		y: WVec<Float>,
+		vx: WVec<Float>,
+		vy: WVec<Float>,
+		thread: WVec<Thread>,
+		frameCount: WVec<UInt>,
+		dead: WVec<Bool>,
+		i: Int,
+		usedSprites: WVec<BatchSprite>,
+		usedCount: Int,
+		initialX: Float,
+		initialY: Float,
+		initialVx: Float,
+		initialVy: Float,
+		code: Maybe<Bytecode>
+	): Void {
+		x[i] = initialX;
+		y[i] = initialY;
+		vx[i] = initialVx;
+		vy[i] = initialVy;
+		thread[i].set(code, 0.0, 0.0, 0.0, 0.0);
+		frameCount[i] = UInt.zero;
+		dead[i] = false;
+		usedSprites[usedCount] = sprite;
+		++usedCount;
+	}
+
+	@:banker_useEntity
 	static function emit(
 		sprite: BatchSprite,
 		x: WVec<Float>,
@@ -48,13 +78,13 @@ class Actor extends broker.entity.BasicBatchEntity {
 		initialY: Float,
 		speed: Float,
 		direction: Float,
-		pattern: Bytecode
+		code: Maybe<Bytecode>
 	): Void {
 		x[i] = initialX;
 		y[i] = initialY;
 		vx[i] = speed * Math.cos(direction);
 		vy[i] = speed * Math.sin(direction);
-		thread[i].set(pattern, 0.0, 0.0, 0.0, 0.0);
+		thread[i].set(code, 0.0, 0.0, 0.0, 0.0);
 		frameCount[i] = UInt.zero;
 		dead[i] = false;
 		usedSprites[usedCount] = sprite;
@@ -110,12 +140,12 @@ class Actor extends broker.entity.BasicBatchEntity {
 	static function mayFire(
 		x: Float,
 		y: Float,
-		fire: FireCallback
+		emitter: Emitter
 	): Void {
 		if (y < 240 && Random.bool(0.01)) {
 			final playerPosition = Global.playerPosition;
 			final dir = Math.atan2(playerPosition.y() - y, playerPosition.x() - x);
-			fire(x, y, 4, dir);
+			emitter.emit(x, y, 4 * Math.cos(dir), 4 * Math.sin(dir), Maybe.none());
 		}
 	}
 }

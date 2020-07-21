@@ -70,14 +70,19 @@ class Thread {
 		Sets bytecode and initial shot position/velocity.
 	**/
 	public extern inline function set(
-		code: Bytecode,
+		code: Maybe<Bytecode>,
 		shotX: Float,
 		shotY: Float,
 		shotVx: Float,
 		shotVy: Float
 	): Void {
-		this.code = Maybe.from(code.data);
-		this.codeLength = code.length;
+		if (code.isSome()) {
+			this.code = Maybe.from(code.unwrap().data);
+			this.codeLength = code.unwrap().length;
+		} else {
+			this.code = Maybe.none();
+			this.codeLength = UInt.zero;
+		}
 		this.codePos = UInt.zero;
 		this.stackSize = UInt.zero;
 		this.shotX = shotX;

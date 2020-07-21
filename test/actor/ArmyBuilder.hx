@@ -19,22 +19,14 @@ class ArmyBuilder {
 
 		final spriteFactory = () -> new BatchSprite(tile);
 
-		final fireCallback = if (bullets != null) {
-			function(x, y, speed, direction) {
-				bullets.emit(x, y, speed, direction, BulletPatterns.none);
-			}
-		} else {
-			function(x, y, speed, direction) {
-				aosoa.emit(x, y, speed, direction, BulletPatterns.none);
-			}
-		};
+		final emitter = new Emitter(Nulls.coalesce(bullets, aosoa));
 
 		aosoa = new ActorAosoa(
 			chunkCapacity,
 			chunkCount,
 			batch,
 			spriteFactory,
-			fireCallback
+			emitter
 		);
 		return aosoa;
 	}
