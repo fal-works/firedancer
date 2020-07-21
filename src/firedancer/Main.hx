@@ -250,7 +250,7 @@ private class PolarShotVelocity {
 	**/
 	public inline function set(speed: Float, direction: Azimuth) {
 		return new OperateVectorC(
-			SetShotPositionC,
+			SetShotVelocityC,
 			speed * direction.cos(),
 			speed * direction.sin()
 		);
@@ -261,7 +261,7 @@ private class PolarShotVelocity {
 	**/
 	public inline function add(speed: Float, direction: Azimuth) {
 		return new OperateVectorC(
-			AddShotPositionC,
+			AddShotVelocityC,
 			speed * direction.cos(),
 			speed * direction.sin()
 		);
