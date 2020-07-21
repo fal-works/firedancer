@@ -15,30 +15,10 @@ class Actor extends broker.entity.BasicBatchEntity {
 	var rotationVelocity: Float = 0.03;
 
 	/**
-		`firedancer` bytecode.
+		`firedancer` thread.
 	**/
-	var fdCode: BytecodeData = BulletPatterns.none.data;
-
-	/**
-		The entire length of `fdCode`.
-	**/
-	var fdCodeLength: UInt = UInt.zero;
-
-	/**
-		Current position in `fdCode`.
-	**/
-	var fdCodePos: UInt = UInt.zero;
-
-	/**
-		`firedancer` data stack.
-	**/
-	@:banker.factory(() -> ByteStackData.alloc(64))
-	var fdStack: ByteStackData;
-
-	/**
-		Current size of data in `fdStack`.
-	**/
-	var fdStackSize: UInt = UInt.zero;
+	@:banker.factory(() -> new Thread(64))
+	var thread: Thread;
 
 	/**
 		Elapsed frame count of each entity.
@@ -58,10 +38,7 @@ class Actor extends broker.entity.BasicBatchEntity {
 		y: WVec<Float>,
 		vx: WVec<Float>,
 		vy: WVec<Float>,
-		fdCode: WVec<BytecodeData>,
-		fdCodeLength: WVec<UInt>,
-		fdCodePos: WVec<UInt>,
-		fdStackSize: WVec<UInt>,
+		thread: WVec<Thread>,
 		frameCount: WVec<UInt>,
 		dead: WVec<Bool>,
 		i: Int,
@@ -77,10 +54,7 @@ class Actor extends broker.entity.BasicBatchEntity {
 		y[i] = initialY;
 		vx[i] = speed * Math.cos(direction);
 		vy[i] = speed * Math.sin(direction);
-		fdCode[i] = pattern.data;
-		fdCodeLength[i] = pattern.length;
-		fdCodePos[i] = UInt.zero;
-		fdStackSize[i] = UInt.zero;
+		thread[i].set(pattern, 0.0, 0.0, 0.0, 0.0);
 		frameCount[i] = UInt.zero;
 		dead[i] = false;
 		usedSprites[usedCount] = sprite;
@@ -110,11 +84,7 @@ class Actor extends broker.entity.BasicBatchEntity {
 		y: WVec<Float>,
 		vx: WVec<Float>,
 		vy: WVec<Float>,
-		fdCode: BytecodeData,
-		fdCodeLength: UInt,
-		fdCodePos: WVec<UInt>,
-		fdStack: ByteStackData,
-		fdStackSize: WVec<UInt>,
+		thread: Thread,
 		frameCount: WVec<UInt>,
 		i: Int,
 		disuse: Bool,
@@ -128,7 +98,7 @@ class Actor extends broker.entity.BasicBatchEntity {
 			disusedSprites[disusedCount] = sprite;
 			++disusedCount;
 		} else {
-			FdVm.run(fdCode, fdCodeLength, fdCodePos, fdStack, fdStackSize, x, y, vx, vy, i);
+			Vm.run(thread, x, y, vx, vy, i);
 			x[i] += vx[i];
 			y[i] += vy[i];
 		}

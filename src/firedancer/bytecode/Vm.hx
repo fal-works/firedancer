@@ -1,36 +1,33 @@
 package firedancer.bytecode;
 
 import haxe.Int32;
-import banker.binary.ByteStackData;
 import banker.vector.WritableVector as Vec;
 import sneaker.print.Printer.println;
 import firedancer.assembly.Opcode;
 import firedancer.bytecode.internal.Constants.*;
 
 /**
-	(WIP)
-
 	Virtual machine for executing bytecode.
 **/
 class Vm {
 	static extern inline final infiniteLoopCheckThreshold = 4096;
 
 	public static function run(
-		code: BytecodeData,
-		codeLength: UInt,
-		codePosVec: Vec<UInt>,
-		stack: ByteStackData,
-		stackSizeVec: Vec<UInt>,
+		thread: Thread,
 		xVec: Vec<Float>,
 		yVec: Vec<Float>,
 		vxVec: Vec<Float>,
 		vyVec: Vec<Float>,
 		vecIndex: UInt
 	): Void {
-		var codePos = codePosVec[vecIndex];
-		if (codeLength <= codePos) return;
+		final maybeCode = thread.code;
+		if (maybeCode.isNone()) return;
+		final code = maybeCode.unwrap();
+		final codeLength = thread.codeLength;
 
-		var stackSize = stackSizeVec[vecIndex];
+		var codePos = thread.codePos;
+		final stack = thread.stack;
+		var stackSize = thread.stackSize;
 
 		var volX: Float = 0.0;
 		var volY: Float = 0.0;
@@ -125,7 +122,7 @@ class Vm {
 		var cnt = 0;
 		#end
 
-		do {
+		while (true) {
 			#if debug
 			if (infiniteLoopCheckThreshold < ++cnt) throw "Detected infinite loop.";
 			#end
@@ -217,38 +214,37 @@ class Vm {
 					throw 'Unknown opcode: $other';
 					#end
 			}
-		} while (codePos < codeLength);
 
-		codePosVec[vecIndex] = codePos;
-		stackSizeVec[vecIndex] = stackSize;
+			if (codeLength <= codePos) {
+				thread.code = Maybe.none();
+				return;
+			}
+		}
+
+		thread.codePos = codePos;
+		thread.stackSize = stackSize;
 
 		println("");
 	}
 
 	public static function dryRun(bytecode: Bytecode): Void {
-		final code = bytecode.data;
-		final codeLength = bytecode.length;
-		final codePosVec = Vec.fromArrayCopy([UInt.zero]);
-		final stack = ByteStackData.alloc(256);
-		final stackSizeVec = Vec.fromArrayCopy([UInt.zero]);
+		final thread = new Thread(64);
+		thread.set(bytecode, 0, 0, 0, 0);
 		final xVec = Vec.fromArrayCopy([0.0]);
 		final yVec = Vec.fromArrayCopy([0.0]);
 		final vxVec = Vec.fromArrayCopy([0.0]);
 		final vyVec = Vec.fromArrayCopy([0.0]);
+
 		final vecIndex = UInt.zero;
 		var frame = UInt.zero;
 
-		while (codePosVec[UInt.zero] < bytecode.length) {
+		while (thread.code.isSome()) {
 			if (infiniteLoopCheckThreshold < frame)
 				throw 'Exceeded $infiniteLoopCheckThreshold frames.';
 
 			println('[frame $frame]');
 			Vm.run(
-				code,
-				codeLength,
-				codePosVec,
-				stack,
-				stackSizeVec,
+				thread,
 				xVec,
 				yVec,
 				vxVec,
