@@ -67,9 +67,29 @@ class Builder {
 	}
 
 	/**
+		Creates an `AddPositionConst` statement.
+	**/
+	public static inline function addPositionConst(x: Float, y: Float): AssemblyStatement {
+		return new AssemblyStatement(AddPositionConst, [Vec(x, y)]);
+	}
+
+	/**
 		Creates a `SetVelocityConst` statement.
 	**/
-	public static inline function setVelocityConst(vx: Float, vy: Float): AssemblyStatement {
+	public static inline function setVelocityConst(
+		vx: Float,
+		vy: Float
+	): AssemblyStatement {
 		return new AssemblyStatement(SetVelocityConst, [Vec(vx, vy)]);
+	}
+
+	/**
+		Creates an `AddVelocityConst` statement.
+	**/
+	public static inline function addVelocityConst(
+		vx: Float,
+		vy: Float
+	): AssemblyStatement {
+		return new AssemblyStatement(AddVelocityConst, [Vec(vx, vy)]);
 	}
 }

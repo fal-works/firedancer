@@ -16,6 +16,21 @@ class SetPositionConst implements ripper.Data implements AstNode {
 }
 
 /**
+	Adds specific constant values to actor's position.
+**/
+@:ripper_verified
+class AddPositionConst implements ripper.Data implements AstNode {
+	public final x: Float;
+	public final y: Float;
+
+	public inline function containsWait(): Bool
+		return false;
+
+	public function toAssembly(): AssemblyCode
+		return addPositionConst(x, y);
+}
+
+/**
 	Sets actor's velocity to specific constant values.
 **/
 @:ripper_verified
@@ -28,4 +43,19 @@ class SetVelocityConst implements ripper.Data implements AstNode {
 
 	public function toAssembly(): AssemblyCode
 		return setVelocityConst(x, y);
+}
+
+/**
+	Adds specific constant values to actor's velocity.
+**/
+@:ripper_verified
+class AddVelocityConst implements ripper.Data implements AstNode {
+	public final x: Float;
+	public final y: Float;
+
+	public inline function containsWait(): Bool
+		return false;
+
+	public function toAssembly(): AssemblyCode
+		return addVelocityConst(x, y);
 }

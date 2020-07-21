@@ -140,15 +140,17 @@ class Vm {
 				case Decrement:
 					decrement();
 				case SetPositionConst:
-					final x = readCodeF64();
-					final y = readCodeF64();
-					xVec[vecIndex] = x;
-					yVec[vecIndex] = y;
+					xVec[vecIndex] = readCodeF64();
+					yVec[vecIndex] = readCodeF64();
+				case AddPositionConst:
+					xVec[vecIndex] += readCodeF64();
+					yVec[vecIndex] += readCodeF64();
 				case SetVelocityConst:
-					final vx = readCodeF64();
-					final vy = readCodeF64();
-					vxVec[vecIndex] = vx;
-					vyVec[vecIndex] = vy;
+					vxVec[vecIndex] = readCodeF64();
+					vyVec[vecIndex] = readCodeF64();
+				case AddVelocityConst:
+					vxVec[vecIndex] += readCodeF64();
+					vyVec[vecIndex] += readCodeF64();
 				case other:
 					#if debug
 					throw 'Unknown opcode: $other';

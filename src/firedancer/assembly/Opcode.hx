@@ -23,7 +23,9 @@ enum abstract Opcode(Int32) to Int to Int32 {
 			case Opcode.PushInt: PushInt;
 			case Opcode.Decrement: Decrement;
 			case Opcode.SetPositionConst: SetPositionConst;
+			case Opcode.AddPositionConst: AddPositionConst;
 			case Opcode.SetVelocityConst: SetVelocityConst;
+			case Opcode.AddVelocityConst: AddVelocityConst;
 			default: throw error(value);
 		}
 	}
@@ -35,7 +37,9 @@ enum abstract Opcode(Int32) to Int to Int32 {
 	final PushInt = 20;
 	final Decrement = 30;
 	final SetPositionConst = 50;
+	final AddPositionConst;
 	final SetVelocityConst;
+	final AddVelocityConst;
 }
 
 class OpcodeExtension {
@@ -51,7 +55,9 @@ class OpcodeExtension {
 			case PushInt: "push_int";
 			case Decrement: "decrement";
 			case SetPositionConst: "set_position_const";
+			case AddPositionConst: "add_position_const";
 			case SetVelocityConst: "set_velocity_const";
+			case AddVelocityConst: "set_velocity_const";
 		}
 	}
 
@@ -66,8 +72,7 @@ class OpcodeExtension {
 			case CountDownJump: [Int];
 			case PushInt: [Int];
 			case Decrement: [];
-			case SetPositionConst: [Vec];
-			case SetVelocityConst: [Vec];
+			case SetPositionConst | AddPositionConst | SetVelocityConst | AddVelocityConst: [Vec];
 		}
 	}
 

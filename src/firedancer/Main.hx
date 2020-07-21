@@ -64,6 +64,12 @@ private class Position {
 	**/
 	public inline function set(x: Float, y: Float)
 		return new SetPositionConst(x, y);
+
+	/**
+		Adds `(x, y)` to position.
+	**/
+	public inline function add(x: Float, y: Float)
+		return new AddPositionConst(x, y);
 }
 
 private class PolarPosition {
@@ -74,6 +80,16 @@ private class PolarPosition {
 	**/
 	public inline function set(distance: Float, bearing: Azimuth) {
 		return new SetPositionConst(
+			distance * bearing.cos(),
+			distance * bearing.sin()
+		);
+	}
+
+	/**
+		Adds a vector of `(distance, bearing)` to position.
+	**/
+	public inline function add(distance: Float, bearing: Azimuth) {
+		return new AddPositionConst(
 			distance * bearing.cos(),
 			distance * bearing.sin()
 		);
@@ -93,6 +109,12 @@ private class Velocity {
 	**/
 	public inline function set(vx: Float, vy: Float)
 		return new SetVelocityConst(vx, vy);
+
+	/**
+		Adds `(x, y)` to velocity.
+	**/
+	public inline function add(x: Float, y: Float)
+		return new AddVelocityConst(x, y);
 }
 
 private class PolarVelocity {
@@ -103,6 +125,16 @@ private class PolarVelocity {
 	**/
 	public inline function set(speed: Float, direction: Azimuth) {
 		return new SetVelocityConst(
+			speed * direction.cos(),
+			speed * direction.sin()
+		);
+	}
+
+	/**
+		Adds a vector of `(speed, direction)` to velocity.
+	**/
+	public inline function add(speed: Float, direction: Azimuth) {
+		return new AddVelocityConst(
 			speed * direction.cos(),
 			speed * direction.sin()
 		);
@@ -136,6 +168,12 @@ private class ShotPosition {
 	**/
 	public inline function set(x: Float, y: Float)
 		throw "Not yet implemented."; // TODO: implement
+
+	/**
+		Adds `(x, y)` to shot position.
+	**/
+	public inline function add(x: Float, y: Float)
+		throw "Not yet implemented."; // TODO: implement
 }
 
 private class PolarShotPosition {
@@ -145,6 +183,13 @@ private class PolarShotPosition {
 		Sets shot position to `(distance, bearing)`.
 	**/
 	public inline function set(distance: Float, bearing: Azimuth) {
+		throw "Not yet implemented."; // TODO: implement
+	}
+
+	/**
+		Adds a vector of `(distance, bearing)` to shot position.
+	**/
+	public inline function add(distance: Float, bearing: Azimuth) {
 		throw "Not yet implemented."; // TODO: implement
 	}
 }
@@ -162,6 +207,12 @@ private class ShotVelocity {
 	**/
 	public inline function set(vx: Float, vy: Float)
 		throw "Not yet implemented."; // TODO: implement
+
+	/**
+		Adds `(x, y)` to shot velocity.
+	**/
+	public inline function add(x: Float, y: Float)
+		throw "Not yet implemented."; // TODO: implement
 }
 
 private class PolarShotVelocity {
@@ -171,6 +222,13 @@ private class PolarShotVelocity {
 		Sets shot velocity to `(speed, direction)`.
 	**/
 	public inline function set(speed: Float, direction: Azimuth) {
+		throw "Not yet implemented."; // TODO: implement
+	}
+
+	/**
+		Adds a vector of `(distance, bearing)` to shot velocity.
+	**/
+	public inline function add(distance: Float, bearing: Azimuth) {
 		throw "Not yet implemented."; // TODO: implement
 	}
 }
