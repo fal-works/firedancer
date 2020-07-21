@@ -12,6 +12,28 @@ class Builder {
 	}
 
 	/**
+		Creates a `PeekVec` statement.
+		@param bytesToSkip Bytes to be skipped from the stack top. `0` for peeking from the top.
+	**/
+	public static inline function peekVec(bytesToSkip: Int = 0): AssemblyStatement {
+		return new AssemblyStatement(PeekVec, [Int(bytesToSkip)]);
+	}
+
+	/**
+		Creates a `DropVec` statement.
+	**/
+	public static inline function dropVec(): AssemblyStatement {
+		return new AssemblyStatement(DropVec, []);
+	}
+
+	/**
+		Creates a `Break` statement.
+	**/
+	public static inline function breakFrame(): AssemblyStatement {
+		return new AssemblyStatement(Break, []);
+	}
+
+	/**
 		Creates a `CountDown` statement.
 	**/
 	public static inline function countDown(): AssemblyStatement {
@@ -62,12 +84,30 @@ class Builder {
 	/**
 		Creates a statement with `opcode`.
 	**/
-	public static inline function operateVectorConst(
-		opcode: Opcode.OperateVectorConstOpcode,
+	public static inline function operateVectorC(
+		opcode: Opcode.OpcodeOperateVectorC,
 		x: Float,
 		y: Float
 	): AssemblyStatement {
 		return new AssemblyStatement(opcode, [Vec(x, y)]);
+	}
+
+	/**
+		Creates a statement with `opcode`.
+	**/
+	public static inline function operateVectorS(
+		opcode: Opcode.OpcodeOperateVectorS
+	): AssemblyStatement {
+		return new AssemblyStatement(opcode, []);
+	}
+
+	/**
+		Creates a statement with `opcode`.
+	**/
+	public static inline function operateVectorV(
+		opcode: Opcode.OpcodeOperateVectorV
+	): AssemblyStatement {
+		return new AssemblyStatement(opcode, []);
 	}
 
 	/**
@@ -96,5 +136,23 @@ class Builder {
 		count: UInt
 	): AssemblyCode {
 		return [for (i in 0...count) bodyFactory(i)].flatten();
+	}
+
+	/**
+		Creates a `CalcRelativePositionCV` statement.
+	**/
+	public static inline function calcRelativePositionCV(x: Float, y: Float): AssemblyStatement {
+		return new AssemblyStatement(CalcRelativePositionCV, [Vec(x, y)]);
+	}
+
+	/**
+		Creates a `CalcRelativeVelocityCV` statement.
+	**/
+	public static inline function calcRelativeVelocityCV(x: Float, y: Float): AssemblyStatement {
+		return new AssemblyStatement(CalcRelativeVelocityCV, [Vec(x, y)]);
+	}
+
+	public static inline function multVecVCS(multiplier: Float): AssemblyStatement {
+		return new AssemblyStatement(MultVecVCS, [Float(multiplier)]);
 	}
 }

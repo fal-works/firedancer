@@ -32,8 +32,8 @@ class Vm {
 
 		var stackSize = stackSizeVec[vecIndex];
 
-		var intValue: Int32;
-		var floatValue: Float;
+		var volX: Float = 0.0;
+		var volY: Float = 0.0;
 
 		inline function readOp(): Int32 {
 			final opcode = code.getI32(codePos);
@@ -43,17 +43,17 @@ class Vm {
 		}
 
 		inline function readCodeI32(): Int32 {
-			intValue = code.getI32(codePos);
+			final v = code.getI32(codePos);
 			codePos += LEN32;
-			println('  read_int ... $intValue');
-			return intValue;
+			println('  read_int ... $v');
+			return v;
 		}
 
 		inline function readCodeF64(): Float {
-			floatValue = code.getF64(codePos);
+			final v = code.getF64(codePos);
 			codePos += LEN64;
-			println('  read_float ... $floatValue');
-			return floatValue;
+			println('  read_float ... $v');
+			return v;
 		}
 
 		inline function pushInt(v: Int32): Void {
@@ -64,6 +64,12 @@ class Vm {
 		inline function pushFloat(v: Float): Void {
 			stackSize = stack.pushF64(stackSize, v);
 			println('  push_float -> ${stack.toHex(stackSize, true)}');
+		}
+
+		inline function pushVec(x: Float, y: Float): Void {
+			stackSize = stack.pushF64(stackSize, x);
+			stackSize = stack.pushF64(stackSize, y);
+			println('  push_vec -> ${stack.toHex(stackSize, true)}');
 		}
 
 		inline function popInt(): Int32 {
@@ -80,20 +86,33 @@ class Vm {
 			return ret.value;
 		}
 
-		inline function peekI32(): Int32 {
-			intValue = stack.peekI32(stackSize);
-			// print('\n  peek_int ... $intValue');
-			return intValue;
+		inline function peekInt(): Int32 {
+			final v = stack.peekI32(stackSize);
+			// print('\n  peek_int ... $v');
+			return v;
 		}
 
-		inline function peekF64(): Float {
-			floatValue = stack.peekF64(stackSize);
-			// print('\n  peek_float ... $floatValue');
-			return floatValue;
+		inline function peekFloat(): Float {
+			final v = stack.peekF64(stackSize);
+			// print('\n  peek_float ... $v');
+			return v;
 		}
+
+		inline function peekVec(bytesToSkip: Int)
+			return stack.peekVec2D64(stackSize - bytesToSkip);
 
 		inline function dropInt(): Void {
 			stackSize = stack.drop(stackSize, Bit32);
+			println('  drop_int -> ${stack.toHex(stackSize, true)}');
+		}
+
+		inline function dropFloat(): Void {
+			stackSize = stack.drop(stackSize, Bit64);
+			println('  drop_int -> ${stack.toHex(stackSize, true)}');
+		}
+
+		inline function dropVec(): Void {
+			stackSize = stack.drop2D(stackSize, Bit64);
 			println('  drop_int -> ${stack.toHex(stackSize, true)}');
 		}
 
@@ -114,8 +133,14 @@ class Vm {
 			switch readOp() {
 				case PushInt:
 					pushInt(readCodeI32());
+				case PeekVec:
+					final vec = peekVec(readCodeI32());
+					volX = vec.x;
+					volY = vec.y;
+				case DropVec:
+					dropVec();
 				case CountDown:
-					if (0 != peekI32()) {
+					if (0 != peekInt()) {
 						decrement();
 						codePos -= LEN32;
 						break;
@@ -128,7 +153,7 @@ class Vm {
 					final jumpLength = readCodeI32();
 					codePos += jumpLength;
 				case CountDownJump:
-					if (0 != peekI32()) {
+					if (0 != peekInt()) {
 						decrement();
 						codePos += LEN32; // skip the operand
 						break;
@@ -139,18 +164,55 @@ class Vm {
 					}
 				case Decrement:
 					decrement();
-				case SetPositionConst:
+				case SetPositionC:
 					xVec[vecIndex] = readCodeF64();
 					yVec[vecIndex] = readCodeF64();
-				case AddPositionConst:
+				case AddPositionC:
 					xVec[vecIndex] += readCodeF64();
 					yVec[vecIndex] += readCodeF64();
-				case SetVelocityConst:
+				case SetVelocityC:
 					vxVec[vecIndex] = readCodeF64();
 					vyVec[vecIndex] = readCodeF64();
-				case AddVelocityConst:
+				case AddVelocityC:
 					vxVec[vecIndex] += readCodeF64();
 					vyVec[vecIndex] += readCodeF64();
+				case SetPositionS:
+					final vec = peekVec(0);
+					xVec[vecIndex] = vec.x;
+					yVec[vecIndex] = vec.y;
+				case AddPositionS:
+					final vec = peekVec(0);
+					xVec[vecIndex] += vec.x;
+					yVec[vecIndex] += vec.y;
+				case SetVelocityS:
+					final vec = peekVec(0);
+					vxVec[vecIndex] = vec.x;
+					vyVec[vecIndex] = vec.y;
+				case AddVelocityS:
+					final vec = peekVec(0);
+					vxVec[vecIndex] += vec.x;
+					vyVec[vecIndex] += vec.y;
+				case SetPositionV:
+					xVec[vecIndex] = volX;
+					yVec[vecIndex] = volY;
+				case AddPositionV:
+					xVec[vecIndex] += volX;
+					yVec[vecIndex] += volY;
+				case SetVelocityV:
+					vxVec[vecIndex] = volX;
+					vyVec[vecIndex] = volY;
+				case AddVelocityV:
+					vxVec[vecIndex] += volX;
+					vyVec[vecIndex] += volY;
+				case CalcRelativePositionCV:
+					volX = readCodeF64() - xVec[vecIndex];
+					volY = readCodeF64() - yVec[vecIndex];
+				case CalcRelativeVelocityCV:
+					volX = readCodeF64() - vxVec[vecIndex];
+					volY = readCodeF64() - vyVec[vecIndex];
+				case MultVecVCS:
+					final multiplier = readCodeF64();
+					pushVec(volX * multiplier, volY * multiplier);
 				case other:
 					#if debug
 					throw 'Unknown opcode: $other';

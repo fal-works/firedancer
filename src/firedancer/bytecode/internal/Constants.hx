@@ -1,6 +1,6 @@
 package firedancer.bytecode.internal;
 
-import banker.binary.WordSize;
+import banker.binary.value_types.WordSize;
 
 class Constants {
 	public static extern inline final LEN32 = WordSize.Bit32.bytes();

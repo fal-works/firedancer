@@ -30,6 +30,8 @@ abstract AssemblyStatement(Data) from Data {
 		#if debug
 		// validate operands
 		final operandTypes = opcode.toStatementType().operandTypes();
+		if (operands.length != operandTypes.length)
+			throw 'Invalid number of operands.\nHave: ${operands.length}\nWant: ${operandTypes.length}';
 		for (i in 0...operands.length) {
 			final operandType = operandTypes[i];
 			final valid = switch operands[i] {
@@ -37,7 +39,7 @@ abstract AssemblyStatement(Data) from Data {
 				case Float(_): operandType == Float;
 				case Vec(_, _): operandType == Vec;
 			}
-			if (!valid) throw "";
+			if (!valid) throw "Invalid operands.";
 		}
 		#end
 

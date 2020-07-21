@@ -123,17 +123,14 @@ class Actor extends broker.entity.BasicBatchEntity {
 		dead: WVec<Bool>,
 		rotationVelocity: Float
 	): Void {
-		final currentX = x[i];
-		final currentY = y[i];
-
-		if (dead[i] || !HabitableZone.containsPoint(currentX, currentY)) {
+		if (dead[i] || !HabitableZone.containsPoint(x[i], y[i])) {
 			disuse = true;
 			disusedSprites[disusedCount] = sprite;
 			++disusedCount;
 		} else {
 			FdVm.run(fdCode, fdCodeLength, fdCodePos, fdStack, fdStackSize, x, y, vx, vy, i);
-			x[i] = currentX + vx[i];
-			y[i] = currentY + vy[i];
+			x[i] += vx[i];
+			y[i] += vy[i];
 		}
 
 		sprite.rotation += rotationVelocity;

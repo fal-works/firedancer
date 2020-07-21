@@ -5,7 +5,7 @@ import firedancer.types.NInt;
 import firedancer.types.Azimuth;
 import firedancer.ast.Ast;
 import firedancer.ast.nodes.*;
-import firedancer.ast.nodes.OperateVecConst;
+import firedancer.ast.nodes.OperateVec;
 import firedancer.bytecode.Bytecode;
 
 class Main {
@@ -62,14 +62,16 @@ private class Position {
 	/**
 		Sets position to `(x, y)`.
 	**/
-	public inline function set(x: Float, y: Float)
-		return new OperateVectorConst(SetPositionConst, x, y);
+	public inline function set(x: Float, y: Float) {
+		return new OperateVectorC(SetPositionC, x, y);
+	}
 
 	/**
 		Adds `(x, y)` to position.
 	**/
-	public inline function add(x: Float, y: Float)
-		return new OperateVectorConst(AddPositionConst, x, y);
+	public inline function add(x: Float, y: Float) {
+		return new OperateVectorC(AddPositionC, x, y);
+	}
 }
 
 private class PolarPosition {
@@ -79,8 +81,8 @@ private class PolarPosition {
 		Sets position to `(distance, bearing)`.
 	**/
 	public inline function set(distance: Float, bearing: Azimuth) {
-		return new OperateVectorConst(
-			SetPositionConst,
+		return new OperateVectorC(
+			SetPositionC,
 			distance * bearing.cos(),
 			distance * bearing.sin()
 		);
@@ -90,8 +92,8 @@ private class PolarPosition {
 		Adds a vector of `(distance, bearing)` to position.
 	**/
 	public inline function add(distance: Float, bearing: Azimuth) {
-		return new OperateVectorConst(
-			AddPositionConst,
+		return new OperateVectorC(
+			AddPositionC,
 			distance * bearing.cos(),
 			distance * bearing.sin()
 		);
@@ -109,14 +111,16 @@ private class Velocity {
 	/**
 		Sets velocity to `(vx, vy)`.
 	**/
-	public inline function set(vx: Float, vy: Float)
-		return new OperateVectorConst(SetVelocityConst, vx, vy);
+	public inline function set(vx: Float, vy: Float) {
+		return new OperateVectorC(SetVelocityC, vx, vy);
+	}
 
 	/**
 		Adds `(x, y)` to velocity.
 	**/
-	public inline function add(x: Float, y: Float)
-		return new OperateVectorConst(AddVelocityConst, x, y);
+	public inline function add(x: Float, y: Float) {
+		return new OperateVectorC(AddVelocityC, x, y);
+	}
 }
 
 private class PolarVelocity {
@@ -126,8 +130,8 @@ private class PolarVelocity {
 		Sets velocity to `(speed, direction)`.
 	**/
 	public inline function set(speed: Float, direction: Azimuth) {
-		return new OperateVectorConst(
-			SetVelocityConst,
+		return new OperateVectorC(
+			SetVelocityC,
 			speed * direction.cos(),
 			speed * direction.sin()
 		);
@@ -137,8 +141,8 @@ private class PolarVelocity {
 		Adds a vector of `(speed, direction)` to velocity.
 	**/
 	public inline function add(speed: Float, direction: Azimuth) {
-		return new OperateVectorConst(
-			AddVelocityConst,
+		return new OperateVectorC(
+			AddVelocityC,
 			speed * direction.cos(),
 			speed * direction.sin()
 		);
