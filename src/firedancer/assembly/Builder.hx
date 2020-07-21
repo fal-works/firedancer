@@ -82,7 +82,7 @@ class Builder {
 	}
 
 	/**
-		Creates a statement with `opcode`.
+		Creates a statement for operating vector with constant values.
 	**/
 	public static inline function operateVectorC(
 		opcode: Opcode.OpcodeOperateVectorC,
@@ -93,19 +93,10 @@ class Builder {
 	}
 
 	/**
-		Creates a statement with `opcode`.
+		Creates a statement for operating vector with stacked/volatile values.
 	**/
-	public static inline function operateVectorS(
-		opcode: Opcode.OpcodeOperateVectorS
-	): AssemblyStatement {
-		return new AssemblyStatement(opcode, []);
-	}
-
-	/**
-		Creates a statement with `opcode`.
-	**/
-	public static inline function operateVectorV(
-		opcode: Opcode.OpcodeOperateVectorV
+	public static inline function operateVectorNonC(
+		opcode: Opcode.OpcodeOperateVectorNonC
 	): AssemblyStatement {
 		return new AssemblyStatement(opcode, []);
 	}
@@ -139,17 +130,14 @@ class Builder {
 	}
 
 	/**
-		Creates a `CalcRelativePositionCV` statement.
+		Creates a statement for calculating relative vector.
 	**/
-	public static inline function calcRelativePositionCV(x: Float, y: Float): AssemblyStatement {
-		return new AssemblyStatement(CalcRelativePositionCV, [Vec(x, y)]);
-	}
-
-	/**
-		Creates a `CalcRelativeVelocityCV` statement.
-	**/
-	public static inline function calcRelativeVelocityCV(x: Float, y: Float): AssemblyStatement {
-		return new AssemblyStatement(CalcRelativeVelocityCV, [Vec(x, y)]);
+	public static inline function calcRelativePositionCV(
+		opcode: Opcode.CalcRelativeVec,
+		x: Float,
+		y: Float
+	): AssemblyStatement {
+		return new AssemblyStatement(opcode, [Vec(x, y)]);
 	}
 
 	public static inline function multVecVCS(multiplier: Float): AssemblyStatement {

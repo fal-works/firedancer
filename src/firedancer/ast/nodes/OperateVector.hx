@@ -1,7 +1,7 @@
 package firedancer.ast.nodes;
 
 import firedancer.types.NInt;
-import firedancer.assembly.Opcode.OpcodeOperateVectorC;
+import firedancer.assembly.Opcode;
 import firedancer.bytecode.internal.Constants.LEN32;
 
 /**
@@ -51,24 +51,29 @@ class OperateVectorLinear implements ripper.Data implements AstNode {
 		var body: AssemblyCode;
 		var complete: AssemblyCode;
 
+		inline function relativeChange(
+			calcRelativeOpcode: CalcRelativeVec,
+			addVecOpcode: OpcodeOperateVectorNonC
+		): Void {
+			prepare = [
+				calcRelativePositionCV(calcRelativeOpcode, this.x, this.y),
+				multVecVCS(1.0 / frames)
+			];
+			// skip the loop counter when peeking
+			body = [breakFrame(), peekVec(LEN32), operateVectorNonC(addVecOpcode)];
+			complete = [dropVec()];
+		}
+
 		switch this.opcode {
 			case SetPositionC:
-				prepare = [
-					calcRelativePositionCV(this.x, this.y),
-					multVecVCS(1.0 / frames)
-				];
-				// skip the loop counter when peeking
-				body = [breakFrame(), peekVec(LEN32), operateVectorV(AddPositionV)];
-				complete = [dropVec()];
+				relativeChange(CalcRelativePositionCV, AddPositionV);
 			case SetVelocityC:
-				prepare = [
-					calcRelativeVelocityCV(this.x, this.y),
-					multVecVCS(1.0 / frames)
-				];
-				// skip the loop counter when peeking
-				body = [breakFrame(), peekVec(LEN32), operateVectorV(AddVelocityV)];
-				complete = [dropVec()];
-			case AddPositionC | AddVelocityC:
+				relativeChange(CalcRelativeVelocityCV, AddVelocityV);
+			case SetShotPositionC:
+				relativeChange(CalcRelativeShotPositionCV, AddShotPositionV);
+			case SetShotVelocityC:
+				relativeChange(CalcRelativeShotVelocityCV, AddShotVelocityV);
+			case AddPositionC | AddVelocityC | AddShotPositionC | AddShotVelocityC:
 				prepare = [];
 				body = [
 					breakFrame(),

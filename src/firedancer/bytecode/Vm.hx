@@ -208,6 +208,52 @@ class Vm {
 				case CalcRelativeVelocityCV:
 					volX = readCodeF64() - vxVec[vecIndex];
 					volY = readCodeF64() - vyVec[vecIndex];
+				case SetShotPositionC:
+					thread.shotX = readCodeF64();
+					thread.shotY = readCodeF64();
+				case AddShotPositionC:
+					thread.shotX += readCodeF64();
+					thread.shotY += readCodeF64();
+				case SetShotVelocityC:
+					thread.shotVx = readCodeF64();
+					thread.shotVy = readCodeF64();
+				case AddShotVelocityC:
+					thread.shotVx += readCodeF64();
+					thread.shotVy += readCodeF64();
+				case SetShotPositionS:
+					final vec = peekVec(0);
+					thread.shotX = vec.x;
+					thread.shotY = vec.y;
+				case AddShotPositionS:
+					final vec = peekVec(0);
+					thread.shotX += vec.x;
+					thread.shotY += vec.y;
+				case SetShotVelocityS:
+					final vec = peekVec(0);
+					thread.shotVx = vec.x;
+					thread.shotVy = vec.y;
+				case AddShotVelocityS:
+					final vec = peekVec(0);
+					thread.shotVx += vec.x;
+					thread.shotVy += vec.y;
+				case SetShotPositionV:
+					thread.shotX = volX;
+					thread.shotY = volY;
+				case AddShotPositionV:
+					thread.shotX += volX;
+					thread.shotY += volY;
+				case SetShotVelocityV:
+					thread.shotVx = volX;
+					thread.shotVy = volY;
+				case AddShotVelocityV:
+					thread.shotVx += volX;
+					thread.shotVy += volY;
+				case CalcRelativeShotPositionCV:
+					volX = readCodeF64() - thread.shotX;
+					volY = readCodeF64() - thread.shotY;
+				case CalcRelativeShotVelocityCV:
+					volX = readCodeF64() - thread.shotVx;
+					volY = readCodeF64() - thread.shotVy;
 				case MultVecVCS:
 					final multiplier = readCodeF64();
 					pushVec(volX * multiplier, volY * multiplier);

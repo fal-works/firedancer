@@ -5,7 +5,7 @@ import firedancer.types.NInt;
 import firedancer.types.Azimuth;
 import firedancer.ast.Ast;
 import firedancer.ast.nodes.*;
-import firedancer.ast.nodes.OperateVec;
+import firedancer.ast.nodes.OperateVector;
 import firedancer.bytecode.Bytecode;
 
 class Main {
@@ -181,32 +181,41 @@ private class ShotPosition {
 	/**
 		Sets shot position to `(x, y)`.
 	**/
-	public inline function set(x: Float, y: Float)
-		throw "Not yet implemented."; // TODO: implement
+	public inline function set(x: Float, y: Float) {
+		return new OperateVectorC(SetShotPositionC, x, y);
+	}
 
 	/**
 		Adds `(x, y)` to shot position.
 	**/
-	public inline function add(x: Float, y: Float)
-		throw "Not yet implemented."; // TODO: implement
-
+	public inline function add(x: Float, y: Float) {
+		return new OperateVectorC(AddShotPositionC, x, y);
+	}
 }
 
 private class PolarShotPosition {
 	public function new() {}
 
 	/**
-		Sets shot position to `(distance, bearing)`.
+		Sets shot position to a vector of `(distance, bearing)`.
 	**/
 	public inline function set(distance: Float, bearing: Azimuth) {
-		throw "Not yet implemented."; // TODO: implement
+		return new OperateVectorC(
+			SetShotPositionC,
+			distance * bearing.cos(),
+			distance * bearing.sin()
+		);
 	}
 
 	/**
 		Adds a vector of `(distance, bearing)` to shot position.
 	**/
 	public inline function add(distance: Float, bearing: Azimuth) {
-		throw "Not yet implemented."; // TODO: implement
+		return new OperateVectorC(
+			AddShotPositionC,
+			distance * bearing.cos(),
+			distance * bearing.sin()
+		);
 	}
 }
 
@@ -219,33 +228,42 @@ private class ShotVelocity {
 	public function new() {}
 
 	/**
-		Sets shot velocity to `(vx, vy)`.
+		Sets shot velocity to `(x, y)`.
 	**/
-	public inline function set(vx: Float, vy: Float)
-		throw "Not yet implemented."; // TODO: implement
+	public inline function set(x: Float, y: Float) {
+		return new OperateVectorC(SetShotVelocityC, x, y);
+	}
 
 	/**
 		Adds `(x, y)` to shot velocity.
 	**/
-	public inline function add(x: Float, y: Float)
-		throw "Not yet implemented."; // TODO: implement
-
+	public inline function add(x: Float, y: Float) {
+		return new OperateVectorC(AddShotVelocityC, x, y);
+	}
 }
 
 private class PolarShotVelocity {
 	public function new() {}
 
 	/**
-		Sets shot velocity to `(speed, direction)`.
+		Sets shot velocity to a vector of `(speed, direction)`.
 	**/
 	public inline function set(speed: Float, direction: Azimuth) {
-		throw "Not yet implemented."; // TODO: implement
+		return new OperateVectorC(
+			SetShotPositionC,
+			speed * direction.cos(),
+			speed * direction.sin()
+		);
 	}
 
 	/**
-		Adds a vector of `(distance, bearing)` to shot velocity.
+		Adds a vector of `(speed, direction)` to shot velocity.
 	**/
-	public inline function add(distance: Float, bearing: Azimuth) {
-		throw "Not yet implemented."; // TODO: implement
+	public inline function add(speed: Float, direction: Azimuth) {
+		return new OperateVectorC(
+			AddShotPositionC,
+			speed * direction.cos(),
+			speed * direction.sin()
+		);
 	}
 }

@@ -38,6 +38,20 @@ enum abstract Opcode(Int32) to Int to Int32 {
 			case Opcode.AddVelocityV: AddVelocityV;
 			case Opcode.CalcRelativePositionCV: CalcRelativePositionCV;
 			case Opcode.CalcRelativeVelocityCV: CalcRelativeVelocityCV;
+			case Opcode.SetShotPositionC: SetShotPositionC;
+			case Opcode.AddShotPositionC: AddShotPositionC;
+			case Opcode.SetShotVelocityC: SetShotVelocityC;
+			case Opcode.AddShotVelocityC: AddShotVelocityC;
+			case Opcode.SetShotPositionS: SetShotPositionS;
+			case Opcode.AddShotPositionS: AddShotPositionS;
+			case Opcode.SetShotVelocityS: SetShotVelocityS;
+			case Opcode.AddShotVelocityS: AddShotVelocityS;
+			case Opcode.SetShotPositionV: SetShotPositionV;
+			case Opcode.AddShotPositionV: AddShotPositionV;
+			case Opcode.SetShotVelocityV: SetShotVelocityV;
+			case Opcode.AddShotVelocityV: AddShotVelocityV;
+			case Opcode.CalcRelativeShotPositionCV: CalcRelativeShotPositionCV;
+			case Opcode.CalcRelativeShotVelocityCV: CalcRelativeShotVelocityCV;
 			case Opcode.MultVecVCS: MultVecVCS;
 			case Opcode.Fire: Fire;
 			default: throw error(value);
@@ -176,6 +190,80 @@ enum abstract Opcode(Int32) to Int to Int32 {
 	**/
 	final CalcRelativeVelocityCV;
 
+	// ---- read/write/calc shot position/velocity ------------------------------
+
+	/**
+		Sets actor's shot position to a given constant vector.
+	**/
+	final SetShotPositionC;
+
+	/**
+		Adds a given constant vector to actor's shot position.
+	**/
+	final AddShotPositionC;
+
+	/**
+		Sets actor's shot velocity to a given constant vector.
+	**/
+	final SetShotVelocityC;
+
+	/**
+		Adds a given constant vector to actor's shot velocity.
+	**/
+	final AddShotVelocityC;
+
+	/**
+		Sets actor's shot position to the vector at the stack top.
+	**/
+	final SetShotPositionS;
+
+	/**
+		Adds the vector at the stack top to actor's shot position.
+	**/
+	final AddShotPositionS;
+
+	/**
+		Sets actor's shot velocity to the vector at the stack top.
+	**/
+	final SetShotVelocityS;
+
+	/**
+		Adds the vector at the stack top to actor's shot velocity.
+	**/
+	final AddShotVelocityS;
+
+	/**
+		Sets actor's shot position to the current volatile vector.
+	**/
+	final SetShotPositionV;
+
+	/**
+		Adds the current volatile vector to actor's shot position.
+	**/
+	final AddShotPositionV;
+
+	/**
+		Sets actor's shot velocity to the current volatile vector.
+	**/
+	final SetShotVelocityV;
+
+	/**
+		Adds the current volatile vector to actor's shot velocity.
+	**/
+	final AddShotVelocityV;
+
+	/**
+		Converts a given constant vector to a relative one from the current shot position
+		and assigns it to the volatile vector.
+	**/
+	final CalcRelativeShotPositionCV;
+
+	/**
+		Converts a given constant vector to a relative one from the current shot velocity
+		and assigns it to the volatile vector.
+	**/
+	final CalcRelativeShotVelocityCV;
+
 	// ---- other operations ----------------------------------------------------
 
 	final Fire;
@@ -198,7 +286,7 @@ class OpcodeExtension {
 			case SetPositionC: "set_position_c";
 			case AddPositionC: "add_position_c";
 			case SetVelocityC: "set_velocity_c";
-			case AddVelocityC: "set_velocity_c";
+			case AddVelocityC: "add_velocity_c";
 			case SetPositionS: "set_position_s";
 			case AddPositionS: "add_position_s";
 			case SetVelocityS: "set_velocity_s";
@@ -209,6 +297,20 @@ class OpcodeExtension {
 			case AddVelocityV: "add_velocity_v";
 			case CalcRelativePositionCV: "calc_rel_position_cv";
 			case CalcRelativeVelocityCV: "calc_rel_velocity_cv";
+			case SetShotPositionC: "set_shot_position_c";
+			case AddShotPositionC: "add_shot_position_c";
+			case SetShotVelocityC: "set_shot_velocity_c";
+			case AddShotVelocityC: "add_shot_velocity_c";
+			case SetShotPositionS: "set_shot_position_s";
+			case AddShotPositionS: "add_shot_position_s";
+			case SetShotVelocityS: "set_shot_velocity_s";
+			case AddShotVelocityS: "add_shot_velocity_s";
+			case SetShotPositionV: "set_shot_position_v";
+			case AddShotPositionV: "add_shot_position_v";
+			case SetShotVelocityV: "set_shot_velocity_v";
+			case AddShotVelocityV: "add_shot_velocity_v";
+			case CalcRelativeShotPositionCV: "calc_rel_shot_position_cv";
+			case CalcRelativeShotVelocityCV: "calc_rel_shot_velocity_cv";
 			case MultVecVCS: "mult_vec_vcs";
 			case Fire: "fire";
 		}
@@ -230,7 +332,11 @@ class OpcodeExtension {
 			case SetPositionC | AddPositionC | SetVelocityC | AddVelocityC: [Vec];
 			case SetPositionS | AddPositionS | SetVelocityS | AddVelocityS: [];
 			case SetPositionV | AddPositionV | SetVelocityV | AddVelocityV: [];
-			case CalcRelativePositionCV | CalcRelativeVelocityCV: [Vec]; // absolute vector
+			case CalcRelativePositionCV | CalcRelativeVelocityCV: [Vec]; // vector before calc
+			case SetShotPositionC | AddShotPositionC | SetShotVelocityC | AddShotVelocityC: [Vec];
+			case SetShotPositionS | AddShotPositionS | SetShotVelocityS | AddShotVelocityS: [];
+			case SetShotPositionV | AddShotPositionV | SetShotVelocityV | AddShotVelocityV: [];
+			case CalcRelativeShotPositionCV | CalcRelativeShotVelocityCV: [Vec]; // vector before calc
 			case MultVecVCS: [Float]; // multiplier value
 			case Fire: [Int]; // bytecode ID
 		}
@@ -251,24 +357,40 @@ enum abstract OpcodeOperateVectorC(Opcode) to Opcode {
 	final AddPositionC = Opcode.AddPositionC;
 	final SetVelocityC = Opcode.SetVelocityC;
 	final AddVelocityC = Opcode.AddVelocityC;
+	final SetShotPositionC = Opcode.SetShotPositionC;
+	final AddShotPositionC = Opcode.AddShotPositionC;
+	final SetShotVelocityC = Opcode.SetShotVelocityC;
+	final AddShotVelocityC = Opcode.AddShotVelocityC;
 }
 
 /**
-	Subset of `Opcode` related to position/velocity operation with stacked values.
+	Subset of `Opcode` related to position/velocity operation with stacked/volatile values.
 **/
-enum abstract OpcodeOperateVectorS(Opcode) to Opcode {
+enum abstract OpcodeOperateVectorNonC(Opcode) to Opcode {
 	final SetPositionS = Opcode.SetPositionS;
 	final AddPositionS = Opcode.AddPositionS;
 	final SetVelocityS = Opcode.SetVelocityS;
 	final AddVelocityS = Opcode.AddVelocityS;
-}
-
-/**
-	Subset of `Opcode` related to position/velocity operation with volatile values.
-**/
-enum abstract OpcodeOperateVectorV(Opcode) to Opcode {
 	final SetPositionV = Opcode.SetPositionV;
 	final AddPositionV = Opcode.AddPositionV;
 	final SetVelocityV = Opcode.SetVelocityV;
 	final AddVelocityV = Opcode.AddVelocityV;
+	final SetShotPositionS = Opcode.SetShotPositionS;
+	final AddShotPositionS = Opcode.AddShotPositionS;
+	final SetShotVelocityS = Opcode.SetShotVelocityS;
+	final AddShotVelocityS = Opcode.AddShotVelocityS;
+	final SetShotPositionV = Opcode.SetShotPositionV;
+	final AddShotPositionV = Opcode.AddShotPositionV;
+	final SetShotVelocityV = Opcode.SetShotVelocityV;
+	final AddShotVelocityV = Opcode.AddShotVelocityV;
+}
+
+/**
+	Subset of `Opcode` related to relative vector calculation.
+**/
+enum abstract CalcRelativeVec(Opcode) to Opcode {
+	final CalcRelativePositionCV = Opcode.CalcRelativePositionCV;
+	final CalcRelativeVelocityCV = Opcode.CalcRelativeVelocityCV;
+	final CalcRelativeShotPositionCV = Opcode.CalcRelativeShotPositionCV;
+	final CalcRelativeShotVelocityCV = Opcode.CalcRelativeShotVelocityCV;
 }
