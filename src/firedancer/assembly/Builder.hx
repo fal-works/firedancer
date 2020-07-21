@@ -1,7 +1,7 @@
 package firedancer.assembly;
 
 /**
-	Functions for creating `AssemblyStatement` instances.
+	Functions for creating `AssemblyStatement`/`AssemblyCode` instances.
 **/
 class Builder {
 	/**
@@ -68,5 +68,33 @@ class Builder {
 		y: Float
 	): AssemblyStatement {
 		return new AssemblyStatement(opcode, [Vec(x, y)]);
+	}
+
+	/**
+		Creates a code instance that repeats `body` in runtime.
+	**/
+	public static function loop(body: AssemblyCode, count: UInt): AssemblyCode {
+		final bodyLength = body.bytecodeLength().int();
+
+		return [
+			[
+				pushInt(count),
+				countDownJump(bodyLength + Opcode.Jump.getBytecodeLength())
+			],
+			body,
+			[
+				jumpBack(body.bytecodeLength() + Opcode.CountDownJump.getBytecodeLength())
+			]
+		].flatten();
+	}
+
+	/**
+		Creates a code instance with `bodyFactory` repeated in compile-time.
+	**/
+	public static function loopInlined(
+		bodyFactory: (index: UInt) -> AssemblyCode,
+		count: UInt
+	): AssemblyCode {
+		return [for (i in 0...count) bodyFactory(i)].flatten();
 	}
 }

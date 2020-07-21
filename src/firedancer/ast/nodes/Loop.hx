@@ -41,21 +41,11 @@ class FiniteLoop extends Loop {
 	override public function toAssembly(): AssemblyCode {
 		final count = this.loopCount;
 		final body = this.node.toAssembly();
-		final bodyLength = body.bytecodeLength().int();
 
-		if (this.isInlined) {
-			return [for (i in 0...count) body.copy()].flatten();
+		return if (this.isInlined) {
+			loopInlined(_ -> body, count);
+		} else {
+			loop(body, count);
 		}
-
-		return [
-			[
-				pushInt(count),
-				countDownJump(bodyLength + Opcode.Jump.getBytecodeLength())
-			],
-			body,
-			[
-				jumpBack(body.bytecodeLength() + Opcode.CountDownJump.getBytecodeLength())
-			]
-		].flatten();
 	}
 }
