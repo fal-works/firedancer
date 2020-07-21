@@ -6,8 +6,8 @@ class BulletPatterns {
 
 	public static final typeA = compile(loop([
 		wait(30),
-		velocity.set(4, 6),
+		velocity.set(5, 150),
 		wait(30),
-		velocity.set(-4, 6)
+		velocity.set(5, 210)
 	]).count(2));
 }

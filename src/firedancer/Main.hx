@@ -60,28 +60,10 @@ class Main {
 
 private class Position {
 	/**
-		Provides functions for operating position in polar coordinates.
+		Provides functions for operating position in cartesian coordinates.
 	**/
-	public final polar = new PolarPosition();
+	public final cartesian = new CartesianPosition();
 
-	public function new() {}
-
-	/**
-		Sets position to `(x, y)`.
-	**/
-	public inline function set(x: Float, y: Float) {
-		return new OperateVectorC(SetPositionC, x, y);
-	}
-
-	/**
-		Adds `(x, y)` to position.
-	**/
-	public inline function add(x: Float, y: Float) {
-		return new OperateVectorC(AddPositionC, x, y);
-	}
-}
-
-private class PolarPosition {
 	public function new() {}
 
 	/**
@@ -107,30 +89,30 @@ private class PolarPosition {
 	}
 }
 
-private class Velocity {
-	/**
-		Provides functions for operating velocity in polar coordinates.
-	**/
-	public final polar = new PolarVelocity();
-
+private class CartesianPosition {
 	public function new() {}
 
 	/**
-		Sets velocity to `(vx, vy)`.
+		Sets position to `(x, y)`.
 	**/
-	public inline function set(vx: Float, vy: Float) {
-		return new OperateVectorC(SetVelocityC, vx, vy);
+	public inline function set(x: Float, y: Float) {
+		return new OperateVectorC(SetPositionC, x, y);
 	}
 
 	/**
-		Adds `(x, y)` to velocity.
+		Adds `(x, y)` to position.
 	**/
 	public inline function add(x: Float, y: Float) {
-		return new OperateVectorC(AddVelocityC, x, y);
+		return new OperateVectorC(AddPositionC, x, y);
 	}
 }
 
-private class PolarVelocity {
+private class Velocity {
+	/**
+		Provides functions for operating velocity in cartesian coordinates.
+	**/
+	public final cartesian = new CartesianVelocity();
+
 	public function new() {}
 
 	/**
@@ -156,6 +138,24 @@ private class PolarVelocity {
 	}
 }
 
+private class CartesianVelocity {
+	public function new() {}
+
+	/**
+		Sets velocity to `(vx, vy)`.
+	**/
+	public inline function set(vx: Float, vy: Float) {
+		return new OperateVectorC(SetVelocityC, vx, vy);
+	}
+
+	/**
+		Adds `(x, y)` to velocity.
+	**/
+	public inline function add(x: Float, y: Float) {
+		return new OperateVectorC(AddVelocityC, x, y);
+	}
+}
+
 private class Shot {
 	public function new() {}
 
@@ -172,28 +172,10 @@ private class Shot {
 
 private class ShotPosition {
 	/**
-		Provides functions for operating shot position in polar coordinates.
+		Provides functions for operating shot position in cartesian coordinates.
 	**/
-	public final polar = new PolarShotPosition();
+	public final cartesian = new CartesianShotPosition();
 
-	public function new() {}
-
-	/**
-		Sets shot position to `(x, y)`.
-	**/
-	public inline function set(x: Float, y: Float) {
-		return new OperateVectorC(SetShotPositionC, x, y);
-	}
-
-	/**
-		Adds `(x, y)` to shot position.
-	**/
-	public inline function add(x: Float, y: Float) {
-		return new OperateVectorC(AddShotPositionC, x, y);
-	}
-}
-
-private class PolarShotPosition {
 	public function new() {}
 
 	/**
@@ -219,30 +201,30 @@ private class PolarShotPosition {
 	}
 }
 
-private class ShotVelocity {
-	/**
-		Provides functions for operating shot velocity in polar coordinates.
-	**/
-	public final polar = new PolarShotVelocity();
-
+private class CartesianShotPosition {
 	public function new() {}
 
 	/**
-		Sets shot velocity to `(x, y)`.
+		Sets shot position to `(x, y)`.
 	**/
 	public inline function set(x: Float, y: Float) {
-		return new OperateVectorC(SetShotVelocityC, x, y);
+		return new OperateVectorC(SetShotPositionC, x, y);
 	}
 
 	/**
-		Adds `(x, y)` to shot velocity.
+		Adds `(x, y)` to shot position.
 	**/
 	public inline function add(x: Float, y: Float) {
-		return new OperateVectorC(AddShotVelocityC, x, y);
+		return new OperateVectorC(AddShotPositionC, x, y);
 	}
 }
 
-private class PolarShotVelocity {
+private class ShotVelocity {
+	/**
+		Provides functions for operating shot velocity in cartesian coordinates.
+	**/
+	public final cartesian = new CartesianShotVelocity();
+
 	public function new() {}
 
 	/**
@@ -265,5 +247,23 @@ private class PolarShotVelocity {
 			speed * direction.cos(),
 			speed * direction.sin()
 		);
+	}
+}
+
+private class CartesianShotVelocity {
+	public function new() {}
+
+	/**
+		Sets shot velocity to `(x, y)`.
+	**/
+	public inline function set(x: Float, y: Float) {
+		return new OperateVectorC(SetShotVelocityC, x, y);
+	}
+
+	/**
+		Adds `(x, y)` to shot velocity.
+	**/
+	public inline function add(x: Float, y: Float) {
+		return new OperateVectorC(AddShotVelocityC, x, y);
 	}
 }
