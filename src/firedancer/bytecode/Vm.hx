@@ -156,7 +156,6 @@ class Vm {
 					if (0 != peekInt()) {
 						decrement();
 						codePos += LEN32; // skip the operand
-						break;
 					} else {
 						dropInt();
 						final jumpLength = readCodeI32();
