@@ -63,13 +63,13 @@ private class Position {
 		Sets position to `(x, y)`.
 	**/
 	public inline function set(x: Float, y: Float)
-		return new SetPositionConst(x, y);
+		return new OperateVectorConst(SetPositionConst, x, y);
 
 	/**
 		Adds `(x, y)` to position.
 	**/
 	public inline function add(x: Float, y: Float)
-		return new AddPositionConst(x, y);
+		return new OperateVectorConst(AddPositionConst, x, y);
 }
 
 private class PolarPosition {
@@ -79,7 +79,8 @@ private class PolarPosition {
 		Sets position to `(distance, bearing)`.
 	**/
 	public inline function set(distance: Float, bearing: Azimuth) {
-		return new SetPositionConst(
+		return new OperateVectorConst(
+			SetPositionConst,
 			distance * bearing.cos(),
 			distance * bearing.sin()
 		);
@@ -89,7 +90,8 @@ private class PolarPosition {
 		Adds a vector of `(distance, bearing)` to position.
 	**/
 	public inline function add(distance: Float, bearing: Azimuth) {
-		return new AddPositionConst(
+		return new OperateVectorConst(
+			AddPositionConst,
 			distance * bearing.cos(),
 			distance * bearing.sin()
 		);
@@ -108,13 +110,13 @@ private class Velocity {
 		Sets velocity to `(vx, vy)`.
 	**/
 	public inline function set(vx: Float, vy: Float)
-		return new SetVelocityConst(vx, vy);
+		return new OperateVectorConst(SetVelocityConst, vx, vy);
 
 	/**
 		Adds `(x, y)` to velocity.
 	**/
 	public inline function add(x: Float, y: Float)
-		return new AddVelocityConst(x, y);
+		return new OperateVectorConst(AddVelocityConst, x, y);
 }
 
 private class PolarVelocity {
@@ -124,7 +126,8 @@ private class PolarVelocity {
 		Sets velocity to `(speed, direction)`.
 	**/
 	public inline function set(speed: Float, direction: Azimuth) {
-		return new SetVelocityConst(
+		return new OperateVectorConst(
+			SetVelocityConst,
 			speed * direction.cos(),
 			speed * direction.sin()
 		);
@@ -134,7 +137,8 @@ private class PolarVelocity {
 		Adds a vector of `(speed, direction)` to velocity.
 	**/
 	public inline function add(speed: Float, direction: Azimuth) {
-		return new AddVelocityConst(
+		return new OperateVectorConst(
+			AddVelocityConst,
 			speed * direction.cos(),
 			speed * direction.sin()
 		);
@@ -174,6 +178,7 @@ private class ShotPosition {
 	**/
 	public inline function add(x: Float, y: Float)
 		throw "Not yet implemented."; // TODO: implement
+
 }
 
 private class PolarShotPosition {
@@ -213,6 +218,7 @@ private class ShotVelocity {
 	**/
 	public inline function add(x: Float, y: Float)
 		throw "Not yet implemented."; // TODO: implement
+
 }
 
 private class PolarShotVelocity {

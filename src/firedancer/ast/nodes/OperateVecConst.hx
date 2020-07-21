@@ -1,10 +1,13 @@
 package firedancer.ast.nodes;
 
+import firedancer.assembly.Opcode.OperateVectorConstOpcode;
+
 /**
-	Sets actor's position to specific constant values.
+	Operates actor's position/velocity with specific constant values.
 **/
 @:ripper_verified
-class SetPositionConst implements ripper.Data implements AstNode {
+class OperateVectorConst implements ripper.Data implements AstNode {
+	public final opcode: OperateVectorConstOpcode;
 	public final x: Float;
 	public final y: Float;
 
@@ -12,50 +15,5 @@ class SetPositionConst implements ripper.Data implements AstNode {
 		return false;
 
 	public function toAssembly(): AssemblyCode
-		return setPositionConst(x, y);
-}
-
-/**
-	Adds specific constant values to actor's position.
-**/
-@:ripper_verified
-class AddPositionConst implements ripper.Data implements AstNode {
-	public final x: Float;
-	public final y: Float;
-
-	public inline function containsWait(): Bool
-		return false;
-
-	public function toAssembly(): AssemblyCode
-		return addPositionConst(x, y);
-}
-
-/**
-	Sets actor's velocity to specific constant values.
-**/
-@:ripper_verified
-class SetVelocityConst implements ripper.Data implements AstNode {
-	public final x: Float;
-	public final y: Float;
-
-	public inline function containsWait(): Bool
-		return false;
-
-	public function toAssembly(): AssemblyCode
-		return setVelocityConst(x, y);
-}
-
-/**
-	Adds specific constant values to actor's velocity.
-**/
-@:ripper_verified
-class AddVelocityConst implements ripper.Data implements AstNode {
-	public final x: Float;
-	public final y: Float;
-
-	public inline function containsWait(): Bool
-		return false;
-
-	public function toAssembly(): AssemblyCode
-		return addVelocityConst(x, y);
+		return operateVectorConst(opcode, x, y);
 }

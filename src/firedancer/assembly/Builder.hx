@@ -60,36 +60,13 @@ class Builder {
 	}
 
 	/**
-		Creates a `SetPositionConst` statement.
+		Creates a statement with `opcode`.
 	**/
-	public static inline function setPositionConst(x: Float, y: Float): AssemblyStatement {
-		return new AssemblyStatement(SetPositionConst, [Vec(x, y)]);
-	}
-
-	/**
-		Creates an `AddPositionConst` statement.
-	**/
-	public static inline function addPositionConst(x: Float, y: Float): AssemblyStatement {
-		return new AssemblyStatement(AddPositionConst, [Vec(x, y)]);
-	}
-
-	/**
-		Creates a `SetVelocityConst` statement.
-	**/
-	public static inline function setVelocityConst(
-		vx: Float,
-		vy: Float
+	public static inline function operateVectorConst(
+		opcode: Opcode.OperateVectorConstOpcode,
+		x: Float,
+		y: Float
 	): AssemblyStatement {
-		return new AssemblyStatement(SetVelocityConst, [Vec(vx, vy)]);
-	}
-
-	/**
-		Creates an `AddVelocityConst` statement.
-	**/
-	public static inline function addVelocityConst(
-		vx: Float,
-		vy: Float
-	): AssemblyStatement {
-		return new AssemblyStatement(AddVelocityConst, [Vec(vx, vy)]);
+		return new AssemblyStatement(opcode, [Vec(x, y)]);
 	}
 }

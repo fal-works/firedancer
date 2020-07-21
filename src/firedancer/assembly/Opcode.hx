@@ -82,3 +82,13 @@ class OpcodeExtension {
 	public static inline function getBytecodeLength(opcode: Opcode): UInt
 		return toStatementType(opcode).bytecodeLength();
 }
+
+/**
+	Subset of `Opcode` related to position/velocity operation.
+**/
+enum abstract OperateVectorConstOpcode(Opcode) to Opcode {
+	final SetPositionConst = Opcode.SetPositionConst;
+	final AddPositionConst = Opcode.AddPositionConst;
+	final SetVelocityConst = Opcode.SetVelocityConst;
+	final AddVelocityConst = Opcode.AddVelocityConst;
+}
