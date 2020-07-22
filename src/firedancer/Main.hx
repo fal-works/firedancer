@@ -5,6 +5,7 @@ import firedancer.types.NInt;
 import firedancer.types.Azimuth;
 import firedancer.ast.Ast;
 import firedancer.ast.nodes.*;
+import firedancer.ast.nodes.OperateAttribute;
 import firedancer.ast.nodes.OperateVector;
 import firedancer.bytecode.Bytecode;
 
@@ -15,9 +16,29 @@ class Main {
 	public static final position = new Position();
 
 	/**
+		Provides functions for operating the length of position vector.
+	**/
+	public static final distance = new Distance();
+
+	/**
+		Provides functions for operating the angle of position vector.
+	**/
+	public static final bearing = new Bearing();
+
+	/**
 		Provides functions for operating velocity.
 	**/
 	public static final velocity = new Velocity();
+
+	/**
+		Provides functions for operating the length of velocity vector.
+	**/
+	public static final speed = new Speed();
+
+	/**
+		Provides functions for operating the angle of velocity vector.
+	**/
+	public static final direction = new Direction();
 
 	/**
 		Provides functions for operating shot position/velocity.
@@ -107,6 +128,42 @@ private class CartesianPosition {
 	}
 }
 
+private class Distance {
+	public function new() {}
+
+	/**
+		Sets the length of position vector to `value`.
+	**/
+	public inline function set(value: Float) {
+		return new OperateAttributeC(SetDistanceC, value);
+	}
+
+	/**
+		Adds `value` to the length of position vector.
+	**/
+	public inline function add(value: Float) {
+		return new OperateAttributeC(AddDistanceC, value);
+	}
+}
+
+private class Bearing {
+	public function new() {}
+
+	/**
+		Sets the angle of position vector to `value`.
+	**/
+	public inline function set(value: Azimuth) {
+		return new OperateAttributeC(SetBearingC, value.toRadians());
+	}
+
+	/**
+		Adds `value` to the angle of position vector.
+	**/
+	public inline function add(value: Float) {
+		return new OperateAttributeC(AddBearingC, value);
+	}
+}
+
 private class Velocity {
 	/**
 		Provides functions for operating velocity in cartesian coordinates.
@@ -156,6 +213,42 @@ private class CartesianVelocity {
 	}
 }
 
+private class Speed {
+	public function new() {}
+
+	/**
+		Sets the length of velocity vector to `value`.
+	**/
+	public inline function set(value: Float) {
+		return new OperateAttributeC(SetSpeedC, value);
+	}
+
+	/**
+		Adds `value` to the length of velocity vector.
+	**/
+	public inline function add(value: Float) {
+		return new OperateAttributeC(AddSpeedC, value);
+	}
+}
+
+private class Direction {
+	public function new() {}
+
+	/**
+		Sets the angle of velocity vector to `value`.
+	**/
+	public inline function set(value: Azimuth) {
+		return new OperateAttributeC(SetDirectionC, value.toRadians());
+	}
+
+	/**
+		Adds `value` to the angle of velocity vector.
+	**/
+	public inline function add(value: Float) {
+		return new OperateAttributeC(AddDirectionC, value);
+	}
+}
+
 private class Shot {
 	public function new() {}
 
@@ -165,9 +258,29 @@ private class Shot {
 	public final position = new ShotPosition();
 
 	/**
+		Provides functions for operating the length of shot position vector.
+	**/
+	public final distance = new ShotDistance();
+
+	/**
+		Provides functions for operating the angle of shot position vector.
+	**/
+	public final bearing = new ShotBearing();
+
+	/**
 		Provides functions for operating shot velocity.
 	**/
 	public final velocity = new ShotVelocity();
+
+	/**
+		Provides functions for operating the length of shot velocity vector.
+	**/
+	public final speed = new ShotSpeed();
+
+	/**
+		Provides functions for operating the angle of shot velocity vector.
+	**/
+	public final direction = new ShotDirection();
 }
 
 private class ShotPosition {
@@ -219,6 +332,42 @@ private class CartesianShotPosition {
 	}
 }
 
+private class ShotDistance {
+	public function new() {}
+
+	/**
+		Sets the length of shot position vector to `value`.
+	**/
+	public inline function set(value: Float) {
+		return new OperateAttributeC(SetShotDistanceC, value);
+	}
+
+	/**
+		Adds `value` to the length of shot position vector.
+	**/
+	public inline function add(value: Float) {
+		return new OperateAttributeC(AddShotDistanceC, value);
+	}
+}
+
+private class ShotBearing {
+	public function new() {}
+
+	/**
+		Sets the angle of shot position vector to `value`.
+	**/
+	public inline function set(value: Azimuth) {
+		return new OperateAttributeC(SetShotBearingC, value.toRadians());
+	}
+
+	/**
+		Adds `value` to the angle of shot position vector.
+	**/
+	public inline function add(value: Float) {
+		return new OperateAttributeC(AddShotBearingC, value);
+	}
+}
+
 private class ShotVelocity {
 	/**
 		Provides functions for operating shot velocity in cartesian coordinates.
@@ -265,5 +414,41 @@ private class CartesianShotVelocity {
 	**/
 	public inline function add(x: Float, y: Float) {
 		return new OperateVectorC(AddShotVelocityC, x, y);
+	}
+}
+
+private class ShotSpeed {
+	public function new() {}
+
+	/**
+		Sets the length of shot velocity vector to `value`.
+	**/
+	public inline function set(value: Float) {
+		return new OperateAttributeC(SetShotSpeedC, value);
+	}
+
+	/**
+		Adds `value` to the length of shot velocity vector.
+	**/
+	public inline function add(value: Float) {
+		return new OperateAttributeC(AddShotSpeedC, value);
+	}
+}
+
+private class ShotDirection {
+	public function new() {}
+
+	/**
+		Sets the angle of shot velocity vector to `value`.
+	**/
+	public inline function set(value: Azimuth) {
+		return new OperateAttributeC(SetShotDirectionC, value.toRadians());
+	}
+
+	/**
+		Adds `value` to the angle of shot velocity vector.
+	**/
+	public inline function add(value: Float) {
+		return new OperateAttributeC(AddShotDirectionC, value);
 	}
 }

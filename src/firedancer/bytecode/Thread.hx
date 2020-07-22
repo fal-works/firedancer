@@ -1,6 +1,9 @@
 package firedancer.bytecode;
 
 import banker.binary.ByteStackData;
+import firedancer.common.MathStatics.hypot;
+import firedancer.common.MathStatics.atan2;
+import firedancer.common.Vec2DStatics.*;
 
 /**
 	Virtual thread for running `firedancer` bytecode.
@@ -22,7 +25,7 @@ class Thread {
 	public var codePos: UInt;
 
 	/**
-		The stack for `this` thread.
+		The stack for `this` this.
 	**/
 	public var stack: ByteStackData;
 
@@ -92,19 +95,16 @@ class Thread {
 	}
 
 	/**
-		Updates values of `this` thread.
+		Updates values of `this` this.
 		Called in `Vm.run()`.
 	**/
-	public extern inline function update(
-		codePos: UInt,
-		stackSize: UInt
-	): Void {
+	public extern inline function update(codePos: UInt, stackSize: UInt): Void {
 		this.codePos = codePos;
 		this.stackSize = stackSize;
 	}
 
 	/**
-		Resets `this` thread.
+		Resets `this` this.
 	**/
 	public extern inline function reset(): Void {
 		this.code = Maybe.none();
@@ -115,5 +115,90 @@ class Thread {
 		this.shotY = 0.0;
 		this.shotVx = 0.0;
 		this.shotVy = 0.0;
+	}
+
+	/**
+		@return The length of current shot position vector.
+	**/
+	public extern inline function getShotDistance(): Float
+		return hypot(this.shotX, this.shotY);
+
+	/**
+		@return The angle of current shot position vector.
+	**/
+	public extern inline function getShotBearing(): Float
+		return atan2(this.shotY, this.shotX);
+
+	/**
+		@return The length of current shot velocity vector.
+	**/
+	public extern inline function getShotSpeed(): Float
+		return hypot(this.shotVx, this.shotVy);
+
+	/**
+		@return The angle of current shot velocity vector.
+	**/
+	public extern inline function getShotDirection(): Float
+		return atan2(this.shotVy, this.shotVx);
+
+
+	public extern inline function setShotPosition(x: Float, y: Float): Void {
+		this.shotX = x;
+		this.shotY = y;
+	}
+
+	public extern inline function addShotPosition(x: Float, y: Float): Void {
+		this.shotX += x;
+		this.shotY += y;
+	}
+
+	public extern inline function setShotVelocity(vx: Float, vy: Float): Void {
+		this.shotVx = vx;
+		this.shotVy = vy;
+	}
+
+	public extern inline function addShotVelocity(vx: Float, vy: Float): Void {
+		this.shotVx += vx;
+		this.shotVy += vy;
+	}
+
+	public extern inline function setShotDistance(value: Float): Void {
+		final newPosition = setLength(this.shotX, this.shotY, value);
+		setShotPosition(newPosition.x, newPosition.y);
+	}
+
+	public extern inline function addShotDistance(value: Float): Void {
+		final newPosition = addLength(this.shotX, this.shotY, value);
+		setShotPosition(newPosition.x, newPosition.y);
+	}
+
+	public extern inline function setShotBearing(value: Float): Void {
+		final newPosition = setAngle(this.shotX, this.shotY, value);
+		setShotPosition(newPosition.x, newPosition.y);
+	}
+
+	public extern inline function addShotBearing(value: Float): Void {
+		final newPosition = addAngle(this.shotX, this.shotY, value);
+		setShotPosition(newPosition.x, newPosition.y);
+	}
+
+	public extern inline function setShotSpeed(value: Float): Void {
+		final newVelocity = setLength(this.shotVx, this.shotVy, value);
+		setShotVelocity(newVelocity.x, newVelocity.y);
+	}
+
+	public extern inline function addShotSpeed(value: Float): Void {
+		final newVelocity = addLength(this.shotVx, this.shotVy, value);
+		setShotVelocity(newVelocity.x, newVelocity.y);
+	}
+
+	public extern inline function setShotDirection(value: Float): Void {
+		final newVelocity = setAngle(this.shotVx, this.shotVy, value);
+		setShotVelocity(newVelocity.x, newVelocity.y);
+	}
+
+	public extern inline function addShotDirection(value: Float): Void {
+		final newVelocity = addAngle(this.shotVx, this.shotVy, value);
+		setShotVelocity(newVelocity.x, newVelocity.y);
 	}
 }

@@ -12,6 +12,21 @@ class Builder {
 	}
 
 	/**
+		Creates a `PeekFloat` statement.
+		@param bytesToSkip Bytes to be skipped from the stack top. `0` for peeking from the top.
+	**/
+	public static inline function peekFloat(bytesToSkip: Int = 0): AssemblyStatement {
+		return new AssemblyStatement(PeekFloat, [Int(bytesToSkip)]);
+	}
+
+	/**
+		Creates a `DropFloat` statement.
+	**/
+	public static inline function dropFloat(): AssemblyStatement {
+		return new AssemblyStatement(DropFloat, []);
+	}
+
+	/**
 		Creates a `PeekVec` statement.
 		@param bytesToSkip Bytes to be skipped from the stack top. `0` for peeking from the top.
 	**/
@@ -138,6 +153,10 @@ class Builder {
 		y: Float
 	): AssemblyStatement {
 		return new AssemblyStatement(opcode, [Vec(x, y)]);
+	}
+
+	public static inline function multFloatVCS(multiplier: Float): AssemblyStatement {
+		return new AssemblyStatement(MultFloatVCS, [Float(multiplier)]);
 	}
 
 	public static inline function multVecVCS(multiplier: Float): AssemblyStatement {

@@ -21,6 +21,8 @@ enum abstract Opcode(Int32) to Int to Int32 {
 			case Opcode.Jump: Jump;
 			case Opcode.CountDownJump: CountDownJump;
 			case Opcode.PushInt: PushInt;
+			case Opcode.PeekFloat: PeekFloat;
+			case Opcode.DropFloat: DropFloat;
 			case Opcode.PeekVec: PeekVec;
 			case Opcode.DropVec: DropVec;
 			case Opcode.Decrement: Decrement;
@@ -38,6 +40,34 @@ enum abstract Opcode(Int32) to Int to Int32 {
 			case Opcode.AddVelocityV: AddVelocityV;
 			case Opcode.CalcRelativePositionCV: CalcRelativePositionCV;
 			case Opcode.CalcRelativeVelocityCV: CalcRelativeVelocityCV;
+			case Opcode.SetDistanceC: SetDistanceC;
+			case Opcode.AddDistanceC: AddDistanceC;
+			case Opcode.SetDistanceS: SetDistanceS;
+			case Opcode.AddDistanceS: AddDistanceS;
+			case Opcode.SetDistanceV: SetDistanceV;
+			case Opcode.AddDistanceV: AddDistanceV;
+			case Opcode.SetBearingC: SetBearingC;
+			case Opcode.AddBearingC: AddBearingC;
+			case Opcode.SetBearingS: SetBearingS;
+			case Opcode.AddBearingS: AddBearingS;
+			case Opcode.SetBearingV: SetBearingV;
+			case Opcode.AddBearingV: AddBearingV;
+			case Opcode.SetSpeedC: SetSpeedC;
+			case Opcode.AddSpeedC: AddSpeedC;
+			case Opcode.SetSpeedS: SetSpeedS;
+			case Opcode.AddSpeedS: AddSpeedS;
+			case Opcode.SetSpeedV: SetSpeedV;
+			case Opcode.AddSpeedV: AddSpeedV;
+			case Opcode.SetDirectionC: SetDirectionC;
+			case Opcode.AddDirectionC: AddDirectionC;
+			case Opcode.SetDirectionS: SetDirectionS;
+			case Opcode.AddDirectionS: AddDirectionS;
+			case Opcode.SetDirectionV: SetDirectionV;
+			case Opcode.AddDirectionV: AddDirectionV;
+			case Opcode.CalcRelativeDistanceCV: CalcRelativeDistanceCV;
+			case Opcode.CalcRelativeBearingCV: CalcRelativeBearingCV;
+			case Opcode.CalcRelativeSpeedCV: CalcRelativeSpeedCV;
+			case Opcode.CalcRelativeDirectionCV: CalcRelativeDirectionCV;
 			case Opcode.SetShotPositionC: SetShotPositionC;
 			case Opcode.AddShotPositionC: AddShotPositionC;
 			case Opcode.SetShotVelocityC: SetShotVelocityC;
@@ -52,6 +82,35 @@ enum abstract Opcode(Int32) to Int to Int32 {
 			case Opcode.AddShotVelocityV: AddShotVelocityV;
 			case Opcode.CalcRelativeShotPositionCV: CalcRelativeShotPositionCV;
 			case Opcode.CalcRelativeShotVelocityCV: CalcRelativeShotVelocityCV;
+			case Opcode.SetShotDistanceC: SetShotDistanceC;
+			case Opcode.AddShotDistanceC: AddShotDistanceC;
+			case Opcode.SetShotDistanceS: SetShotDistanceS;
+			case Opcode.AddShotDistanceS: AddShotDistanceS;
+			case Opcode.SetShotDistanceV: SetShotDistanceV;
+			case Opcode.AddShotDistanceV: AddShotDistanceV;
+			case Opcode.SetShotBearingC: SetShotBearingC;
+			case Opcode.AddShotBearingC: AddShotBearingC;
+			case Opcode.SetShotBearingS: SetShotBearingS;
+			case Opcode.AddShotBearingS: AddShotBearingS;
+			case Opcode.SetShotBearingV: SetShotBearingV;
+			case Opcode.AddShotBearingV: AddShotBearingV;
+			case Opcode.SetShotSpeedC: SetShotSpeedC;
+			case Opcode.AddShotSpeedC: AddShotSpeedC;
+			case Opcode.SetShotSpeedS: SetShotSpeedS;
+			case Opcode.AddShotSpeedS: AddShotSpeedS;
+			case Opcode.SetShotSpeedV: SetShotSpeedV;
+			case Opcode.AddShotSpeedV: AddShotSpeedV;
+			case Opcode.SetShotDirectionC: SetShotDirectionC;
+			case Opcode.AddShotDirectionC: AddShotDirectionC;
+			case Opcode.SetShotDirectionS: SetShotDirectionS;
+			case Opcode.AddShotDirectionS: AddShotDirectionS;
+			case Opcode.SetShotDirectionV: SetShotDirectionV;
+			case Opcode.AddShotDirectionV: AddShotDirectionV;
+			case Opcode.CalcRelativeShotDistanceCV: CalcRelativeShotDistanceCV;
+			case Opcode.CalcRelativeShotBearingCV: CalcRelativeShotBearingCV;
+			case Opcode.CalcRelativeShotSpeedCV: CalcRelativeShotSpeedCV;
+			case Opcode.CalcRelativeShotDirectionCV: CalcRelativeShotDirectionCV;
+			case Opcode.MultFloatVCS: MultFloatVCS;
 			case Opcode.MultVecVCS: MultVecVCS;
 			case Opcode.Fire: Fire;
 			default: throw error(value);
@@ -96,6 +155,17 @@ enum abstract Opcode(Int32) to Int to Int32 {
 	final PushInt;
 
 	/**
+		Reads a float at the stack top (skipping a given constant bytes from the top)
+		and assigns it to the volatile float.
+	**/
+	final PeekFloat;
+
+	/**
+		Drops float from the stack top.
+	**/
+	final DropFloat;
+
+	/**
 		Reads a vector at the stack top (skipping a given constant bytes from the top)
 		and assigns it to the volatile vector.
 	**/
@@ -110,6 +180,11 @@ enum abstract Opcode(Int32) to Int to Int32 {
 		Decrements the integer at the stack top.
 	**/
 	final Decrement;
+
+	/**
+		Multiplicates the current volatile float by a given constant float and pushes it to the stack top.
+	**/
+	final MultFloatVCS;
 
 	/**
 		Multiplicates the current volatile vector by a given constant float and pushes it to the stack top.
@@ -190,6 +265,37 @@ enum abstract Opcode(Int32) to Int to Int32 {
 	**/
 	final CalcRelativeVelocityCV;
 
+	final SetDistanceC;
+	final AddDistanceC;
+	final SetDistanceS;
+	final AddDistanceS;
+	final SetDistanceV;
+	final AddDistanceV;
+	final SetBearingC;
+	final AddBearingC;
+	final SetBearingS;
+	final AddBearingS;
+	final SetBearingV;
+	final AddBearingV;
+
+	final SetSpeedC;
+	final AddSpeedC;
+	final SetSpeedS;
+	final AddSpeedS;
+	final SetSpeedV;
+	final AddSpeedV;
+	final SetDirectionC;
+	final AddDirectionC;
+	final SetDirectionS;
+	final AddDirectionS;
+	final SetDirectionV;
+	final AddDirectionV;
+
+	final CalcRelativeDistanceCV;
+	final CalcRelativeBearingCV;
+	final CalcRelativeSpeedCV;
+	final CalcRelativeDirectionCV;
+
 	// ---- read/write/calc shot position/velocity ------------------------------
 
 	/**
@@ -264,6 +370,37 @@ enum abstract Opcode(Int32) to Int to Int32 {
 	**/
 	final CalcRelativeShotVelocityCV;
 
+	final SetShotDistanceC;
+	final AddShotDistanceC;
+	final SetShotDistanceS;
+	final AddShotDistanceS;
+	final SetShotDistanceV;
+	final AddShotDistanceV;
+	final SetShotBearingC;
+	final AddShotBearingC;
+	final SetShotBearingS;
+	final AddShotBearingS;
+	final SetShotBearingV;
+	final AddShotBearingV;
+
+	final SetShotSpeedC;
+	final AddShotSpeedC;
+	final SetShotSpeedS;
+	final AddShotSpeedS;
+	final SetShotSpeedV;
+	final AddShotSpeedV;
+	final SetShotDirectionC;
+	final AddShotDirectionC;
+	final SetShotDirectionS;
+	final AddShotDirectionS;
+	final SetShotDirectionV;
+	final AddShotDirectionV;
+
+	final CalcRelativeShotDistanceCV;
+	final CalcRelativeShotBearingCV;
+	final CalcRelativeShotSpeedCV;
+	final CalcRelativeShotDirectionCV;
+
 	// ---- other operations ----------------------------------------------------
 
 	final Fire;
@@ -280,6 +417,8 @@ class OpcodeExtension {
 			case Jump: "jump";
 			case CountDownJump: "count_down_jump";
 			case PushInt: "push_int";
+			case PeekFloat: "peek_float";
+			case DropFloat: "drop_float";
 			case PeekVec: "peek_vec";
 			case DropVec: "drop_vec";
 			case Decrement: "decrement";
@@ -297,6 +436,34 @@ class OpcodeExtension {
 			case AddVelocityV: "add_velocity_v";
 			case CalcRelativePositionCV: "calc_rel_position_cv";
 			case CalcRelativeVelocityCV: "calc_rel_velocity_cv";
+			case SetDistanceC: "set_distance_c";
+			case AddDistanceC: "add_distance_c";
+			case SetDistanceS: "set_distance_s";
+			case AddDistanceS: "add_distance_s";
+			case SetDistanceV: "set_distance_v";
+			case AddDistanceV: "add_distance_v";
+			case SetBearingC: "set_bearing_c";
+			case AddBearingC: "add_bearing_c";
+			case SetBearingS: "set_bearing_s";
+			case AddBearingS: "add_bearing_s";
+			case SetBearingV: "set_bearing_v";
+			case AddBearingV: "add_bearing_v";
+			case SetSpeedC: "set_speed_c";
+			case AddSpeedC: "add_speed_c";
+			case SetSpeedS: "set_speed_s";
+			case AddSpeedS: "add_speed_s";
+			case SetSpeedV: "set_speed_v";
+			case AddSpeedV: "add_speed_v";
+			case SetDirectionC: "set_direction_c";
+			case AddDirectionC: "add_direction_c";
+			case SetDirectionS: "set_direction_s";
+			case AddDirectionS: "add_direction_s";
+			case SetDirectionV: "set_direction_v";
+			case AddDirectionV: "add_direction_v";
+			case CalcRelativeDistanceCV: "calc_rel_distance_cv";
+			case CalcRelativeBearingCV: "calc_rel_bearing_cv";
+			case CalcRelativeSpeedCV: "calc_rel_speed_cv";
+			case CalcRelativeDirectionCV: "calc_rel_direction_cv";
 			case SetShotPositionC: "set_shot_position_c";
 			case AddShotPositionC: "add_shot_position_c";
 			case SetShotVelocityC: "set_shot_velocity_c";
@@ -311,6 +478,35 @@ class OpcodeExtension {
 			case AddShotVelocityV: "add_shot_velocity_v";
 			case CalcRelativeShotPositionCV: "calc_rel_shot_position_cv";
 			case CalcRelativeShotVelocityCV: "calc_rel_shot_velocity_cv";
+			case SetShotDistanceC: "set_shot_distance_c";
+			case AddShotDistanceC: "add_shot_distance_c";
+			case SetShotDistanceS: "set_shot_distance_s";
+			case AddShotDistanceS: "add_shot_distance_s";
+			case SetShotDistanceV: "set_shot_distance_v";
+			case AddShotDistanceV: "add_shot_distance_v";
+			case SetShotBearingC: "set_shot_bearing_c";
+			case AddShotBearingC: "add_shot_bearing_c";
+			case SetShotBearingS: "set_shot_bearing_s";
+			case AddShotBearingS: "add_shot_bearing_s";
+			case SetShotBearingV: "set_shot_bearing_v";
+			case AddShotBearingV: "add_shot_bearing_v";
+			case SetShotSpeedC: "set_shot_speed_c";
+			case AddShotSpeedC: "add_shot_speed_c";
+			case SetShotSpeedS: "set_shot_speed_s";
+			case AddShotSpeedS: "add_shot_speed_s";
+			case SetShotSpeedV: "set_shot_speed_v";
+			case AddShotSpeedV: "add_shot_speed_v";
+			case SetShotDirectionC: "set_shot_direction_c";
+			case AddShotDirectionC: "add_shot_direction_c";
+			case SetShotDirectionS: "set_shot_direction_s";
+			case AddShotDirectionS: "add_shot_direction_s";
+			case SetShotDirectionV: "set_shot_direction_v";
+			case AddShotDirectionV: "add_shot_direction_v";
+			case CalcRelativeShotDistanceCV: "calc_rel_shot_distance_cv";
+			case CalcRelativeShotBearingCV: "calc_rel_shot_bearing_cv";
+			case CalcRelativeShotSpeedCV: "calc_rel_shot_speed_cv";
+			case CalcRelativeShotDirectionCV: "calc_rel_shot_direction_cv";
+			case MultFloatVCS: "mult_float_vcs";
 			case MultVecVCS: "mult_vec_vcs";
 			case Fire: "fire";
 		}
@@ -326,18 +522,34 @@ class OpcodeExtension {
 			case Jump: [Int]; // bytecode length to jump
 			case CountDownJump: [Int]; // bytecode length to jump
 			case PushInt: [Int]; // integer to push
-			case PeekVec: [Int]; // bytes to be skipped from the stack top
-			case DropVec: [];
+			case PeekFloat | PeekVec: [Int]; // bytes to be skipped from the stack top
+			case DropFloat | DropVec: [];
 			case Decrement: [];
 			case SetPositionC | AddPositionC | SetVelocityC | AddVelocityC: [Vec];
 			case SetPositionS | AddPositionS | SetVelocityS | AddVelocityS: [];
 			case SetPositionV | AddPositionV | SetVelocityV | AddVelocityV: [];
 			case CalcRelativePositionCV | CalcRelativeVelocityCV: [Vec]; // vector before calc
+			case SetDistanceC | AddDistanceC | SetBearingC | AddBearingC: [Float];
+			case SetSpeedC | AddSpeedC | SetDirectionC | AddDirectionC: [Float];
+			case SetDistanceS | AddDistanceS | SetBearingS | AddBearingS: [];
+			case SetSpeedS | AddSpeedS | SetDirectionS | AddDirectionS: [];
+			case SetDistanceV | AddDistanceV | SetBearingV | AddBearingV: [];
+			case SetSpeedV | AddSpeedV | SetDirectionV | AddDirectionV: [];
+			case CalcRelativeDistanceCV | CalcRelativeBearingCV: [Float]; // value before calc
+			case CalcRelativeSpeedCV | CalcRelativeDirectionCV: [Float]; // value before calc
 			case SetShotPositionC | AddShotPositionC | SetShotVelocityC | AddShotVelocityC: [Vec];
 			case SetShotPositionS | AddShotPositionS | SetShotVelocityS | AddShotVelocityS: [];
 			case SetShotPositionV | AddShotPositionV | SetShotVelocityV | AddShotVelocityV: [];
 			case CalcRelativeShotPositionCV | CalcRelativeShotVelocityCV: [Vec]; // vector before calc
-			case MultVecVCS: [Float]; // multiplier value
+			case SetShotDistanceC | AddShotDistanceC | SetShotBearingC | AddShotBearingC: [Float];
+			case SetShotSpeedC | AddShotSpeedC | SetShotDirectionC | AddShotDirectionC: [Float];
+			case SetShotDistanceS | AddShotDistanceS | SetShotBearingS | AddShotBearingS: [];
+			case SetShotSpeedS | AddShotSpeedS | SetShotDirectionS | AddShotDirectionS: [];
+			case SetShotDistanceV | AddShotDistanceV | SetShotBearingV | AddShotBearingV: [];
+			case SetShotSpeedV | AddShotSpeedV | SetShotDirectionV | AddShotDirectionV: [];
+			case CalcRelativeShotDistanceCV | CalcRelativeShotBearingCV: [Float]; // value before calc
+			case CalcRelativeShotSpeedCV | CalcRelativeShotDirectionCV: [Float]; // value before calc
+			case MultFloatVCS | MultVecVCS: [Float]; // multiplier value
 			case Fire: [Int]; // bytecode ID
 		}
 	}
