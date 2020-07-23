@@ -17,7 +17,8 @@ class Actor extends broker.entity.BasicBatchEntity {
 	/**
 		`firedancer` thread.
 	**/
-	@:banker.factory(() -> new Thread(64))
+	@:banker_factory(() -> new Thread(64))
+	@:banker_swap
 	var thread: Thread;
 
 	/**
