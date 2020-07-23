@@ -38,6 +38,6 @@ class Army {
 		speed: Float,
 		direction: Float
 	): Void {
-		this.bullets.emit(x, y, speed, direction, BulletPatterns.none);
+		this.bullets.emit(x, y, speed, direction, Maybe.none());
 	}
 }

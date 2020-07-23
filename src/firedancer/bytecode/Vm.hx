@@ -2,7 +2,6 @@ package firedancer.bytecode;
 
 import haxe.Int32;
 import banker.vector.WritableVector as Vec;
-import sneaker.print.Printer;
 import firedancer.assembly.Opcode;
 import firedancer.types.Emitter;
 import firedancer.bytecode.internal.Constants.*;
@@ -77,14 +76,12 @@ class Vm {
 		inline function popInt(): Int32 {
 			final ret = stack.popI32(stackSize);
 			stackSize = ret.size;
-			// print('\n  pop_int ... $intValue');
 			return ret.value;
 		}
 
 		inline function popFloat(): Float {
 			final ret = stack.popF64(stackSize);
 			stackSize = ret.size;
-			// print('\n  pop_float ... $floatValue');
 			return ret.value;
 		}
 
@@ -232,10 +229,11 @@ class Vm {
 		var cnt = 0;
 		#end
 
-		while (true) {
-			#if debug
-			if (infiniteLoopCheckThreshold < ++cnt) throw "Detected infinite loop.";
-			#end
+		do {
+			if (codeLength <= codePos) {
+				thread.code = Maybe.none();
+				return;
+			}
 
 			switch readOp() {
 				case PushInt:
@@ -477,11 +475,10 @@ class Vm {
 					#end
 			}
 
-			if (codeLength <= codePos) {
-				thread.code = Maybe.none();
-				return;
-			}
-		}
+			#if debug
+			if (infiniteLoopCheckThreshold < ++cnt) throw "Detected infinite loop.";
+			#end
+		} while (true);
 
 		thread.update(codePos, stackSize);
 
