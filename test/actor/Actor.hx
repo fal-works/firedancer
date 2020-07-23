@@ -137,18 +137,6 @@ class Actor extends broker.entity.BasicBatchEntity {
 		sprite.rotation += rotationVelocity;
 		++frameCount[i];
 	}
-
-	static function mayFire(
-		x: Float,
-		y: Float,
-		emitter: Emitter
-	): Void {
-		if (y < 240 && Random.bool(0.01)) {
-			final playerPosition = Global.playerPosition;
-			final dir = Math.atan2(playerPosition.y() - y, playerPosition.x() - x);
-			emitter.emit(x, y, 4 * Math.cos(dir), 4 * Math.sin(dir), Maybe.none());
-		}
-	}
 }
 
 @:build(banker.aosoa.Chunk.fromStructure(actor.Actor))

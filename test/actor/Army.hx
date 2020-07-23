@@ -15,7 +15,6 @@ class Army {
 	public function update() {
 		this.agents.update();
 		this.bullets.update();
-		this.agents.mayFire();
 	}
 
 	public function synchronize() {
