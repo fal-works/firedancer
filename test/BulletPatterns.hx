@@ -1,13 +1,14 @@
 import firedancer.Main.*;
-import firedancer.bytecode.Bytecode;
 
 class BulletPatterns {
-	public static final none = Bytecode.createEmpty();
-
-	public static final typeA = compile(loop([
-		wait(30),
-		velocity.set(5, 150),
-		wait(30),
-		velocity.set(5, 210)
-	]).count(2));
+	public static final typeA = compile([
+		velocity.set(10, 180),
+		speed.set(0).frames(60),
+		shot.velocity.set(5, 180),
+		loop([
+			fire(),
+			shot.direction.add(6),
+			wait(1)
+		])
+	]);
 }
