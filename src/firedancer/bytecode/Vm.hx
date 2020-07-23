@@ -2,7 +2,7 @@ package firedancer.bytecode;
 
 import haxe.Int32;
 import banker.vector.WritableVector as Vec;
-import sneaker.print.Printer.println;
+import sneaker.print.Printer;
 import firedancer.assembly.Opcode;
 import firedancer.types.Emitter;
 import firedancer.bytecode.internal.Constants.*;
@@ -508,6 +508,12 @@ class Vm {
 			Vm.run(thread, xVec, yVec, vxVec, vyVec, vecIndex, emitter);
 			++frame;
 		}
+	}
+
+	static function println(s: String): Void {
+		#if firedancer_verbose
+		Printer.println(s);
+		#end
 	}
 }
 

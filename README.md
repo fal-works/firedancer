@@ -1,6 +1,14 @@
 # firedancer
 
-Define, compile and run bullet-hell patterns.
+Define, compile and run bullet-hell patterns. (WIP)
+
+
+## Compilation flags
+
+|library|flag|description|
+|---|---|---|
+|firedancer|firedancer_verbose|Emits verbose log.|
+
 
 ## Dependencies
 
