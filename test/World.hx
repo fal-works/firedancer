@@ -29,7 +29,7 @@ class World {
 		final armies = new Object();
 		area.add(armies);
 
-		final filter = new h2d.filter.Glow(0xFFFFFF, 0.3, 100, 1, 1, true);
+		final filter = new h2d.filter.Glow(0xFFFFFF, 1.0, 50, 0.5, 0.5, true);
 		armies.setFilter(filter);
 
 		army = WorldBuilder.createArmy(armies);
