@@ -1,4 +1,4 @@
-package firedancer.ast.nodes;
+package firedancer.script.nodes;
 
 /**
 	Emits a new actor.

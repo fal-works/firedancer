@@ -1,4 +1,4 @@
-package firedancer.ast.nodes;
+package firedancer.script.nodes;
 
 /**
 	List of `AstNode` to be run sequentially.

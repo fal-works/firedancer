@@ -1,4 +1,4 @@
-import firedancer.Main.*;
+import firedancer.script.Api.*;
 
 class BulletPatterns {
 	public static final typeA = compile([

@@ -1,7 +1,7 @@
-package firedancer.ast;
+package firedancer.script;
 
 import firedancer.bytecode.Bytecode;
-import firedancer.ast.nodes.List;
+import firedancer.script.nodes.List;
 
 /**
 	AST (abstract syntax tree) that represents a bullet hell pattern.

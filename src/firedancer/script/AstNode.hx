@@ -1,4 +1,4 @@
-package firedancer.ast;
+package firedancer.script;
 
 import firedancer.assembly.AssemblyCode;
 

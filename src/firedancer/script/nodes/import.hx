@@ -1,6 +1,6 @@
-package firedancer.ast.nodes;
+package firedancer.script.nodes;
 
 import firedancer.assembly.AssemblyCode;
+import firedancer.assembly.AssemblyStatement.create as statement;
 import firedancer.assembly.Builder.*;
 import firedancer.assembly.Opcode;
-import firedancer.assembly.AssemblyStatement.create as statement;
