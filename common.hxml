@@ -11,4 +11,6 @@
 -lib firedancer
 -lib heaps
 
+-D windowTitle=firedancer
+
 --debug
