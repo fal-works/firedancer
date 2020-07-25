@@ -1,9 +1,8 @@
 package firedancer.script.api_components;
 
-import firedancer.types.Azimuth;
-import firedancer.script.nodes.OperateAttribute;
-import firedancer.script.nodes.OperateVector;
-
+/**
+	Provides features for operating actor's velocity.
+**/
 class Velocity {
 	/**
 		Provides functions for operating velocity in cartesian coordinates.
@@ -15,62 +14,67 @@ class Velocity {
 	/**
 		Sets velocity to `(speed, direction)`.
 	**/
-	public inline function set(speed: Float, direction: Azimuth) {
-		return new OperateVectorC(
-			SetVelocityC,
-			speed * direction.cos(),
-			speed * direction.sin()
-		);
+	public inline function set(speed: FloatArgument, direction: Azimuth) {
+		final vec: VecArgument = { length: speed, angle: direction };
+		return new OperateActor(Velocity, SetVector(vec));
 	}
 
 	/**
 		Adds a vector of `(speed, direction)` to velocity.
 	**/
-	public inline function add(speed: Float, direction: Azimuth) {
-		return new OperateVectorC(
-			AddVelocityC,
-			speed * direction.cos(),
-			speed * direction.sin()
-		);
+	public inline function add(speed: FloatArgument, direction: Azimuth) {
+		final vec: VecArgument = { length: speed, angle: direction };
+		return new OperateActor(Velocity, AddVector(vec));
 	}
 }
 
+/**
+	Provides functions for operating actor's velocity in cartesian coordinates.
+**/
 class CartesianVelocity {
 	public function new() {}
 
 	/**
 		Sets velocity to `(vx, vy)`.
 	**/
-	public inline function set(vx: Float, vy: Float) {
-		return new OperateVectorC(SetVelocityC, vx, vy);
+	public inline function set(vx: FloatArgument, vy: FloatArgument) {
+		final vec: VecArgument = { x: vx, y: vy };
+		return new OperateActor(ShotVelocity, SetVector(vec));
 	}
 
 	/**
-		Adds `(x, y)` to velocity.
+		Adds `(vx, vy)` to velocity.
 	**/
-	public inline function add(x: Float, y: Float) {
-		return new OperateVectorC(AddVelocityC, x, y);
+	public inline function add(vx: FloatArgument, vy: FloatArgument) {
+		final vec: VecArgument = { x: vx, y: vy };
+		return new OperateActor(ShotVelocity, AddVector(vec));
 	}
 }
 
+/**
+	Provides functions for operating the length of actor's velocity vector.
+**/
 class Speed {
 	public function new() {}
 
 	/**
 		Sets the length of velocity vector to `value`.
 	**/
-	public inline function set(value: Float) {
-		return new OperateAttributeC(SetSpeedC, value);
+	public inline function set(value: FloatArgument) {
+		return new OperateActor(Velocity, SetLength(value));
 	}
 
 	/**
 		Adds `value` to the length of velocity vector.
 	**/
-	public inline function add(value: Float) {
-		return new OperateAttributeC(AddSpeedC, value);
+	public inline function add(value: FloatArgument) {
+		return new OperateActor(Velocity, AddLength(value));
 	}
 }
 
+/**
+	Provides functions for operating the angle of actor's velocity vector.
+**/
 class Direction {
 	public function new() {}
 
@@ -78,13 +82,13 @@ class Direction {
 		Sets the angle of velocity vector to `value`.
 	**/
 	public inline function set(value: Azimuth) {
-		return new OperateAttributeC(SetDirectionC, value.toRadians());
+		return new OperateActor(Velocity, SetAngle(value));
 	}
 
 	/**
 		Adds `value` to the angle of velocity vector.
 	**/
-	public inline function add(value: Float) {
-		return new OperateAttributeC(AddDirectionC, value);
+	public inline function add(value: FloatArgument) {
+		return new OperateActor(Velocity, AddAngle(value));
 	}
 }

@@ -1,9 +1,8 @@
 package firedancer.script.api_components;
 
-import firedancer.types.Azimuth;
-import firedancer.script.nodes.OperateAttribute;
-import firedancer.script.nodes.OperateVector;
-
+/**
+	Provides features for operating actor's position.
+**/
 class Position {
 	/**
 		Provides functions for operating position in cartesian coordinates.
@@ -15,62 +14,67 @@ class Position {
 	/**
 		Sets position to `(distance, bearing)`.
 	**/
-	public inline function set(distance: Float, bearing: Azimuth) {
-		return new OperateVectorC(
-			SetPositionC,
-			distance * bearing.cos(),
-			distance * bearing.sin()
-		);
+	public inline function set(distance: FloatArgument, bearing: Azimuth) {
+		final vec: VecArgument = { length: distance, angle: bearing };
+		return new OperateActor(Position, SetVector(vec));
 	}
 
 	/**
 		Adds a vector of `(distance, bearing)` to position.
 	**/
-	public inline function add(distance: Float, bearing: Azimuth) {
-		return new OperateVectorC(
-			AddPositionC,
-			distance * bearing.cos(),
-			distance * bearing.sin()
-		);
+	public inline function add(distance: FloatArgument, bearing: Azimuth) {
+		final vec: VecArgument = { length: distance, angle: bearing };
+		return new OperateActor(Position, AddVector(vec));
 	}
 }
 
+/**
+	Provides functions for operating actor's position in cartesian coordinates.
+**/
 class CartesianPosition {
 	public function new() {}
 
 	/**
 		Sets position to `(x, y)`.
 	**/
-	public inline function set(x: Float, y: Float) {
-		return new OperateVectorC(SetPositionC, x, y);
+	public inline function set(x: FloatArgument, y: FloatArgument) {
+		final vec: VecArgument = { x: x, y: y };
+		return new OperateActor(Position, SetVector(vec));
 	}
 
 	/**
 		Adds `(x, y)` to position.
 	**/
-	public inline function add(x: Float, y: Float) {
-		return new OperateVectorC(AddPositionC, x, y);
+	public inline function add(x: FloatArgument, y: FloatArgument) {
+		final vec: VecArgument = { x: x, y: y };
+		return new OperateActor(Position, AddVector(vec));
 	}
 }
 
+/**
+	Provides functions for operating the length of actor's position vector.
+**/
 class Distance {
 	public function new() {}
 
 	/**
 		Sets the length of position vector to `value`.
 	**/
-	public inline function set(value: Float) {
-		return new OperateAttributeC(SetDistanceC, value);
+	public inline function set(value: FloatArgument) {
+		return new OperateActor(Position, SetLength(value));
 	}
 
 	/**
 		Adds `value` to the length of position vector.
 	**/
-	public inline function add(value: Float) {
-		return new OperateAttributeC(AddDistanceC, value);
+	public inline function add(value: FloatArgument) {
+		return new OperateActor(Position, AddLength(value));
 	}
 }
 
+/**
+	Provides functions for operating the angle of actor's position vector.
+**/
 class Bearing {
 	public function new() {}
 
@@ -78,13 +82,13 @@ class Bearing {
 		Sets the angle of position vector to `value`.
 	**/
 	public inline function set(value: Azimuth) {
-		return new OperateAttributeC(SetBearingC, value.toRadians());
+		return new OperateActor(Position, SetAngle(value));
 	}
 
 	/**
 		Adds `value` to the angle of position vector.
 	**/
-	public inline function add(value: Float) {
-		return new OperateAttributeC(AddBearingC, value);
+	public inline function add(value: FloatArgument) {
+		return new OperateActor(Position, AddAngle(value));
 	}
 }
