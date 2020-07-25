@@ -272,6 +272,8 @@ class Vm {
 					}
 				case Decrement:
 					decrement();
+				case LoadFloatCV:
+					volFloat = readCodeF64();
 				case MultFloatVCS:
 					final multiplier = readCodeF64();
 					pushFloat(volFloat * multiplier);

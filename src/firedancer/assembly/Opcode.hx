@@ -26,6 +26,7 @@ enum abstract Opcode(Int32) to Int to Int32 {
 			case Opcode.PeekVec: PeekVec;
 			case Opcode.DropVec: DropVec;
 			case Opcode.Decrement: Decrement;
+			case Opcode.LoadFloatCV: LoadFloatCV;
 			case Opcode.SetPositionC: SetPositionC;
 			case Opcode.AddPositionC: AddPositionC;
 			case Opcode.SetVelocityC: SetVelocityC;
@@ -180,6 +181,11 @@ enum abstract Opcode(Int32) to Int to Int32 {
 		Decrements the integer at the stack top.
 	**/
 	final Decrement;
+
+	/**
+		Assigns a given constant float to the current volatile float.
+	**/
+	final LoadFloatCV;
 
 	/**
 		Multiplicates the current volatile float by a given constant float and pushes it to the stack top.
@@ -422,6 +428,7 @@ class OpcodeExtension {
 			case PeekVec: "peek_vec";
 			case DropVec: "drop_vec";
 			case Decrement: "decrement";
+			case LoadFloatCV: "load_float_cv";
 			case SetPositionC: "set_position_c";
 			case AddPositionC: "add_position_c";
 			case SetVelocityC: "set_velocity_c";
@@ -525,6 +532,7 @@ class OpcodeExtension {
 			case PeekFloat | PeekVec: [Int]; // bytes to be skipped from the stack top
 			case DropFloat | DropVec: [];
 			case Decrement: [];
+			case LoadFloatCV: [Float];
 			case SetPositionC | AddPositionC | SetVelocityC | AddVelocityC: [Vec];
 			case SetPositionS | AddPositionS | SetVelocityS | AddVelocityS: [];
 			case SetPositionV | AddPositionV | SetVelocityV | AddVelocityV: [];
