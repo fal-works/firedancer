@@ -88,7 +88,7 @@ class ShotBearing {
 	/**
 		Adds `value` to the angle of shot position vector.
 	**/
-	public inline function add(value: FloatArgument) {
+	public inline function add(value: AzimuthDisplacementArgument) {
 		return new OperateActor(ShotPosition, AddAngle(value));
 	}
 }

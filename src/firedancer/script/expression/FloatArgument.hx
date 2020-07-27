@@ -11,7 +11,7 @@ abstract FloatArgument(FloatExpression) from FloatExpression to FloatExpression 
 	@:from static extern inline function fromConstantInt(value: Int): FloatArgument
 		return FloatExpression.Constant(value);
 
-	@:op(A / B) extern inline function divide(divisor: Float): FloatArgument {
+	@:op(A / B) public extern inline function divide(divisor: Float): FloatArgument {
 		return switch this {
 			case Constant(value): value / divisor;
 			case Variable(_): throw "Not yet implemented.";

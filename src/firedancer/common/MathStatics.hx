@@ -9,6 +9,8 @@ class MathStatics {
 	public static extern inline final PI = 3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348;
 	public static extern inline final TWO_PI = 2.0 * PI;
 	public static extern inline final ONE_OVER_TWO_PI = 1.0 / TWO_PI;
+	public static extern inline final DEG_TO_RAD = MathStatics.TWO_PI / 360.0;
+	public static extern inline final RAD_TO_DEG = 360.0 / MathStatics.TWO_PI;
 
 	/**
 		@return Trigonometric cosine of `radians`.

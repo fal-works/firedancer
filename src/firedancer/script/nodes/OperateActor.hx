@@ -148,7 +148,7 @@ enum ActorAttributeOperation {
 	SetLength(arg: FloatArgument);
 	AddLength(arg: FloatArgument);
 	SetAngle(arg: AzimuthArgument);
-	AddAngle(arg: FloatArgument);
+	AddAngle(arg: AzimuthDisplacementArgument);
 }
 
 class ActorAttributeOperationExtension {
@@ -159,9 +159,9 @@ class ActorAttributeOperationExtension {
 	**/
 	public static function divide(addOperation: ActorAttributeOperation, divisor: Int) {
 		return switch addOperation {
-			case AddVector(expression): AddVector(expression / divisor);
-			case AddLength(expression): AddLength(expression / divisor);
-			case AddAngle(expression): AddAngle(expression / divisor);
+			case AddVector(arg): AddVector(arg.divide(divisor));
+			case AddLength(arg): AddLength(arg.divide(divisor));
+			case AddAngle(arg): AddAngle(arg.divide(divisor));
 			default: throw "Unsupported operation.";
 		}
 	}

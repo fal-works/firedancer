@@ -10,22 +10,26 @@ class BulletPatterns {
 		])
 	];
 
-	public static final aimPlayer = compile([
+	static final aimPlayer = compile([
 		position.cartesian.add(-200, 0),
 		velocity.set(10, 180),
 		speed.set(0).frames(60),
 		aimPlayerBody
 	]);
 
-	static final spiral = compile([
-		velocity.set(10, 180),
-		speed.set(0).frames(60),
+	static final spiralBody: Ast = [
 		shot.velocity.set(5, 180),
 		loop([
 			fire(),
-			shot.direction.add(6),
+			shot.direction.add(12),
 			wait(1)
 		])
+	];
+
+	static final spiral = compile([
+		velocity.set(10, 180),
+		speed.set(0).frames(60),
+		spiralBody
 	]);
 
 	static final sandbox = compile(loop([
@@ -43,5 +47,5 @@ class BulletPatterns {
 		velocity.set(5, 210)
 	]).count(2));
 
-	public static final testPattern = aimPlayer;
+	public static final testPattern = spiral;
 }

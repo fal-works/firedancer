@@ -88,7 +88,7 @@ class Direction {
 	/**
 		Adds `value` to the angle of velocity vector.
 	**/
-	public inline function add(value: FloatArgument) {
+	public inline function add(value: AzimuthDisplacementArgument) {
 		return new OperateActor(Velocity, AddAngle(value));
 	}
 }

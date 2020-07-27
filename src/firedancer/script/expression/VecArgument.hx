@@ -53,7 +53,7 @@ abstract VecArgument(VecExpression) from VecExpression to VecExpression {
 		}
 	}
 
-	@:op(A / B) extern inline function divide(divisor: Float): VecArgument {
+	@:op(A / B) public extern inline function divide(divisor: Float): VecArgument {
 		final expression: VecExpression = switch this {
 			case CartesianConstant(x, y): CartesianConstant(x / divisor, y / divisor);
 			case PolarConstant(length, angle): PolarConstant(length / divisor, angle);
