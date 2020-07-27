@@ -177,15 +177,15 @@ class ActorAttributeOperationExtension {
 		attribute: ActorAttribute,
 		frames: NInt
 	) {
-		var calcRelative: AssemblyCode;
-		var multVCS: AssemblyStatement;
-		var peekChange: AssemblyStatement;
-		var addFromVolatile: Opcode;
-		var dropChange: AssemblyStatement;
+		var calcRelative: AssemblyCode; // Calculate total change (before the loop)
+		var multChangeVCS: AssemblyStatement; // Get change rate (before the loop)
+		var peekChange: AssemblyStatement; // Peek change rate (in the loop)
+		var addFromVolatile: Opcode; // Apply change rate (in the loop)
+		var dropChange: AssemblyStatement; // Drop change rate (after the loop)
 
 		switch setOperation {
 			case SetVector(arg):
-				multVCS = statement(MultVecVCS, [Float(1.0 / frames)]);
+				multChangeVCS = statement(MultVecVCS, [Float(1.0 / frames)]);
 				peekChange = peekVec(LEN32); // skip the loop counter
 				dropChange = dropVec();
 
@@ -231,7 +231,7 @@ class ActorAttributeOperationExtension {
 						calcRelative = [statement(loadVolatileOpcode), statement(calcRelativeVV)];
 				}
 			case SetLength(arg):
-				multVCS = statement(MultFloatVCS, [Float(1.0 / frames)]);
+				multChangeVCS = statement(MultFloatVCS, [Float(1.0 / frames)]);
 				peekChange = peekFloat(LEN32); // skip the loop counter
 				dropChange = dropFloat();
 
@@ -265,7 +265,7 @@ class ActorAttributeOperationExtension {
 						];
 				}
 			case SetAngle(arg):
-				multVCS = statement(MultFloatVCS, [Float(1.0 / frames)]);
+				multChangeVCS = statement(MultFloatVCS, [Float(1.0 / frames)]);
 				peekChange = peekFloat(LEN32); // skip the loop counter
 				dropChange = dropFloat();
 
@@ -301,7 +301,7 @@ class ActorAttributeOperationExtension {
 			default: throw "Unsupported operation.";
 		}
 
-		final prepare: AssemblyCode = calcRelative.concat([multVCS]);
+		final prepare: AssemblyCode = calcRelative.concat([multChangeVCS]);
 		final body: AssemblyCode = [
 			breakFrame(),
 			peekChange,
