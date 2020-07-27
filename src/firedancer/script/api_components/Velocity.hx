@@ -14,7 +14,7 @@ class Velocity {
 	/**
 		Sets velocity to `(speed, direction)`.
 	**/
-	public inline function set(speed: FloatArgument, direction: Azimuth) {
+	public inline function set(speed: FloatArgument, direction: AzimuthArgument) {
 		final vec: VecArgument = { length: speed, angle: direction };
 		return new OperateActor(Velocity, SetVector(vec));
 	}
@@ -22,7 +22,7 @@ class Velocity {
 	/**
 		Adds a vector of `(speed, direction)` to velocity.
 	**/
-	public inline function add(speed: FloatArgument, direction: Azimuth) {
+	public inline function add(speed: FloatArgument, direction: AzimuthArgument) {
 		final vec: VecArgument = { length: speed, angle: direction };
 		return new OperateActor(Velocity, AddVector(vec));
 	}
@@ -81,7 +81,7 @@ class Direction {
 	/**
 		Sets the angle of velocity vector to `value`.
 	**/
-	public inline function set(value: Azimuth) {
+	public inline function set(value: AzimuthArgument) {
 		return new OperateActor(Velocity, SetAngle(value));
 	}
 

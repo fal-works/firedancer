@@ -14,6 +14,11 @@ enum VecExpression {
 	CartesianExpression(x: FloatArgument, y: FloatArgument);
 	PolarConstant(length: Float, angle: Azimuth);
 	PolarExpression(length: FloatArgument, angle: AzimuthExpression);
+
+	/**
+		@param loadV `Opcode` for loading the value to the current volatile vector.
+	**/
+	Variable(loadV: Opcode);
 }
 
 class VecExpressionExtension {
@@ -33,13 +38,27 @@ class VecExpressionExtension {
 				new AssemblyStatement(constantOpcode, [Vec(length * angle.cos(), length * angle.sin())]);
 			case CartesianExpression(x, y):
 				[
-					x.loadToVolatile(),
-					y.loadToVolatile(),
-					[new AssemblyStatement(volatileOpcode, [])]
+					x.loadToVolatileFloat(),
+					y.loadToVolatileFloat(),
+					[
+						new AssemblyStatement(CastCartesianVV, []),
+						new AssemblyStatement(volatileOpcode, [])
+					]
 				].flatten();
 			case PolarExpression(length, angle):
-				// TODO: add opcode `PolarToCartesian` or something
-				throw "Not yet implemented.";
+				[
+					length.loadToVolatileFloat(),
+					angle.toFloat().loadToVolatileFloat(),
+					[
+						new AssemblyStatement(CastPolarVV, []),
+						new AssemblyStatement(volatileOpcode, [])
+					]
+				].flatten();
+			case Variable(loadV):
+				[
+					new AssemblyStatement(loadV, []),
+					new AssemblyStatement(volatileOpcode, [])
+				];
 		}
 	}
 }

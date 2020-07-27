@@ -1,20 +1,13 @@
 package actor;
 
-class Army {
+class Army implements ripper.Data {
 	public final agents: ActorAosoa;
 	public final bullets: ActorAosoa;
-
-	public function new(
-		agents: ActorAosoa,
-		bullets: ActorAosoa
-	) {
-		this.agents = agents;
-		this.bullets = bullets;
-	}
+	public final targetPosition: Point;
 
 	public function update() {
-		this.agents.update();
-		this.bullets.update();
+		this.agents.update(this.targetPosition);
+		this.bullets.update(this.targetPosition);
 	}
 
 	public function synchronize() {

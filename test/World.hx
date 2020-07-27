@@ -4,6 +4,7 @@ import broker.image.Tile;
 import broker.draw.DrawArea;
 import broker.draw.TileDraw;
 import broker.draw.BatchDraw;
+import broker.geometry.Point;
 import actor.*;
 
 class World {
@@ -29,10 +30,9 @@ class World {
 		final armies = new Object();
 		area.add(armies);
 
-		final filter = new h2d.filter.Glow(0xFFFFFF, 1.0, 50, 0.5, 0.5, true);
-		armies.setFilter(filter);
+		// armies.setFilter(new h2d.filter.Glow(0xFFFFFF, 1.0, 50, 0.5, 0.5, true));
 
-		army = WorldBuilder.createArmy(armies);
+		army = WorldBuilder.createArmy(armies, Global.playerPosition);
 
 		// first agent
 		army.newAgent(
@@ -40,29 +40,16 @@ class World {
 			-32,
 			3,
 			0.5 * Math.PI,
-			BulletPatterns.typeA
+			BulletPatterns.testPattern
 		);
 	}
 
 	public function update(): Void {
 		army.update();
-
-		// if (Math.random() < 0.03) newAgent();
-
 		army.synchronize();
 	}
 
 	public function dispose(): Void {
-	}
-
-	function newAgent(): Void {
-		army.newAgent(
-			(0.1 + 0.8 * Math.random()) * worldWidth,
-			-32,
-			1 + Math.random() * 1,
-			0.5 * Math.PI,
-			BulletPatterns.typeA
-		);
 	}
 }
 
@@ -71,7 +58,7 @@ class World {
 **/
 @:access(World)
 private class WorldBuilder {
-	public static function createArmy(parent: Object) {
+	public static function createArmy(parent: Object, targetPosition: Point) {
 		final agentTile = Tile.fromRgb(0xf0f0f0, 48, 48).toCentered();
 		final agentBatch = new BatchDraw(agentTile.getTexture(), App.width, App.height);
 		parent.addChild(agentBatch);
@@ -93,7 +80,7 @@ private class WorldBuilder {
 			bullets
 		);
 
-		return new Army(agents, bullets);
+		return new Army(agents, bullets, targetPosition);
 	}
 }
 

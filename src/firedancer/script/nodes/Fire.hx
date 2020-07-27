@@ -5,7 +5,7 @@ package firedancer.script.nodes;
 **/
 @:ripper_verified
 class Fire implements ripper.Data implements AstNode {
-	public final pattern: Maybe<AstNode>;
+	public final pattern: Maybe<Ast>;
 
 	public inline function containsWait(): Bool
 		return false;

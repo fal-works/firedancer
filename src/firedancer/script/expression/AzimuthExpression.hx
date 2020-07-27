@@ -10,6 +10,11 @@ import firedancer.types.Azimuth;
 @:using(firedancer.script.expression.AzimuthExpression.AzimuthExpressionExtension)
 enum AzimuthExpression {
 	Constant(value: Azimuth);
+
+	/**
+		@param loadV `Opcode` for loading the value to the current volatile float.
+	**/
+	Variable(loadV: Opcode);
 }
 
 class AzimuthExpressionExtension {
@@ -19,6 +24,7 @@ class AzimuthExpressionExtension {
 	public static inline function toFloat(_this: AzimuthExpression): FloatArgument {
 		return switch _this {
 			case Constant(value): value.toRadians();
+			case Variable(loadV): FloatExpression.Variable(loadV);
 		}
 	}
 

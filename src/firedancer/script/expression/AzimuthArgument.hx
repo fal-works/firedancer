@@ -10,6 +10,12 @@ abstract AzimuthArgument(AzimuthExpression) from AzimuthExpression to AzimuthExp
 	@:from static extern inline function fromConstant(value: Azimuth): AzimuthArgument
 		return AzimuthExpression.Constant(value);
 
+	@:from static extern inline function fromConstantFloat(value: Float): AzimuthArgument
+		return AzimuthExpression.Constant(value);
+
+	@:from static extern inline function fromConstantInt(value: Int): AzimuthArgument
+		return AzimuthExpression.Constant(value);
+
 	public extern inline function toExpression(): AzimuthExpression
 		return this;
 }

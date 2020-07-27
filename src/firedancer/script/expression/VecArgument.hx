@@ -22,7 +22,11 @@ abstract VecArgument(VecExpression) from VecExpression to VecExpression {
 				switch y {
 					case Constant(constY):
 						VecExpression.CartesianConstant(constX, constY);
+					default:
+						VecExpression.CartesianExpression(x, y);
 				}
+			default:
+				VecExpression.CartesianExpression(x, y);
 		}
 	}
 
@@ -32,13 +36,20 @@ abstract VecArgument(VecExpression) from VecExpression to VecExpression {
 		return VecExpression.PolarConstant(args.length, args.angle);
 
 	@:from static extern inline function fromPolarExpressionss(
-		args: { length: FloatArgument, angle: Azimuth }
+		args: { length: FloatArgument, angle: AzimuthArgument }
 	): VecArgument {
 		final length: FloatExpression = args.length;
-		final angle = args.angle;
+		final angle: AzimuthExpression = args.angle;
 		return switch length {
 			case Constant(constLength):
-				VecExpression.PolarConstant(constLength, angle);
+				switch angle {
+					case Constant(constantAngle):
+						VecExpression.PolarConstant(constLength, constantAngle);
+					default:
+						VecExpression.PolarExpression(length, angle);
+				}
+			default:
+				VecExpression.PolarExpression(length, angle);
 		}
 	}
 
@@ -48,6 +59,7 @@ abstract VecArgument(VecExpression) from VecExpression to VecExpression {
 			case PolarConstant(length, angle): PolarConstant(length / divisor, angle);
 			case CartesianExpression(x, y): CartesianExpression(x / divisor, y / divisor);
 			case PolarExpression(length, angle): PolarExpression(length / divisor, angle);
+			case Variable(loadVolatileOpcode): throw "Not yet implemented.";
 		}
 		return expression;
 	}

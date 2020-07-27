@@ -177,7 +177,7 @@ class ActorAttributeOperationExtension {
 		attribute: ActorAttribute,
 		frames: NInt
 	) {
-		var calcRelative: AssemblyStatement;
+		var calcRelative: AssemblyCode;
 		var multVCS: AssemblyStatement;
 		var peekChange: AssemblyStatement;
 		var addFromVolatile: Opcode;
@@ -215,18 +215,26 @@ class ActorAttributeOperationExtension {
 						final x = length * angle.cos();
 						final y = length * angle.sin();
 						final operands:Array<Operand> = [Vec(x, y)];
-						switch attribute {
+						calcRelative = switch attribute {
 							case Position:
-								calcRelative = statement(CalcRelativePositionCV, operands);
+								statement(CalcRelativePositionCV, operands);
 							case Velocity:
-								calcRelative = statement(CalcRelativeVelocityCV, operands);
+								statement(CalcRelativeVelocityCV, operands);
 							case ShotPosition:
-								calcRelative = statement(CalcRelativeShotPositionCV, operands);
+								statement(CalcRelativeShotPositionCV, operands);
 							case ShotVelocity:
-								calcRelative = statement(CalcRelativeShotVelocityCV, operands);
+								statement(CalcRelativeShotVelocityCV, operands);
 						}
 					case PolarExpression(length, angle):
 						throw "";
+					case Variable(loadVolatileOpcode):
+						final calcRelativeVV = switch attribute {
+							case Position: statement(CalcRelativePositionVV);
+							case Velocity: statement(CalcRelativeVelocityVV);
+							case ShotPosition: statement(CalcRelativeShotPositionVV);
+							case ShotVelocity: statement(CalcRelativeShotVelocityVV);
+						}
+						calcRelative = [statement(loadVolatileOpcode), calcRelativeVV];
 				}
 			case SetLength(arg):
 				multVCS = statement(MultFloatVCS, [Float(1.0 / frames)]);
@@ -243,16 +251,27 @@ class ActorAttributeOperationExtension {
 				switch arg.toExpression() {
 					case Constant(value):
 						final operands:Array<Operand> = [Float(value)];
-						switch attribute {
+						calcRelative = switch attribute {
 							case Position:
-								calcRelative = statement(CalcRelativeDistanceCV, operands);
+								statement(CalcRelativeDistanceCV, operands);
 							case Velocity:
-								calcRelative = statement(CalcRelativeSpeedCV, operands);
+								statement(CalcRelativeSpeedCV, operands);
 							case ShotPosition:
-								calcRelative = statement(CalcRelativeShotDistanceCV, operands);
+								statement(CalcRelativeShotDistanceCV, operands);
 							case ShotVelocity:
-								calcRelative = statement(CalcRelativeShotSpeedCV, operands);
+								statement(CalcRelativeShotSpeedCV, operands);
 						}
+					case Variable(loadVolatileOpcode):
+						final calcRelativeVV = switch attribute {
+							case Position: statement(CalcRelativeDistanceVV);
+							case Velocity: statement(CalcRelativeSpeedVV);
+							case ShotPosition: statement(CalcRelativeShotDistanceVV);
+							case ShotVelocity: statement(CalcRelativeShotDirectionVV);
+						}
+						calcRelative = [
+							statement(loadVolatileOpcode),
+							calcRelativeVV
+						];
 				}
 			case SetAngle(arg):
 				multVCS = statement(MultFloatVCS, [Float(1.0 / frames)]);
@@ -269,21 +288,32 @@ class ActorAttributeOperationExtension {
 				switch arg.toExpression() {
 					case Constant(value):
 						final operands:Array<Operand> = [Float(value.toRadians())];
-						switch attribute {
+						calcRelative = switch attribute {
 							case Position:
-								calcRelative = statement(CalcRelativeBearingCV, operands);
+								statement(CalcRelativeBearingCV, operands);
 							case Velocity:
-								calcRelative = statement(CalcRelativeDirectionCV, operands);
+								statement(CalcRelativeDirectionCV, operands);
 							case ShotPosition:
-								calcRelative = statement(CalcRelativeShotBearingCV, operands);
+								statement(CalcRelativeShotBearingCV, operands);
 							case ShotVelocity:
-								calcRelative = statement(CalcRelativeShotDirectionCV, operands);
+								statement(CalcRelativeShotDirectionCV, operands);
 						}
+					case Variable(loadVolatileOpcode):
+						final calcRelativeVV = switch attribute {
+							case Position: statement(CalcRelativeBearingVV);
+							case Velocity: statement(CalcRelativeDirectionVV);
+							case ShotPosition: statement(CalcRelativeShotBearingVV);
+							case ShotVelocity: statement(CalcRelativeShotDirectionVV);
+						}
+						calcRelative = [
+							statement(loadVolatileOpcode),
+							calcRelativeVV
+						];
 				}
 			default: throw "Unsupported operation.";
 		}
 
-		final prepare: AssemblyCode = [calcRelative, multVCS];
+		final prepare: AssemblyCode = calcRelative.concat([multVCS]);
 		final body: AssemblyCode = [
 			breakFrame(),
 			peekChange,

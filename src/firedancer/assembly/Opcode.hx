@@ -27,6 +27,15 @@ enum abstract Opcode(Int32) to Int to Int32 {
 			case Opcode.DropVec: DropVec;
 			case Opcode.Decrement: Decrement;
 			case Opcode.LoadFloatCV: LoadFloatCV;
+			case Opcode.LoadVecCV: LoadVecCV;
+			case Opcode.LoadVecXCV: LoadVecXCV;
+			case Opcode.LoadVecYCV: LoadVecYCV;
+			case Opcode.LoadTargetPositionV: LoadTargetPositionV;
+			case Opcode.LoadTargetXV: LoadTargetXV;
+			case Opcode.LoadTargetYV: LoadTargetYV;
+			case Opcode.LoadBearingToTargetV: LoadBearingToTargetV;
+			case Opcode.CastCartesianVV: CastCartesianVV;
+			case Opcode.CastPolarVV: CastPolarVV;
 			case Opcode.SetPositionC: SetPositionC;
 			case Opcode.AddPositionC: AddPositionC;
 			case Opcode.SetVelocityC: SetVelocityC;
@@ -41,6 +50,8 @@ enum abstract Opcode(Int32) to Int to Int32 {
 			case Opcode.AddVelocityV: AddVelocityV;
 			case Opcode.CalcRelativePositionCV: CalcRelativePositionCV;
 			case Opcode.CalcRelativeVelocityCV: CalcRelativeVelocityCV;
+			case Opcode.CalcRelativePositionVV: CalcRelativePositionVV;
+			case Opcode.CalcRelativeVelocityVV: CalcRelativeVelocityVV;
 			case Opcode.SetDistanceC: SetDistanceC;
 			case Opcode.AddDistanceC: AddDistanceC;
 			case Opcode.SetDistanceS: SetDistanceS;
@@ -69,6 +80,10 @@ enum abstract Opcode(Int32) to Int to Int32 {
 			case Opcode.CalcRelativeBearingCV: CalcRelativeBearingCV;
 			case Opcode.CalcRelativeSpeedCV: CalcRelativeSpeedCV;
 			case Opcode.CalcRelativeDirectionCV: CalcRelativeDirectionCV;
+			case Opcode.CalcRelativeDistanceVV: CalcRelativeDistanceVV;
+			case Opcode.CalcRelativeBearingVV: CalcRelativeBearingVV;
+			case Opcode.CalcRelativeSpeedVV: CalcRelativeSpeedVV;
+			case Opcode.CalcRelativeDirectionVV: CalcRelativeDirectionVV;
 			case Opcode.SetShotPositionC: SetShotPositionC;
 			case Opcode.AddShotPositionC: AddShotPositionC;
 			case Opcode.SetShotVelocityC: SetShotVelocityC;
@@ -83,6 +98,8 @@ enum abstract Opcode(Int32) to Int to Int32 {
 			case Opcode.AddShotVelocityV: AddShotVelocityV;
 			case Opcode.CalcRelativeShotPositionCV: CalcRelativeShotPositionCV;
 			case Opcode.CalcRelativeShotVelocityCV: CalcRelativeShotVelocityCV;
+			case Opcode.CalcRelativeShotPositionVV: CalcRelativeShotPositionVV;
+			case Opcode.CalcRelativeShotVelocityVV: CalcRelativeShotVelocityVV;
 			case Opcode.SetShotDistanceC: SetShotDistanceC;
 			case Opcode.AddShotDistanceC: AddShotDistanceC;
 			case Opcode.SetShotDistanceS: SetShotDistanceS;
@@ -111,6 +128,10 @@ enum abstract Opcode(Int32) to Int to Int32 {
 			case Opcode.CalcRelativeShotBearingCV: CalcRelativeShotBearingCV;
 			case Opcode.CalcRelativeShotSpeedCV: CalcRelativeShotSpeedCV;
 			case Opcode.CalcRelativeShotDirectionCV: CalcRelativeShotDirectionCV;
+			case Opcode.CalcRelativeShotDistanceVV: CalcRelativeShotDistanceVV;
+			case Opcode.CalcRelativeShotBearingVV: CalcRelativeShotBearingVV;
+			case Opcode.CalcRelativeShotSpeedVV: CalcRelativeShotSpeedVV;
+			case Opcode.CalcRelativeShotDirectionVV: CalcRelativeShotDirectionVV;
 			case Opcode.MultFloatVCS: MultFloatVCS;
 			case Opcode.MultVecVCS: MultVecVCS;
 			case Opcode.Fire: Fire;
@@ -188,6 +209,21 @@ enum abstract Opcode(Int32) to Int to Int32 {
 	final LoadFloatCV;
 
 	/**
+		Assigns given constant float values to the current volatile vector.
+	**/
+	final LoadVecCV;
+
+	/**
+		Assigns a given constant float to the x-component of the current volatile vector.
+	**/
+	final LoadVecXCV;
+
+	/**
+		Assigns a given constant float to the y-component of the current volatile vector.
+	**/
+	final LoadVecYCV;
+
+	/**
 		Multiplicates the current volatile float by a given constant float and pushes it to the stack top.
 	**/
 	final MultFloatVCS;
@@ -196,6 +232,38 @@ enum abstract Opcode(Int32) to Int to Int32 {
 		Multiplicates the current volatile vector by a given constant float and pushes it to the stack top.
 	**/
 	final MultVecVCS;
+
+	/**
+		Assigns actor's target position to the volatile vector.
+	**/
+	final LoadTargetPositionV;
+
+	/**
+		Assigns the x-component of actor's target position to the x-component of the volatile vector.
+	**/
+	final LoadTargetXV;
+
+	/**
+		Assigns the y-component of actor's target position to the y-component of the volatile vector.
+	**/
+	final LoadTargetYV;
+
+	/**
+		Assigns the bearing angle from actor to target to the volatile float.
+	**/
+	final LoadBearingToTargetV;
+
+	/**
+		Interprets the last loaded volatile float values `(prev, cur)` as `(x, y)` and
+		assigns them to the volatile vector.
+	**/
+	final CastCartesianVV;
+
+	/**
+		Interprets the last loaded volatile float values `(prev, cur)` as `(length, angle)` and
+		assigns their cartesian representation to the volatile vector.
+	**/
+	final CastPolarVV;
 
 	// ---- read/write/calc actor data ------------------------------------------
 
@@ -271,6 +339,18 @@ enum abstract Opcode(Int32) to Int to Int32 {
 	**/
 	final CalcRelativeVelocityCV;
 
+	/**
+		Converts the current volatile vector (which should be an absolute position)
+		to a relative one from actor's current position and re-assigns it to the volatile vector.
+	**/
+	final CalcRelativePositionVV;
+
+	/**
+		Converts the current volatile vector (which should be an absolute velocity)
+		to a relative one from actor's current velocity and re-assigns it to the volatile vector.
+	**/
+	final CalcRelativeVelocityVV;
+
 	final SetDistanceC;
 	final AddDistanceC;
 	final SetDistanceS;
@@ -301,6 +381,11 @@ enum abstract Opcode(Int32) to Int to Int32 {
 	final CalcRelativeBearingCV;
 	final CalcRelativeSpeedCV;
 	final CalcRelativeDirectionCV;
+
+	final CalcRelativeDistanceVV;
+	final CalcRelativeBearingVV;
+	final CalcRelativeSpeedVV;
+	final CalcRelativeDirectionVV;
 
 	// ---- read/write/calc shot position/velocity ------------------------------
 
@@ -376,6 +461,18 @@ enum abstract Opcode(Int32) to Int to Int32 {
 	**/
 	final CalcRelativeShotVelocityCV;
 
+	/**
+		Converts the current volatile vector to a relative one from the current shot position
+		and re-assigns it to the volatile vector.
+	**/
+	final CalcRelativeShotPositionVV;
+
+	/**
+		Converts the current volatile vector to a relative one from the current shot velocity
+		and re-assigns it to the volatile vector.
+	**/
+	final CalcRelativeShotVelocityVV;
+
 	final SetShotDistanceC;
 	final AddShotDistanceC;
 	final SetShotDistanceS;
@@ -407,6 +504,11 @@ enum abstract Opcode(Int32) to Int to Int32 {
 	final CalcRelativeShotSpeedCV;
 	final CalcRelativeShotDirectionCV;
 
+	final CalcRelativeShotDistanceVV;
+	final CalcRelativeShotBearingVV;
+	final CalcRelativeShotSpeedVV;
+	final CalcRelativeShotDirectionVV;
+
 	// ---- other operations ----------------------------------------------------
 
 	final Fire;
@@ -429,6 +531,15 @@ class OpcodeExtension {
 			case DropVec: "drop_vec";
 			case Decrement: "decrement";
 			case LoadFloatCV: "load_float_cv";
+			case LoadVecCV: "load_vec_cv";
+			case LoadVecXCV: "load_vec_x_cv";
+			case LoadVecYCV: "load_vec_y_cv";
+			case LoadTargetPositionV: "load_target_position_v";
+			case LoadTargetXV: "load_target_x_v";
+			case LoadTargetYV: "load_target_y_v";
+			case LoadBearingToTargetV: "load_bearing_to_target_v";
+			case CastCartesianVV: "cast_cartesian_vv";
+			case CastPolarVV: "cast_polar_vv";
 			case SetPositionC: "set_position_c";
 			case AddPositionC: "add_position_c";
 			case SetVelocityC: "set_velocity_c";
@@ -443,6 +554,8 @@ class OpcodeExtension {
 			case AddVelocityV: "add_velocity_v";
 			case CalcRelativePositionCV: "calc_rel_position_cv";
 			case CalcRelativeVelocityCV: "calc_rel_velocity_cv";
+			case CalcRelativePositionVV: "calc_rel_position_vv";
+			case CalcRelativeVelocityVV: "calc_rel_velocity_vv";
 			case SetDistanceC: "set_distance_c";
 			case AddDistanceC: "add_distance_c";
 			case SetDistanceS: "set_distance_s";
@@ -471,6 +584,10 @@ class OpcodeExtension {
 			case CalcRelativeBearingCV: "calc_rel_bearing_cv";
 			case CalcRelativeSpeedCV: "calc_rel_speed_cv";
 			case CalcRelativeDirectionCV: "calc_rel_direction_cv";
+			case CalcRelativeDistanceVV: "calc_rel_distance_vv";
+			case CalcRelativeBearingVV: "calc_rel_bearing_vv";
+			case CalcRelativeSpeedVV: "calc_rel_speed_vv";
+			case CalcRelativeDirectionVV: "calc_rel_direction_vv";
 			case SetShotPositionC: "set_shot_position_c";
 			case AddShotPositionC: "add_shot_position_c";
 			case SetShotVelocityC: "set_shot_velocity_c";
@@ -485,6 +602,8 @@ class OpcodeExtension {
 			case AddShotVelocityV: "add_shot_velocity_v";
 			case CalcRelativeShotPositionCV: "calc_rel_shot_position_cv";
 			case CalcRelativeShotVelocityCV: "calc_rel_shot_velocity_cv";
+			case CalcRelativeShotPositionVV: "calc_rel_shot_position_vv";
+			case CalcRelativeShotVelocityVV: "calc_rel_shot_velocity_vv";
 			case SetShotDistanceC: "set_shot_distance_c";
 			case AddShotDistanceC: "add_shot_distance_c";
 			case SetShotDistanceS: "set_shot_distance_s";
@@ -513,6 +632,10 @@ class OpcodeExtension {
 			case CalcRelativeShotBearingCV: "calc_rel_shot_bearing_cv";
 			case CalcRelativeShotSpeedCV: "calc_rel_shot_speed_cv";
 			case CalcRelativeShotDirectionCV: "calc_rel_shot_direction_cv";
+			case CalcRelativeShotDistanceVV: "calc_rel_distance_vv";
+			case CalcRelativeShotBearingVV: "calc_rel_bearing_vv";
+			case CalcRelativeShotSpeedVV: "calc_rel_speed_vv";
+			case CalcRelativeShotDirectionVV: "calc_rel_direction_vv";
 			case MultFloatVCS: "mult_float_vcs";
 			case MultVecVCS: "mult_vec_vcs";
 			case Fire: "fire";
@@ -533,10 +656,16 @@ class OpcodeExtension {
 			case DropFloat | DropVec: [];
 			case Decrement: [];
 			case LoadFloatCV: [Float];
+			case LoadVecCV: [Vec];
+			case LoadVecXCV | LoadVecYCV: [Float];
+			case LoadTargetPositionV | LoadTargetXV | LoadTargetYV: [];
+			case LoadBearingToTargetV: [];
+			case CastCartesianVV | CastPolarVV: [];
 			case SetPositionC | AddPositionC | SetVelocityC | AddVelocityC: [Vec];
 			case SetPositionS | AddPositionS | SetVelocityS | AddVelocityS: [];
 			case SetPositionV | AddPositionV | SetVelocityV | AddVelocityV: [];
 			case CalcRelativePositionCV | CalcRelativeVelocityCV: [Vec]; // vector before calc
+			case CalcRelativePositionVV | CalcRelativeVelocityVV: [];
 			case SetDistanceC | AddDistanceC | SetBearingC | AddBearingC: [Float];
 			case SetSpeedC | AddSpeedC | SetDirectionC | AddDirectionC: [Float];
 			case SetDistanceS | AddDistanceS | SetBearingS | AddBearingS: [];
@@ -545,10 +674,13 @@ class OpcodeExtension {
 			case SetSpeedV | AddSpeedV | SetDirectionV | AddDirectionV: [];
 			case CalcRelativeDistanceCV | CalcRelativeBearingCV: [Float]; // value before calc
 			case CalcRelativeSpeedCV | CalcRelativeDirectionCV: [Float]; // value before calc
+			case CalcRelativeDistanceVV | CalcRelativeBearingVV: [];
+			case CalcRelativeSpeedVV | CalcRelativeDirectionVV: [];
 			case SetShotPositionC | AddShotPositionC | SetShotVelocityC | AddShotVelocityC: [Vec];
 			case SetShotPositionS | AddShotPositionS | SetShotVelocityS | AddShotVelocityS: [];
 			case SetShotPositionV | AddShotPositionV | SetShotVelocityV | AddShotVelocityV: [];
 			case CalcRelativeShotPositionCV | CalcRelativeShotVelocityCV: [Vec]; // vector before calc
+			case CalcRelativeShotPositionVV | CalcRelativeShotVelocityVV: [];
 			case SetShotDistanceC | AddShotDistanceC | SetShotBearingC | AddShotBearingC: [Float];
 			case SetShotSpeedC | AddShotSpeedC | SetShotDirectionC | AddShotDirectionC: [Float];
 			case SetShotDistanceS | AddShotDistanceS | SetShotBearingS | AddShotBearingS: [];
@@ -557,6 +689,8 @@ class OpcodeExtension {
 			case SetShotSpeedV | AddShotSpeedV | SetShotDirectionV | AddShotDirectionV: [];
 			case CalcRelativeShotDistanceCV | CalcRelativeShotBearingCV: [Float]; // value before calc
 			case CalcRelativeShotSpeedCV | CalcRelativeShotDirectionCV: [Float]; // value before calc
+			case CalcRelativeShotDistanceVV | CalcRelativeShotBearingVV: [];
+			case CalcRelativeShotSpeedVV | CalcRelativeShotDirectionVV: [];
 			case MultFloatVCS | MultVecVCS: [Float]; // multiplier value
 			case Fire: [Int]; // bytecode ID
 		}

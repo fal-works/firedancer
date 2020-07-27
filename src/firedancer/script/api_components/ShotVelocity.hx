@@ -14,7 +14,7 @@ class ShotVelocity {
 	/**
 		Sets shot velocity to a vector of `(speed, direction)`.
 	**/
-	public inline function set(speed: FloatArgument, direction: Azimuth) {
+	public inline function set(speed: FloatArgument, direction: AzimuthArgument) {
 		final vec: VecArgument = { length: speed, angle: direction };
 		return new OperateActor(ShotVelocity, SetVector(vec));
 	}
@@ -22,7 +22,7 @@ class ShotVelocity {
 	/**
 		Adds a vector of `(speed, direction)` to shot velocity.
 	**/
-	public inline function add(speed: FloatArgument, direction: Azimuth) {
+	public inline function add(speed: FloatArgument, direction: AzimuthArgument) {
 		final vec: VecArgument = { length: speed, angle: direction };
 		return new OperateActor(ShotVelocity, AddVector(vec));
 	}
@@ -81,7 +81,7 @@ class ShotDirection {
 	/**
 		Sets the angle of shot velocity vector to `value`.
 	**/
-	public inline function set(value: Azimuth) {
+	public inline function set(value: AzimuthArgument) {
 		return new OperateActor(ShotVelocity, SetAngle(value));
 	}
 

@@ -67,6 +67,13 @@ class Api {
 	}
 
 	/**
+		Sets shot direction to the bearing to the target position.
+	**/
+	public static inline function aim(): Aim {
+		return new Aim();
+	}
+
+	/**
 		Compiles `Ast` or `AstNode` into `Bytecode`.
 	**/
 	public static inline function compile(ast: Ast): Bytecode {

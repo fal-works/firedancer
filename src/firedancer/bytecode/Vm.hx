@@ -2,6 +2,7 @@ package firedancer.bytecode;
 
 import haxe.Int32;
 import banker.vector.WritableVector as Vec;
+import broker.geometry.Point;
 import firedancer.assembly.Opcode;
 import firedancer.types.Emitter;
 import firedancer.bytecode.internal.Constants.*;
@@ -21,7 +22,8 @@ class Vm {
 		vxVec: Vec<Float>,
 		vyVec: Vec<Float>,
 		vecIndex: UInt,
-		emitter: Emitter
+		emitter: Emitter,
+		targetPosition: Point
 	): Void {
 		final maybeCode = thread.code;
 		if (maybeCode.isNone()) return;
@@ -32,9 +34,26 @@ class Vm {
 		final stack = thread.stack;
 		var stackSize = thread.stackSize;
 
+		var volFloatPrev: Float = 0.0;
 		var volFloat: Float = 0.0;
 		var volX: Float = 0.0;
 		var volY: Float = 0.0;
+
+		inline function setVolFloat(v: Float): Void {
+			volFloatPrev = volFloat;
+			volFloat = v;
+		}
+
+		inline function setVolX(x: Float): Void
+			volX = x;
+
+		inline function setVolY(y: Float): Void
+			volY = y;
+
+		inline function setVolVec(x: Float, y: Float): Void {
+			setVolX(x);
+			setVolY(y);
+		}
 
 		inline function readOp(): Int32 {
 			final opcode = code.getI32(codePos);
@@ -239,13 +258,12 @@ class Vm {
 				case PushInt:
 					pushInt(readCodeI32());
 				case PeekFloat:
-					volFloat = peekFloatSkipped(readCodeI32());
+					setVolFloat(peekFloatSkipped(readCodeI32()));
 				case DropFloat:
 					dropFloat();
 				case PeekVec:
 					final vec = peekVecSkipped(readCodeI32());
-					volX = vec.x;
-					volY = vec.y;
+					setVolVec(vec.x, vec.y);
 				case DropVec:
 					dropVec();
 				case CountDownBreak:
@@ -273,13 +291,34 @@ class Vm {
 				case Decrement:
 					decrement();
 				case LoadFloatCV:
-					volFloat = readCodeF64();
+					setVolFloat(readCodeF64());
+				case LoadVecCV:
+					setVolVec(readCodeF64(), readCodeF64());
+				case LoadVecXCV:
+					setVolX(readCodeF64());
+				case LoadVecYCV:
+					setVolY(readCodeF64());
 				case MultFloatVCS:
 					final multiplier = readCodeF64();
 					pushFloat(volFloat * multiplier);
 				case MultVecVCS:
 					final multiplier = readCodeF64();
 					pushVec(volX * multiplier, volY * multiplier);
+				case LoadTargetPositionV:
+					setVolVec(targetPosition.x(), targetPosition.y());
+				case LoadTargetXV:
+					setVolX(targetPosition.x());
+				case LoadTargetYV:
+					setVolY(targetPosition.y());
+				case LoadBearingToTargetV:
+					setVolFloat(atan2(
+						targetPosition.y() - getY(),
+						targetPosition.x() - getX()
+					));
+				case CastCartesianVV:
+					setVolVec(volFloatPrev, volFloat);
+				case CastPolarVV:
+					setVolVec(volFloatPrev * cos(volFloat), volFloatPrev * sin(volFloat));
 				case SetPositionC:
 					setPosition(readCodeF64(), readCodeF64());
 				case AddPositionC:
@@ -309,11 +348,13 @@ class Vm {
 				case AddVelocityV:
 					addVelocity(volX, volY);
 				case CalcRelativePositionCV:
-					volX = readCodeF64() - getX();
-					volY = readCodeF64() - getY();
+					setVolVec(readCodeF64() - getX(), readCodeF64() - getY());
 				case CalcRelativeVelocityCV:
-					volX = readCodeF64() - getVx();
-					volY = readCodeF64() - getVy();
+					setVolVec(readCodeF64() - getVx(), readCodeF64() - getVy());
+				case CalcRelativePositionVV:
+					setVolVec(volX - getX(), volY - getY());
+				case CalcRelativeVelocityVV:
+					setVolVec(volX - getVx(), volY - getVy());
 				case SetDistanceC:
 					setDistance(readCodeF64());
 				case AddDistanceC:
@@ -363,13 +404,21 @@ class Vm {
 				case AddDirectionV:
 					addDirection(volFloat);
 				case CalcRelativeDistanceCV:
-					volFloat = readCodeF64() - getDistance();
+					setVolFloat(readCodeF64() - getDistance());
 				case CalcRelativeBearingCV:
-					volFloat = readCodeF64() - normalizeAngle(getBearing());
+					setVolFloat(readCodeF64() - normalizeAngle(getBearing()));
 				case CalcRelativeSpeedCV:
-					volFloat = readCodeF64() - getSpeed();
+					setVolFloat(readCodeF64() - getSpeed());
 				case CalcRelativeDirectionCV:
-					volFloat = readCodeF64() - normalizeAngle(getDirection());
+					setVolFloat(readCodeF64() - normalizeAngle(getDirection()));
+				case CalcRelativeDistanceVV:
+					setVolFloat(volFloat - getDistance());
+				case CalcRelativeBearingVV:
+					setVolFloat(volFloat - normalizeAngle(getBearing()));
+				case CalcRelativeSpeedVV:
+					setVolFloat(volFloat - getSpeed());
+				case CalcRelativeDirectionVV:
+					setVolFloat(volFloat - normalizeAngle(getDirection()));
 				case SetShotPositionC:
 					thread.setShotPosition(readCodeF64(), readCodeF64());
 				case AddShotPositionC:
@@ -399,11 +448,16 @@ class Vm {
 				case AddShotVelocityV:
 					thread.addShotVelocity(volX, volY);
 				case CalcRelativeShotPositionCV:
-					volX = readCodeF64() - thread.shotX;
-					volY = readCodeF64() - thread.shotY;
+					setVolVec(readCodeF64() - thread.shotX, readCodeF64() - thread.shotY);
 				case CalcRelativeShotVelocityCV:
-					volX = readCodeF64() - thread.shotVx;
-					volY = readCodeF64() - thread.shotVy;
+					setVolVec(
+						readCodeF64() - thread.shotVx,
+						readCodeF64() - thread.shotVy
+					);
+				case CalcRelativeShotPositionVV:
+					setVolVec(volX - thread.shotX, volY - thread.shotY);
+				case CalcRelativeShotVelocityVV:
+					setVolVec(volX - thread.shotVx, volY - thread.shotVy);
 				case SetShotDistanceC:
 					thread.setShotDistance(readCodeF64());
 				case AddShotDistanceC:
@@ -453,13 +507,21 @@ class Vm {
 				case AddShotDirectionV:
 					thread.addShotDirection(volFloat);
 				case CalcRelativeShotDistanceCV:
-					volFloat = readCodeF64() - thread.getShotDistance();
+					setVolFloat(readCodeF64() - thread.getShotDistance());
 				case CalcRelativeShotBearingCV:
-					volFloat = readCodeF64() - normalizeAngle(thread.getShotBearing());
+					setVolFloat(readCodeF64() - normalizeAngle(thread.getShotBearing()));
 				case CalcRelativeShotSpeedCV:
-					volFloat = readCodeF64() - thread.getShotSpeed();
+					setVolFloat(readCodeF64() - thread.getShotSpeed());
 				case CalcRelativeShotDirectionCV:
-					volFloat = readCodeF64() - normalizeAngle(thread.getShotDirection());
+					setVolFloat(readCodeF64() - normalizeAngle(thread.getShotDirection()));
+				case CalcRelativeShotDistanceVV:
+					setVolFloat(volFloat - thread.getShotDistance());
+				case CalcRelativeShotBearingVV:
+					setVolFloat(volFloat - normalizeAngle(thread.getShotBearing()));
+				case CalcRelativeShotSpeedVV:
+					setVolFloat(volFloat - thread.getShotSpeed());
+				case CalcRelativeShotDirectionVV:
+					setVolFloat(volFloat - normalizeAngle(thread.getShotDirection()));
 				case Fire:
 					final bytecodeId = readCodeI32();
 					final bytecode = if (bytecodeId < 0) Maybe.none() else
@@ -496,6 +558,7 @@ class Vm {
 		final vyVec = Vec.fromArrayCopy([0.0]);
 		final vecIndex = UInt.zero;
 		final emitter = new NullEmitter();
+		final targetPosition = new Point(0, 0);
 
 		var frame = UInt.zero;
 
@@ -504,7 +567,16 @@ class Vm {
 				throw 'Exceeded $infiniteLoopCheckThreshold frames.';
 
 			println('[frame $frame]');
-			Vm.run(thread, xVec, yVec, vxVec, vyVec, vecIndex, emitter);
+			Vm.run(
+				thread,
+				xVec,
+				yVec,
+				vxVec,
+				vyVec,
+				vecIndex,
+				emitter,
+				targetPosition
+			);
 			++frame;
 		}
 	}
