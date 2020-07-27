@@ -88,13 +88,16 @@ private class Data implements ripper.Data {
 		final buf = new StringBuffer();
 		buf.add(this.opcode.toString());
 
+		inline function ftoa(v: Float): String
+			return if (Floats.toInt(v) == v) '$v.0' else Std.string(v);
+
 		final operands = this.operands;
 		for (i in 0...operands.length) {
 			buf.addChar(' '.code);
 			buf.add(switch operands[i] {
 				case Int(value): Std.string(value);
-				case Float(value): Std.string(value);
-				case Vec(x, y): '$x, $y';
+				case Float(value): ftoa(value);
+				case Vec(x, y): '(${ftoa(x)}, ${ftoa(y)})';
 			});
 		}
 
