@@ -138,10 +138,10 @@ class Builder {
 		Creates a code instance with `bodyFactory` repeated in compile-time.
 	**/
 	public static function loopUnrolled(
-		bodyFactory: (index: UInt) -> AssemblyCode,
-		count: UInt
+		iterator: IntIterator,
+		bodyFactory: (index: Int) -> AssemblyCode
 	): AssemblyCode {
-		return [for (i in 0...count) bodyFactory(i)].flatten();
+		return [for (i in iterator) bodyFactory(i)].flatten();
 	}
 
 	/**
