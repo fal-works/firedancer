@@ -406,19 +406,19 @@ class Vm {
 				case CalcRelativeDistanceCV:
 					setVolFloat(readCodeF64() - getDistance());
 				case CalcRelativeBearingCV:
-					setVolFloat(readCodeF64() - normalizeAngle(getBearing()));
+					setVolFloat(normalizeAngle(readCodeF64() - getBearing()));
 				case CalcRelativeSpeedCV:
 					setVolFloat(readCodeF64() - getSpeed());
 				case CalcRelativeDirectionCV:
-					setVolFloat(readCodeF64() - normalizeAngle(getDirection()));
+					setVolFloat(normalizeAngle(readCodeF64() - getDirection()));
 				case CalcRelativeDistanceVV:
 					setVolFloat(volFloat - getDistance());
 				case CalcRelativeBearingVV:
-					setVolFloat(volFloat - normalizeAngle(getBearing()));
+					setVolFloat(normalizeAngle(volFloat - getBearing()));
 				case CalcRelativeSpeedVV:
 					setVolFloat(volFloat - getSpeed());
 				case CalcRelativeDirectionVV:
-					setVolFloat(volFloat - normalizeAngle(getDirection()));
+					setVolFloat(normalizeAngle(volFloat - getDirection()));
 				case SetShotPositionC:
 					thread.setShotPosition(readCodeF64(), readCodeF64());
 				case AddShotPositionC:
@@ -509,19 +509,19 @@ class Vm {
 				case CalcRelativeShotDistanceCV:
 					setVolFloat(readCodeF64() - thread.getShotDistance());
 				case CalcRelativeShotBearingCV:
-					setVolFloat(readCodeF64() - normalizeAngle(thread.getShotBearing()));
+					setVolFloat(normalizeAngle(readCodeF64() - thread.getShotBearing()));
 				case CalcRelativeShotSpeedCV:
 					setVolFloat(readCodeF64() - thread.getShotSpeed());
 				case CalcRelativeShotDirectionCV:
-					setVolFloat(readCodeF64() - normalizeAngle(thread.getShotDirection()));
+					setVolFloat(normalizeAngle(readCodeF64() - thread.getShotDirection()));
 				case CalcRelativeShotDistanceVV:
 					setVolFloat(volFloat - thread.getShotDistance());
 				case CalcRelativeShotBearingVV:
-					setVolFloat(volFloat - normalizeAngle(thread.getShotBearing()));
+					setVolFloat(normalizeAngle(volFloat - thread.getShotBearing()));
 				case CalcRelativeShotSpeedVV:
 					setVolFloat(volFloat - thread.getShotSpeed());
 				case CalcRelativeShotDirectionVV:
-					setVolFloat(volFloat - normalizeAngle(thread.getShotDirection()));
+					setVolFloat(normalizeAngle(volFloat - thread.getShotDirection()));
 				case Fire:
 					final bytecodeId = readCodeI32();
 					final bytecode = if (bytecodeId < 0) Maybe.none() else
