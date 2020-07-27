@@ -1,6 +1,7 @@
 package firedancer.types;
 
 import firedancer.common.MathStatics;
+import firedancer.common.MathStatics.nearlyEqual;
 
 /**
 	Azimuth value.
@@ -39,16 +40,36 @@ abstract Azimuth(Float) {
 		return this;
 
 	/**
-		@return Trigonometric cosine of `this` azimuth.
+		Returns trigonometric cosine of `this` azimuth.
+
+		Should not be used in runtime as this also does some error correction.
 	**/
-	public extern inline function cos(): Float
-		return MathStatics.cos(toRadians());
+	public function cos(): Float {
+		final value = MathStatics.cos(toRadians());
+
+		return if (nearlyEqual(value, 0.0)) 0.0;
+		else if (nearlyEqual(value, 1.0)) 1.0;
+		else if (nearlyEqual(value, -1.0)) -1.0;
+		else if (nearlyEqual(value, 0.5)) 0.5;
+		else if (nearlyEqual(value, -0.5)) -0.5;
+		else value;
+	}
 
 	/**
-		@return Trigonometric sine of `this` azimuth.
+		Returns trigonometric sine of `this` azimuth.
+
+		Should not be used in runtime as this also does some error correction.
 	**/
-	public extern inline function sin(): Float
-		return MathStatics.sin(toRadians());
+	public function sin(): Float {
+		final value = MathStatics.sin(toRadians());
+
+		return if (nearlyEqual(value, 0.0)) 0.0;
+		else if (nearlyEqual(value, 1.0)) 1.0;
+		else if (nearlyEqual(value, -1.0)) -1.0;
+		else if (nearlyEqual(value, 0.5)) 0.5;
+		else if (nearlyEqual(value, -0.5)) -0.5;
+		else value;
+	}
 
 	extern inline function new(radians: Float)
 		this = MathStatics.normalizeAngle(radians);

@@ -6,11 +6,14 @@ package firedancer.common;
 class MathStatics {
 	// TODO: optimize???
 
-	public static extern inline final PI = 3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348;
+	public static extern inline final PI = 3.1415926535897932;
 	public static extern inline final TWO_PI = 2.0 * PI;
+	public static extern inline final HALF_PI = 0.5 * PI;
+	public static extern inline final THIRD_PI = PI / 3.0;
 	public static extern inline final ONE_OVER_TWO_PI = 1.0 / TWO_PI;
-	public static extern inline final DEG_TO_RAD = MathStatics.TWO_PI / 360.0;
-	public static extern inline final RAD_TO_DEG = 360.0 / MathStatics.TWO_PI;
+	public static extern inline final DEG_TO_RAD = TWO_PI / 360.0;
+	public static extern inline final RAD_TO_DEG = 360.0 / TWO_PI;
+	public static extern inline final EPSILON = 1.77635683940025e-015; // pow(2, 1-50)
 
 	/**
 		@return Trigonometric cosine of `radians`.
@@ -47,4 +50,10 @@ class MathStatics {
 	**/
 	public static extern inline function normalizeAngle(angle: Float): Float
 		return angle - TWO_PI * Math.floor((angle + PI) * ONE_OVER_TWO_PI);
+
+	/**
+		@return `true` if the absolute value of the difference of `a` and `b` is less than `EPSILON`.
+	**/
+	public static extern inline function nearlyEqual(a: Float, b: Float): Bool
+		return Math.abs(a - b) < EPSILON;
 }
