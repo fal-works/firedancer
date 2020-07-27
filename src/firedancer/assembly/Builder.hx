@@ -97,26 +97,6 @@ class Builder {
 	}
 
 	/**
-		Creates a statement for operating vector with constant values.
-	**/
-	public static inline function operateVectorC(
-		opcode: Opcode.OpcodeOperateVectorC,
-		x: Float,
-		y: Float
-	): AssemblyStatement {
-		return new AssemblyStatement(opcode, [Vec(x, y)]);
-	}
-
-	/**
-		Creates a statement for operating vector with stacked/volatile values.
-	**/
-	public static inline function operateVectorNonC(
-		opcode: Opcode.OpcodeOperateVectorNonC
-	): AssemblyStatement {
-		return new AssemblyStatement(opcode, []);
-	}
-
-	/**
 		Creates a code instance that repeats `body` in runtime.
 	**/
 	public static function loop(body: AssemblyCode, count: UInt): AssemblyCode {
@@ -142,25 +122,6 @@ class Builder {
 		bodyFactory: (index: Int) -> AssemblyCode
 	): AssemblyCode {
 		return [for (i in iterator) bodyFactory(i)].flatten();
-	}
-
-	/**
-		Creates a statement for calculating relative vector.
-	**/
-	public static inline function calcRelativePositionCV(
-		opcode: Opcode.CalcRelativeVec,
-		x: Float,
-		y: Float
-	): AssemblyStatement {
-		return new AssemblyStatement(opcode, [Vec(x, y)]);
-	}
-
-	public static inline function multFloatVCS(multiplier: Float): AssemblyStatement {
-		return new AssemblyStatement(MultFloatVCS, [Float(multiplier)]);
-	}
-
-	public static inline function multVecVCS(multiplier: Float): AssemblyStatement {
-		return new AssemblyStatement(MultVecVCS, [Float(multiplier)]);
 	}
 
 	public static inline function fire(bytecodeId: Int): AssemblyStatement {
