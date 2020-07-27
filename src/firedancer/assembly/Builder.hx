@@ -137,7 +137,7 @@ class Builder {
 	/**
 		Creates a code instance with `bodyFactory` repeated in compile-time.
 	**/
-	public static function loopInlined(
+	public static function loopUnrolled(
 		bodyFactory: (index: UInt) -> AssemblyCode,
 		count: UInt
 	): AssemblyCode {

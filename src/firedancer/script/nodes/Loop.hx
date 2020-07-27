@@ -43,7 +43,7 @@ class FiniteLoop extends Loop {
 		final body = this.node.toAssembly();
 
 		return if (this.isInlined) {
-			loopInlined(_ -> body, count);
+			loopUnrolled(_ -> body, count);
 		} else {
 			loop(body, count);
 		}

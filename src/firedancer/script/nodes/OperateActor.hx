@@ -113,7 +113,7 @@ class OperateActorLinear implements ripper.Data implements AstNode {
 		}
 
 		final loopedBody = if (this.loopUnrolling) {
-			loopInlined(_ -> body, frames);
+			loopUnrolled(_ -> body, frames);
 		} else loop(body, frames);
 
 		return [
