@@ -4,18 +4,18 @@ package firedancer.script.nodes;
 	Repeats the provided `AstNode`.
 **/
 @:ripper_verified
-class Loop implements ripper.Data implements AstNode {
+class Loop extends AstNode implements ripper.Data {
 	public final node: AstNode;
 
 	public inline function count(count: UInt): FiniteLoop {
 		return new FiniteLoop(this.node, count);
 	}
 
-	public inline function containsWait(): Bool {
+	override public inline function containsWait(): Bool {
 		return this.node.containsWait();
 	}
 
-	public function toAssembly(context: CompileContext): AssemblyCode {
+	override public function toAssembly(context: CompileContext): AssemblyCode {
 		if (!this.containsWait()) throw "Infinite loop must contain Wait.";
 
 		final code = this.node.toAssembly(context);

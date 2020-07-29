@@ -1,6 +1,5 @@
 package firedancer.script;
 
-import firedancer.bytecode.Bytecode;
 import firedancer.script.nodes.List;
 
 /**
@@ -11,6 +10,12 @@ abstract Ast(AstNode) from AstNode to AstNode {
 	/**
 		Converts `nodes` to `Ast`.
 	**/
-	@:from public static inline function fromArray(nodes: std.Array<AstNode>): Ast
+	@:from public static inline function fromArray(nodes: Array<AstNode>): Ast
 		return new List(nodes);
+
+	/**
+		Converts `nodes` to `Ast`.
+	**/
+	@:from static inline function fromStdArray(nodes: std.Array<AstNode>): Ast
+		return fromArray(nodes);
 }

@@ -18,10 +18,17 @@ class CompileContext {
 	**/
 	final nameIndexMap = new Map<String, UInt>();
 
+	/**
+		Stack of injection code.
+		@see `pushInjectionCode()`
+	**/
+	final injectionStack: Array<AssemblyCode> = [];
+
 	public function new() {}
 
 	/**
-		Registers `code` in `this` context if absent.
+		Registers `code` in `this` context (if absent)
+		so that it can be retrieved by a specific ID number.
 		@return The ID for `code`.
 	**/
 	public function setCode(code: AssemblyCode): UInt {
@@ -50,6 +57,32 @@ class CompileContext {
 
 		return index;
 	}
+
+	/**
+		@return The entire injection code that have been pushed by `pushInjectionCode()`.
+		The order is reversed so that the last pushed code comes first.
+		@see `pushInjectionCode()`
+	**/
+	public inline function getInjectionCode(): AssemblyCode {
+		final code = this.injectionStack.copy();
+		code.reverse();
+		return code.flatten();
+	}
+
+	/**
+		Pushes `code` so that it is injected in every frame
+		(i.e. before every `Break` operation or some sort of equivalent)
+		within the current node list being compiled.
+		@param code
+	**/
+	public inline function pushInjectionCode(code: AssemblyCode): Void
+		this.injectionStack.push(code);
+
+	/**
+		Pops the injection code that was previously pushed by `pushInjectionCode()`.
+	**/
+	public inline function popInjectionCode(): Void
+		this.injectionStack.pop();
 
 	/**
 		Creates a `RuntimeContext` instance.

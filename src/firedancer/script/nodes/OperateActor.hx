@@ -10,7 +10,8 @@ import firedancer.bytecode.internal.Constants.LEN32;
 /**
 	Operates actor's attribute (e.g. position).
 **/
-class OperateActor implements ripper.Data implements AstNode {
+@:ripper_verified
+class OperateActor extends AstNode implements ripper.Data {
 	/**
 		Creates an `AssemblyCode` instance from `attribute` and `operation`.
 	**/
@@ -67,14 +68,15 @@ class OperateActor implements ripper.Data implements AstNode {
 	public inline function frames(frames: NInt)
 		return new OperateActorLinear(attribute, operation, frames);
 
-	public inline function containsWait(): Bool
+	override public inline function containsWait(): Bool
 		return false;
 
-	public function toAssembly(context: CompileContext): AssemblyCode
+	override public function toAssembly(context: CompileContext): AssemblyCode
 		return createAssembly(attribute, operation);
 }
 
-class OperateActorLinear implements ripper.Data implements AstNode {
+@:ripper_verified
+class OperateActorLinear extends AstNode implements ripper.Data {
 	final attribute: ActorAttribute;
 	final operation: ActorAttributeOperation;
 	final frames: NInt;
@@ -88,10 +90,10 @@ class OperateActorLinear implements ripper.Data implements AstNode {
 		return this;
 	}
 
-	public inline function containsWait(): Bool
+	override public inline function containsWait(): Bool
 		return true;
 
-	public function toAssembly(context: CompileContext): AssemblyCode {
+	override public function toAssembly(context: CompileContext): AssemblyCode {
 		final frames = this.frames;
 		var prepare: AssemblyCode;
 		var body: AssemblyCode;

@@ -8,7 +8,7 @@ import firedancer.script.expression.AzimuthExpression;
 	Sets actor's shot direction to the bearing to the target position.
 **/
 @:ripper_verified
-class Aim implements ripper.Data implements AstNode {
+class Aim extends AstNode implements ripper.Data {
 	var speed: Maybe<FloatExpression> = Maybe.none();
 
 	/**
@@ -19,10 +19,10 @@ class Aim implements ripper.Data implements AstNode {
 		return this;
 	}
 
-	public inline function containsWait(): Bool
+	override public inline function containsWait(): Bool
 		return false;
 
-	public function toAssembly(context: CompileContext): AssemblyCode {
+	override public function toAssembly(context: CompileContext): AssemblyCode {
 		final bearingToTarget = AzimuthExpression.Variable(LoadBearingToTargetV);
 		final node = new OperateActor(ShotVelocity, if (speed.isSome()) {
 			SetVector({ length: speed.unwrap(), angle: bearingToTarget });

@@ -17,6 +17,12 @@ abstract NInt(Int) to Int32 to Int to UInt {
 	@:from static extern inline function fromInt32(v: Int32): NInt
 		return fromInt(v);
 
+	public extern inline function int(): Int
+		return this;
+
+	public extern inline function uint(): UInt
+		return this;
+
 	extern inline function new(v:Int)
 		this = v;
 }

@@ -74,6 +74,13 @@ class Api {
 	}
 
 	/**
+		Runs `ast` each frame within the current node list.
+	**/
+	public static inline function eachFrame(ast: Ast): EachFrame {
+		return new EachFrame(ast);
+	}
+
+	/**
 		Compiles `Ast` or `AstNode` into `Bytecode`.
 	**/
 	public static inline function compile(namedAstMap: Map<String, Ast>): RuntimeContext {
