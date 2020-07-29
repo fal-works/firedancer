@@ -6,6 +6,12 @@ class Actor extends broker.entity.BasicBatchEntity {
 		Object for emitting new bullet.
 	**/
 	@:banker_chunkLevelFinal
+	var bytecodeTable: Vector<Bytecode>;
+
+	/**
+		Object for emitting new bullet.
+	**/
+	@:banker_chunkLevelFinal
 	var emitter: Emitter;
 
 	/**
@@ -110,6 +116,7 @@ class Actor extends broker.entity.BasicBatchEntity {
 	}
 
 	static function update(
+		bytecodeTable: Vector<Bytecode>,
 		sprite: BatchSprite,
 		x: WVec<Float>,
 		y: WVec<Float>,
@@ -131,7 +138,7 @@ class Actor extends broker.entity.BasicBatchEntity {
 			disusedSprites[disusedCount] = sprite;
 			++disusedCount;
 		} else {
-			Vm.run(thread, x, y, vx, vy, i, emitter, targetPosition);
+			Vm.run(bytecodeTable, thread, x, y, vx, vy, i, emitter, targetPosition);
 			x[i] += vx[i];
 			y[i] += vy[i];
 		}

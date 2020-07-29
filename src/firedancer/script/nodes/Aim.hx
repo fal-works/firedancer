@@ -22,12 +22,12 @@ class Aim implements ripper.Data implements AstNode {
 	public inline function containsWait(): Bool
 		return false;
 
-	public function toAssembly(): AssemblyCode {
+	public function toAssembly(context: CompileContext): AssemblyCode {
 		final bearingToTarget = AzimuthExpression.Variable(LoadBearingToTargetV);
 		final node = new OperateActor(ShotVelocity, if (speed.isSome()) {
 			SetVector({ length: speed.unwrap(), angle: bearingToTarget });
 		} else SetAngle(bearingToTarget));
 
-		return node.toAssembly();
+		return node.toAssembly(context);
 	}
 }

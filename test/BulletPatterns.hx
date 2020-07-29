@@ -10,12 +10,12 @@ class BulletPatterns {
 		])
 	];
 
-	static final aimPlayer = compile([
+	static final aimPlayer: Ast = [
 		position.cartesian.add(-200, 0),
 		velocity.set(10, 180),
 		speed.set(0).frames(60),
 		aimPlayerBody
-	]);
+	];
 
 	static final spiralBody: Ast = [
 		shot.velocity.set(5, 180),
@@ -26,13 +26,31 @@ class BulletPatterns {
 		])
 	];
 
-	static final spiral = compile([
+	static final spiral: Ast = [
 		velocity.set(10, 180),
 		speed.set(0).frames(60),
 		spiralBody
-	]);
+	];
 
-	static final sandbox = compile(loop([
+	static final fireWithPatternBody: Ast = [
+		shot.velocity.set(5, 180),
+		loop([
+			fire([
+				wait(30),
+				direction.add(-120)
+			]),
+			shot.direction.add(36),
+			wait(8)
+		])
+	];
+
+	static final fireWithPattern: Ast = [
+		velocity.set(10, 180),
+		speed.set(0).frames(60),
+		fireWithPatternBody
+	];
+
+	static final sandbox: Ast = loop([
 		wait(30),
 		shot.velocity.set(5, 180),
 		loop([fire(), wait(4)]).count(10),
@@ -45,7 +63,10 @@ class BulletPatterns {
 		velocity.set(5, 150),
 		wait(30),
 		velocity.set(5, 210)
-	]).count(2));
+	]).count(2);
 
-	public static final testPattern = spiral;
+	static final testAst = fireWithPattern; // Change this for testing
+
+	public static final context = compile(["test" => testAst]);
+	public static final testPattern = context.getBytecodeByName("test");
 }

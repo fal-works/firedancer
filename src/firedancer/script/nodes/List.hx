@@ -17,6 +17,6 @@ class List implements ripper.Data implements AstNode {
 		return found;
 	}
 
-	public function toAssembly(): AssemblyCode
-		return nodes.map(node -> node.toAssembly()).flatten();
+	public function toAssembly(context: CompileContext): AssemblyCode
+		return nodes.map(node -> node.toAssembly(context)).flatten();
 }

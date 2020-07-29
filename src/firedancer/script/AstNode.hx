@@ -14,5 +14,5 @@ interface AstNode {
 	/**
 		Converts the AST starting from `this` node to code in a virtual assembly language.
 	**/
-	function toAssembly(): AssemblyCode;
+	function toAssembly(context: CompileContext): AssemblyCode;
 }

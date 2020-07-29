@@ -1,8 +1,8 @@
 package firedancer.script;
 
 import firedancer.types.NInt;
+import firedancer.bytecode.RuntimeContext;
 import firedancer.script.nodes.*;
-import firedancer.bytecode.Bytecode;
 import firedancer.script.api_components.Position;
 import firedancer.script.api_components.Velocity;
 import firedancer.script.api_components.Shot;
@@ -76,13 +76,17 @@ class Api {
 	/**
 		Compiles `Ast` or `AstNode` into `Bytecode`.
 	**/
-	public static inline function compile(ast: Ast): Bytecode {
-		final assemblyCode = ast.toAssembly();
-		final bytecode = assemblyCode.compile();
-		#if debug
-		println('[ASSEMBLY]\n${assemblyCode.toString()}\n');
-		println('[BYTECODE]\n${bytecode.toHex()}\n');
-		#end
-		return bytecode;
+	public static inline function compile(namedAstMap: Map<String, Ast>): RuntimeContext {
+		final compileContext = new CompileContext();
+
+		for (name => ast in namedAstMap) {
+			final assemblyCode = ast.toAssembly(compileContext);
+			compileContext.setNamedCode(assemblyCode, name);
+			#if debug
+			println('[ASSEMBLY]\n${assemblyCode.toString()}\n');
+			#end
+		}
+
+		return compileContext.createRuntimeContext();
 	}
 }

@@ -15,13 +15,13 @@ class Loop implements ripper.Data implements AstNode {
 		return this.node.containsWait();
 	}
 
-	public function toAssembly(): AssemblyCode {
+	public function toAssembly(context: CompileContext): AssemblyCode {
 		if (!this.containsWait()) throw "Infinite loop must contain Wait.";
 
-		final body = this.node.toAssembly();
-		body.push(jumpBack(body.bytecodeLength()));
+		final code = this.node.toAssembly(context);
+		code.push(jumpBack(code.bytecodeLength()));
 
-		return body;
+		return code;
 	}
 }
 
@@ -38,14 +38,16 @@ class FiniteLoop extends Loop {
 		return this;
 	}
 
-	override public function toAssembly(): AssemblyCode {
+	override public function toAssembly(context: CompileContext): AssemblyCode {
 		final count = this.loopCount;
-		final body = this.node.toAssembly();
+		final body = this.node.toAssembly(context);
 
-		return if (this.isInlined) {
+		final code = if (this.isInlined) {
 			loopUnrolled(0...count, _ -> body);
 		} else {
 			loop(body, count);
 		}
+
+		return code;
 	}
 }

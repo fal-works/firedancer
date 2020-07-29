@@ -26,6 +26,7 @@ class ArmyBuilder {
 			chunkCount,
 			batch,
 			spriteFactory,
+			BulletPatterns.context.bytecodeTable,
 			emitter
 		);
 		return aosoa;

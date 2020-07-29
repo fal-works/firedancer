@@ -1,6 +1,7 @@
 package firedancer.bytecode;
 
 import haxe.Int32;
+import banker.vector.Vector as RVec;
 import banker.vector.WritableVector as Vec;
 import broker.geometry.Point;
 import firedancer.assembly.Opcode;
@@ -16,6 +17,7 @@ class Vm {
 	static extern inline final infiniteLoopCheckThreshold = 4096;
 
 	public static function run(
+		bytecodeTable: RVec<Bytecode>,
 		thread: Thread,
 		xVec: Vec<Float>,
 		yVec: Vec<Float>,
@@ -525,7 +527,7 @@ class Vm {
 				case Fire:
 					final bytecodeId = readCodeI32();
 					final bytecode = if (bytecodeId < 0) Maybe.none() else
-						Maybe.none(); // TODO: see table or some kind of that
+						Maybe.from(bytecodeTable[bytecodeId]);
 					emitter.emit(
 						xVec[vecIndex] + thread.shotX,
 						yVec[vecIndex] + thread.shotY,
@@ -549,7 +551,7 @@ class Vm {
 		println("");
 	}
 
-	public static function dryRun(bytecode: Bytecode): Void {
+	public static function dryRun(context: RuntimeContext, bytecode: Bytecode): Void {
 		final thread = new Thread(64);
 		thread.set(bytecode, 0, 0, 0, 0);
 		final xVec = Vec.fromArrayCopy([0.0]);
@@ -568,6 +570,7 @@ class Vm {
 
 			println('[frame $frame]');
 			Vm.run(
+				context.bytecodeTable,
 				thread,
 				xVec,
 				yVec,

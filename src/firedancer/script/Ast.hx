@@ -13,10 +13,4 @@ abstract Ast(AstNode) from AstNode to AstNode {
 	**/
 	@:from public static inline function fromArray(nodes: std.Array<AstNode>): Ast
 		return new List(nodes);
-
-	/**
-		Compiles `this` into `Bytecode`.
-	**/
-	public inline function compile(): Bytecode
-		return this.toAssembly().compile();
 }
