@@ -252,7 +252,7 @@ class Vm {
 
 		do {
 			if (codeLength <= codePos) {
-				thread.code = Maybe.none();
+				thread.deactivate();
 				return;
 			}
 

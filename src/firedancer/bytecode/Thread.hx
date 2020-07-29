@@ -10,6 +10,11 @@ import firedancer.common.Vec2DStatics.*;
 **/
 class Thread {
 	/**
+		`true` if `this` thread is currently in use.
+	**/
+	public var active: Bool;
+
+	/**
 		Bytecode to be run.
 	**/
 	public var code: Maybe<BytecodeData>;
@@ -58,6 +63,7 @@ class Thread {
 		@param stackCapacity The capacity of the stack in bytes.
 	**/
 	public function new(stackCapacity: UInt) {
+		this.active = false;
 		this.code = Maybe.none();
 		this.codeLength = UInt.zero;
 		this.codePos = UInt.zero;
@@ -73,19 +79,15 @@ class Thread {
 		Sets bytecode and initial shot position/velocity.
 	**/
 	public extern inline function set(
-		code: Maybe<Bytecode>,
+		code: Bytecode,
 		shotX: Float,
 		shotY: Float,
 		shotVx: Float,
 		shotVy: Float
 	): Void {
-		if (code.isSome()) {
-			this.code = Maybe.from(code.unwrap().data);
-			this.codeLength = code.unwrap().length;
-		} else {
-			this.code = Maybe.none();
-			this.codeLength = UInt.zero;
-		}
+		this.active = true;
+		this.code = Maybe.from(code.data);
+		this.codeLength = code.length;
 		this.codePos = UInt.zero;
 		this.stackSize = UInt.zero;
 		this.shotX = shotX;
@@ -104,17 +106,32 @@ class Thread {
 	}
 
 	/**
-		Resets `this` this.
+		Deactivates `this` thread and removes the bytecode attached.
 	**/
-	public extern inline function reset(): Void {
+	public extern inline function deactivate(): Void {
+		this.active = false;
 		this.code = Maybe.none();
-		this.codeLength = UInt.zero;
-		this.codePos = UInt.zero;
-		this.stackSize = UInt.zero;
+	}
+
+	/**
+		Resets shot position/velocity.
+	**/
+	public extern inline function resetShot(): Void {
 		this.shotX = 0.0;
 		this.shotY = 0.0;
 		this.shotVx = 0.0;
 		this.shotVy = 0.0;
+	}
+
+	/**
+		Resets all properties of `this` thread.
+	**/
+	public extern inline function reset(): Void {
+		this.deactivate();
+		this.codeLength = UInt.zero;
+		this.codePos = UInt.zero;
+		this.stackSize = UInt.zero;
+		this.resetShot();
 	}
 
 	/**

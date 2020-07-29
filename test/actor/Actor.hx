@@ -61,7 +61,7 @@ class Actor extends broker.entity.BasicBatchEntity {
 		y[i] = initialY;
 		vx[i] = initialVx;
 		vy[i] = initialVy;
-		thread.set(code, 0.0, 0.0, 0.0, 0.0);
+		if (code.isSome()) thread.set(code.unwrap(), 0.0, 0.0, 0.0, 0.0);
 		frameCount[i] = UInt.zero;
 		dead[i] = false;
 		usedSprites[usedCount] = sprite;
@@ -75,7 +75,7 @@ class Actor extends broker.entity.BasicBatchEntity {
 		y: WVec<Float>,
 		vx: WVec<Float>,
 		vy: WVec<Float>,
-		thread: WVec<Thread>,
+		thread: Thread,
 		frameCount: WVec<UInt>,
 		dead: WVec<Bool>,
 		i: Int,
@@ -91,7 +91,7 @@ class Actor extends broker.entity.BasicBatchEntity {
 		y[i] = initialY;
 		vx[i] = speed * Math.cos(direction);
 		vy[i] = speed * Math.sin(direction);
-		thread[i].set(code, 0.0, 0.0, 0.0, 0.0);
+		if (code.isSome()) thread.set(code.unwrap(), 0.0, 0.0, 0.0, 0.0);
 		frameCount[i] = UInt.zero;
 		dead[i] = false;
 		usedSprites[usedCount] = sprite;
