@@ -96,6 +96,30 @@ abstract ThreadList(Vector<Thread>) {
 		}
 	}
 
+	/**
+		Deactivates all threads.
+	**/
+	public extern inline function deactivateAll(): Void {
+		final len = this.length;
+		var i = UInt.zero;
+		while (i < len) {
+			this[i].deactivate();
+			++i;
+		}
+	}
+
+	/**
+		Deactivates all sub-threads.
+	**/
+	public extern inline function deactivateSubThreads(): Void {
+		final len = this.length;
+		var i = UInt.one;
+		while (i < len) {
+			this[i].deactivate();
+			++i;
+		}
+	}
+
 	extern inline function get_main()
 		return this[UInt.zero];
 }

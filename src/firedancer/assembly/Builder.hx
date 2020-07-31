@@ -144,4 +144,11 @@ class Builder {
 	public static inline function awaitThread(): AssemblyStatement {
 		return new AssemblyStatement(AwaitThread, []);
 	}
+
+	/**
+		Creates an `End` statement.
+	**/
+	public static inline function end(endCode: Int): AssemblyStatement {
+		return new AssemblyStatement(End, [Int(endCode)]);
+	}
 }

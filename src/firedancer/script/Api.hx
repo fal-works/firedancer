@@ -101,6 +101,18 @@ class Api {
 	}
 
 	/**
+		Ends running the bullet pattern with a specific end code
+		so that the end code is returned from the VM.
+
+		Normally the VM returns a default end code `0`.
+		`end()` is useful for returning another end code so that you can
+		branch the process according to that value (for example: kill the actor if `1` is returned).
+	**/
+	public static inline function end(endCode: Int): End {
+		return new End(endCode);
+	}
+
+	/**
 		@return New `RuntimeContext` instance that contains all `Bytecode` compiled.
 	**/
 	public static inline function compile(namedAstMap: Map<String, Ast>): RuntimeContext {

@@ -138,6 +138,7 @@ enum abstract Opcode(Int32) to Int to Int32 {
 			case Opcode.UseThread: UseThread;
 			case Opcode.UseThreadS: UseThreadS;
 			case Opcode.AwaitThread: AwaitThread;
+			case Opcode.End: End;
 			default: throw error(value);
 		}
 	}
@@ -539,6 +540,11 @@ enum abstract Opcode(Int32) to Int to Int32 {
 		- If not active, drops the thread ID from the stack and goes to next.
 	**/
 	final AwaitThread;
+
+	/**
+		Ends running bytecode and returns an end code specified by a given constant integer.
+	**/
+	final End;
 }
 
 class OpcodeExtension {
@@ -669,6 +675,7 @@ class OpcodeExtension {
 			case UseThread: "use_thread";
 			case UseThreadS: "use_thread_s";
 			case AwaitThread: "await_thread";
+			case End: "end";
 		}
 	}
 
@@ -725,6 +732,7 @@ class OpcodeExtension {
 			case Fire: [Int]; // bytecode ID or negative for null
 			case UseThread | UseThreadS: [Int]; // bytecode ID
 			case AwaitThread: [];
+			case End: [Int]; // end code
 		}
 	}
 

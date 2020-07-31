@@ -18,8 +18,8 @@ class Vm {
 	static extern inline final infiniteLoopCheckThreshold = 4096;
 
 	/**
-		Runs firedancer bytecode.
-		@return End code.
+		Runs firedancer bytecode for a specific actor.
+		@return `true` if the actor is to be
 	**/
 	public static function run(
 		bytecodeTable: RVec<Bytecode>,
@@ -568,6 +568,10 @@ class Vm {
 						} else {
 							dropInt();
 						}
+					case End:
+						final endCode = readCodeI32();
+						threads.deactivateAll();
+						return endCode;
 					case other:
 						#if debug
 						throw 'Unknown opcode: $other';

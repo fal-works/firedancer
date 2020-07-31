@@ -144,9 +144,13 @@ class Actor extends broker.entity.BasicBatchEntity {
 			disusedSprites[disusedCount] = sprite;
 			++disusedCount;
 		} else {
-			Vm.run(bytecodeTable, threads, x, y, vx, vy, i, emitter, targetPosition);
+			final endCode = Vm.run(bytecodeTable, threads, x, y, vx, vy, i, emitter, targetPosition);
 			x[i] += vx[i];
 			y[i] += vy[i];
+			switch endCode {
+				case VANISH: dead[i] = true;
+				default:
+			}
 		}
 
 		sprite.rotation += rotationVelocity;

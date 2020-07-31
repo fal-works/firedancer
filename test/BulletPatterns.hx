@@ -1,5 +1,6 @@
 import firedancer.script.Api.*;
 import firedancer.script.Ast;
+import FdEndCode.*;
 
 class BulletPatterns {
 	static final aimPlayer: Ast = [
@@ -70,6 +71,18 @@ class BulletPatterns {
 		])
 	];
 
+	static final vanishTest: Ast = [
+		shot.velocity.set(5, 180),
+		loop([
+			fire([
+				wait(30),
+				end(VANISH)
+			]),
+			shot.direction.add(12),
+			wait(1)
+		])
+	];
+
 	static final sandbox: Ast = loop([
 		wait(30),
 		shot.velocity.set(5, 180),
@@ -85,7 +98,7 @@ class BulletPatterns {
 		velocity.set(5, 210)
 	]).count(2);
 
-	static final testAst = test(parallelTest); // Change this for testing
+	static final testAst = test(vanishTest); // Change this for testing
 
 	public static final context = compile(["test" => testAst]);
 	public static final testPattern = context.getBytecodeByName("test");

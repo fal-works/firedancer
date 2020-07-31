@@ -16,3 +16,4 @@ import firedancer.bytecode.Vm;
 import firedancer.bytecode.ThreadList;
 import actor.Constants.*;
 import World.HabitableZone;
+import FdEndCode.*;
