@@ -2,7 +2,7 @@ import firedancer.script.Api.*;
 import firedancer.script.Ast;
 
 class BulletPatterns {
-	static final aimPlayerBody: Ast = [
+	static final aimPlayer: Ast = [
 		aim().shotSpeed(5),
 		loop([
 			fire(),
@@ -10,14 +10,7 @@ class BulletPatterns {
 		])
 	];
 
-	static final aimPlayer: Ast = [
-		position.cartesian.add(-200, 0),
-		velocity.set(10, 180),
-		speed.set(0).frames(60),
-		aimPlayerBody
-	];
-
-	static final spiralBody: Ast = [
+	static final spiral: Ast = [
 		shot.velocity.set(5, 180),
 		loop([
 			fire(),
@@ -26,13 +19,7 @@ class BulletPatterns {
 		])
 	];
 
-	static final spiral: Ast = [
-		velocity.set(10, 180),
-		speed.set(0).frames(60),
-		spiralBody
-	];
-
-	static final fireWithPatternBody: Ast = [
+	static final fireWithPattern: Ast = [
 		shot.velocity.set(5, 180),
 		loop([
 			fire([
@@ -44,13 +31,7 @@ class BulletPatterns {
 		])
 	];
 
-	static final fireWithPattern: Ast = [
-		velocity.set(10, 180),
-		speed.set(0).frames(60),
-		fireWithPatternBody
-	];
-
-	static final eachFrameTestBody: Ast = [
+	static final eachFrameTest: Ast = [
 		shot.velocity.set(5, 180),
 		eachFrame(shot.direction.add(4)),
 		loop([
@@ -59,13 +40,7 @@ class BulletPatterns {
 		])
 	];
 
-	static final eachFrameTest: Ast = [
-		velocity.set(10, 180),
-		speed.set(0).frames(60),
-		eachFrameTestBody
-	];
-
-	static final asyncTestBody: Ast = [
+	static final asyncTest: Ast = [
 		shot.velocity.set(5, 180),
 		async(
 			loop([
@@ -80,13 +55,7 @@ class BulletPatterns {
 		])
 	];
 
-	static final asyncTest: Ast = [
-		velocity.set(10, 180),
-		speed.set(0).frames(60),
-		asyncTestBody
-	];
-
-	static final parallelTestBody: Ast = [
+	static final parallelTest: Ast = [
 		shot.velocity.set(5, 180),
 		parallel([
 			loop([
@@ -99,12 +68,6 @@ class BulletPatterns {
 				wait(4)
 			])
 		])
-	];
-
-	static final parallelTest: Ast = [
-		velocity.set(10, 180),
-		speed.set(0).frames(60),
-		parallelTestBody
 	];
 
 	static final sandbox: Ast = loop([
@@ -122,8 +85,16 @@ class BulletPatterns {
 		velocity.set(5, 210)
 	]).count(2);
 
-	static final testAst = parallelTest; // Change this for testing
+	static final testAst = test(parallelTest); // Change this for testing
 
 	public static final context = compile(["test" => testAst]);
 	public static final testPattern = context.getBytecodeByName("test");
+
+	static function test(ast: Ast): Ast {
+		return [
+			velocity.set(10, 180),
+			speed.set(0).frames(60),
+			ast
+		];
+	}
 }
