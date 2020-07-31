@@ -553,6 +553,15 @@ class Vm {
 							thread.shotVy,
 							bytecode
 						);
+					case UseThread:
+						final bytecodeId = readCodeI32();
+						threads.useSubThread(
+							bytecodeTable[bytecodeId],
+							thread.shotX,
+							thread.shotY,
+							thread.shotVx,
+							thread.shotVy
+						);
 					case other:
 						#if debug
 						throw 'Unknown opcode: $other';

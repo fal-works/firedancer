@@ -65,6 +65,27 @@ class BulletPatterns {
 		eachFrameTestBody
 	];
 
+	static final asyncTestBody: Ast = [
+		shot.velocity.set(5, 180),
+		async(
+			loop([
+				fire(),
+				wait(8)
+			])
+		),
+		loop([
+			fire(),
+			shot.direction.add(32),
+			wait(4)
+		])
+	];
+
+	static final asyncTest: Ast = [
+		velocity.set(10, 180),
+		speed.set(0).frames(60),
+		asyncTestBody
+	];
+
 	static final sandbox: Ast = loop([
 		wait(30),
 		shot.velocity.set(5, 180),
@@ -80,7 +101,7 @@ class BulletPatterns {
 		velocity.set(5, 210)
 	]).count(2);
 
-	static final testAst = eachFrameTest; // Change this for testing
+	static final testAst = asyncTest; // Change this for testing
 
 	public static final context = compile(["test" => testAst]);
 	public static final testPattern = context.getBytecodeByName("test");

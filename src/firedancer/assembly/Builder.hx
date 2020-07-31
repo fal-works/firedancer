@@ -124,7 +124,17 @@ class Builder {
 		return [for (i in iterator) bodyFactory(i)].flatten();
 	}
 
+	/**
+		Creates a `Fire` statement.
+	**/
 	public static inline function fire(bytecodeId: Int): AssemblyStatement {
 		return new AssemblyStatement(Fire, [Int(bytecodeId)]);
+	}
+
+	/**
+		Creates a `UseThread` statement.
+	**/
+	public static inline function useThread(bytecodeId: Int): AssemblyStatement {
+		return new AssemblyStatement(UseThread, [Int(bytecodeId)]);
 	}
 }

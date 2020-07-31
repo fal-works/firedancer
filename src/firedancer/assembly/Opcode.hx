@@ -135,6 +135,7 @@ enum abstract Opcode(Int32) to Int to Int32 {
 			case Opcode.MultFloatVCS: MultFloatVCS;
 			case Opcode.MultVecVCS: MultVecVCS;
 			case Opcode.Fire: Fire;
+			case Opcode.UseThread: UseThread;
 			default: throw error(value);
 		}
 	}
@@ -511,7 +512,16 @@ enum abstract Opcode(Int32) to Int to Int32 {
 
 	// ---- other operations ----------------------------------------------------
 
+	/**
+		Emits a new actor with bytecode ID specified by a given constant integer
+		(if negative, emits without bytecode).
+	**/
 	final Fire;
+
+	/**
+		Activates a new thread with bytecode ID specified by a given constant integer.
+	**/
+	final UseThread;
 }
 
 class OpcodeExtension {
@@ -639,6 +649,7 @@ class OpcodeExtension {
 			case MultFloatVCS: "mult_float_vcs";
 			case MultVecVCS: "mult_vec_vcs";
 			case Fire: "fire";
+			case UseThread: "use_thread";
 		}
 	}
 
@@ -692,7 +703,8 @@ class OpcodeExtension {
 			case CalcRelativeShotDistanceVV | CalcRelativeShotBearingVV: [];
 			case CalcRelativeShotSpeedVV | CalcRelativeShotDirectionVV: [];
 			case MultFloatVCS | MultVecVCS: [Float]; // multiplier value
-			case Fire: [Int]; // bytecode ID
+			case Fire: [Int]; // bytecode ID or negative for null
+			case UseThread: [Int]; // bytecode ID
 		}
 	}
 

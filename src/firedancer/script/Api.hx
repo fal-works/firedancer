@@ -81,6 +81,16 @@ class Api {
 	}
 
 	/**
+		Runs any pattern in another thread.
+
+		The initial shot position/veocity are the same as that in the current thread,
+		but any change to shot position/velocity does not affect other threads.
+	**/
+	public static inline function async(ast: Ast): Async {
+		return new Async(ast);
+	}
+
+	/**
 		Compiles `Ast` or `AstNode` into `Bytecode`.
 	**/
 	public static inline function compile(namedAstMap: Map<String, Ast>): RuntimeContext {
