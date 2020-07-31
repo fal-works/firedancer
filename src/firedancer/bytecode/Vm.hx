@@ -630,15 +630,3 @@ class Vm {
 		#end
 	}
 }
-
-private class NullEmitter implements Emitter {
-	public function new() {}
-
-	public function emit(
-		x: Float,
-		y: Float,
-		vx: Float,
-		vy: Float,
-		code: Maybe<Bytecode>
-	): Void {}
-}

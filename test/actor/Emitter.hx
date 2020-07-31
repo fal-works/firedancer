@@ -4,10 +4,10 @@ package actor;
 	Object for emitting new bullet.
 **/
 @:ripper_verified
-class Emitter implements ripper.Data implements firedancer.types.Emitter {
+class Emitter extends firedancer.types.Emitter implements ripper.Data {
 	final aosoa: ActorAosoa;
 
-	public inline function emit(
+	override public function emit(
 		x: Float,
 		y: Float,
 		vx: Float,
