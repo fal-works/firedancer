@@ -136,6 +136,8 @@ enum abstract Opcode(Int32) to Int to Int32 {
 			case Opcode.MultVecVCS: MultVecVCS;
 			case Opcode.Fire: Fire;
 			case Opcode.UseThread: UseThread;
+			case Opcode.UseThreadS: UseThreadS;
+			case Opcode.AwaitThread: AwaitThread;
 			default: throw error(value);
 		}
 	}
@@ -522,6 +524,21 @@ enum abstract Opcode(Int32) to Int to Int32 {
 		Activates a new thread with bytecode ID specified by a given constant integer.
 	**/
 	final UseThread;
+
+	/**
+		Activates a new thread with bytecode ID specified by a given constant integer,
+		then pushes the thread ID to the stack.
+	**/
+	final UseThreadS;
+
+	/**
+		Peeks the top integer (which should be a thread ID) from the stack
+		and checks if the thread is currently active.
+		- If active, breaks the current frame.
+		  The next frame will begin with this `AwaitThread` opcode again.
+		- If not active, drops the thread ID from the stack and goes to next.
+	**/
+	final AwaitThread;
 }
 
 class OpcodeExtension {
@@ -650,6 +667,8 @@ class OpcodeExtension {
 			case MultVecVCS: "mult_vec_vcs";
 			case Fire: "fire";
 			case UseThread: "use_thread";
+			case UseThreadS: "use_thread_s";
+			case AwaitThread: "await_thread";
 		}
 	}
 
@@ -704,7 +723,8 @@ class OpcodeExtension {
 			case CalcRelativeShotSpeedVV | CalcRelativeShotDirectionVV: [];
 			case MultFloatVCS | MultVecVCS: [Float]; // multiplier value
 			case Fire: [Int]; // bytecode ID or negative for null
-			case UseThread: [Int]; // bytecode ID
+			case UseThread | UseThreadS: [Int]; // bytecode ID
+			case AwaitThread: [];
 		}
 	}
 

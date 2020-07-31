@@ -555,13 +555,18 @@ class Vm {
 						);
 					case UseThread:
 						final bytecodeId = readCodeI32();
-						threads.useSubThread(
-							bytecodeTable[bytecodeId],
-							thread.shotX,
-							thread.shotY,
-							thread.shotVx,
-							thread.shotVy
-						);
+						threads.useSubThread(bytecodeTable[bytecodeId], thread);
+					case UseThreadS:
+						final bytecodeId = readCodeI32();
+						final threadId = threads.useSubThread(bytecodeTable[bytecodeId], thread);
+						pushInt(threadId.int());
+					case AwaitThread:
+						if (threads[peekInt()].active) {
+							codePos -= LEN32;
+							break;
+						} else {
+							dropInt();
+						}
 					case other:
 						#if debug
 						throw 'Unknown opcode: $other';

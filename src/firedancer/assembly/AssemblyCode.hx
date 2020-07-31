@@ -10,7 +10,7 @@ private typedef Data = Array<AssemblyStatement>;
 **/
 @:notNull @:forward
 abstract AssemblyCode(Data) from Data to Data {
-	@:from static function fromStatement(statement: AssemblyStatement): AssemblyCode
+	@:from static extern inline function fromStatement(statement: AssemblyStatement): AssemblyCode
 		return [statement];
 
 	/**

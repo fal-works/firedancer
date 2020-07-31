@@ -137,4 +137,11 @@ class Builder {
 	public static inline function useThread(bytecodeId: Int): AssemblyStatement {
 		return new AssemblyStatement(UseThread, [Int(bytecodeId)]);
 	}
+
+	/**
+		Creates an `AwaitThread` statement.
+	**/
+	public static inline function awaitThread(): AssemblyStatement {
+		return new AssemblyStatement(AwaitThread, []);
+	}
 }

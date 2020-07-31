@@ -91,6 +91,16 @@ class Api {
 	}
 
 	/**
+		Runs the first pattern in the current thread and each subsequent one in a separate thread.
+		Then waits until all patterns are completed.
+
+		Any change to shot position/velocity made in a thread does not affect other threads.
+	**/
+	public static inline function parallel(asts: Array<Ast>): Parallel {
+		return new Parallel(asts);
+	}
+
+	/**
 		Compiles `Ast` or `AstNode` into `Bytecode`.
 	**/
 	public static inline function compile(namedAstMap: Map<String, Ast>): RuntimeContext {

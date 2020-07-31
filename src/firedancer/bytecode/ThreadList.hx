@@ -39,26 +39,26 @@ abstract ThreadList(Vector<Thread>) {
 	}
 
 	/**
-		Finds the first available sub-thread, and activates it
-		with given bytecode and shot position/velocity.
+		Finds the first available sub-thread and activates it with given bytecode.
 
 		Throws error if no available sub-thread is found.
+		@param currentThread The `Thread` from which the shot position/velocity should be copied.
 		@return The ID of the `Thread` that has been activated.
 	**/
-	public inline function useSubThread(
-		code: Bytecode,
-		shotX: Float,
-		shotY: Float,
-		shotVx: Float,
-		shotVy: Float
-	): UInt {
+	public function useSubThread(code: Bytecode, currentThread: Thread): UInt {
 		var index = MaybeUInt.none;
 		var i = UInt.one;
 		final len = this.length;
 		do {
 			final thread = this[i];
 			if (!thread.active) {
-				thread.set(code, shotX, shotY, shotVx, shotVy);
+				thread.set(
+					code,
+					currentThread.shotX,
+					currentThread.shotY,
+					currentThread.shotVx,
+					currentThread.shotVy
+				);
 				index = i;
 				break;
 			}
