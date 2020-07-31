@@ -13,5 +13,6 @@ import broker.draw.BatchDraw;
 import broker.draw.BatchSprite;
 import firedancer.bytecode.Bytecode;
 import firedancer.bytecode.Vm;
-import firedancer.bytecode.Thread;
+import firedancer.bytecode.ThreadList;
+import actor.Constants.*;
 import World.HabitableZone;
