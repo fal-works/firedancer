@@ -19,6 +19,7 @@ class Vm {
 
 	/**
 		Runs firedancer bytecode.
+		@return End code.
 	**/
 	public static function run(
 		bytecodeTable: RVec<Bytecode>,
@@ -30,7 +31,7 @@ class Vm {
 		vecIndex: UInt,
 		emitter: Emitter,
 		targetPosition: Point
-	): Void {
+	): Int {
 		var code: BytecodeData;
 		var codeLength: UInt;
 
@@ -271,7 +272,7 @@ class Vm {
 			do {
 				if (codeLength <= codePos) {
 					thread.deactivate();
-					return;
+					break;
 				}
 
 				switch readOp() {
@@ -582,6 +583,8 @@ class Vm {
 
 			println("");
 		}
+
+		return 0;
 	}
 
 	public static function dryRun(context: RuntimeContext, bytecode: Bytecode, stackCapacity: UInt = 256): Void {
