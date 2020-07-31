@@ -1,6 +1,5 @@
 package firedancer.script;
 
-import haxe.EnumFlags;
 import sneaker.exception.NotOverriddenException;
 import firedancer.assembly.AssemblyCode;
 
@@ -8,7 +7,7 @@ import firedancer.assembly.AssemblyCode;
 	A node of AST (abstract syntax tree) that represents a bullet hell pattern.
 **/
 class AstNode {
-	public var type(default, null): AstNodeType = Other;
+	public var nodeType(default, null): AstNodeType = Other;
 
 	/**
 		@return `true` if `this` or any descendant node contains `Wait` element.

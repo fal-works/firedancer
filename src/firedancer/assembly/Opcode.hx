@@ -135,6 +135,7 @@ enum abstract Opcode(Int32) to Int to Int32 {
 			case Opcode.MultFloatVCS: MultFloatVCS;
 			case Opcode.MultVecVCS: MultVecVCS;
 			case Opcode.Fire: Fire;
+			case Opcode.FireWithType: FireWithType;
 			case Opcode.UseThread: UseThread;
 			case Opcode.UseThreadS: UseThreadS;
 			case Opcode.AwaitThread: AwaitThread;
@@ -516,10 +517,21 @@ enum abstract Opcode(Int32) to Int to Int32 {
 	// ---- other operations ----------------------------------------------------
 
 	/**
-		Emits a new actor with bytecode ID specified by a given constant integer
-		(if negative, emits without bytecode).
+		Emits a new actor with a default type.
+
+		Argument:
+		- (int) Bytecode ID, or any negative value to emit without bytecode
 	**/
 	final Fire;
+
+	/**
+		Emits a new actor with a specified type.
+
+		Arguments:
+		1. (int) Bytecode ID, or any negative value to emit without bytecode
+		2. (int) Fire type
+	**/
+	final FireWithType;
 
 	/**
 		Activates a new thread with bytecode ID specified by a given constant integer.
@@ -672,6 +684,7 @@ class OpcodeExtension {
 			case MultFloatVCS: "mult_float_vcs";
 			case MultVecVCS: "mult_vec_vcs";
 			case Fire: "fire";
+			case FireWithType: "fire_with_type";
 			case UseThread: "use_thread";
 			case UseThreadS: "use_thread_s";
 			case AwaitThread: "await_thread";
@@ -730,6 +743,7 @@ class OpcodeExtension {
 			case CalcRelativeShotSpeedVV | CalcRelativeShotDirectionVV: [];
 			case MultFloatVCS | MultVecVCS: [Float]; // multiplier value
 			case Fire: [Int]; // bytecode ID or negative for null
+			case FireWithType: [Int, Int]; // 1. bytecode ID or negative for null, 2. Fire type
 			case UseThread | UseThreadS: [Int]; // bytecode ID
 			case AwaitThread: [];
 			case End: [Int]; // end code

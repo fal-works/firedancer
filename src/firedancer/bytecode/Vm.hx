@@ -552,6 +552,20 @@ class Vm {
 							yVec[vecIndex] + thread.shotY,
 							thread.shotVx,
 							thread.shotVy,
+							0,
+							bytecode
+						);
+					case FireWithType:
+						final bytecodeId = readCodeI32();
+						final bytecode = if (bytecodeId < 0) Maybe.none() else
+							Maybe.from(bytecodeTable[bytecodeId]);
+						final fireType = readCodeI32();
+						emitter.emit(
+							xVec[vecIndex] + thread.shotX,
+							yVec[vecIndex] + thread.shotY,
+							thread.shotVx,
+							thread.shotVy,
+							fireType,
 							bytecode
 						);
 					case UseThread:

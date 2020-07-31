@@ -25,7 +25,7 @@ class List extends AstNode implements ripper.Data {
 		for (i in 0...nodes.length) {
 			final node = nodes[i];
 
-			switch node.type {
+			switch node.nodeType {
 				case EachFrame(astToBeInjected):
 					context.pushInjectionCode(astToBeInjected.toAssembly(context));
 					++eachFrameNodeCount;

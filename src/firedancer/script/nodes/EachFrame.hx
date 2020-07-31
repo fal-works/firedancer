@@ -6,7 +6,7 @@ package firedancer.script.nodes;
 @:ripper_verified
 class EachFrame extends AstNode {
 	public function new(astToBeInjected: Ast)
-		this.type = EachFrame(astToBeInjected);
+		this.nodeType = EachFrame(astToBeInjected);
 
 	override public inline function containsWait(): Bool
 		return false;

@@ -6,6 +6,12 @@ package firedancer.script.nodes;
 @:ripper_verified
 class Fire extends AstNode implements ripper.Data {
 	public final pattern: Maybe<Ast>;
+	public var fireType(default, null): Int = 0;
+
+	public inline function type(fireType: Int): Fire {
+		this.fireType = fireType;
+		return this;
+	}
 
 	override public inline function containsWait(): Bool
 		return false;
@@ -15,6 +21,6 @@ class Fire extends AstNode implements ripper.Data {
 			context.setCode(pattern.unwrap().toAssembly(context));
 		};
 
-		return [fire(bytecodeId)];
+		return [fire(bytecodeId, fireType)];
 	}
 }

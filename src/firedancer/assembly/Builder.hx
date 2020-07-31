@@ -125,10 +125,17 @@ class Builder {
 	}
 
 	/**
-		Creates a `Fire` statement.
+		Creates a `Fire` or `FireWithType` statement.
 	**/
-	public static inline function fire(bytecodeId: Int): AssemblyStatement {
-		return new AssemblyStatement(Fire, [Int(bytecodeId)]);
+	public static inline function fire(
+		bytecodeId: Int,
+		fireType: Int = 0
+	): AssemblyStatement {
+		return if (fireType == 0) {
+			new AssemblyStatement(Fire, [Int(bytecodeId)]);
+		} else {
+			new AssemblyStatement(FireWithType, [Int(bytecodeId), Int(fireType)]);
+		}
 	}
 
 	/**
