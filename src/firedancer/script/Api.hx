@@ -101,7 +101,7 @@ class Api {
 	}
 
 	/**
-		Compiles `Ast` or `AstNode` into `Bytecode`.
+		@return New `RuntimeContext` instance that contains all `Bytecode` compiled.
 	**/
 	public static inline function compile(namedAstMap: Map<String, Ast>): RuntimeContext {
 		final compileContext = new CompileContext();
