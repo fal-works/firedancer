@@ -19,6 +19,12 @@ abstract Bytecode(Bytes) from Bytes to Bytes {
 	**/
 	public var data(get, never): BytecodeData;
 
+	/**
+		@return Hexadecimal representation of `this` with each byte separated.
+	**/
+	public inline function toString(): String
+		return this.toHex();
+
 	extern inline function get_data()
 		return this.data;
 }
