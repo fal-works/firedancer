@@ -1,8 +1,8 @@
 package firedancer.bytecode;
 
 import banker.binary.ByteStackData;
-import firedancer.common.MathStatics.hypot;
-import firedancer.common.MathStatics.atan2;
+import reckoner.Geometry.hypot;
+import reckoner.Geometry.atan2;
 import firedancer.common.Vec2DStatics.*;
 
 /**

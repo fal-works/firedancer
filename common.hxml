@@ -8,6 +8,7 @@
 -main Main
 
 -lib broker
+-lib reckoner
 -lib firedancer
 -lib heaps
 

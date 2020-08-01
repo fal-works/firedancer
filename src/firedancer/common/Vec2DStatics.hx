@@ -1,9 +1,9 @@
 package firedancer.common;
 
-import firedancer.types.TmpVec2DPolar;
-import firedancer.types.TmpVec2D;
-import firedancer.common.MathStatics.hypot;
-import firedancer.common.MathStatics.atan2;
+import reckoner.TmpVec2D;
+import reckoner.TmpVec2DPolar;
+import reckoner.Geometry.hypot;
+import reckoner.Geometry.atan2;
 
 /**
 	Static functions for 2D vector.

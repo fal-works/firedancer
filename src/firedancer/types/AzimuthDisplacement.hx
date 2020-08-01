@@ -1,6 +1,6 @@
 package firedancer.types;
 
-import firedancer.common.MathStatics;
+import reckoner.Geometry;
 
 /**
 	Displacement of `Azimuth`.
@@ -13,7 +13,7 @@ abstract AzimuthDisplacement(Float) {
 	@:from public static extern inline function fromDegrees(
 		degrees: Float
 	): AzimuthDisplacement {
-		return new AzimuthDisplacement(MathStatics.DEG_TO_RAD * degrees);
+		return new AzimuthDisplacement(Geometry.degreesToRadians(degrees));
 	}
 
 	@:op(A + B) extern inline function plus(

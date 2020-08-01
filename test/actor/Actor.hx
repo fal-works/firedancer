@@ -92,8 +92,8 @@ class Actor extends broker.entity.BasicBatchEntity {
 	): Void {
 		x[i] = initialX;
 		y[i] = initialY;
-		vx[i] = speed * Math.cos(direction);
-		vy[i] = speed * Math.sin(direction);
+		vx[i] = speed * cos(direction);
+		vy[i] = speed * sin(direction);
 
 		if (code.isSome()) threads.set(code.unwrap());
 		else threads.reset();

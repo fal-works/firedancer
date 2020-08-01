@@ -1,7 +1,7 @@
 package firedancer.types;
 
-import firedancer.common.MathStatics;
-import firedancer.common.MathStatics.nearlyEqual;
+import reckoner.Geometry;
+import reckoner.Numeric.nearlyEqual;
 
 /**
 	Azimuth value.
@@ -17,7 +17,7 @@ abstract Azimuth(Float) {
 		Creates an `Azimuth` value from degrees (north-based and clockwise, 360 for a full rotation).
 	**/
 	@:from public static extern inline function fromDegrees(degrees: Float): Azimuth {
-		return new Azimuth(MathStatics.DEG_TO_RAD * (degrees - 90.0));
+		return new Azimuth(Geometry.degreesToRadians(degrees - 90.0));
 	}
 
 	@:commutative @:op(A + B) static extern inline function plus(
@@ -45,7 +45,7 @@ abstract Azimuth(Float) {
 		Should not be used in runtime as this also does some error correction.
 	**/
 	public function cos(): Float {
-		final value = MathStatics.cos(toRadians());
+		final value = Geometry.cos(toRadians());
 
 		return if (nearlyEqual(value, 0.0)) 0.0;
 		else if (nearlyEqual(value, 1.0)) 1.0;
@@ -61,7 +61,7 @@ abstract Azimuth(Float) {
 		Should not be used in runtime as this also does some error correction.
 	**/
 	public function sin(): Float {
-		final value = MathStatics.sin(toRadians());
+		final value = Geometry.sin(toRadians());
 
 		return if (nearlyEqual(value, 0.0)) 0.0;
 		else if (nearlyEqual(value, 1.0)) 1.0;
@@ -72,5 +72,5 @@ abstract Azimuth(Float) {
 	}
 
 	extern inline function new(radians: Float)
-		this = MathStatics.normalizeAngle(radians);
+		this = Geometry.normalizeAngle(radians);
 }

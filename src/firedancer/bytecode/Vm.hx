@@ -8,7 +8,7 @@ import broker.geometry.Point;
 import firedancer.assembly.Opcode;
 import firedancer.types.Emitter;
 import firedancer.bytecode.internal.Constants.*;
-import firedancer.common.MathStatics.*;
+import reckoner.Geometry.*;
 import firedancer.common.Vec2DStatics.*;
 
 /**
