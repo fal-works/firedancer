@@ -9,6 +9,7 @@ import firedancer.assembly.Opcode;
 import firedancer.types.Emitter;
 import firedancer.bytecode.internal.Constants.*;
 import reckoner.Geometry.*;
+import reckoner.Random;
 import firedancer.common.Vec2DStatics.*;
 
 /**
@@ -340,6 +341,10 @@ class Vm {
 						setVolVec(volFloatPrev, volFloat);
 					case CastPolarVV:
 						setVolVec(volFloatPrev * cos(volFloat), volFloatPrev * sin(volFloat));
+					case RandomFloatCV:
+						setVolFloat(Random.float(readCodeF64()));
+					case RandomFloatVV:
+						setVolFloat(Random.float(volFloat));
 					case SetPositionC:
 						setPosition(readCodeF64(), readCodeF64());
 					case AddPositionC:

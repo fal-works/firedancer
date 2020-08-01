@@ -40,6 +40,8 @@ enum abstract Opcode(Int) to Int {
 			case Opcode.LoadBearingToTargetV: LoadBearingToTargetV;
 			case Opcode.CastCartesianVV: CastCartesianVV;
 			case Opcode.CastPolarVV: CastPolarVV;
+			case Opcode.RandomFloatCV: RandomFloatCV;
+			case Opcode.RandomFloatVV: RandomFloatVV;
 			case Opcode.SetPositionC: SetPositionC;
 			case Opcode.AddPositionC: AddPositionC;
 			case Opcode.SetVelocityC: SetVelocityC;
@@ -294,6 +296,18 @@ enum abstract Opcode(Int) to Int {
 		assigns their cartesian representation to the volatile vector.
 	**/
 	final CastPolarVV;
+
+	/**
+		Multiplies the given constant float by a random value in range `[0, 1)`
+		and assigns it to the volatile float.
+	**/
+	final RandomFloatCV;
+
+	/**
+		Multiplies the current volatile float by a random value in range `[0, 1)`
+		and reassigns it to the volatile float.
+	**/
+	final RandomFloatVV;
 
 	// ---- read/write/calc actor data ------------------------------------------
 
@@ -592,6 +606,8 @@ class OpcodeExtension {
 			case LoadBearingToTargetV: "load_bearing_to_target_v";
 			case CastCartesianVV: "cast_cartesian_vv";
 			case CastPolarVV: "cast_polar_vv";
+			case RandomFloatCV: "random_float_cv";
+			case RandomFloatVV: "random_float_vv";
 			case SetPositionC: "set_position_c";
 			case AddPositionC: "add_position_c";
 			case SetVelocityC: "set_velocity_c";
@@ -717,6 +733,8 @@ class OpcodeExtension {
 			case LoadTargetPositionV | LoadTargetXV | LoadTargetYV: [];
 			case LoadBearingToTargetV: [];
 			case CastCartesianVV | CastPolarVV: [];
+			case RandomFloatCV: [Float];
+			case RandomFloatVV: [];
 			case SetPositionC | AddPositionC | SetVelocityC | AddVelocityC: [Vec];
 			case SetPositionS | AddPositionS | SetVelocityS | AddVelocityS: [];
 			case SetPositionV | AddPositionV | SetVelocityV | AddVelocityV: [];
