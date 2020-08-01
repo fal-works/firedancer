@@ -60,10 +60,10 @@ class Vm {
 			setVolY(y);
 		}
 
-		inline function readOp(): Int32 {
-			final opcode = code.getI32(codePos);
+		inline function readOp(): Int {
+			final opcode: Int = code.getUI8(codePos);
 			println('${Opcode.from(opcode).toString()} (pos: $codePos)');
-			codePos += LEN32;
+			codePos += Opcode.size;
 			return opcode;
 		}
 
@@ -290,7 +290,7 @@ class Vm {
 					case CountDownBreak:
 						if (0 != peekInt()) {
 							decrement();
-							codePos -= LEN32;
+							codePos -= Opcode.size;
 							break;
 						} else {
 							dropInt();
@@ -577,7 +577,7 @@ class Vm {
 						pushInt(threadId.int());
 					case AwaitThread:
 						if (threads[peekInt()].active) {
-							codePos -= LEN32;
+							codePos -= Opcode.size;
 							break;
 						} else {
 							dropInt();

@@ -21,7 +21,7 @@ abstract WordArray(Data) from Data to Data {
 		for (i in 0...this.length) {
 			final unit = this[i];
 			length += switch unit {
-				case Opcode(_): LEN32;
+				case Opcode(_): Opcode.size;
 				case Int(_): LEN32;
 				case Float(_): LEN64;
 			}
@@ -39,8 +39,8 @@ abstract WordArray(Data) from Data to Data {
 		var pos = UInt.zero;
 
 		inline function instruction(code: Opcode): Void {
-			data.setI32(pos, code);
-			pos += LEN32;
+			data.setUI8(pos, code.int());
+			pos += Opcode.size;
 		}
 
 		inline function int32(v: Int32): Void {

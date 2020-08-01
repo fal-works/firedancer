@@ -1,20 +1,20 @@
 package firedancer.assembly;
 
-import haxe.Int32;
-
 /**
 	Value that specifies an operation to be performed.
 **/
 @:using(firedancer.assembly.Opcode.OpcodeExtension)
-enum abstract Opcode(Int32) to Int to Int32 {
-	static function error(v: Int32): String
+enum abstract Opcode(Int) to Int {
+	public static extern inline final size = UInt.one;
+
+	static function error(v: Int): String
 		return 'Unknown opcode: $v';
 
 	/**
 		Converts `value` to `Opcode`.
 		Throws error if `value` does not match any `Opcode` values.
 	**/
-	public static inline function from(value: Int32): Opcode {
+	public static inline function from(value: Int): Opcode {
 		return switch value {
 			case Opcode.Break: Break;
 			case Opcode.CountDownBreak: CountDownBreak;
@@ -557,6 +557,9 @@ enum abstract Opcode(Int32) to Int to Int32 {
 		Ends running bytecode and returns an end code specified by a given constant integer.
 	**/
 	final End;
+
+	public extern inline function int(): Int
+		return this;
 }
 
 class OpcodeExtension {

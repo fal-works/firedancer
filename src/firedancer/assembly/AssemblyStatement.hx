@@ -53,7 +53,7 @@ private class Data implements ripper.Data {
 	public final operands: Array<Operand>;
 
 	public function bytecodeLength(): UInt {
-		var len = LEN32;
+		var len = Opcode.size;
 
 		for (i in 0...operands.length) {
 			len += switch operands[i] {

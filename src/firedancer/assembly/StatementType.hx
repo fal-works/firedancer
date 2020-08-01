@@ -6,8 +6,6 @@ import banker.binary.internal.Constants.*;
 	Object for specifying operand types of any `AssemblyStatement`.
 **/
 abstract StatementType(Array<OperandType>) from Array<OperandType> {
-	static extern inline final opcodeBytecodeLength = LEN32;
-
 	/**
 		Casts `this` to the underlying type (an array of `OperandType`).
 	**/
@@ -18,7 +16,7 @@ abstract StatementType(Array<OperandType>) from Array<OperandType> {
 		Calculates the bytecode length in bytes that is required for a single `AssemblyStatement`.
 	**/
 	public function bytecodeLength(): UInt {
-		var len = opcodeBytecodeLength;
+		var len = Opcode.size;
 
 		for (i in 0...this.length) len += switch this[i] {
 			case Int: LEN32;
