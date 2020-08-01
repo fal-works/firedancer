@@ -20,6 +20,10 @@ enum abstract Opcode(Int) to Int {
 			case Opcode.CountDownBreak: CountDownBreak;
 			case Opcode.Jump: Jump;
 			case Opcode.CountDownJump: CountDownJump;
+			case Opcode.UseThread: UseThread;
+			case Opcode.UseThreadS: UseThreadS;
+			case Opcode.AwaitThread: AwaitThread;
+			case Opcode.End: End;
 			case Opcode.PushInt: PushInt;
 			case Opcode.PeekFloat: PeekFloat;
 			case Opcode.DropFloat: DropFloat;
@@ -136,10 +140,6 @@ enum abstract Opcode(Int) to Int {
 			case Opcode.MultVecVCS: MultVecVCS;
 			case Opcode.Fire: Fire;
 			case Opcode.FireWithType: FireWithType;
-			case Opcode.UseThread: UseThread;
-			case Opcode.UseThreadS: UseThreadS;
-			case Opcode.AwaitThread: AwaitThread;
-			case Opcode.End: End;
 			default: throw error(value);
 		}
 	}
@@ -173,6 +173,31 @@ enum abstract Opcode(Int) to Int {
 			adds a given constant value to the current bytecode position.
 	**/
 	final CountDownJump;
+
+	/**
+		Activates a new thread with bytecode ID specified by a given constant integer.
+	**/
+	final UseThread;
+
+	/**
+		Activates a new thread with bytecode ID specified by a given constant integer,
+		then pushes the thread ID to the stack.
+	**/
+	final UseThreadS;
+
+	/**
+		Peeks the top integer (which should be a thread ID) from the stack
+		and checks if the thread is currently active.
+		- If active, breaks the current frame.
+		  The next frame will begin with this `AwaitThread` opcode again.
+		- If not active, drops the thread ID from the stack and goes to next.
+	**/
+	final AwaitThread;
+
+	/**
+		Ends running bytecode and returns an end code specified by a given constant integer.
+	**/
+	final End;
 
 	// ---- read/write/calc values ----------------------------------------------
 
@@ -533,31 +558,6 @@ enum abstract Opcode(Int) to Int {
 	**/
 	final FireWithType;
 
-	/**
-		Activates a new thread with bytecode ID specified by a given constant integer.
-	**/
-	final UseThread;
-
-	/**
-		Activates a new thread with bytecode ID specified by a given constant integer,
-		then pushes the thread ID to the stack.
-	**/
-	final UseThreadS;
-
-	/**
-		Peeks the top integer (which should be a thread ID) from the stack
-		and checks if the thread is currently active.
-		- If active, breaks the current frame.
-		  The next frame will begin with this `AwaitThread` opcode again.
-		- If not active, drops the thread ID from the stack and goes to next.
-	**/
-	final AwaitThread;
-
-	/**
-		Ends running bytecode and returns an end code specified by a given constant integer.
-	**/
-	final End;
-
 	public extern inline function int(): Int
 		return this;
 }
@@ -572,6 +572,10 @@ class OpcodeExtension {
 			case CountDownBreak: "count_down_break";
 			case Jump: "jump";
 			case CountDownJump: "count_down_jump";
+			case UseThread: "use_thread";
+			case UseThreadS: "use_thread_s";
+			case AwaitThread: "await_thread";
+			case End: "end";
 			case PushInt: "push_int";
 			case PeekFloat: "peek_float";
 			case DropFloat: "drop_float";
@@ -688,10 +692,6 @@ class OpcodeExtension {
 			case MultVecVCS: "mult_vec_vcs";
 			case Fire: "fire";
 			case FireWithType: "fire_with_type";
-			case UseThread: "use_thread";
-			case UseThreadS: "use_thread_s";
-			case AwaitThread: "await_thread";
-			case End: "end";
 		}
 	}
 
@@ -704,6 +704,9 @@ class OpcodeExtension {
 			case CountDownBreak: [];
 			case Jump: [Int]; // bytecode length to jump
 			case CountDownJump: [Int]; // bytecode length to jump
+			case UseThread | UseThreadS: [Int]; // bytecode ID
+			case AwaitThread: [];
+			case End: [Int]; // end code
 			case PushInt: [Int]; // integer to push
 			case PeekFloat | PeekVec: [Int]; // bytes to be skipped from the stack top
 			case DropFloat | DropVec: [];
@@ -747,9 +750,6 @@ class OpcodeExtension {
 			case MultFloatVCS | MultVecVCS: [Float]; // multiplier value
 			case Fire: [Int]; // bytecode ID or negative for null
 			case FireWithType: [Int, Int]; // 1. bytecode ID or negative for null, 2. Fire type
-			case UseThread | UseThreadS: [Int]; // bytecode ID
-			case AwaitThread: [];
-			case End: [Int]; // end code
 		}
 	}
 
