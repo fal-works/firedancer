@@ -10,7 +10,11 @@ import firedancer.assembly.AssemblyCode;
 @:using(firedancer.script.expression.FloatExpression.FloatExpressionExtension)
 enum FloatExpression {
 	Constant(value: Float);
+	Runtime(expression: FloatRuntimeExpression);
+}
 
+@:using(firedancer.script.expression.FloatExpression.FloatRuntimeExpressionExtension)
+enum FloatRuntimeExpression {
 	/**
 		@param loadV `Opcode` for loading the value to the current volatile float.
 	**/
@@ -25,8 +29,8 @@ class FloatExpressionExtension {
 		return switch _this {
 			case Constant(value):
 				new AssemblyStatement(LoadFloatCV, [Float(value)]);
-			case Variable(loadV):
-				new AssemblyStatement(loadV, []);
+			case Runtime(expression):
+				expression.loadToVolatileFloat();
 		}
 	}
 
@@ -41,12 +45,22 @@ class FloatExpressionExtension {
 	): AssemblyCode {
 		return switch _this {
 			case Constant(value):
-				new AssemblyStatement(constantOpcode,	[Float(value)]);
-			case Variable(loadV):
-				[
-					new AssemblyStatement(loadV, []),
-					new AssemblyStatement(volatileOpcode, [])
-				];
+				new AssemblyStatement(constantOpcode, [Float(value)]);
+			case Runtime(expression):
+				final code = expression.loadToVolatileFloat();
+				code.push(new AssemblyStatement(volatileOpcode, []));
+				code;
+		}
+	}
+}
+
+class FloatRuntimeExpressionExtension {
+	/**
+		Creates an `AssemblyCode` that assigns `this` value to the current volatile float.
+	**/
+	public static function loadToVolatileFloat(_this: FloatRuntimeExpression): AssemblyCode {
+		return switch _this {
+			case Variable(loadV): new AssemblyStatement(loadV, []);
 		}
 	}
 }

@@ -254,17 +254,15 @@ class ActorAttributeOperationExtension {
 						};
 						final operands:Array<Operand> = [Float(value)];
 						calcRelative = statement(opcode, operands);
-					case Variable(loadVolatileOpcode):
+					case Runtime(expression):
 						final calcRelativeVV = switch attribute {
 							case Position: CalcRelativeDistanceVV;
 							case Velocity: CalcRelativeSpeedVV;
 							case ShotPosition: CalcRelativeShotDistanceVV;
 							case ShotVelocity: CalcRelativeShotDirectionVV;
 						}
-						calcRelative = [
-							statement(loadVolatileOpcode),
-							statement(calcRelativeVV)
-						];
+						calcRelative = expression.loadToVolatileFloat();
+						calcRelative.push(statement(calcRelativeVV));
 				}
 			case SetAngle(arg):
 				multChangeVCS = statement(MultFloatVCS, [Float(1.0 / frames)]);
@@ -288,17 +286,15 @@ class ActorAttributeOperationExtension {
 						};
 						final operands:Array<Operand> = [Float(value.toRadians())];
 						calcRelative = statement(opcode, operands);
-					case Variable(loadVolatileOpcode):
+					case Runtime(expression):
 						final calcRelativeVV = switch attribute {
 							case Position: CalcRelativeBearingVV;
 							case Velocity: CalcRelativeDirectionVV;
 							case ShotPosition: CalcRelativeShotBearingVV;
 							case ShotVelocity: CalcRelativeShotDirectionVV;
 						}
-						calcRelative = [
-							statement(loadVolatileOpcode),
-							statement(calcRelativeVV)
-						];
+						calcRelative = expression.toFloat().loadToVolatileFloat();
+						calcRelative.push(statement(calcRelativeVV));
 				}
 			default: throw "Unsupported operation.";
 		}

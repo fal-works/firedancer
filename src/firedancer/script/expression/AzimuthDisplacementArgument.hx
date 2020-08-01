@@ -23,7 +23,7 @@ abstract AzimuthDisplacementArgument(
 	@:op(A / B) public extern inline function divide(divisor: Float): AzimuthDisplacementArgument {
 		return switch this {
 			case Constant(value): value / divisor;
-			case Variable(_): throw "Not yet implemented.";
+			case Runtime(_): throw "Not yet implemented.";
 		}
 	}
 

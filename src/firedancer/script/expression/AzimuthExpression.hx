@@ -3,6 +3,7 @@ package firedancer.script.expression;
 import firedancer.assembly.Opcode;
 import firedancer.assembly.AssemblyCode;
 import firedancer.types.Azimuth;
+import firedancer.script.expression.FloatExpression;
 
 /**
 	Expression representing any `Azimuth` value.
@@ -10,7 +11,11 @@ import firedancer.types.Azimuth;
 @:using(firedancer.script.expression.AzimuthExpression.AzimuthExpressionExtension)
 enum AzimuthExpression {
 	Constant(value: Azimuth);
+	Runtime(expression: AzimuthRuntimeExpression);
+}
 
+@:using(firedancer.script.expression.AzimuthExpression.AzimuthRuntimeExpressionExtension)
+enum AzimuthRuntimeExpression {
 	/**
 		@param loadV `Opcode` for loading the value to the current volatile float.
 	**/
@@ -24,7 +29,10 @@ class AzimuthExpressionExtension {
 	public static inline function toFloat(_this: AzimuthExpression): FloatArgument {
 		return switch _this {
 			case Constant(value): value.toRadians();
-			case Variable(loadV): FloatExpression.Variable(loadV);
+			case Runtime(expression):
+				switch expression {
+					case Variable(loadV): FloatExpression.Runtime(Variable(loadV));
+				}
 		}
 	}
 
@@ -38,5 +46,18 @@ class AzimuthExpressionExtension {
 		volatileOpcode: Opcode
 	): AssemblyCode {
 		return _this.toFloat().use(constantOpcode, volatileOpcode);
+	}
+}
+
+class AzimuthRuntimeExpressionExtension {
+	/**
+		Converts `this` to `FloatRuntimeExpression`.
+	**/
+	public static inline function toFloat(
+		_this: AzimuthRuntimeExpression
+	): FloatRuntimeExpression {
+		return switch _this {
+			case Variable(loadV): Variable(loadV);
+		}
 	}
 }
