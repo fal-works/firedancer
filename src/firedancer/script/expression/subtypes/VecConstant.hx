@@ -11,24 +11,25 @@ import firedancer.assembly.AssemblyCode;
 **/
 @:notNull @:forward
 abstract VecConstant(VecConstantEnum) from VecConstantEnum to VecConstantEnum {
-	@:from public static function fromCartesian(
-		args: { x: Float, y: Float }
-	): VecConstant
-		return VecConstantEnum.Cartesian(FloatLikeConstantEnum.Float(args.x), FloatLikeConstantEnum.Float(args.y));
+	@:from public static function fromCartesian(args: { x: Float, y: Float }): VecConstant
+		return VecConstantEnum.Cartesian(
+			FloatLikeConstantEnum.Float(args.x),
+			FloatLikeConstantEnum.Float(args.y)
+		);
 
 	@:from public static function fromPolar(
 		args: { length: Float, angle: Azimuth }
 	): VecConstant {
 		return VecConstantEnum.Polar(
 			FloatLikeConstantEnum.Float(args.length),
-			FloatLikeConstantEnum.Azimuth(args.angle)
+			FloatLikeConstantEnum.Angle(args.angle.toAngle())
 		);
 	}
 
 	@:to public function toOperand(): ConstantOperand {
 		return switch this {
 			case Cartesian(x, y):
-				Vec(x, y);
+				Vec(x.toFloat(), y.toFloat());
 			case Polar(length, angle):
 				final vec = angle.toAzimuth().toVec2D(length.toFloat());
 				Vec(vec.x, vec.y);

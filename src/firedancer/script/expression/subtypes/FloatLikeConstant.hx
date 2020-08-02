@@ -2,7 +2,7 @@ package firedancer.script.expression.subtypes;
 
 import firedancer.assembly.ConstantOperand;
 import firedancer.types.Azimuth;
-import firedancer.types.AzimuthDisplacement;
+import firedancer.types.Angle;
 
 /**
 	Abstract over `FloatLikeConstantEnum` that can be implicitly cast from/to other types.
@@ -17,37 +17,20 @@ abstract FloatLikeConstant(
 	@:from static extern inline function fromConstantInt(value: Int): FloatLikeConstant
 		return fromConstant(value);
 
-	@:from public static extern inline function fromAzimuth(
-		value: Azimuth
-	): FloatLikeConstant
-		return FloatLikeConstantEnum.Azimuth(value);
+	@:from public static extern inline function fromAngle(value: Angle): FloatLikeConstant
+		return FloatLikeConstantEnum.Angle(value);
 
-	@:from public static extern inline function fromAzimuthDisplacement(
-		value: AzimuthDisplacement
-	): FloatLikeConstant
-		return FloatLikeConstantEnum.AzimuthDisplacement(value);
-
-	@:to public function toFloat(): Float {
+	public function toFloat(): Float {
 		return switch this {
 			case Float(value): value;
-			case Azimuth(value): value.toRadians();
-			case AzimuthDisplacement(value): value.toRadians();
+			case Angle(value): value.toRadians();
 		}
 	}
 
-	@:to public function toAzimuth(): Azimuth {
+	public function toAzimuth(): Azimuth {
 		return switch this {
 			case Float(value): value;
-			case Azimuth(value): value;
-			case AzimuthDisplacement(value): Azimuth.zero + value;
-		}
-	}
-
-	@:to public function toAzimuthDisplacement(): AzimuthDisplacement {
-		return switch this {
-			case Float(value): value;
-			case Azimuth(value): throw "Cannot convert Azimuth to AzimuthDisplacement.";
-			case AzimuthDisplacement(value): value;
+			case Angle(value): Azimuth.zero + value;
 		}
 	}
 
@@ -59,20 +42,12 @@ abstract FloatLikeConstant(
 			case Float(valueA):
 				switch other.toEnum() {
 					case Float(valueB): valueA + valueB;
-					case Azimuth(_): throw "Cannot add Float and Azimuth.";
-					case AzimuthDisplacement(valueB): valueA + valueB.toDegrees();
+					case Angle(valueB): valueA + valueB.toDegrees();
 				}
-			case Azimuth(valueA):
-				switch other.toEnum() {
-					case Float(_): throw "Cannot add Azimuth and Float.";
-					case Azimuth(_): throw "Cannot add Azimuth values.";
-					case AzimuthDisplacement(valueB): valueA + valueB;
-				}
-			case AzimuthDisplacement(valueA):
+			case Angle(valueA):
 				switch other.toEnum() {
 					case Float(valueB): valueA + valueB;
-					case Azimuth(valueB): valueA + valueB;
-					case AzimuthDisplacement(valueB): valueA + valueB;
+					case Angle(valueB): valueA + valueB;
 				}
 		}
 	}
@@ -80,8 +55,7 @@ abstract FloatLikeConstant(
 	@:op(A / B) function divide(divisor: Float): FloatLikeConstant {
 		return switch this {
 			case Float(value): FloatLikeConstantEnum.Float(value / divisor);
-			case Azimuth(_): throw "Cannot divide Azimuth value.";
-			case AzimuthDisplacement(value): FloatLikeConstantEnum.AzimuthDisplacement(value / divisor);
+			case Angle(value): FloatLikeConstantEnum.Angle(value / divisor);
 		}
 	}
 

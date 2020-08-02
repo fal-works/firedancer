@@ -88,7 +88,7 @@ class Bearing {
 	/**
 		Adds `value` to the angle of position vector.
 	**/
-	public inline function add(value: AzimuthDisplacementExpression) {
+	public inline function add(value: AngleExpression) {
 		return new OperateActor(Position, AddAngle(value));
 	}
 }

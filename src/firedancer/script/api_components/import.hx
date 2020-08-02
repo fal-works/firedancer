@@ -4,5 +4,5 @@ import firedancer.types.Azimuth;
 import firedancer.script.nodes.OperateActor;
 import firedancer.script.expression.FloatExpression;
 import firedancer.script.expression.AzimuthExpression;
-import firedancer.script.expression.AzimuthDisplacementExpression;
+import firedancer.script.expression.AngleExpression;
 import firedancer.script.expression.VecExpression;

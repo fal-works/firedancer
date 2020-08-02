@@ -25,7 +25,7 @@ abstract VecExpression(VecExpressionEnum) from VecExpressionEnum to VecExpressio
 			case Constant(constX):
 				switch y {
 					case Constant(constY):
-						fromCartesianConstants({ x: constX, y: constY });
+						fromCartesianConstants({ x: constX.toFloat(), y: constY.toFloat() });
 					default:
 						VecExpressionEnum.Runtime(Cartesian(x, y));
 				}
@@ -49,7 +49,7 @@ abstract VecExpression(VecExpressionEnum) from VecExpressionEnum to VecExpressio
 			case Constant(constLength):
 				switch angle {
 					case Constant(constAngle):
-						fromPolarConstants({ length: constLength, angle: constAngle.toAzimuth() });
+						fromPolarConstants({ length: constLength.toFloat(), angle: constAngle.toAzimuth() });
 					default:
 						VecExpressionEnum.Runtime(Polar(length, angle));
 				}

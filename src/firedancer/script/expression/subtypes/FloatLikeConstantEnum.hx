@@ -1,13 +1,11 @@
 package firedancer.script.expression.subtypes;
 
-import firedancer.types.Azimuth;
-import firedancer.types.AzimuthDisplacement;
+import firedancer.types.Angle;
 
 /**
 	Constant expression of any float-like type.
 **/
 enum FloatLikeConstantEnum {
 	Float(value: Float);
-	Azimuth(value: Azimuth);
-	AzimuthDisplacement(value: AzimuthDisplacement);
+	Angle(value: Angle);
 }

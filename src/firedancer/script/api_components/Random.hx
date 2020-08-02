@@ -22,10 +22,10 @@ class Random {
 	/**
 		Gets a random angle in range `[0, 360)`.
 	**/
-	public inline function angle(): AzimuthDisplacementExpression {
+	public inline function angle(): AngleExpression {
 		return FloatLikeExpressionEnum.Runtime(UnaryOperator({
 			operateFloatCV: RandomFloatCV,
 			operateFloatVV: RandomFloatVV
-		}, AzimuthDisplacementExpression.fromConstant(360)));
+		}, AngleExpression.fromConstant(360)));
 	}
 }

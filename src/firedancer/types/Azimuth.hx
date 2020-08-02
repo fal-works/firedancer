@@ -8,27 +8,28 @@ import reckoner.Numeric.nearlyEqual;
 	Azimuth value in degrees (north-based and clockwise, 360 for a full rotation).
 **/
 @:notNull @:forward(toRadians, toDegrees)
-abstract Azimuth(AzimuthDisplacement) from AzimuthDisplacement to AzimuthDisplacement {
+abstract Azimuth(Angle) from Angle {
 	/**
 		The north `Azimuth`.
 	**/
-	public static extern inline final zero = AzimuthDisplacement.zero;
+	public static extern inline final zero: Azimuth = 0.0;
 
 	/**
-		Creates an `Azimuth` value from degrees (north-based and clockwise, 360 for a full rotation).
+		Creates an `Azimuth` value from degrees.
 	**/
 	@:from public static extern inline function fromDegrees(degrees: Float): Azimuth
-		return AzimuthDisplacement.fromDegrees(degrees);
+		return Angle.fromDegrees(degrees);
 
-	@:commutative @:op(A + B) static extern inline function plus(
-		azimuth: Azimuth,
-		displacement: AzimuthDisplacement
-	): Azimuth {
-		return (azimuth : AzimuthDisplacement) + displacement;
-	}
+	@:op(A + B) @:commutative
+	static extern inline function add(azimuth: Azimuth, displacement: Angle): Azimuth
+		return azimuth.toAngle() + displacement;
 
-	@:op(A - B) extern inline function minus(displacement: AzimuthDisplacement): Azimuth
-		return this - displacement;
+	@:op(A - B)
+	static extern inline function subtract(azimuth: Azimuth, displacement: Angle): Azimuth
+		return azimuth.toAngle() - displacement;
+
+	public extern inline function toAngle(): Angle
+		return this;
 
 	/**
 		Creates a 2D vector from a given `length` and `this` azimuth.

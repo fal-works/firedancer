@@ -88,7 +88,7 @@ class ShotDirection {
 	/**
 		Adds `value` to the angle of shot velocity vector.
 	**/
-	public inline function add(value: AzimuthDisplacementExpression) {
+	public inline function add(value: AngleExpression) {
 		return new OperateActor(ShotVelocity, AddAngle(value));
 	}
 }
