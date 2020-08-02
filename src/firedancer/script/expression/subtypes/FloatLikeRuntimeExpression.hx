@@ -38,6 +38,7 @@ abstract FloatLikeRuntimeExpression(
 								if (operateFloatsVCV.isSome())
 									code.pushStatement(operateFloatsVCV.unwrap(), [valueB]);
 								else {
+									code.pushStatement(SaveFloatV);
 									code.pushStatement(LoadFloatCV, [valueB]);
 									code.pushStatement(operateFloatsVVV, []);
 								}
@@ -47,6 +48,7 @@ abstract FloatLikeRuntimeExpression(
 									code.pushStatement(operateFloatsVCV.unwrap(), [valueA]);
 								} else {
 									code.pushStatement(LoadFloatCV, [valueA]);
+									code.pushStatement(SaveFloatV);
 									code.pushFromArray(expressionB.loadToVolatileFloat());
 									code.pushStatement(operateFloatsVVV);
 								}
@@ -59,14 +61,14 @@ abstract FloatLikeRuntimeExpression(
 									code.pushStatement(operateFloatsVCV.unwrap(), [valueB]);
 								} else {
 									code.pushFromArray(expressionA.loadToVolatileFloat());
+									code.pushStatement(SaveFloatV);
 									code.pushStatement(LoadFloatCV, [valueB]);
 									code.pushStatement(operateFloatsVVV);
 								}
 							case Runtime(expressionB):
 								code.pushFromArray(expressionA.loadToVolatileFloat());
-								code.pushStatement(PushFloatV);
+								code.pushStatement(SaveFloatV);
 								code.pushFromArray(expressionB.loadToVolatileFloat());
-								code.pushStatement(PeekFloat, [Int(0)]);
 								code.pushStatement(operateFloatsVVV);
 						};
 				};
