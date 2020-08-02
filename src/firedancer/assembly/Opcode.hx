@@ -25,6 +25,8 @@ enum abstract Opcode(Int) to Int {
 			case Opcode.AwaitThread: AwaitThread;
 			case Opcode.End: End;
 			case Opcode.PushIntC: PushIntC;
+			case Opcode.PushFloatC: PushFloatC;
+			case Opcode.PushFloatV: PushFloatV;
 			case Opcode.PeekFloat: PeekFloat;
 			case Opcode.DropFloat: DropFloat;
 			case Opcode.PeekVec: PeekVec;
@@ -207,6 +209,16 @@ enum abstract Opcode(Int) to Int {
 		Pushes a given constant integer to the stack top.
 	**/
 	final PushIntC;
+
+	/**
+		Pushes a given constant float to the stack top.
+	**/
+	final PushFloatC;
+
+	/**
+		Pushes the current volatile float to the stack top.
+	**/
+	final PushFloatV;
 
 	/**
 		Reads a float at the stack top (skipping a given constant bytes from the top)
@@ -591,6 +603,8 @@ class OpcodeExtension {
 			case AwaitThread: "await_thread";
 			case End: "end";
 			case PushIntC: "push_int_c";
+			case PushFloatC: "push_float_c";
+			case PushFloatV: "push_float_v";
 			case PeekFloat: "peek_float";
 			case DropFloat: "drop_float";
 			case PeekVec: "peek_vec";
@@ -724,6 +738,8 @@ class OpcodeExtension {
 			case AwaitThread: [];
 			case End: [Int]; // end code
 			case PushIntC: [Int]; // integer to push
+			case PushFloatC: [Float]; // float to push
+			case PushFloatV: [];
 			case PeekFloat | PeekVec: [Int]; // bytes to be skipped from the stack top
 			case DropFloat | DropVec: [];
 			case Decrement: [];
