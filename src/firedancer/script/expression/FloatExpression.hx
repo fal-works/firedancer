@@ -1,66 +1,24 @@
 package firedancer.script.expression;
 
-import firedancer.assembly.Opcode;
-import firedancer.assembly.AssemblyStatement;
-import firedancer.assembly.AssemblyCode;
-
 /**
-	Expression representing any float value.
+	Abstract over `FloatLikeExpressionEnum` that can be implicitly cast from `Float`.
 **/
-@:using(firedancer.script.expression.FloatExpression.FloatExpressionExtension)
-enum FloatExpression {
-	Constant(value: Float);
-	Runtime(expression: FloatRuntimeExpression);
-}
+@:notNull @:forward
+abstract FloatExpression(
+	FloatLikeExpressionEnum
+) from FloatLikeExpressionEnum to FloatLikeExpressionEnum {
+	@:from public static extern inline function fromConstant(value: Float): FloatExpression
+		return FloatLikeExpressionEnum.Constant(value);
 
-@:using(firedancer.script.expression.FloatExpression.FloatRuntimeExpressionExtension)
-enum FloatRuntimeExpression {
-	/**
-		@param loadV `Opcode` for loading the value to the current volatile float.
-	**/
-	Variable(loadV: Opcode);
-}
+	@:from static extern inline function fromConstantInt(value: Int): FloatExpression
+		return fromConstant(value);
 
-class FloatExpressionExtension {
-	/**
-		Creates an `AssemblyCode` that assigns `this` value to the current volatile float.
-	**/
-	public static function loadToVolatileFloat(_this: FloatExpression): AssemblyCode {
-		return switch _this {
-			case Constant(value):
-				new AssemblyStatement(LoadFloatCV, [Float(value)]);
-			case Runtime(expression):
-				expression.loadToVolatileFloat();
-		}
-	}
+	@:op(A / B) extern inline function divide(divisor: Float): FloatExpression
+		return this.divide(divisor);
 
-	/**
-		Creates an `AssemblyCode` that runs either `constantOpcode` or `volatileOpcode`
-		receiving `this` value as argument.
-	**/
-	public static function use(
-		_this: FloatExpression,
-		constantOpcode: Opcode,
-		volatileOpcode: Opcode
-	): AssemblyCode {
-		return switch _this {
-			case Constant(value):
-				new AssemblyStatement(constantOpcode, [Float(value)]);
-			case Runtime(expression):
-				final code = expression.loadToVolatileFloat();
-				code.push(new AssemblyStatement(volatileOpcode, []));
-				code;
-		}
-	}
-}
+	@:op(A / B) extern inline function divideInt(divisor: Int): FloatExpression
+		return divide(divisor);
 
-class FloatRuntimeExpressionExtension {
-	/**
-		Creates an `AssemblyCode` that assigns `this` value to the current volatile float.
-	**/
-	public static function loadToVolatileFloat(_this: FloatRuntimeExpression): AssemblyCode {
-		return switch _this {
-			case Variable(loadV): new AssemblyStatement(loadV, []);
-		}
-	}
+	public extern inline function toEnum(): FloatLikeExpressionEnum
+		return this;
 }

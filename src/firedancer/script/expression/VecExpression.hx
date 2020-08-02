@@ -2,63 +2,93 @@ package firedancer.script.expression;
 
 import firedancer.types.Azimuth;
 import firedancer.assembly.Opcode;
-import firedancer.assembly.AssemblyStatement;
 import firedancer.assembly.AssemblyCode;
+import firedancer.script.expression.subtypes.VecConstant;
 
 /**
-	Expression representing any 2D vector.
+	Abstract over `VecExpressionEnum` that can be implicitly cast from vector objects.
 **/
-@:using(firedancer.script.expression.VecExpression.VecExpressionExtension)
-enum VecExpression {
-	CartesianConstant(x: Float, y: Float);
-	CartesianExpression(x: FloatArgument, y: FloatArgument);
-	PolarConstant(length: Float, angle: Azimuth);
-	PolarExpression(length: FloatArgument, angle: AzimuthExpression);
+@:notNull @:forward
+abstract VecExpression(VecExpressionEnum) from VecExpressionEnum to VecExpressionEnum {
+	@:from public static function fromCartesianConstants(
+		args: { x: Float, y: Float }
+	): VecExpression {
+		return VecExpressionEnum.Constant(VecConstant.fromCartesian(args));
+	}
 
-	/**
-		@param loadV `Opcode` for loading the value to the current volatile vector.
-	**/
-	Variable(loadV: Opcode);
-}
-
-class VecExpressionExtension {
-	/**
-		Creates an `AssemblyCode` that runs either `constantOpcode` or `volatileOpcode`
-		receiving `this` value as argument.
-	**/
-	public static function use(
-		_this: VecExpression,
-		constantOpcode: Opcode,
-		volatileOpcode: Opcode
-	): AssemblyCode {
-		return switch _this {
-			case CartesianConstant(x, y):
-				new AssemblyStatement(constantOpcode, [Vec(x, y)]);
-			case PolarConstant(length, angle):
-				new AssemblyStatement(constantOpcode, [Vec(length * angle.cos(), length * angle.sin())]);
-			case CartesianExpression(x, y):
-				[
-					x.loadToVolatileFloat(),
-					y.loadToVolatileFloat(),
-					[
-						new AssemblyStatement(CastCartesianVV, []),
-						new AssemblyStatement(volatileOpcode, [])
-					]
-				].flatten();
-			case PolarExpression(length, angle):
-				[
-					length.loadToVolatileFloat(),
-					angle.toFloat().loadToVolatileFloat(),
-					[
-						new AssemblyStatement(CastPolarVV, []),
-						new AssemblyStatement(volatileOpcode, [])
-					]
-				].flatten();
-			case Variable(loadV):
-				[
-					new AssemblyStatement(loadV, []),
-					new AssemblyStatement(volatileOpcode, [])
-				];
+	@:from public static function fromCartesianExpressions(
+		args: { x: FloatExpression, y: FloatExpression }
+	): VecExpression {
+		final x = args.x.toEnum();
+		final y = args.y.toEnum();
+		return switch x {
+			case Constant(constX):
+				switch y {
+					case Constant(constY):
+						fromCartesianConstants({ x: constX, y: constY });
+					default:
+						VecExpressionEnum.Runtime(Cartesian(x, y));
+				}
+			default:
+				VecExpressionEnum.Runtime(Cartesian(x, y));
 		}
 	}
+
+	@:from public static function fromPolarConstants(
+		args: { length: Float, angle: Azimuth }
+	): VecExpression {
+		return VecExpressionEnum.Constant(VecConstant.fromPolar(args));
+	}
+
+	@:from public static function fromPolarExpressionss(
+		args: { length: FloatExpression, angle: AzimuthExpression }
+	): VecExpression {
+		final length = args.length.toEnum();
+		final angle = args.angle.toEnum();
+		return switch length {
+			case Constant(constLength):
+				switch angle {
+					case Constant(constAngle):
+						fromPolarConstants({ length: constLength, angle: constAngle });
+					default:
+						VecExpressionEnum.Runtime(Polar(length, angle));
+				}
+			default:
+				VecExpressionEnum.Runtime(Polar(length, angle));
+		}
+	}
+
+	@:op(A / B) public function divide(divisor: Float): VecExpression {
+		final expression: VecExpressionEnum = switch this {
+			case Constant(value):
+				Constant(value / divisor);
+			case Runtime(expression):
+				Runtime(expression / divisor);
+		}
+		return expression;
+	}
+
+	@:op(A / B) extern inline function divideInt(divisor: Int): VecExpression
+		return divide(divisor);
+
+	/**
+		Creates an `AssemblyCode` that runs either `processConstantVector` or `processVolatileVector`
+		receiving `this` value as argument.
+		@param processConstantVector Any `Opcode` that uses a constant vector.
+		@param processVolatileVector Any `Opcode` that uses the volatile vector.
+	**/
+	public function use(
+		processConstantVector: Opcode,
+		processVolatileVector: Opcode
+	): AssemblyCode {
+		return switch this {
+			case Constant(value):
+				value.use(processConstantVector);
+			case Runtime(expression):
+				expression.use(processVolatileVector);
+		}
+	}
+
+	public extern inline function toEnum(): VecExpressionEnum
+		return this;
 }

@@ -1,8 +1,7 @@
 package firedancer.script.nodes;
 
+import firedancer.script.expression.FloatLikeExpressionEnum;
 import firedancer.script.expression.FloatExpression;
-import firedancer.script.expression.FloatArgument;
-import firedancer.script.expression.AzimuthExpression;
 
 /**
 	Sets actor's shot direction to the bearing to the target position.
@@ -14,7 +13,7 @@ class Aim extends AstNode implements ripper.Data {
 	/**
 		Sets shot speed.
 	**/
-	public inline function shotSpeed(speed: FloatArgument): Aim {
+	public inline function shotSpeed(speed: FloatExpression): Aim {
 		this.speed = Maybe.from(speed);
 		return this;
 	}
@@ -23,7 +22,7 @@ class Aim extends AstNode implements ripper.Data {
 		return false;
 
 	override public function toAssembly(context: CompileContext): AssemblyCode {
-		final bearingToTarget = AzimuthExpression.Runtime(Variable(LoadBearingToTargetV));
+		final bearingToTarget = FloatLikeExpressionEnum.Runtime(Variable(LoadBearingToTargetV));
 		final node = new OperateActor(ShotVelocity, if (speed.isSome()) {
 			SetVector({ length: speed.unwrap(), angle: bearingToTarget });
 		} else SetAngle(bearingToTarget));

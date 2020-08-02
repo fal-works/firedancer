@@ -14,16 +14,16 @@ class Velocity {
 	/**
 		Sets velocity to `(speed, direction)`.
 	**/
-	public inline function set(speed: FloatArgument, direction: AzimuthArgument) {
-		final vec: VecArgument = { length: speed, angle: direction };
+	public inline function set(speed: FloatExpression, direction: AzimuthExpression) {
+		final vec: VecExpression = { length: speed, angle: direction };
 		return new OperateActor(Velocity, SetVector(vec));
 	}
 
 	/**
 		Adds a vector of `(speed, direction)` to velocity.
 	**/
-	public inline function add(speed: FloatArgument, direction: AzimuthArgument) {
-		final vec: VecArgument = { length: speed, angle: direction };
+	public inline function add(speed: FloatExpression, direction: AzimuthExpression) {
+		final vec: VecExpression = { length: speed, angle: direction };
 		return new OperateActor(Velocity, AddVector(vec));
 	}
 }
@@ -37,16 +37,16 @@ class CartesianVelocity {
 	/**
 		Sets velocity to `(vx, vy)`.
 	**/
-	public inline function set(vx: FloatArgument, vy: FloatArgument) {
-		final vec: VecArgument = { x: vx, y: vy };
+	public inline function set(vx: FloatExpression, vy: FloatExpression) {
+		final vec: VecExpression = { x: vx, y: vy };
 		return new OperateActor(ShotVelocity, SetVector(vec));
 	}
 
 	/**
 		Adds `(vx, vy)` to velocity.
 	**/
-	public inline function add(vx: FloatArgument, vy: FloatArgument) {
-		final vec: VecArgument = { x: vx, y: vy };
+	public inline function add(vx: FloatExpression, vy: FloatExpression) {
+		final vec: VecExpression = { x: vx, y: vy };
 		return new OperateActor(ShotVelocity, AddVector(vec));
 	}
 }
@@ -60,14 +60,14 @@ class Speed {
 	/**
 		Sets the length of velocity vector to `value`.
 	**/
-	public inline function set(value: FloatArgument) {
+	public inline function set(value: FloatExpression) {
 		return new OperateActor(Velocity, SetLength(value));
 	}
 
 	/**
 		Adds `value` to the length of velocity vector.
 	**/
-	public inline function add(value: FloatArgument) {
+	public inline function add(value: FloatExpression) {
 		return new OperateActor(Velocity, AddLength(value));
 	}
 }
@@ -81,14 +81,14 @@ class Direction {
 	/**
 		Sets the angle of velocity vector to `value`.
 	**/
-	public inline function set(value: AzimuthArgument) {
+	public inline function set(value: AzimuthExpression) {
 		return new OperateActor(Velocity, SetAngle(value));
 	}
 
 	/**
 		Adds `value` to the angle of velocity vector.
 	**/
-	public inline function add(value: AzimuthDisplacementArgument) {
+	public inline function add(value: AzimuthDisplacementExpression) {
 		return new OperateActor(Velocity, AddAngle(value));
 	}
 }

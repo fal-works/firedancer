@@ -141,16 +141,16 @@ enum abstract ActorAttribute(Int) {
 **/
 @:using(firedancer.script.nodes.OperateActor.ActorAttributeOperationExtension)
 enum ActorAttributeOperation {
-	SetVector(arg: VecArgument);
-	AddVector(arg: VecArgument);
-	// SetX(arg: FloatArgument);
-	// AddX(arg: FloatArgument);
-	// SetY(arg: FloatArgument);
-	// AddY(arg: FloatArgument);
-	SetLength(arg: FloatArgument);
-	AddLength(arg: FloatArgument);
-	SetAngle(arg: AzimuthArgument);
-	AddAngle(arg: AzimuthDisplacementArgument);
+	SetVector(arg: VecExpression);
+	AddVector(arg: VecExpression);
+	// SetX(arg: FloatExpression);
+	// AddX(arg: FloatExpression);
+	// SetY(arg: FloatExpression);
+	// AddY(arg: FloatExpression);
+	SetLength(arg: FloatExpression);
+	AddLength(arg: FloatExpression);
+	SetAngle(arg: AzimuthExpression);
+	AddAngle(arg: AzimuthDisplacementExpression);
 }
 
 class ActorAttributeOperationExtension {
@@ -161,9 +161,9 @@ class ActorAttributeOperationExtension {
 	**/
 	public static function divide(addOperation: ActorAttributeOperation, divisor: Int) {
 		return switch addOperation {
-			case AddVector(arg): AddVector(arg.divide(divisor));
-			case AddLength(arg): AddLength(arg.divide(divisor));
-			case AddAngle(arg): AddAngle(arg.divide(divisor));
+			case AddVector(arg): AddVector(arg / divisor);
+			case AddLength(arg): AddLength(arg / divisor);
+			case AddAngle(arg): AddAngle(arg / divisor);
 			default: throw "Unsupported operation.";
 		}
 	}
@@ -198,39 +198,26 @@ class ActorAttributeOperationExtension {
 					case ShotVelocity: AddShotVelocityV;
 				}
 
-				switch arg.toExpression() {
-					case CartesianConstant(x, y):
-						final opcode = switch attribute {
+				switch arg.toEnum() {
+					case Constant(value):
+						final calcRelativeCV = switch attribute {
 							case Position: CalcRelativePositionCV;
 							case Velocity: CalcRelativeVelocityCV;
 							case ShotPosition: CalcRelativeShotPositionCV;
 							case ShotVelocity: CalcRelativeShotVelocityCV;
 						};
-						final operands:Array<Operand> = [Vec(x, y)];
-						calcRelative = statement(opcode, operands);
-					case CartesianExpression(x, y):
-						throw "";
-					case PolarConstant(length, angle):
-						final opcode = switch attribute {
-							case Position: CalcRelativePositionCV;
-							case Velocity: CalcRelativeVelocityCV;
-							case ShotPosition: CalcRelativeShotPositionCV;
-							case ShotVelocity: CalcRelativeShotVelocityCV;
-						};
-						final x = length * angle.cos();
-						final y = length * angle.sin();
-						final operands:Array<Operand> = [Vec(x, y)];
-						calcRelative = statement(opcode, operands);
-					case PolarExpression(length, angle):
-						throw "";
-					case Variable(loadVolatileOpcode):
+						calcRelative = statement(calcRelativeCV, [value]);
+					case Runtime(expression):
 						final calcRelativeVV = switch attribute {
 							case Position: CalcRelativePositionVV;
 							case Velocity: CalcRelativeVelocityVV;
 							case ShotPosition: CalcRelativeShotPositionVV;
 							case ShotVelocity: CalcRelativeShotVelocityVV;
 						};
-						calcRelative = [statement(loadVolatileOpcode), statement(calcRelativeVV)];
+						calcRelative = [
+							expression.loadToVolatileVector(),
+							[statement(calcRelativeVV)]
+						].flatten();
 				}
 			case SetLength(arg):
 				multChangeVCS = statement(MultFloatVCS, [Float(1.0 / frames)]);
@@ -244,7 +231,7 @@ class ActorAttributeOperationExtension {
 					case ShotVelocity: AddShotSpeedV;
 				}
 
-				switch arg.toExpression() {
+				switch arg.toEnum() {
 					case Constant(value):
 						final opcode = switch attribute {
 							case Position: CalcRelativeDistanceCV;
@@ -252,7 +239,7 @@ class ActorAttributeOperationExtension {
 							case ShotPosition: CalcRelativeShotDistanceCV;
 							case ShotVelocity: CalcRelativeShotSpeedCV;
 						};
-						final operands:Array<Operand> = [Float(value)];
+						final operands:Array<Operand> = [value.toOperand()];
 						calcRelative = statement(opcode, operands);
 					case Runtime(expression):
 						final calcRelativeVV = switch attribute {
@@ -276,7 +263,7 @@ class ActorAttributeOperationExtension {
 					case ShotVelocity: AddShotDirectionV;
 				}
 
-				switch arg.toExpression() {
+				switch arg.toEnum() {
 					case Constant(value):
 						final opcode = switch attribute {
 							case Position: CalcRelativeBearingCV;
@@ -284,7 +271,7 @@ class ActorAttributeOperationExtension {
 							case ShotPosition: CalcRelativeShotBearingCV;
 							case ShotVelocity: CalcRelativeShotDirectionCV;
 						};
-						final operands:Array<Operand> = [Float(value.toRadians())];
+						final operands:Array<Operand> = [value];
 						calcRelative = statement(opcode, operands);
 					case Runtime(expression):
 						final calcRelativeVV = switch attribute {
@@ -293,7 +280,7 @@ class ActorAttributeOperationExtension {
 							case ShotPosition: CalcRelativeShotBearingVV;
 							case ShotVelocity: CalcRelativeShotDirectionVV;
 						}
-						calcRelative = expression.toFloat().loadToVolatileFloat();
+						calcRelative = expression.loadToVolatileFloat();
 						calcRelative.push(statement(calcRelativeVV));
 				}
 			default: throw "Unsupported operation.";

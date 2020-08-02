@@ -14,16 +14,16 @@ class ShotPosition {
 	/**
 		Sets shot position to a vector of `(distance, bearing)`.
 	**/
-	public inline function set(distance: FloatArgument, bearing: AzimuthArgument) {
-		final vec: VecArgument = { length: distance, angle: bearing };
+	public inline function set(distance: FloatExpression, bearing: AzimuthExpression) {
+		final vec: VecExpression = { length: distance, angle: bearing };
 		return new OperateActor(ShotPosition, SetVector(vec));
 	}
 
 	/**
 		Adds a vector of `(distance, bearing)` to shot position.
 	**/
-	public inline function add(distance: FloatArgument, bearing: AzimuthArgument) {
-		final vec: VecArgument = { length: distance, angle: bearing };
+	public inline function add(distance: FloatExpression, bearing: AzimuthExpression) {
+		final vec: VecExpression = { length: distance, angle: bearing };
 		return new OperateActor(ShotPosition, AddVector(vec));
 	}
 }
@@ -37,16 +37,16 @@ class CartesianShotPosition {
 	/**
 		Sets shot position to `(x, y)`.
 	**/
-	public inline function set(x: FloatArgument, y: FloatArgument) {
-		final vec: VecArgument = { x: x, y: y };
+	public inline function set(x: FloatExpression, y: FloatExpression) {
+		final vec: VecExpression = { x: x, y: y };
 		return new OperateActor(ShotPosition, SetVector(vec));
 	}
 
 	/**
 		Adds `(x, y)` to shot position.
 	**/
-	public inline function add(x: FloatArgument, y: FloatArgument) {
-		final vec: VecArgument = { x: x, y: y };
+	public inline function add(x: FloatExpression, y: FloatExpression) {
+		final vec: VecExpression = { x: x, y: y };
 		return new OperateActor(ShotPosition, AddVector(vec));
 	}
 }
@@ -60,14 +60,14 @@ class ShotDistance {
 	/**
 		Sets the length of shot position vector to `value`.
 	**/
-	public inline function set(value: FloatArgument) {
+	public inline function set(value: FloatExpression) {
 		return new OperateActor(ShotPosition, SetLength(value));
 	}
 
 	/**
 		Adds `value` to the length of shot position vector.
 	**/
-	public inline function add(value: FloatArgument) {
+	public inline function add(value: FloatExpression) {
 		return new OperateActor(ShotPosition, AddLength(value));
 	}
 }
@@ -81,14 +81,14 @@ class ShotBearing {
 	/**
 		Sets the angle of shot position vector to `value`.
 	**/
-	public inline function set(value: AzimuthArgument) {
+	public inline function set(value: AzimuthExpression) {
 		return new OperateActor(ShotPosition, SetAngle(value));
 	}
 
 	/**
 		Adds `value` to the angle of shot position vector.
 	**/
-	public inline function add(value: AzimuthDisplacementArgument) {
+	public inline function add(value: AzimuthDisplacementExpression) {
 		return new OperateActor(ShotPosition, AddAngle(value));
 	}
 }

@@ -1,48 +1,31 @@
 package firedancer.script.expression;
 
-import firedancer.assembly.Opcode;
-import firedancer.assembly.AssemblyCode;
 import firedancer.types.AzimuthDisplacement;
 
 /**
-	Expression representing any `AzimuthDisplacementExpression` value.
+	Abstract over `FloatLikeExpressionEnum` that can be implicitly converted from `AzimuthDisplacement`.
 **/
-@:using(firedancer.script.expression.AzimuthDisplacementExpression.AzimuthDisplacementExpressionExtension)
-enum AzimuthDisplacementExpression {
-	Constant(value: AzimuthDisplacement);
-	Runtime(expression: AzimuthDisplacementRuntimeExpression);
-}
+@:notNull @:forward
+abstract AzimuthDisplacementExpression(
+	FloatLikeExpressionEnum
+) from FloatLikeExpressionEnum to FloatLikeExpressionEnum {
+	@:from public static extern inline function fromConstant(
+		value: AzimuthDisplacement
+	): AzimuthDisplacementExpression
+		return FloatLikeExpressionEnum.Constant(value);
 
-enum AzimuthDisplacementRuntimeExpression {
-	/**
-		@param loadV `Opcode` for loading the value to the current volatile float.
-	**/
-	Variable(loadV: Opcode);
-}
+	@:from static extern inline function fromConstantFloat(value: Float): AzimuthDisplacementExpression
+		return fromConstant(value);
 
-class AzimuthDisplacementExpressionExtension {
-	/**
-		Converts `this` to `FloatArgument`.
-	**/
-	public static inline function toFloat(_this: AzimuthDisplacementExpression): FloatArgument {
-		return switch _this {
-			case Constant(value): value.toRadians();
-			case Runtime(expression):
-				switch expression {
-					case Variable(loadV): FloatExpression.Runtime(Variable(loadV));
-				}
-		}
-	}
+	@:from static extern inline function fromConstantInt(value: Int): AzimuthDisplacementExpression
+		return fromConstant(value);
 
-	/**
-		Creates an `AssemblyCode` that runs either `constantOpcode` or `volatileOpcode`
-		receiving `this` value as argument.
-	**/
-	public static function use(
-		_this: AzimuthDisplacementExpression,
-		constantOpcode: Opcode,
-		volatileOpcode: Opcode
-	): AssemblyCode {
-		return _this.toFloat().use(constantOpcode, volatileOpcode);
-	}
+	@:op(A / B) extern inline function divide(divisor: Float): AzimuthDisplacementExpression
+		return this.divide(divisor);
+
+	@:op(A / B) extern inline function divideInt(divisor: Int): AzimuthDisplacementExpression
+		return divide(divisor);
+
+	public extern inline function toEnum(): FloatLikeExpressionEnum
+		return this;
 }
