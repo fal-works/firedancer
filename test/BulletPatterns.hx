@@ -86,8 +86,11 @@ class BulletPatterns {
 	static final randomTest: Ast = [
 		shot.velocity.set(5, 180),
 		loop([
+			shot.velocity.set(
+				1 + random.float(4),
+				random.angle()
+			),
 			fire(),
-			shot.direction.set(random.float(360)),
 			wait(1)
 		])
 	];

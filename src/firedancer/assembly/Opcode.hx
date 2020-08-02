@@ -40,6 +40,10 @@ enum abstract Opcode(Int) to Int {
 			case Opcode.LoadTargetXV: LoadTargetXV;
 			case Opcode.LoadTargetYV: LoadTargetYV;
 			case Opcode.LoadBearingToTargetV: LoadBearingToTargetV;
+			case Opcode.AddFloatVCV: AddFloatVCV;
+			case Opcode.AddFloatVVV: AddFloatVVV;
+			case Opcode.MultFloatVCS: MultFloatVCS;
+			case Opcode.MultVecVCS: MultVecVCS;
 			case Opcode.CastCartesianVV: CastCartesianVV;
 			case Opcode.CastPolarVV: CastPolarVV;
 			case Opcode.RandomFloatCV: RandomFloatCV;
@@ -140,8 +144,6 @@ enum abstract Opcode(Int) to Int {
 			case Opcode.CalcRelativeShotBearingVV: CalcRelativeShotBearingVV;
 			case Opcode.CalcRelativeShotSpeedVV: CalcRelativeShotSpeedVV;
 			case Opcode.CalcRelativeShotDirectionVV: CalcRelativeShotDirectionVV;
-			case Opcode.MultFloatVCS: MultFloatVCS;
-			case Opcode.MultVecVCS: MultVecVCS;
 			case Opcode.Fire: Fire;
 			case Opcode.FireWithType: FireWithType;
 			default: throw error(value);
@@ -266,6 +268,16 @@ enum abstract Opcode(Int) to Int {
 		Assigns a given constant float to the y-component of the current volatile vector.
 	**/
 	final LoadVecYCV;
+
+	/**
+		Adds a given constant float to the current volatile float.
+	**/
+	final AddFloatVCV;
+
+	/**
+		Adds the last loaded two volatile floats and reassigns the result to the volatile float.
+	**/
+	final AddFloatVVV;
 
 	/**
 		Multiplicates the current volatile float by a given constant float and pushes it to the stack top.
@@ -618,6 +630,10 @@ class OpcodeExtension {
 			case LoadTargetXV: "load_target_x_v";
 			case LoadTargetYV: "load_target_y_v";
 			case LoadBearingToTargetV: "load_bearing_to_target_v";
+			case AddFloatVCV: "add_float_vcv";
+			case AddFloatVVV: "add_float_vvv";
+			case MultFloatVCS: "mult_float_vcs";
+			case MultVecVCS: "mult_vec_vcs";
 			case CastCartesianVV: "cast_cartesian_vv";
 			case CastPolarVV: "cast_polar_vv";
 			case RandomFloatCV: "random_float_cv";
@@ -718,8 +734,6 @@ class OpcodeExtension {
 			case CalcRelativeShotBearingVV: "calc_rel_bearing_vv";
 			case CalcRelativeShotSpeedVV: "calc_rel_speed_vv";
 			case CalcRelativeShotDirectionVV: "calc_rel_direction_vv";
-			case MultFloatVCS: "mult_float_vcs";
-			case MultVecVCS: "mult_vec_vcs";
 			case Fire: "fire";
 			case FireWithType: "fire_with_type";
 		}
@@ -748,6 +762,9 @@ class OpcodeExtension {
 			case LoadVecXCV | LoadVecYCV: [Float];
 			case LoadTargetPositionV | LoadTargetXV | LoadTargetYV: [];
 			case LoadBearingToTargetV: [];
+			case AddFloatVCV: [Float]; // value to add
+			case AddFloatVVV: [];
+			case MultFloatVCS | MultVecVCS: [Float]; // multiplier value
 			case CastCartesianVV | CastPolarVV: [];
 			case RandomFloatCV: [Float];
 			case RandomFloatVV: [];
@@ -781,7 +798,6 @@ class OpcodeExtension {
 			case CalcRelativeShotSpeedCV | CalcRelativeShotDirectionCV: [Float]; // value before calc
 			case CalcRelativeShotDistanceVV | CalcRelativeShotBearingVV: [];
 			case CalcRelativeShotSpeedVV | CalcRelativeShotDirectionVV: [];
-			case MultFloatVCS | MultVecVCS: [Float]; // multiplier value
 			case Fire: [Int]; // bytecode ID or negative for null
 			case FireWithType: [Int, Int]; // 1. bytecode ID or negative for null, 2. Fire type
 		}

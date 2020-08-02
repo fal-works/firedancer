@@ -46,6 +46,12 @@ abstract AzimuthDisplacement(Float) {
 	public extern inline function toRadians(): Float
 		return this;
 
+	/**
+		Converts `this` to `Float` in degrees.
+	**/
+	public inline function toDegrees(): Float
+		return Geometry.radiansToDegrees(this);
+
 	extern inline function new(radians: Float)
 		this = radians;
 }

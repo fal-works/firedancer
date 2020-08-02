@@ -40,6 +40,13 @@ abstract Azimuth(Float) {
 		return this;
 
 	/**
+		Converts `this` to `Float` in degrees
+		(north-based and clockwise, 360 for a full rotation).
+	**/
+	public inline function toDegrees(): Float
+		return Geometry.radiansToDegrees(this) + 90.0;
+
+	/**
 		Returns trigonometric cosine of `this` azimuth.
 
 		Should not be used in runtime as this also does some error correction.

@@ -13,9 +13,23 @@ enum FloatLikeRuntimeExpressionEnum {
 
 	/**
 		@param type Type that determines which `Opcode` to use.
-		@param operand The operand float-like expression.
+		@param operand A float-like expression to be operated.
 	**/
-	UnaryOperator(type: FloatUnaryOperatorType, operand: FloatLikeExpressionEnum);
+	UnaryOperator(
+		type: FloatUnaryOperatorType,
+		operand: FloatLikeExpressionEnum
+	);
+
+	/**
+		@param type Type that determines which `Opcode` to use.
+		@param operandA The first float-like expression to be operated.
+		@param operandB The second float-like expression to be operated.
+	**/
+	BinaryOperator(
+		type: FloatBinaryOperatorType,
+		operandA: FloatLikeExpressionEnum,
+		operandB: FloatLikeExpressionEnum
+	);
 }
 
 @:structInit
@@ -29,4 +43,24 @@ class FloatUnaryOperatorType {
 		Any `Opcode` that operates the volatile float and reassigns the result to the volatile float.
 	**/
 	public final operateFloatVV: Opcode;
+}
+
+@:structInit
+class FloatBinaryOperatorType {
+	/**
+		Any `Opcode` that operates both the volatile float and a given constant float
+		and then reassigns the result to the volatile float.
+	**/
+	public final operateFloatsVCV: Maybe<Opcode>;
+
+	/**
+		Any `Opcode` that operates the last loaded two volatile float values
+		and reassigns the result to the volatile float.
+	**/
+	public final operateFloatsVVV: Opcode;
+
+	function new(operateFloatsVVV: Opcode, ?operateFloatsVCV: Opcode) {
+		this.operateFloatsVCV = Maybe.from(operateFloatsVCV);
+		this.operateFloatsVVV = operateFloatsVVV;
+	}
 }

@@ -20,10 +20,15 @@ abstract AzimuthDisplacementExpression(
 	@:from static extern inline function fromConstantInt(value: Int): AzimuthDisplacementExpression
 		return fromConstant(value);
 
-	@:op(A / B) extern inline function divide(divisor: Float): AzimuthDisplacementExpression
+	@:to public extern inline function toAzimuthExpression(): AzimuthExpression
+		return this.toAzimuthExpression();
+
+	@:op(A / B)
+	extern inline function divide(divisor: Float): AzimuthDisplacementExpression
 		return this.divide(divisor);
 
-	@:op(A / B) extern inline function divideInt(divisor: Int): AzimuthDisplacementExpression
+	@:op(A / B)
+	extern inline function divideInt(divisor: Int): AzimuthDisplacementExpression
 		return divide(divisor);
 
 	public extern inline function toEnum(): FloatLikeExpressionEnum

@@ -1,5 +1,6 @@
 package firedancer.script.expression;
 
+import firedancer.script.expression.subtypes.FloatLikeRuntimeExpressionEnum;
 import firedancer.assembly.Opcode;
 import firedancer.assembly.AssemblyStatement;
 import firedancer.assembly.AssemblyCode;
@@ -16,6 +17,15 @@ enum FloatLikeExpressionEnum {
 }
 
 class FloatLikeExpressionExtensionEnum {
+	public static function toAzimuthExpression(_this: FloatLikeExpressionEnum): AzimuthExpression {
+		return switch _this {
+			case Constant(value):
+				value.toAzimuth();
+			default:
+				_this;
+		};
+	}
+
 	/**
 		Creates an `AssemblyCode` that assigns `this` value to the current volatile float.
 	**/
@@ -46,6 +56,34 @@ class FloatLikeExpressionExtensionEnum {
 				final code = expression.loadToVolatileFloat();
 				code.push(new AssemblyStatement(volatileOpcode, []));
 				code;
+		}
+	}
+
+	public static function add(
+		_this: FloatLikeExpressionEnum,
+		other: FloatLikeExpressionEnum
+	): FloatLikeExpressionEnum {
+		return switch _this {
+			case Constant(valueA):
+				switch other {
+					case Constant(valueB):
+						FloatLikeExpressionEnum.Constant(valueA + valueB);
+					case Runtime(_):
+						FloatLikeExpressionEnum.Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperator(
+							{
+								operateFloatsVCV: AddFloatVCV,
+								operateFloatsVVV: AddFloatVVV
+							},
+							_this,
+							other
+						));
+				}
+			case Runtime(_):
+				FloatLikeExpressionEnum.Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperator(
+					{ operateFloatsVCV: AddFloatVCV, operateFloatsVVV: AddFloatVVV },
+					_this,
+					other
+				));
 		}
 	}
 

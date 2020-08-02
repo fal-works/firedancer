@@ -39,12 +39,43 @@ abstract FloatLikeConstant(
 		return switch this {
 			case Float(value): value;
 			case Azimuth(value): value;
-			case AzimuthDisplacement(value): throw "Cannot convert to Azimuth.";
+			case AzimuthDisplacement(value): Azimuth.zero + value;
+		}
+	}
+
+	@:to public function toAzimuthDisplacement(): AzimuthDisplacement {
+		return switch this {
+			case Float(value): value;
+			case Azimuth(value): throw "Cannot convert Azimuth to AzimuthDisplacement.";
+			case AzimuthDisplacement(value): value;
 		}
 	}
 
 	@:to public extern inline function toOperand(): ConstantOperand
 		return Float(toFloat());
+
+	@:op(A + B) function add(other: FloatLikeConstant): FloatLikeConstant {
+		return switch this {
+			case Float(valueA):
+				switch other.toEnum() {
+					case Float(valueB): valueA + valueB;
+					case Azimuth(_): throw "Cannot add Float and Azimuth.";
+					case AzimuthDisplacement(valueB): valueA + valueB.toDegrees();
+				}
+			case Azimuth(valueA):
+				switch other.toEnum() {
+					case Float(_): throw "Cannot add Azimuth and Float.";
+					case Azimuth(_): throw "Cannot add Azimuth values.";
+					case AzimuthDisplacement(valueB): valueA + valueB;
+				}
+			case AzimuthDisplacement(valueA):
+				switch other.toEnum() {
+					case Float(valueB): valueA + valueB;
+					case Azimuth(valueB): valueA + valueB;
+					case AzimuthDisplacement(valueB): valueA + valueB;
+				}
+		}
+	}
 
 	@:op(A / B) function divide(divisor: Float): FloatLikeConstant {
 		return switch this {
@@ -57,6 +88,6 @@ abstract FloatLikeConstant(
 	@:op(A / B) extern inline function divideInt(divisor: Int): FloatLikeConstant
 		return divide(divisor);
 
-	public extern inline function toEnum(): FloatLikeConstant
+	public extern inline function toEnum(): FloatLikeConstantEnum
 		return this;
 }
