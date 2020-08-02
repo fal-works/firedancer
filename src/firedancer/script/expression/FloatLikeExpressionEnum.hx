@@ -53,27 +53,30 @@ class FloatLikeExpressionExtensionEnum {
 		_this: FloatLikeExpressionEnum,
 		other: FloatLikeExpressionEnum
 	): FloatLikeExpressionEnum {
-		return switch _this {
+		switch _this {
 			case Constant(valueA):
 				switch other {
 					case Constant(valueB):
-						FloatLikeExpressionEnum.Constant(valueA + valueB);
+						return Constant(valueA + valueB);
 					case Runtime(_):
-						FloatLikeExpressionEnum.Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperator(
-							{
-								operateFloatsVCV: AddFloatVCV,
-								operateFloatsVVV: AddFloatVVV
-							},
-							_this,
-							other
-						));
 				}
 			case Runtime(_):
-				FloatLikeExpressionEnum.Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperator(
-					{ operateFloatsVCV: AddFloatVCV, operateFloatsVVV: AddFloatVVV },
-					_this,
-					other
-				));
+		}
+
+		return Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperator(
+			{ operateFloatsVCV: AddFloatVCV, operateFloatsVVV: AddFloatVVV },
+			_this,
+			other
+		));
+	}
+
+	public static function multiply(
+		_this: FloatLikeExpressionEnum,
+		factor: Float
+	): FloatLikeExpressionEnum {
+		return switch _this {
+			case Constant(value): Constant(factor * value);
+			case Runtime(_): throw "Not yet implemented.";
 		}
 	}
 
@@ -82,7 +85,7 @@ class FloatLikeExpressionExtensionEnum {
 		divisor: Float
 	): FloatLikeExpressionEnum {
 		return switch _this {
-			case Constant(value): FloatLikeExpressionEnum.Constant(value / divisor);
+			case Constant(value): Constant(value / divisor);
 			case Runtime(_): throw "Not yet implemented.";
 		}
 	}

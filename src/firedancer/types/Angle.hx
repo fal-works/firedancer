@@ -17,9 +17,9 @@ abstract Angle(ArcDegrees) from ArcDegrees from Float {
 
 	@:op(A - B) function minus(other: Angle): Angle;
 
-	@:op(A * B) function multiply(factor: Float): Angle;
+	@:op(A * B) @:commutative static function multiply(angle: Angle, factor: Float): Angle;
 
-	@:op(A * B) function multiplyInt(factor: Int): Angle;
+	@:op(A * B) @:commutative static function multiplyInt(angle: Angle, factor: Int): Angle;
 
 	@:op(A / B) function divide(divisor: Float): Angle;
 

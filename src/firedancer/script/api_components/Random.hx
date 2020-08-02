@@ -20,12 +20,14 @@ class Random {
 	}
 
 	/**
-		Gets a random angle in range `[0, 360)`.
+		Gets a random angle in range `[-centralAngle / 2, centralAngle / 2)`.
 	**/
-	public inline function angle(): AngleExpression {
+	public inline function angle(?centralAngle: AngleExpression): AngleExpression {
+		final centralAngle = Nulls.coalesce(centralAngle, 360.0);
+
 		return FloatLikeExpressionEnum.Runtime(UnaryOperator({
-			operateFloatCV: RandomFloatCV,
-			operateFloatVV: RandomFloatVV
-		}, AngleExpression.fromConstantAngle(360)));
+			operateFloatCV: RandomFloatSignedCV,
+			operateFloatVV: RandomFloatSignedVV
+		}, centralAngle / 2));
 	}
 }

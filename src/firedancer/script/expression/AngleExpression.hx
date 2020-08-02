@@ -44,6 +44,14 @@ abstract AngleExpression(
 		return addFloatExpression(a, b);
 	}
 
+	@:op(A * B) @:commutative
+	static extern inline function multiply(expr: AngleExpression, factor: Float): AngleExpression
+		return expr.multiply(factor);
+
+	@:op(A * B) @:commutative
+	static extern inline function multiplyInt(expr: AngleExpression, factor: Int): AngleExpression
+		return multiply(expr, factor);
+
 	@:op(A / B)
 	extern inline function divide(divisor: Float): AngleExpression
 		return this.divide(divisor);

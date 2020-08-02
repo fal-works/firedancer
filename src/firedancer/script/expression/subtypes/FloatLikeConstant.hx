@@ -41,6 +41,22 @@ abstract FloatLikeConstant(
 		}
 	}
 
+	@:op(A * B) @:commutative static function multiply(
+		constant: FloatLikeConstant,
+		factor: Float
+	): FloatLikeConstant {
+		return switch constant {
+			case Float(value): FloatLikeConstantEnum.Float(factor * value);
+			case Angle(value): FloatLikeConstantEnum.Angle(factor * value);
+		}
+	}
+
+	@:op(A * B) @:commutative static extern inline function multiplyInt(
+		constant: FloatLikeConstant,
+		factor: Int
+	): FloatLikeConstant
+		return multiply(constant, factor);
+
 	@:op(A / B) function divide(divisor: Float): FloatLikeConstant {
 		return switch this {
 			case Float(value): FloatLikeConstantEnum.Float(value / divisor);
