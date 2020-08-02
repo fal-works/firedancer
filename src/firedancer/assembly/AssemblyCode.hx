@@ -14,6 +14,12 @@ abstract AssemblyCode(Data) from Data to Data {
 		return [statement];
 
 	/**
+		Pushes a new `AssemblyStatement` created from `opcode` and `operands`.
+	**/
+	public function pushStatement(opcode: Opcode, ?operands: Array<ConstantOperand>): Void
+		this.push(AssemblyStatement.create(opcode, operands));
+
+	/**
 		@return The bytecode length in bytes after compiled.
 	**/
 	public function bytecodeLength(): UInt {
