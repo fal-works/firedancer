@@ -26,6 +26,6 @@ class Random {
 		return FloatLikeExpressionEnum.Runtime(UnaryOperator({
 			operateFloatCV: RandomFloatCV,
 			operateFloatVV: RandomFloatVV
-		}, AngleExpression.fromConstant(360)));
+		}, AngleExpression.fromConstantAngle(360)));
 	}
 }

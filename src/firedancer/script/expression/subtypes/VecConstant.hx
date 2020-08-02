@@ -7,25 +7,39 @@ import firedancer.assembly.AssemblyStatement;
 import firedancer.assembly.AssemblyCode;
 
 /**
-	Abstract over `VecConstantEnum` that can be implicitly cast from vector objects.
+	Abstract over `VecConstantEnum` with some casting methods and operator overloads.
 **/
-@:notNull @:forward
+@:notNull
 abstract VecConstant(VecConstantEnum) from VecConstantEnum to VecConstantEnum {
-	@:from public static function fromCartesian(args: { x: Float, y: Float }): VecConstant
+	/**
+		Converts a cartesian 2D vector to `VecConstant`.
+	**/
+	@:from public static function fromCartesian(
+		args: { x: Float, y: Float }
+	): VecConstant {
 		return VecConstantEnum.Cartesian(
-			FloatLikeConstantEnum.Float(args.x),
-			FloatLikeConstantEnum.Float(args.y)
+			constantFloat(args.x),
+			constantFloat(args.y)
 		);
+	}
 
+	/**
+		Converts a polar 2D vector to `VecConstant`.
+	**/
 	@:from public static function fromPolar(
 		args: { length: Float, angle: Azimuth }
 	): VecConstant {
 		return VecConstantEnum.Polar(
-			FloatLikeConstantEnum.Float(args.length),
-			FloatLikeConstantEnum.Angle(args.angle.toAngle())
+			constantFloat(args.length),
+			constantAngle(args.angle.toAngle())
 		);
 	}
 
+	/**
+		Converts `this` to a 2D vector `ConstantOperand`.
+
+		If the input was a polar vector, the result is converted to cartesian.
+	**/
 	@:to public function toOperand(): ConstantOperand {
 		return switch this {
 			case Cartesian(x, y):

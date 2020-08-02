@@ -12,7 +12,7 @@ abstract AzimuthExpression(
 	@:from public static extern inline function fromConstant(
 		value: Azimuth
 	): AzimuthExpression
-		return FloatLikeExpressionEnum.Constant(value.toAngle());
+		return FloatLikeExpressionEnum.Constant(constantAngle(value.toAngle()));
 
 	@:from static extern inline function fromConstantFloat(value: Float): AzimuthExpression
 		return fromConstant(value);

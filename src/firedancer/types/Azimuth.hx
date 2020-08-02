@@ -8,25 +8,28 @@ import reckoner.Numeric.nearlyEqual;
 	Azimuth value in degrees (north-based and clockwise, 360 for a full rotation).
 **/
 @:notNull @:forward(toRadians, toDegrees)
-abstract Azimuth(Angle) from Angle {
+abstract Azimuth(Angle) {
 	/**
 		The north `Azimuth`.
 	**/
-	public static extern inline final zero: Azimuth = 0.0;
+	public static extern inline final zero: Azimuth = cast 0.0;
 
 	/**
 		Creates an `Azimuth` value from degrees.
 	**/
-	@:from public static extern inline function fromDegrees(degrees: Float): Azimuth
-		return Angle.fromDegrees(degrees);
+	@:from public static extern inline function fromDegrees(degrees: Float): Azimuth {
+		return new Azimuth(Angle.fromDegrees(degrees));
+	}
 
 	@:op(A + B) @:commutative
-	static extern inline function add(azimuth: Azimuth, displacement: Angle): Azimuth
-		return azimuth.toAngle() + displacement;
+	static extern inline function add(azimuth: Azimuth, displacement: Angle): Azimuth {
+		return new Azimuth(azimuth.toAngle() + displacement);
+	}
 
 	@:op(A - B)
-	static extern inline function subtract(azimuth: Azimuth, displacement: Angle): Azimuth
-		return azimuth.toAngle() - displacement;
+	static extern inline function subtract(azimuth: Azimuth, displacement: Angle): Azimuth {
+		return new Azimuth(azimuth.toAngle() - displacement);
+	}
 
 	public extern inline function toAngle(): Angle
 		return this;
@@ -55,4 +58,7 @@ abstract Azimuth(Angle) from Angle {
 
 		return { x: xFactor * length, y: yFactor * length };
 	}
+
+	extern inline function new(angle: Angle)
+		this = angle;
 }

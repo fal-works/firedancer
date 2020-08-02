@@ -9,14 +9,14 @@ import firedancer.types.Angle;
 abstract AngleExpression(
 	FloatLikeExpressionEnum
 ) from FloatLikeExpressionEnum to FloatLikeExpressionEnum {
-	@:from public static extern inline function fromConstant(value: Angle): AngleExpression
-		return FloatLikeExpressionEnum.Constant(value);
+	@:from public static extern inline function fromConstantAngle(value: Angle): AngleExpression
+		return FloatLikeExpressionEnum.Constant(constantAngle(value));
 
 	@:from static extern inline function fromConstantFloat(value: Float): AngleExpression
-		return fromConstant(value);
+		return fromConstantAngle(value);
 
 	@:from static extern inline function fromConstantInt(value: Int): AngleExpression
-		return fromConstant(value);
+		return fromConstantAngle(value);
 
 	@:to public extern inline function toAzimuthExpression(): AzimuthExpression
 		return this.toAzimuthExpression();
