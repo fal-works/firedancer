@@ -1,5 +1,6 @@
 package firedancer.types;
 
+import reckoner.TmpVec2D;
 import reckoner.Geometry;
 import reckoner.Numeric.nearlyEqual;
 
@@ -30,36 +31,27 @@ abstract Azimuth(AzimuthDisplacement) from AzimuthDisplacement to AzimuthDisplac
 		return this - displacement;
 
 	/**
-		Returns trigonometric cosine of `this` azimuth.
+		Creates a 2D vector from a given `length` and `this` azimuth.
 
 		Should not be used in runtime as this also does some error correction.
 	**/
-	public function cos(): Float {
-		final value = Geometry.cos(this.toRadians() + Geometry.MINUS_HALF_PI);
+	public extern inline function toVec2D(length: Float): TmpVec2D {
+		var xFactor = Geometry.sin(this.toRadians());
 
-		if (nearlyEqual(value, 0.0)) return 0.0;
-		if (nearlyEqual(value, 1.0)) return 1.0;
-		if (nearlyEqual(value, -1.0)) return -1.0;
-		if (nearlyEqual(value, 0.5)) return 0.5;
-		if (nearlyEqual(value, -0.5)) return -0.5;
+		if (nearlyEqual(xFactor, 0.0)) xFactor = 0.0;
+		if (nearlyEqual(xFactor, 1.0)) xFactor = 1.0;
+		if (nearlyEqual(xFactor, -1.0)) xFactor = -1.0;
+		if (nearlyEqual(xFactor, 0.5)) xFactor = 0.5;
+		if (nearlyEqual(xFactor, -0.5)) xFactor = -0.5;
 
-		return value;
-	}
+		var yFactor = -Geometry.cos(this.toRadians());
 
-	/**
-		Returns trigonometric sine of `this` azimuth.
+		if (nearlyEqual(yFactor, 0.0)) yFactor = 0.0;
+		if (nearlyEqual(yFactor, 1.0)) yFactor = 1.0;
+		if (nearlyEqual(yFactor, -1.0)) yFactor = -1.0;
+		if (nearlyEqual(yFactor, 0.5)) yFactor = 0.5;
+		if (nearlyEqual(yFactor, -0.5)) yFactor = -0.5;
 
-		Should not be used in runtime as this also does some error correction.
-	**/
-	public function sin(): Float {
-		final value = Geometry.sin(this.toRadians() + Geometry.MINUS_HALF_PI);
-
-		if (nearlyEqual(value, 0.0)) return 0.0;
-		if (nearlyEqual(value, 1.0)) return 1.0;
-		if (nearlyEqual(value, -1.0)) return -1.0;
-		if (nearlyEqual(value, 0.5)) return 0.5;
-		if (nearlyEqual(value, -0.5)) return -0.5;
-
-		return value;
+		return { x: xFactor * length, y: yFactor * length };
 	}
 }

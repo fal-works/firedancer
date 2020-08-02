@@ -30,9 +30,8 @@ abstract VecConstant(VecConstantEnum) from VecConstantEnum to VecConstantEnum {
 			case Cartesian(x, y):
 				Vec(x, y);
 			case Polar(length, angle):
-				final x: Float = length.toFloat() * angle.toAzimuth().cos();
-				final y: Float = length.toFloat() * angle.toAzimuth().sin();
-				Vec(x, y);
+				final vec = angle.toAzimuth().toVec2D(length.toFloat());
+				Vec(vec.x, vec.y);
 		}
 	}
 
