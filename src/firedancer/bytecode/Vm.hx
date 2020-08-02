@@ -277,7 +277,7 @@ class Vm {
 				}
 
 				switch readOp() {
-					case PushInt:
+					case PushIntC:
 						pushInt(readCodeI32());
 					case PeekFloat:
 						setVolFloat(peekFloatSkipped(readCodeI32()));

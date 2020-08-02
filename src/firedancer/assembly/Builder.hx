@@ -5,10 +5,10 @@ package firedancer.assembly;
 **/
 class Builder {
 	/**
-		Creates a `PushInt` statement.
+		Creates a `PushIntC` statement.
 	**/
-	public static inline function pushInt(v: Int): AssemblyStatement {
-		return new AssemblyStatement(PushInt, [Int(v)]);
+	public static inline function pushIntC(v: Int): AssemblyStatement {
+		return new AssemblyStatement(PushIntC, [Int(v)]);
 	}
 
 	/**
@@ -104,7 +104,7 @@ class Builder {
 
 		return [
 			[
-				pushInt(count),
+				pushIntC(count),
 				countDownJump(bodyLength + Opcode.Jump.getBytecodeLength())
 			],
 			body,

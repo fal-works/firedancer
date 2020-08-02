@@ -27,7 +27,7 @@ class Wait extends AstNode implements ripper.Data {
 			return if (frames.int() <= unrollThreshold) {
 				loopUnrolled(0...frames, _ -> breakFrame());
 			} else {
-				[pushInt(frames), countDownbreak()];
+				[pushIntC(frames), countDownbreak()];
 			}
 		}
 
