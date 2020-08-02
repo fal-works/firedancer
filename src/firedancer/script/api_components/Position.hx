@@ -14,7 +14,7 @@ class Position {
 	/**
 		Sets position to `(distance, bearing)`.
 	**/
-	public inline function set(distance: FloatExpression, bearing: AzimuthExpression) {
+	public inline function set(distance: FloatExpression, bearing: AngleExpression) {
 		final vec: VecExpression = { length: distance, angle: bearing };
 		return new OperateActor(Position, SetVector(vec));
 	}
@@ -22,7 +22,7 @@ class Position {
 	/**
 		Adds a vector of `(distance, bearing)` to position.
 	**/
-	public inline function add(distance: FloatExpression, bearing: AzimuthExpression) {
+	public inline function add(distance: FloatExpression, bearing: AngleExpression) {
 		final vec: VecExpression = { length: distance, angle: bearing };
 		return new OperateActor(Position, AddVector(vec));
 	}
@@ -81,7 +81,7 @@ class Bearing {
 	/**
 		Sets the angle of position vector to `value`.
 	**/
-	public inline function set(value: AzimuthExpression) {
+	public inline function set(value: AngleExpression) {
 		return new OperateActor(Position, SetAngle(value));
 	}
 

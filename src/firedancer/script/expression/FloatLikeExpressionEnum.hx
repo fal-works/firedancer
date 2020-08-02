@@ -1,7 +1,5 @@
 package firedancer.script.expression;
 
-import reckoner.Geometry;
-import firedancer.script.expression.subtypes.FloatLikeRuntimeExpressionEnum;
 import firedancer.assembly.Opcode;
 import firedancer.assembly.AssemblyStatement;
 import firedancer.assembly.AssemblyCode;
@@ -18,17 +16,6 @@ enum FloatLikeExpressionEnum {
 }
 
 class FloatLikeExpressionExtensionEnum {
-	public static function toAzimuthExpression(
-		_this: FloatLikeExpressionEnum
-	): AzimuthExpression {
-		return switch _this {
-			case Constant(value):
-				value.toAzimuth();
-			default:
-				_this;
-		};
-	}
-
 	/**
 		Creates an `AssemblyCode` that assigns `this` value to the current volatile float.
 	**/

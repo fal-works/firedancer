@@ -18,9 +18,6 @@ abstract AngleExpression(
 	@:from static extern inline function fromConstantInt(value: Int): AngleExpression
 		return fromConstantAngle(value);
 
-	@:to public extern inline function toAzimuthExpression(): AzimuthExpression
-		return this.toAzimuthExpression();
-
 	@:op(A / B)
 	extern inline function divide(divisor: Float): AngleExpression
 		return this.divide(divisor);

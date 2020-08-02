@@ -14,7 +14,7 @@ class ShotPosition {
 	/**
 		Sets shot position to a vector of `(distance, bearing)`.
 	**/
-	public inline function set(distance: FloatExpression, bearing: AzimuthExpression) {
+	public inline function set(distance: FloatExpression, bearing: AngleExpression) {
 		final vec: VecExpression = { length: distance, angle: bearing };
 		return new OperateActor(ShotPosition, SetVector(vec));
 	}
@@ -22,7 +22,7 @@ class ShotPosition {
 	/**
 		Adds a vector of `(distance, bearing)` to shot position.
 	**/
-	public inline function add(distance: FloatExpression, bearing: AzimuthExpression) {
+	public inline function add(distance: FloatExpression, bearing: AngleExpression) {
 		final vec: VecExpression = { length: distance, angle: bearing };
 		return new OperateActor(ShotPosition, AddVector(vec));
 	}
@@ -81,7 +81,7 @@ class ShotBearing {
 	/**
 		Sets the angle of shot position vector to `value`.
 	**/
-	public inline function set(value: AzimuthExpression) {
+	public inline function set(value: AngleExpression) {
 		return new OperateActor(ShotPosition, SetAngle(value));
 	}
 

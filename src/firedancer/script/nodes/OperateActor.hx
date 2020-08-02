@@ -149,7 +149,7 @@ enum ActorAttributeOperation {
 	// AddY(arg: FloatExpression);
 	SetLength(arg: FloatExpression);
 	AddLength(arg: FloatExpression);
-	SetAngle(arg: AzimuthExpression);
+	SetAngle(arg: AngleExpression);
 	AddAngle(arg: AngleExpression);
 }
 

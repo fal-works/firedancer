@@ -7,7 +7,7 @@ import firedancer.assembly.Opcode;
 **/
 enum VecRuntimeExpressionEnum {
 	Cartesian(x: FloatExpression, y: FloatExpression);
-	Polar(length: FloatExpression, angle: AzimuthExpression);
+	Polar(length: FloatExpression, angle: AngleExpression);
 
 	/**
 		@param loadV `Opcode` for loading the value to the current volatile vector.

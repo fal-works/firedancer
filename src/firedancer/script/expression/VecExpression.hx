@@ -41,7 +41,7 @@ abstract VecExpression(VecExpressionEnum) from VecExpressionEnum to VecExpressio
 	}
 
 	@:from public static function fromPolarExpressionss(
-		args: { length: FloatExpression, angle: AzimuthExpression }
+		args: { length: FloatExpression, angle: AngleExpression }
 	): VecExpression {
 		final length = args.length.toEnum();
 		final angle = args.angle.toEnum();
