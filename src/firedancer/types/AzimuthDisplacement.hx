@@ -3,55 +3,31 @@ package firedancer.types;
 import reckoner.Geometry;
 
 /**
-	Displacement of `Azimuth`.
-	Implicit cast from degrees. The internal representation is in radians.
+	Angle in degrees (clockwise, 360 for a full rotation).
 **/
-abstract AzimuthDisplacement(Float) {
-	/**
-		Creates an `AzimuthDisplacement` value from degrees (clockwise, 360 for a full rotation).
-	**/
-	@:from public static extern inline function fromDegrees(
-		degrees: Float
-	): AzimuthDisplacement {
-		return new AzimuthDisplacement(Geometry.degreesToRadians(degrees));
-	}
+abstract AzimuthDisplacement(Float) from Float {
+	public static extern inline final zero: AzimuthDisplacement = 0.0;
 
-	@:op(A + B) extern inline function plus(
-		other: AzimuthDisplacement
-	): AzimuthDisplacement {
-		return new AzimuthDisplacement(this + other.toRadians());
-	}
+	public static extern inline function fromDegrees(v: Float): AzimuthDisplacement
+		return v;
 
-	@:op(A - B) extern inline function minus(
-		other: AzimuthDisplacement
-	): AzimuthDisplacement {
-		return new AzimuthDisplacement(this - other.toRadians());
-	}
+	@:op(A + B) function plus(other: AzimuthDisplacement): AzimuthDisplacement;
 
-	@:op(A * B) extern inline function multiply(
-		factor: Float
-	): AzimuthDisplacement {
-		return new AzimuthDisplacement(factor * this);
-	}
+	@:op(A - B) function minus(other: AzimuthDisplacement): AzimuthDisplacement;
 
-	@:op(A / B) extern inline function divide(
-		divisor: Float
-	): AzimuthDisplacement {
-		return new AzimuthDisplacement(this / divisor);
-	}
+	@:op(A * B) function multiply(factor: Float): AzimuthDisplacement;
+
+	@:op(A / B) function divide(divisor: Float): AzimuthDisplacement;
 
 	/**
 		Casts `this` to `Float` in radians.
 	**/
 	public extern inline function toRadians(): Float
-		return this;
+		return Geometry.degreesToRadians(this);
 
 	/**
 		Converts `this` to `Float` in degrees.
 	**/
 	public inline function toDegrees(): Float
-		return Geometry.radiansToDegrees(this);
-
-	extern inline function new(radians: Float)
-		this = radians;
+		return this;
 }

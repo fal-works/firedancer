@@ -1,5 +1,6 @@
 package firedancer.script.expression;
 
+import reckoner.Geometry;
 import firedancer.script.expression.subtypes.FloatLikeRuntimeExpressionEnum;
 import firedancer.assembly.Opcode;
 import firedancer.assembly.AssemblyStatement;
@@ -17,7 +18,9 @@ enum FloatLikeExpressionEnum {
 }
 
 class FloatLikeExpressionExtensionEnum {
-	public static function toAzimuthExpression(_this: FloatLikeExpressionEnum): AzimuthExpression {
+	public static function toAzimuthExpression(
+		_this: FloatLikeExpressionEnum
+	): AzimuthExpression {
 		return switch _this {
 			case Constant(value):
 				value.toAzimuth();
@@ -30,13 +33,24 @@ class FloatLikeExpressionExtensionEnum {
 		Creates an `AssemblyCode` that assigns `this` value to the current volatile float.
 	**/
 	public static function loadToVolatileFloat(
-		_this: FloatLikeExpressionEnum
+		_this: FloatLikeExpressionEnum,
+		type: FloatLikeExpressionType
 	): AssemblyCode {
 		return switch _this {
 			case Constant(value):
+				switch type {
+					case Azimuth: value += Geometry.MINUS_HALF_PI;
+					case Default:
+				}
 				new AssemblyStatement(LoadFloatCV, [value]);
 			case Runtime(expression):
-				expression.loadToVolatileFloat();
+				final code = expression.loadToVolatileFloat();
+				switch type {
+					case Azimuth:
+						code.pushStatement(AddFloatVCV, [Float(Geometry.MINUS_HALF_PI)]);
+					case Default:
+				}
+				code;
 		}
 	}
 

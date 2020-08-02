@@ -49,7 +49,7 @@ abstract VecExpression(VecExpressionEnum) from VecExpressionEnum to VecExpressio
 			case Constant(constLength):
 				switch angle {
 					case Constant(constAngle):
-						fromPolarConstants({ length: constLength, angle: constAngle });
+						fromPolarConstants({ length: constLength, angle: constAngle.toAzimuth() });
 					default:
 						VecExpressionEnum.Runtime(Polar(length, angle));
 				}
@@ -61,7 +61,7 @@ abstract VecExpression(VecExpressionEnum) from VecExpressionEnum to VecExpressio
 	@:op(A / B) public function divide(divisor: Float): VecExpression {
 		final expression: VecExpressionEnum = switch this {
 			case Constant(value):
-				Constant(value / divisor);
+				Constant(value.divide(divisor));
 			case Runtime(expression):
 				Runtime(expression / divisor);
 		}

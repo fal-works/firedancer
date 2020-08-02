@@ -40,15 +40,16 @@ class Vm {
 		var stack: ByteStackData;
 		var stackSize: UInt;
 
-		var volFloatPrev: Float;
+		var volFloatSaved: Float;
 		var volFloat: Float;
 		var volX: Float;
 		var volY: Float;
 
-		inline function setVolFloat(v: Float): Void {
-			volFloatPrev = volFloat;
+		inline function setVolFloat(v: Float): Void
 			volFloat = v;
-		}
+
+		inline function saveFloat(v: Float): Void
+			volFloatSaved = v;
 
 		inline function setVolX(x: Float): Void
 			volX = x;
@@ -261,7 +262,7 @@ class Vm {
 			stack = thread.stack;
 			stackSize = thread.stackSize;
 
-			volFloatPrev = 0.0;
+			volFloatSaved = 0.0;
 			volFloat = 0.0;
 			volX = 0.0;
 			volY = 0.0;
@@ -327,7 +328,7 @@ class Vm {
 					case AddFloatVCV:
 						setVolFloat(volFloat + readCodeF64());
 					case AddFloatVVV:
-						setVolFloat(volFloatPrev + volFloat);
+						setVolFloat(volFloatSaved + volFloat);
 					case MultFloatVCS:
 						final multiplier = readCodeF64();
 						pushFloat(volFloat * multiplier);
@@ -345,10 +346,12 @@ class Vm {
 							targetPosition.y() - getY(),
 							targetPosition.x() - getX()
 						));
+					case SaveFloatV:
+						saveFloat(volFloat);
 					case CastCartesianVV:
-						setVolVec(volFloatPrev, volFloat);
+						setVolVec(volFloatSaved, volFloat);
 					case CastPolarVV:
-						setVolVec(volFloatPrev * cos(volFloat), volFloatPrev * sin(volFloat));
+						setVolVec(volFloatSaved * cos(volFloat), volFloatSaved * sin(volFloat));
 					case RandomFloatCV:
 						setVolFloat(Random.float(readCodeF64()));
 					case RandomFloatVV:

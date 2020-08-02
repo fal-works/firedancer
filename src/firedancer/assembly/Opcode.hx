@@ -44,6 +44,7 @@ enum abstract Opcode(Int) to Int {
 			case Opcode.AddFloatVVV: AddFloatVVV;
 			case Opcode.MultFloatVCS: MultFloatVCS;
 			case Opcode.MultVecVCS: MultVecVCS;
+			case Opcode.SaveFloatV: SaveFloatV;
 			case Opcode.CastCartesianVV: CastCartesianVV;
 			case Opcode.CastPolarVV: CastPolarVV;
 			case Opcode.RandomFloatCV: RandomFloatCV;
@@ -275,7 +276,7 @@ enum abstract Opcode(Int) to Int {
 	final AddFloatVCV;
 
 	/**
-		Adds the last loaded two volatile floats and reassigns the result to the volatile float.
+		Adds the last saved volatile float to the current volatile float.
 	**/
 	final AddFloatVVV;
 
@@ -310,14 +311,19 @@ enum abstract Opcode(Int) to Int {
 	final LoadBearingToTargetV;
 
 	/**
-		Interprets the last loaded volatile float values `(prev, cur)` as `(x, y)` and
-		assigns them to the volatile vector.
+		Saves the current volatile float.
+	**/
+	final SaveFloatV;
+
+	/**
+		Interprets the last saved volatile float as `x` and the current volatile float as `y`,
+		and assigns them to the volatile vector.
 	**/
 	final CastCartesianVV;
 
 	/**
-		Interprets the last loaded volatile float values `(prev, cur)` as `(length, angle)` and
-		assigns their cartesian representation to the volatile vector.
+		Interprets the last saved volatile float as `length` and the current volatile float as `angle`,
+		and assigns their cartesian representation to the volatile vector.
 	**/
 	final CastPolarVV;
 
@@ -634,6 +640,7 @@ class OpcodeExtension {
 			case AddFloatVVV: "add_float_vvv";
 			case MultFloatVCS: "mult_float_vcs";
 			case MultVecVCS: "mult_vec_vcs";
+			case SaveFloatV: "save_float_v";
 			case CastCartesianVV: "cast_cartesian_vv";
 			case CastPolarVV: "cast_polar_vv";
 			case RandomFloatCV: "random_float_cv";
@@ -765,6 +772,7 @@ class OpcodeExtension {
 			case AddFloatVCV: [Float]; // value to add
 			case AddFloatVVV: [];
 			case MultFloatVCS | MultVecVCS: [Float]; // multiplier value
+			case SaveFloatV: [];
 			case CastCartesianVV | CastPolarVV: [];
 			case RandomFloatCV: [Float];
 			case RandomFloatVV: [];
