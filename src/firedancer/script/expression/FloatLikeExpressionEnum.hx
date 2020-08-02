@@ -33,24 +33,13 @@ class FloatLikeExpressionExtensionEnum {
 		Creates an `AssemblyCode` that assigns `this` value to the current volatile float.
 	**/
 	public static function loadToVolatileFloat(
-		_this: FloatLikeExpressionEnum,
-		type: FloatLikeExpressionType
+		_this: FloatLikeExpressionEnum
 	): AssemblyCode {
 		return switch _this {
 			case Constant(value):
-				switch type {
-					case Azimuth: value += Geometry.MINUS_HALF_PI;
-					case Default:
-				}
 				new AssemblyStatement(LoadFloatCV, [value]);
 			case Runtime(expression):
-				final code = expression.loadToVolatileFloat();
-				switch type {
-					case Azimuth:
-						code.pushStatement(AddFloatVCV, [Float(Geometry.MINUS_HALF_PI)]);
-					case Default:
-				}
-				code;
+				expression.loadToVolatileFloat();
 		}
 	}
 

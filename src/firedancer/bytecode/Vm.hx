@@ -351,7 +351,8 @@ class Vm {
 					case CastCartesianVV:
 						setVolVec(volFloatSaved, volFloat);
 					case CastPolarVV:
-						setVolVec(volFloatSaved * cos(volFloat), volFloatSaved * sin(volFloat));
+						// north-based & clockwise
+						setVolVec(volFloatSaved * sin(volFloat), volFloatSaved * -cos(volFloat));
 					case RandomFloatCV:
 						setVolFloat(Random.float(readCodeF64()));
 					case RandomFloatVV:

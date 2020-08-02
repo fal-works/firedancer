@@ -31,16 +31,16 @@ abstract VecRuntimeExpression(VecRuntimeExpressionEnum) from VecRuntimeExpressio
 		return switch this {
 			case Cartesian(x, y):
 				[
-					x.loadToVolatileFloat(Default),
+					x.loadToVolatileFloat(),
 					[new AssemblyStatement(SaveFloatV, [])],
-					y.loadToVolatileFloat(Default),
+					y.loadToVolatileFloat(),
 					[new AssemblyStatement(CastCartesianVV, [])]
 				].flatten();
 			case Polar(length, angle):
 				[
-					length.loadToVolatileFloat(Default),
+					length.loadToVolatileFloat(),
 					[new AssemblyStatement(SaveFloatV, [])],
-					angle.loadToVolatileFloat(Azimuth),
+					angle.loadToVolatileFloat(),
 					[new AssemblyStatement(CastPolarVV, [])]
 				].flatten();
 			case Variable(loadV):
