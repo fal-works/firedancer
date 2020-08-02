@@ -5,11 +5,11 @@ import banker.binary.internal.Constants.*;
 /**
 	Object for specifying operand types of any `AssemblyStatement`.
 **/
-abstract StatementType(Array<OperandType>) from Array<OperandType> {
+abstract StatementType(Array<ConstantOperandType>) from Array<ConstantOperandType> {
 	/**
-		Casts `this` to the underlying type (an array of `OperandType`).
+		Casts `this` to the underlying type (an array of `ConstantOperandType`).
 	**/
-	@:to public extern inline function operandTypes(): Array<OperandType>
+	@:to public extern inline function operandTypes(): Array<ConstantOperandType>
 		return this;
 
 	/**

@@ -1,7 +1,7 @@
 package firedancer.script.expression.subtypes;
 
 import firedancer.types.Azimuth;
-import firedancer.assembly.Operand;
+import firedancer.assembly.ConstantOperand;
 import firedancer.assembly.Opcode;
 import firedancer.assembly.AssemblyStatement;
 import firedancer.assembly.AssemblyCode;
@@ -25,7 +25,7 @@ abstract VecConstant(VecConstantEnum) from VecConstantEnum to VecConstantEnum {
 		);
 	}
 
-	@:to public function toOperand(): Operand {
+	@:to public function toOperand(): ConstantOperand {
 		return switch this {
 			case Cartesian(x, y):
 				Vec(x, y);

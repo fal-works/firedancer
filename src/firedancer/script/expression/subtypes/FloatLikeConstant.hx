@@ -1,6 +1,6 @@
 package firedancer.script.expression.subtypes;
 
-import firedancer.assembly.Operand;
+import firedancer.assembly.ConstantOperand;
 import firedancer.types.Azimuth;
 import firedancer.types.AzimuthDisplacement;
 
@@ -43,7 +43,7 @@ abstract FloatLikeConstant(
 		}
 	}
 
-	@:to public extern inline function toOperand(): Operand
+	@:to public extern inline function toOperand(): ConstantOperand
 		return Float(toFloat());
 
 	@:op(A / B) function divide(divisor: Float): FloatLikeConstant {

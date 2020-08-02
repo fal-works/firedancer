@@ -1,9 +1,9 @@
 package firedancer.assembly;
 
 /**
-	Operand value in `AssemblyStatement`.
+	Constant operand value to be passed to an `Opcode` in `AssemblyStatement`.
 **/
-enum Operand {
+enum ConstantOperand {
 	/**
 		A 32-bit integer value.
 	**/

@@ -1,9 +1,9 @@
 package firedancer.assembly;
 
 /**
-	Type of `Operand`.
+	Type of `ConstantOperand`.
 **/
-enum abstract OperandType(Int) {
+enum abstract ConstantOperandType(Int) {
 	/**
 		A 32-bit integer value.
 	**/

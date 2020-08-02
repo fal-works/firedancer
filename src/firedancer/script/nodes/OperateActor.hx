@@ -1,6 +1,6 @@
 package firedancer.script.nodes;
 
-import firedancer.assembly.Operand;
+import firedancer.assembly.ConstantOperand;
 import firedancer.assembly.AssemblyStatement;
 import firedancer.types.NInt;
 import firedancer.assembly.AssemblyCode;
@@ -239,7 +239,7 @@ class ActorAttributeOperationExtension {
 							case ShotPosition: CalcRelativeShotDistanceCV;
 							case ShotVelocity: CalcRelativeShotSpeedCV;
 						};
-						final operands:Array<Operand> = [value.toOperand()];
+						final operands:Array<ConstantOperand> = [value.toOperand()];
 						calcRelative = statement(opcode, operands);
 					case Runtime(expression):
 						final calcRelativeVV = switch attribute {
@@ -271,7 +271,7 @@ class ActorAttributeOperationExtension {
 							case ShotPosition: CalcRelativeShotBearingCV;
 							case ShotVelocity: CalcRelativeShotDirectionCV;
 						};
-						final operands:Array<Operand> = [value];
+						final operands:Array<ConstantOperand> = [value];
 						calcRelative = statement(opcode, operands);
 					case Runtime(expression):
 						final calcRelativeVV = switch attribute {

@@ -14,7 +14,7 @@ abstract AssemblyStatement(Data) from Data {
 	**/
 	public static extern inline function create(
 		opcode: Opcode,
-		?operands: Array<Operand>
+		?operands: Array<ConstantOperand>
 	): AssemblyStatement {
 		return new AssemblyStatement(opcode, operands.orNew());
 	}
@@ -26,7 +26,7 @@ abstract AssemblyStatement(Data) from Data {
 		return new AssemblyStatement(opcode, []);
 	}
 
-	public extern inline function new(opcode: Opcode, operands: Array<Operand>) {
+	public extern inline function new(opcode: Opcode, operands: Array<ConstantOperand>) {
 		#if debug
 		// validate operands
 		final operandTypes = opcode.toStatementType().operandTypes();
@@ -50,7 +50,7 @@ abstract AssemblyStatement(Data) from Data {
 @:ripper_verified
 private class Data implements ripper.Data {
 	public final opcode: Opcode;
-	public final operands: Array<Operand>;
+	public final operands: Array<ConstantOperand>;
 
 	public function bytecodeLength(): UInt {
 		var len = Opcode.size;
