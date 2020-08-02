@@ -48,14 +48,16 @@ class FloatUnaryOperatorType {
 @:structInit
 class FloatBinaryOperatorType {
 	/**
-		Any `Opcode` that operates both the volatile float and a given constant float
-		and then reassigns the result to the volatile float.
+		Any `Opcode` that operates the two below and reassigns the result to the volatile float.
+		- The current volatile float
+		- The given constant float
 	**/
 	public final operateFloatsVCV: Maybe<Opcode>;
 
 	/**
-		Any `Opcode` that operates the last loaded two volatile float values
-		and reassigns the result to the volatile float.
+		Any `Opcode` that operates the two below and reassigns the result to the volatile float.
+		- The last saved volatile float
+		- The current volatile float
 	**/
 	public final operateFloatsVVV: Opcode;
 
