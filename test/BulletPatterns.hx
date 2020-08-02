@@ -83,6 +83,15 @@ class BulletPatterns {
 		])
 	];
 
+	static final randomTest: Ast = [
+		shot.velocity.set(5, 180),
+		loop([
+			fire(),
+			shot.direction.set(random.float(360)),
+			wait(1)
+		])
+	];
+
 	static final sandbox: Ast = loop([
 		wait(30),
 		shot.velocity.set(5, 180),
@@ -98,7 +107,7 @@ class BulletPatterns {
 		velocity.set(5, 210)
 	]).count(2);
 
-	static final testAst = test(vanishTest); // Change this for testing
+	static final testAst = test(randomTest); // Change this for testing
 
 	public static final context = compile(["test" => testAst]);
 	public static final testPattern = context.getBytecodeByName("test");

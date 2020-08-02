@@ -6,6 +6,7 @@ import firedancer.script.nodes.*;
 import firedancer.script.api_components.Position;
 import firedancer.script.api_components.Velocity;
 import firedancer.script.api_components.Shot;
+import firedancer.script.api_components.Random;
 #if debug
 import sneaker.print.Printer.println;
 #end
@@ -45,6 +46,11 @@ class Api {
 		Provides functions for operating shot position/velocity.
 	**/
 	public static final shot = new Shot();
+
+	/**
+		Provides functions for generating pseudorandom numbers.
+	**/
+	public static final random = new Random();
 
 	/**
 		Waits `frames`.

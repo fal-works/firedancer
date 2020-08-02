@@ -15,7 +15,17 @@ abstract FloatLikeRuntimeExpression(
 	**/
 	public function loadToVolatileFloat(): AssemblyCode {
 		return switch this {
-			case Variable(loadV): new AssemblyStatement(loadV, []);
+			case Variable(loadV):
+				new AssemblyStatement(loadV, []);
+			case UnaryOperator(type, operand):
+				switch operand {
+					case Constant(value):
+						new AssemblyStatement(type.operateFloatCV, [value]);
+					case Runtime(expression):
+						final code = expression.loadToVolatileFloat();
+						code.push(new AssemblyStatement(type.operateFloatVV, []));
+						code;
+				};
 		}
 	}
 
