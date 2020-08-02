@@ -114,6 +114,7 @@ class BulletPatterns {
 
 	static function test(ast: Ast): Ast {
 		return [
+			// position.cartesian.add(-160, 0),
 			velocity.set(10, 180),
 			speed.set(0).frames(60),
 			ast
