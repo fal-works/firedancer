@@ -2,6 +2,7 @@ package firedancer.script.api_components;
 
 import firedancer.script.expression.FloatExpression;
 import firedancer.script.expression.FloatLikeExpressionEnum;
+import firedancer.assembly.Opcode.*;
 
 /**
 	Provides functions for generating pseudorandom numbers.
@@ -14,8 +15,8 @@ class Random {
 	**/
 	public inline function float(max: FloatExpression): FloatExpression {
 		return FloatLikeExpressionEnum.Runtime(UnaryOperator({
-			operateFloatCV: RandomFloatCV,
-			operateFloatVV: RandomFloatVV
+			operateFloatCV: general(RandomFloatCV),
+			operateFloatVV: general(RandomFloatVV)
 		}, max));
 	}
 
@@ -26,8 +27,8 @@ class Random {
 		final centralAngle = Nulls.coalesce(centralAngle, 360.0);
 
 		return FloatLikeExpressionEnum.Runtime(UnaryOperator({
-			operateFloatCV: RandomFloatSignedCV,
-			operateFloatVV: RandomFloatSignedVV
+			operateFloatCV: general(RandomFloatSignedCV),
+			operateFloatVV: general(RandomFloatSignedVV)
 		}, centralAngle / 2));
 	}
 }

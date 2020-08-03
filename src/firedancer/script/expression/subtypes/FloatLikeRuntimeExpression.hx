@@ -2,6 +2,7 @@ package firedancer.script.expression.subtypes;
 
 import firedancer.assembly.AssemblyCode;
 import firedancer.assembly.AssemblyStatement;
+import firedancer.assembly.Opcode.*;
 
 /**
 	Abstract over `FloatLikeRuntimeExpressionEnum`.
@@ -35,12 +36,12 @@ abstract FloatLikeRuntimeExpression(
 					case Constant(valueA):
 						switch operandB {
 							case Constant(valueB):
-								code.pushStatement(LoadFloatCV, [valueA]);
+								code.pushStatement(general(LoadFloatCV), [valueA]);
 								if (operateFloatsVCV.isSome())
 									code.pushStatement(operateFloatsVCV.unwrap(), [valueB]);
 								else {
-									code.pushStatement(SaveFloatV);
-									code.pushStatement(LoadFloatCV, [valueB]);
+									code.pushStatement(general(SaveFloatV));
+									code.pushStatement(general(LoadFloatCV), [valueB]);
 									code.pushStatement(operateFloatsVVV, []);
 								}
 							case Runtime(expressionB):
@@ -48,8 +49,8 @@ abstract FloatLikeRuntimeExpression(
 									code.pushFromArray(expressionB.loadToVolatileFloat());
 									code.pushStatement(operateFloatsCVV.unwrap(), [valueA]);
 								} else {
-									code.pushStatement(LoadFloatCV, [valueA]);
-									code.pushStatement(SaveFloatV);
+									code.pushStatement(general(LoadFloatCV), [valueA]);
+									code.pushStatement(general(SaveFloatV));
 									code.pushFromArray(expressionB.loadToVolatileFloat());
 									code.pushStatement(operateFloatsVVV);
 								}
@@ -62,13 +63,13 @@ abstract FloatLikeRuntimeExpression(
 									code.pushStatement(operateFloatsVCV.unwrap(), [valueB]);
 								} else {
 									code.pushFromArray(expressionA.loadToVolatileFloat());
-									code.pushStatement(SaveFloatV);
-									code.pushStatement(LoadFloatCV, [valueB]);
+									code.pushStatement(general(SaveFloatV));
+									code.pushStatement(general(LoadFloatCV), [valueB]);
 									code.pushStatement(operateFloatsVVV);
 								}
 							case Runtime(expressionB):
 								code.pushFromArray(expressionA.loadToVolatileFloat());
-								code.pushStatement(SaveFloatV);
+								code.pushStatement(general(SaveFloatV));
 								code.pushFromArray(expressionB.loadToVolatileFloat());
 								code.pushStatement(operateFloatsVVV);
 						};

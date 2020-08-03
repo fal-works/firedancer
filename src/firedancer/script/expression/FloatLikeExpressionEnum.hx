@@ -1,6 +1,7 @@
 package firedancer.script.expression;
 
 import firedancer.assembly.Opcode;
+import firedancer.assembly.Opcode.*;
 import firedancer.assembly.AssemblyStatement;
 import firedancer.assembly.AssemblyCode;
 import firedancer.script.expression.subtypes.FloatLikeConstant;
@@ -24,7 +25,7 @@ class FloatLikeExpressionExtensionEnum {
 	): AssemblyCode {
 		return switch _this {
 			case Constant(value):
-				new AssemblyStatement(LoadFloatCV, [value]);
+				new AssemblyStatement(general(LoadFloatCV), [value]);
 			case Runtime(expression):
 				expression.loadToVolatileFloat();
 		}
@@ -64,7 +65,11 @@ class FloatLikeExpressionExtensionEnum {
 		}
 
 		return Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperator(
-			{ operateFloatsVCV: AddFloatVCV, operateFloatsCVV: AddFloatVCV, operateFloatsVVV: AddFloatVVV },
+			{
+				operateFloatsVCV: general(AddFloatVCV),
+				operateFloatsCVV: general(AddFloatVCV),
+				operateFloatsVVV: general(AddFloatVVV)
+			},
 			_this,
 			other
 		));
@@ -85,7 +90,11 @@ class FloatLikeExpressionExtensionEnum {
 		}
 
 		return Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperator(
-			{ operateFloatsVCV: SubFloatVCV, operateFloatsCVV: SubFloatCVV, operateFloatsVVV: SubFloatVVV },
+			{
+				operateFloatsVCV: general(SubFloatVCV),
+				operateFloatsCVV: general(SubFloatCVV),
+				operateFloatsVVV: general(SubFloatVVV)
+			},
 			_this,
 			other
 		));

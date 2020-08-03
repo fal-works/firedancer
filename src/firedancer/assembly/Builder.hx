@@ -1,5 +1,8 @@
 package firedancer.assembly;
 
+import firedancer.assembly.Opcode.*;
+import firedancer.assembly.operation.GeneralOperation;
+
 /**
 	Functions for creating `AssemblyStatement`/`AssemblyCode` instances.
 **/
@@ -8,7 +11,7 @@ class Builder {
 		Creates a `PushIntC` statement.
 	**/
 	public static inline function pushIntC(v: Int): AssemblyStatement {
-		return new AssemblyStatement(PushIntC, [Int(v)]);
+		return new AssemblyStatement(general(PushIntC), [Int(v)]);
 	}
 
 	/**
@@ -16,14 +19,14 @@ class Builder {
 		@param bytesToSkip Bytes to be skipped from the stack top. `0` for peeking from the top.
 	**/
 	public static inline function peekFloat(bytesToSkip: Int = 0): AssemblyStatement {
-		return new AssemblyStatement(PeekFloat, [Int(bytesToSkip)]);
+		return new AssemblyStatement(general(PeekFloat), [Int(bytesToSkip)]);
 	}
 
 	/**
 		Creates a `DropFloat` statement.
 	**/
 	public static inline function dropFloat(): AssemblyStatement {
-		return new AssemblyStatement(DropFloat, []);
+		return new AssemblyStatement(general(DropFloat), []);
 	}
 
 	/**
@@ -31,28 +34,28 @@ class Builder {
 		@param bytesToSkip Bytes to be skipped from the stack top. `0` for peeking from the top.
 	**/
 	public static inline function peekVec(bytesToSkip: Int = 0): AssemblyStatement {
-		return new AssemblyStatement(PeekVec, [Int(bytesToSkip)]);
+		return new AssemblyStatement(general(PeekVec), [Int(bytesToSkip)]);
 	}
 
 	/**
 		Creates a `DropVec` statement.
 	**/
 	public static inline function dropVec(): AssemblyStatement {
-		return new AssemblyStatement(DropVec, []);
+		return new AssemblyStatement(general(DropVec), []);
 	}
 
 	/**
 		Creates a `Break` statement.
 	**/
 	public static inline function breakFrame(): AssemblyStatement {
-		return new AssemblyStatement(Break, []);
+		return new AssemblyStatement(general(Break), []);
 	}
 
 	/**
 		Creates a `CountDownBreak` statement.
 	**/
 	public static inline function countDownbreak(): AssemblyStatement {
-		return new AssemblyStatement(CountDownBreak, []);
+		return new AssemblyStatement(general(CountDownBreak), []);
 	}
 
 	/**
@@ -64,14 +67,14 @@ class Builder {
 			throw 'Invalid value: $lengthInBytes';
 		#end
 
-		return new AssemblyStatement(Jump, [Int(lengthInBytes.int())]);
+		return new AssemblyStatement(general(Jump), [Int(lengthInBytes.int())]);
 	}
 
 	/**
 		Creates a `Jump` statement with a negative argument.
 	**/
 	public static inline function jumpBack(lengthInBytes: UInt): AssemblyStatement {
-		final jumpBackLength = Opcode.Jump.toStatementType().bytecodeLength();
+		final jumpBackLength = GeneralOperation.Jump.toStatementType().bytecodeLength();
 		final totalBackLength = -jumpBackLength - lengthInBytes.int();
 
 		#if debug
@@ -79,21 +82,21 @@ class Builder {
 			throw 'Invalid value: $lengthInBytes';
 		#end
 
-		return new AssemblyStatement(Jump, [Int(totalBackLength)]);
+		return new AssemblyStatement(general(Jump), [Int(totalBackLength)]);
 	}
 
 	/**
 		Creates a `CountDownJump` statement.
 	**/
 	public static inline function countDownJump(lengthInBytes: UInt): AssemblyStatement {
-		return new AssemblyStatement(CountDownJump, [Int(lengthInBytes.int())]);
+		return new AssemblyStatement(general(CountDownJump), [Int(lengthInBytes.int())]);
 	}
 
 	/**
 		Creates a `Decrement` statement.
 	**/
 	public static inline function decrement(): AssemblyStatement {
-		return new AssemblyStatement(Decrement, []);
+		return new AssemblyStatement(general(Decrement), []);
 	}
 
 	/**
@@ -105,11 +108,11 @@ class Builder {
 		return [
 			[
 				pushIntC(count),
-				countDownJump(bodyLength + Opcode.Jump.getBytecodeLength())
+				countDownJump(bodyLength + GeneralOperation.Jump.getBytecodeLength())
 			],
 			body,
 			[
-				jumpBack(body.bytecodeLength() + Opcode.CountDownJump.getBytecodeLength())
+				jumpBack(body.bytecodeLength() + GeneralOperation.CountDownJump.getBytecodeLength())
 			]
 		].flatten();
 	}
@@ -132,9 +135,9 @@ class Builder {
 		fireType: Int = 0
 	): AssemblyStatement {
 		return if (fireType == 0) {
-			new AssemblyStatement(Fire, [Int(bytecodeId)]);
+			new AssemblyStatement(general(Fire), [Int(bytecodeId)]);
 		} else {
-			new AssemblyStatement(FireWithType, [Int(bytecodeId), Int(fireType)]);
+			new AssemblyStatement(general(FireWithType), [Int(bytecodeId), Int(fireType)]);
 		}
 	}
 
@@ -142,20 +145,20 @@ class Builder {
 		Creates a `UseThread` statement.
 	**/
 	public static inline function useThread(bytecodeId: Int): AssemblyStatement {
-		return new AssemblyStatement(UseThread, [Int(bytecodeId)]);
+		return new AssemblyStatement(general(UseThread), [Int(bytecodeId)]);
 	}
 
 	/**
 		Creates an `AwaitThread` statement.
 	**/
 	public static inline function awaitThread(): AssemblyStatement {
-		return new AssemblyStatement(AwaitThread, []);
+		return new AssemblyStatement(general(AwaitThread), []);
 	}
 
 	/**
 		Creates an `End` statement.
 	**/
 	public static inline function end(endCode: Int): AssemblyStatement {
-		return new AssemblyStatement(End, [Int(endCode)]);
+		return new AssemblyStatement(general(End), [Int(endCode)]);
 	}
 }

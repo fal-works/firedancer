@@ -1,6 +1,7 @@
 package firedancer.script.expression.subtypes;
 
 import firedancer.assembly.Opcode;
+import firedancer.assembly.Opcode.*;
 import firedancer.assembly.AssemblyStatement;
 import firedancer.assembly.AssemblyCode;
 
@@ -32,16 +33,16 @@ abstract VecRuntimeExpression(VecRuntimeExpressionEnum) from VecRuntimeExpressio
 			case Cartesian(x, y):
 				[
 					x.loadToVolatileFloat(),
-					[new AssemblyStatement(SaveFloatV, [])],
+					[new AssemblyStatement(general(SaveFloatV), [])],
 					y.loadToVolatileFloat(),
-					[new AssemblyStatement(CastCartesianVV, [])]
+					[new AssemblyStatement(general(CastCartesianVV), [])]
 				].flatten();
 			case Polar(length, angle):
 				[
 					length.loadToVolatileFloat(),
-					[new AssemblyStatement(SaveFloatV, [])],
+					[new AssemblyStatement(general(SaveFloatV), [])],
 					angle.loadToVolatileFloat(),
-					[new AssemblyStatement(CastPolarVV, [])]
+					[new AssemblyStatement(general(CastPolarVV), [])]
 				].flatten();
 			case Variable(loadV):
 				new AssemblyStatement(loadV, []);

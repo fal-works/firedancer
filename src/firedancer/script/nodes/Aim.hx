@@ -22,7 +22,7 @@ class Aim extends AstNode implements ripper.Data {
 		return false;
 
 	override public function toAssembly(context: CompileContext): AssemblyCode {
-		final bearingToTarget = FloatLikeExpressionEnum.Runtime(Variable(LoadBearingToTargetV));
+		final bearingToTarget = FloatLikeExpressionEnum.Runtime(Variable(Opcode.read(LoadBearingToTargetV)));
 		final node = new OperateActor(ShotVelocity, if (speed.isSome()) {
 			SetVector({ length: speed.unwrap(), angle: bearingToTarget });
 		} else SetAngle(bearingToTarget));

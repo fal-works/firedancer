@@ -4,6 +4,8 @@ import sneaker.string_buffer.StringBuffer;
 import firedancer.bytecode.WordArray;
 import firedancer.bytecode.internal.Constants.*;
 
+using firedancer.assembly.OpcodeExtension;
+
 /**
 	A single statement in bullet pattern code written in a virtual assembly language.
 **/
