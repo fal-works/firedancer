@@ -64,7 +64,28 @@ class FloatLikeExpressionExtensionEnum {
 		}
 
 		return Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperator(
-			{ operateFloatsVCV: AddFloatVCV, operateFloatsVVV: AddFloatVVV },
+			{ operateFloatsVCV: AddFloatVCV, operateFloatsCVV: AddFloatVCV, operateFloatsVVV: AddFloatVVV },
+			_this,
+			other
+		));
+	}
+
+	public static function subtract(
+		_this: FloatLikeExpressionEnum,
+		other: FloatLikeExpressionEnum
+	): FloatLikeExpressionEnum {
+		switch _this {
+			case Constant(valueA):
+				switch other {
+					case Constant(valueB):
+						return Constant(valueA - valueB);
+					case Runtime(_):
+				}
+			case Runtime(_):
+		}
+
+		return Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperator(
+			{ operateFloatsVCV: SubFloatVCV, operateFloatsCVV: SubFloatCVV, operateFloatsVVV: SubFloatVVV },
 			_this,
 			other
 		));

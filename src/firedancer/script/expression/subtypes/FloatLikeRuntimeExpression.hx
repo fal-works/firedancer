@@ -29,6 +29,7 @@ abstract FloatLikeRuntimeExpression(
 			case BinaryOperator(type, operandA, operandB):
 				final code: AssemblyCode = [];
 				final operateFloatsVCV = type.operateFloatsVCV;
+				final operateFloatsCVV = type.operateFloatsCVV;
 				final operateFloatsVVV = type.operateFloatsVVV;
 				switch operandA {
 					case Constant(valueA):
@@ -43,9 +44,9 @@ abstract FloatLikeRuntimeExpression(
 									code.pushStatement(operateFloatsVVV, []);
 								}
 							case Runtime(expressionB):
-								if (operateFloatsVCV.isSome()) {
+								if (operateFloatsCVV.isSome()) {
 									code.pushFromArray(expressionB.loadToVolatileFloat());
-									code.pushStatement(operateFloatsVCV.unwrap(), [valueA]);
+									code.pushStatement(operateFloatsCVV.unwrap(), [valueA]);
 								} else {
 									code.pushStatement(LoadFloatCV, [valueA]);
 									code.pushStatement(SaveFloatV);

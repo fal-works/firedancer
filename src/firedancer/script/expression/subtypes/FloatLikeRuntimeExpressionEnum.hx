@@ -49,20 +49,28 @@ class FloatUnaryOperatorType {
 class FloatBinaryOperatorType {
 	/**
 		Any `Opcode` that operates the two below and reassigns the result to the volatile float.
-		- The current volatile float
-		- The given constant float
+		1. The current volatile float
+		2. The given constant float
 	**/
 	public final operateFloatsVCV: Maybe<Opcode>;
 
 	/**
 		Any `Opcode` that operates the two below and reassigns the result to the volatile float.
-		- The last saved volatile float
-		- The current volatile float
+		1. The given constant float
+		2. The current volatile float
+	**/
+	public final operateFloatsCVV: Maybe<Opcode>;
+
+	/**
+		Any `Opcode` that operates the two below and reassigns the result to the volatile float.
+		1. The last saved volatile float
+		2. The current volatile float
 	**/
 	public final operateFloatsVVV: Opcode;
 
-	function new(operateFloatsVVV: Opcode, ?operateFloatsVCV: Opcode) {
+	function new(operateFloatsVVV: Opcode, ?operateFloatsVCV: Opcode, ?operateFloatsCVV: Opcode) {
 		this.operateFloatsVCV = Maybe.from(operateFloatsVCV);
+		this.operateFloatsCVV = Maybe.from(operateFloatsCVV);
 		this.operateFloatsVVV = operateFloatsVVV;
 	}
 }

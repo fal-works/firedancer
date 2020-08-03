@@ -42,6 +42,10 @@ enum abstract Opcode(Int) to Int {
 			case Opcode.LoadBearingToTargetV: LoadBearingToTargetV;
 			case Opcode.AddFloatVCV: AddFloatVCV;
 			case Opcode.AddFloatVVV: AddFloatVVV;
+			case Opcode.SubFloatVCV: SubFloatVCV;
+			case Opcode.SubFloatCVV: SubFloatCVV;
+			case Opcode.SubFloatVVV: SubFloatVVV;
+			case Opcode.MinusFloatV: MinusFloatV;
 			case Opcode.MultFloatVCS: MultFloatVCS;
 			case Opcode.MultVecVCS: MultVecVCS;
 			case Opcode.SaveFloatV: SaveFloatV;
@@ -281,6 +285,26 @@ enum abstract Opcode(Int) to Int {
 		Adds the last saved volatile float to the current volatile float.
 	**/
 	final AddFloatVVV;
+
+	/**
+		Subtracts a given constant float from the current volatile float.
+	**/
+	final SubFloatVCV;
+
+	/**
+		Subtracts the current volatile float from a given constant float and assigns it to the volatile float.
+	**/
+	final SubFloatCVV;
+
+	/**
+		Subtracts the current volatile float from the last saved volatile float and assigns it to the volatile float.
+	**/
+	final SubFloatVVV;
+
+	/**
+		Changes the sign of the current volatile float.
+	**/
+	final MinusFloatV;
 
 	/**
 		Multiplicates the current volatile float by a given constant float and pushes it to the stack top.
@@ -652,6 +676,10 @@ class OpcodeExtension {
 			case LoadBearingToTargetV: "load_bearing_to_target_v";
 			case AddFloatVCV: "add_float_vcv";
 			case AddFloatVVV: "add_float_vvv";
+			case SubFloatVCV: "sub_float_vcv";
+			case SubFloatCVV: "sub_float_cvv";
+			case SubFloatVVV: "sub_float_vvv";
+			case MinusFloatV: "minus_float_v";
 			case MultFloatVCS: "mult_float_vcs";
 			case MultVecVCS: "mult_vec_vcs";
 			case SaveFloatV: "save_float_v";
@@ -787,6 +815,10 @@ class OpcodeExtension {
 			case LoadBearingToTargetV: [];
 			case AddFloatVCV: [Float]; // value to add
 			case AddFloatVVV: [];
+			case SubFloatVCV: [Float]; // value to subtract
+			case SubFloatCVV: [Float]; // value from which to subtract
+			case SubFloatVVV: [];
+			case MinusFloatV: [];
 			case MultFloatVCS | MultVecVCS: [Float]; // multiplier value
 			case SaveFloatV: [];
 			case CastCartesianVV | CastPolarVV: [];

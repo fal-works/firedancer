@@ -41,6 +41,21 @@ abstract FloatLikeConstant(
 		}
 	}
 
+	@:op(A - B) function subtract(other: FloatLikeConstant): FloatLikeConstant {
+		return switch this {
+			case Float(valueA):
+				switch other.toEnum() {
+					case Float(valueB): fromFloat(valueA - valueB);
+					case Angle(valueB): fromFloat(valueA - valueB.toDegrees());
+				}
+			case Angle(valueA):
+				switch other.toEnum() {
+					case Float(valueB): fromAngle(valueA - valueB);
+					case Angle(valueB): fromAngle(valueA - valueB);
+				}
+		}
+	}
+
 	@:op(A * B) @:commutative static function multiply(
 		constant: FloatLikeConstant,
 		factor: Float

@@ -13,11 +13,20 @@ abstract FloatExpression(
 	@:from static extern inline function fromConstantInt(value: Int): FloatExpression
 		return fromConstant(value);
 
-	@:op(A + B) static extern inline function add(
+	@:op(A + B)
+	static extern inline function add(
 		a: FloatExpression,
 		b: FloatExpression
 	): FloatExpression {
 		return a.add(b);
+	}
+
+	@:op(A - B)
+	static extern inline function subtract(
+		a: FloatExpression,
+		b: FloatExpression
+	): FloatExpression {
+		return a.subtract(b);
 	}
 
 	@:op(A + B) @:commutative
