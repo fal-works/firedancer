@@ -56,21 +56,20 @@ abstract FloatLikeConstant(
 		}
 	}
 
-	@:op(A * B) @:commutative static function multiply(
-		constant: FloatLikeConstant,
-		factor: Float
-	): FloatLikeConstant {
-		return switch constant {
-			case Float(value): FloatLikeConstantEnum.Float(factor * value);
-			case Angle(value): FloatLikeConstantEnum.Angle(factor * value);
+	@:op(A * B) function multiply(other: FloatLikeConstant): FloatLikeConstant {
+		return switch this {
+			case Float(valueA):
+				switch other.toEnum() {
+					case Float(valueB): fromFloat(valueA * valueB);
+					case Angle(valueB): fromAngle(valueA * valueB.toDegrees());
+				}
+			case Angle(valueA):
+				switch other.toEnum() {
+					case Float(valueB): fromAngle(valueA * valueB);
+					case Angle(valueB): fromFloat(valueA.toDegrees() * valueB.toDegrees());
+				}
 		}
 	}
-
-	@:op(A * B) @:commutative static extern inline function multiplyInt(
-		constant: FloatLikeConstant,
-		factor: Int
-	): FloatLikeConstant
-		return multiply(constant, factor);
 
 	@:op(A / B) function divide(divisor: Float): FloatLikeConstant {
 		return switch this {

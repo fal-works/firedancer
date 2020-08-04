@@ -102,12 +102,27 @@ class FloatLikeExpressionExtensionEnum {
 
 	public static function multiply(
 		_this: FloatLikeExpressionEnum,
-		factor: Float
+		other: FloatLikeExpressionEnum
 	): FloatLikeExpressionEnum {
-		return switch _this {
-			case Constant(value): Constant(factor * value);
-			case Runtime(_): throw "Not yet implemented.";
+		switch _this {
+			case Constant(valueA):
+				switch other {
+					case Constant(valueB):
+						return Constant(valueA * valueB);
+					case Runtime(_):
+				};
+			case Runtime(_):
 		}
+
+		return Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperator(
+			{
+				operateFloatsVCV: general(MultFloatVCV),
+				operateFloatsCVV: general(MultFloatVCV),
+				operateFloatsVVV: general(MultFloatVVV)
+			},
+			_this,
+			other
+		));
 	}
 
 	public static function divide(

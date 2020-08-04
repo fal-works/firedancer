@@ -40,6 +40,8 @@ enum abstract GeneralOperation(Int) to Int {
 			case GeneralOperation.SubFloatCVV: SubFloatCVV;
 			case GeneralOperation.SubFloatVVV: SubFloatVVV;
 			case GeneralOperation.MinusFloatV: MinusFloatV;
+			case GeneralOperation.MultFloatVCV: MultFloatVCV;
+			case GeneralOperation.MultFloatVVV: MultFloatVVV;
 			case GeneralOperation.MultFloatVCS: MultFloatVCS;
 			case GeneralOperation.MultVecVCS: MultVecVCS;
 			case GeneralOperation.SaveFloatV: SaveFloatV;
@@ -205,6 +207,16 @@ enum abstract GeneralOperation(Int) to Int {
 	final MinusFloatV;
 
 	/**
+		Multiplies the current volatile float by a given constant float.
+	**/
+	final MultFloatVCV;
+
+	/**
+		Multiplies the last saved volatile float and the current volatile float, and reassigns it to the volatile float.
+	**/
+	final MultFloatVVV;
+
+	/**
 		Multiplicates the current volatile float by a given constant float and pushes it to the stack top.
 	**/
 	final MultFloatVCS;
@@ -311,6 +323,8 @@ class GeneralOperationExtension {
 			case SubFloatCVV: "sub_float_cvv";
 			case SubFloatVVV: "sub_float_vvv";
 			case MinusFloatV: "minus_float_v";
+			case MultFloatVCV: "mult_float_vcv";
+			case MultFloatVVV: "mult_float_vvv";
 			case MultFloatVCS: "mult_float_vcs";
 			case MultVecVCS: "mult_vec_vcs";
 			case SaveFloatV: "save_float_v";
@@ -352,7 +366,8 @@ class GeneralOperationExtension {
 			case SubFloatCVV: [Float]; // value from which to subtract
 			case SubFloatVVV: [];
 			case MinusFloatV: [];
-			case MultFloatVCS | MultVecVCS: [Float]; // multiplier value
+			case MultFloatVVV: [];
+			case MultFloatVCV | MultFloatVCS | MultVecVCS: [Float]; // multiplier value
 			case SaveFloatV: [];
 			case CastCartesianVV | CastPolarVV: [];
 			case RandomFloatCV: [Float];

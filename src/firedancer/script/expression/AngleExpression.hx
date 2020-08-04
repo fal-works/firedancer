@@ -26,14 +26,6 @@ abstract AngleExpression(
 		return a.add(b);
 	}
 
-	@:op(A - B)
-	static extern inline function subtract(
-		a: AngleExpression,
-		b: AngleExpression
-	): AngleExpression {
-		return a.subtract(b);
-	}
-
 	@:op(A + B) @:commutative
 	static extern inline function addFloatExpression(
 		a: AngleExpression,
@@ -52,13 +44,21 @@ abstract AngleExpression(
 		return addFloatExpression(a, b);
 	}
 
-	@:op(A * B) @:commutative
-	static extern inline function multiply(expr: AngleExpression, factor: Float): AngleExpression
-		return expr.multiply(factor);
+	@:op(A - B)
+	static extern inline function subtract(
+		a: AngleExpression,
+		b: AngleExpression
+	): AngleExpression {
+		return a.subtract(b);
+	}
 
 	@:op(A * B) @:commutative
-	static extern inline function multiplyInt(expr: AngleExpression, factor: Int): AngleExpression
-		return multiply(expr, factor);
+	static extern inline function multiply(
+		expr: AngleExpression,
+		factor: FloatExpression
+	): AngleExpression {
+		return expr.multiply(factor);
+	}
 
 	@:op(A / B)
 	extern inline function divide(divisor: Float): AngleExpression
