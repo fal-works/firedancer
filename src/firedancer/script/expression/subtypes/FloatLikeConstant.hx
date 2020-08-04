@@ -71,15 +71,20 @@ abstract FloatLikeConstant(
 		}
 	}
 
-	@:op(A / B) function divide(divisor: Float): FloatLikeConstant {
+	@:op(A / B) function divide(divisor: FloatLikeConstant): FloatLikeConstant {
 		return switch this {
-			case Float(value): FloatLikeConstantEnum.Float(value / divisor);
-			case Angle(value): FloatLikeConstantEnum.Angle(value / divisor);
+			case Float(valueA):
+				switch divisor.toEnum() {
+					case Float(valueB): fromFloat(valueA / valueB);
+					case Angle(valueB): fromAngle(valueA / valueB.toDegrees());
+				}
+			case Angle(valueA):
+				switch divisor.toEnum() {
+					case Float(valueB): fromAngle(valueA / valueB);
+					case Angle(valueB): fromFloat(valueA.toDegrees() / valueB.toDegrees());
+				}
 		}
 	}
-
-	@:op(A / B) extern inline function divideInt(divisor: Int): FloatLikeConstant
-		return divide(divisor);
 
 	/**
 		Converts this `FloatLikeConstant` to `Float`.

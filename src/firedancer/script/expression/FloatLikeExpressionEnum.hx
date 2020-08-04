@@ -64,15 +64,11 @@ class FloatLikeExpressionExtensionEnum {
 			case Runtime(_):
 		}
 
-		return Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperator(
-			{
-				operateFloatsVCV: general(AddFloatVCV),
-				operateFloatsCVV: general(AddFloatVCV),
-				operateFloatsVVV: general(AddFloatVVV)
-			},
-			_this,
-			other
-		));
+		return Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperator({
+			operateFloatsVCV: general(AddFloatVCV),
+			operateFloatsCVV: general(AddFloatVCV),
+			operateFloatsVVV: general(AddFloatVVV)
+		}, _this, other));
 	}
 
 	public static function subtract(
@@ -89,15 +85,11 @@ class FloatLikeExpressionExtensionEnum {
 			case Runtime(_):
 		}
 
-		return Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperator(
-			{
-				operateFloatsVCV: general(SubFloatVCV),
-				operateFloatsCVV: general(SubFloatCVV),
-				operateFloatsVVV: general(SubFloatVVV)
-			},
-			_this,
-			other
-		));
+		return Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperator({
+			operateFloatsVCV: general(SubFloatVCV),
+			operateFloatsCVV: general(SubFloatCVV),
+			operateFloatsVVV: general(SubFloatVVV)
+		}, _this, other));
 	}
 
 	public static function multiply(
@@ -114,24 +106,45 @@ class FloatLikeExpressionExtensionEnum {
 			case Runtime(_):
 		}
 
-		return Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperator(
-			{
-				operateFloatsVCV: general(MultFloatVCV),
-				operateFloatsCVV: general(MultFloatVCV),
-				operateFloatsVVV: general(MultFloatVVV)
-			},
-			_this,
-			other
-		));
+		return Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperator({
+			operateFloatsVCV: general(MultFloatVCV),
+			operateFloatsCVV: general(MultFloatVCV),
+			operateFloatsVVV: general(MultFloatVVV)
+		}, _this, other));
 	}
 
 	public static function divide(
 		_this: FloatLikeExpressionEnum,
-		divisor: Float
+		other: FloatLikeExpressionEnum
 	): FloatLikeExpressionEnum {
-		return switch _this {
-			case Constant(value): Constant(value / divisor);
-			case Runtime(_): throw "Not yet implemented.";
+		// TODO: refactor
+
+		switch _this {
+			case Constant(valueA):
+				switch other {
+					case Constant(valueB):
+						return Constant(valueA / valueB);
+					case Runtime(_):
+				};
+			case Runtime(_):
+				switch other {
+					case Constant(valueB):
+						// multiply the reciprocal
+						return Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperator(
+							{
+								operateFloatsVCV: general(MultFloatVCV),
+								operateFloatsVVV: general(DivFloatVVV)
+							},
+							_this,
+							Constant(FloatLikeConstant.fromFloat(1.0) / valueB)
+						));
+					case Runtime(_):
+				}
 		}
+
+		return Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperator({
+			operateFloatsCVV: general(DivFloatCVV),
+			operateFloatsVVV: general(DivFloatVVV)
+		}, _this, other));
 	}
 }

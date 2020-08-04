@@ -61,12 +61,8 @@ abstract AngleExpression(
 	}
 
 	@:op(A / B)
-	extern inline function divide(divisor: Float): AngleExpression
+	extern inline function divide(divisor: FloatExpression): AngleExpression
 		return this.divide(divisor);
-
-	@:op(A / B)
-	extern inline function divideInt(divisor: Int): AngleExpression
-		return divide(divisor);
 
 	public extern inline function toEnum(): FloatLikeExpressionEnum
 		return this;

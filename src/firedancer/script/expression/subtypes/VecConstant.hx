@@ -50,16 +50,13 @@ abstract VecConstant(VecConstantEnum) from VecConstantEnum to VecConstantEnum {
 		}
 	}
 
-	@:op(A / B) public function divide(divisor: Float): VecConstant {
+	@:op(A / B) public function divide(divisor: FloatLikeConstant): VecConstant {
 		final expression: VecConstantEnum = switch this {
 			case Cartesian(x, y): Cartesian(x / divisor, y / divisor);
 			case Polar(length, angle): Polar(length / divisor, angle);
 		}
 		return expression;
 	}
-
-	@:op(A / B) extern inline function divideInt(divisor: Int): VecConstant
-		return divide(divisor);
 
 	/**
 		Creates an `AssemblyCode` that runs a given `Opcode` receiving `this` value as argument.

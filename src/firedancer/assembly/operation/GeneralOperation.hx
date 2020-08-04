@@ -43,6 +43,7 @@ enum abstract GeneralOperation(Int) to Int {
 			case GeneralOperation.MultFloatVCV: MultFloatVCV;
 			case GeneralOperation.MultFloatVVV: MultFloatVVV;
 			case GeneralOperation.MultFloatVCS: MultFloatVCS;
+			case GeneralOperation.DivFloatVVV: DivFloatVVV;
 			case GeneralOperation.MultVecVCS: MultVecVCS;
 			case GeneralOperation.SaveFloatV: SaveFloatV;
 			case GeneralOperation.CastCartesianVV: CastCartesianVV;
@@ -222,6 +223,16 @@ enum abstract GeneralOperation(Int) to Int {
 	final MultFloatVCS;
 
 	/**
+		Divides a given constant float by the current volatile float and reassigns it to the volatile float.
+	**/
+	final DivFloatCVV;
+
+	/**
+		Divides the last saved volatile float by the current volatile float, and reassigns it to the volatile float.
+	**/
+	final DivFloatVVV;
+
+	/**
 		Multiplicates the current volatile vector by a given constant float and pushes it to the stack top.
 	**/
 	final MultVecVCS;
@@ -326,6 +337,8 @@ class GeneralOperationExtension {
 			case MultFloatVCV: "mult_float_vcv";
 			case MultFloatVVV: "mult_float_vvv";
 			case MultFloatVCS: "mult_float_vcs";
+			case DivFloatCVV: "div_float_cvv";
+			case DivFloatVVV: "div_float_vvv";
 			case MultVecVCS: "mult_vec_vcs";
 			case SaveFloatV: "save_float_v";
 			case CastCartesianVV: "cast_cartesian_vv";
@@ -367,7 +380,10 @@ class GeneralOperationExtension {
 			case SubFloatVVV: [];
 			case MinusFloatV: [];
 			case MultFloatVVV: [];
-			case MultFloatVCV | MultFloatVCS | MultVecVCS: [Float]; // multiplier value
+			case MultFloatVCV | MultFloatVCS: [Float]; // multiplier value
+			case DivFloatCVV: [Float]; // value to be divided
+			case DivFloatVVV: [];
+			case MultVecVCS: [Float]; // multiplier value
 			case SaveFloatV: [];
 			case CastCartesianVV | CastPolarVV: [];
 			case RandomFloatCV: [Float];

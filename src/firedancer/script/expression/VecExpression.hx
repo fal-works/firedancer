@@ -1,5 +1,6 @@
 package firedancer.script.expression;
 
+import firedancer.script.expression.subtypes.FloatLikeConstant;
 import firedancer.types.Azimuth;
 import firedancer.assembly.Opcode;
 import firedancer.assembly.AssemblyCode;
@@ -58,18 +59,22 @@ abstract VecExpression(VecExpressionEnum) from VecExpressionEnum to VecExpressio
 		}
 	}
 
-	@:op(A / B) public function divide(divisor: Float): VecExpression {
+	@:op(A / B) public function divide(divisor: FloatLikeConstant): VecExpression {
 		final expression: VecExpressionEnum = switch this {
 			case Constant(value):
 				Constant(value.divide(divisor));
 			case Runtime(expression):
-				Runtime(expression / divisor);
+				// Runtime(expression / divisor);
+				throw "Not yet implemented.";
 		}
 		return expression;
 	}
 
+	@:op(A / B) extern inline function divideFloat(divisor: Float): VecExpression
+		return divide(FloatLikeConstant.fromFloat(divisor));
+
 	@:op(A / B) extern inline function divideInt(divisor: Int): VecExpression
-		return divide(divisor);
+		return divide(FloatLikeConstant.fromFloat(divisor));
 
 	/**
 		Creates an `AssemblyCode` that runs either `processConstantVector` or `processVolatileVector`

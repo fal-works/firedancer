@@ -21,14 +21,6 @@ abstract FloatExpression(
 		return a.add(b);
 	}
 
-	@:op(A - B)
-	static extern inline function subtract(
-		a: FloatExpression,
-		b: FloatExpression
-	): FloatExpression {
-		return a.subtract(b);
-	}
-
 	@:op(A + B) @:commutative
 	static extern inline function addFloat(a: FloatExpression, b: Float): FloatExpression {
 		return add(a, b);
@@ -39,8 +31,19 @@ abstract FloatExpression(
 		return add(a, b);
 	}
 
-	@:op(A / B) extern inline function divide(divisor: Float): FloatExpression
+	@:op(A - B)
+	static extern inline function subtract(
+		a: FloatExpression,
+		b: FloatExpression
+	): FloatExpression {
+		return a.subtract(b);
+	}
+
+	@:op(A / B) extern inline function divide(divisor: FloatExpression): FloatExpression
 		return this.divide(divisor);
+
+	@:op(A / B) extern inline function divideFloat(divisor: Float): FloatExpression
+		return divide(divisor);
 
 	@:op(A / B) extern inline function divideInt(divisor: Int): FloatExpression
 		return divide(divisor);
