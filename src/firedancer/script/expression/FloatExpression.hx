@@ -39,6 +39,14 @@ abstract FloatExpression(
 		return a.subtract(b);
 	}
 
+	@:op(A * B)
+	static extern inline function multiply(
+		a: FloatExpression,
+		b: FloatExpression
+	): AngleExpression {
+		return a.multiply(b);
+	}
+
 	@:op(A / B) extern inline function divide(divisor: FloatExpression): FloatExpression
 		return this.divide(divisor);
 
