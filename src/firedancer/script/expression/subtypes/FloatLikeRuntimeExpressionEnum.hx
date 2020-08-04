@@ -35,7 +35,7 @@ enum FloatLikeRuntimeExpressionEnum {
 @:structInit
 class FloatUnaryOperatorType {
 	/**
-		Any function that takes two float values and returns another float.
+		Any function that takes a float value and returns another float.
 
 		This can only be set if the result can be calculated in compile-time.
 	**/
