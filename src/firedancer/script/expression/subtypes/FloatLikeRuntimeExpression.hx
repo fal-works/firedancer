@@ -21,14 +21,27 @@ abstract FloatLikeRuntimeExpression(
 			case UnaryOperator(type, operand):
 				switch operand {
 					case Constant(value):
-						new AssemblyStatement(type.operateFloatCV, [value]);
+						final operateConstantFloat = type.operateConstantFloat;
+						final operateFloatCV = type.operateFloatCV;
+						if (operateConstantFloat.isSome()) {
+							new AssemblyStatement(
+								general(LoadFloatCV),
+								[Float(operateConstantFloat.unwrap()(value.toFloat()))]
+							);
+						} else if (operateFloatCV.isSome()) {
+							new AssemblyStatement(operateFloatCV.unwrap(), [value]);
+						} else [
+							new AssemblyStatement(general(LoadFloatCV), [value]),
+							new AssemblyStatement(type.operateFloatVV, [])
+						];
 					case Runtime(expression):
 						final code = expression.loadToVolatileFloat();
 						code.push(new AssemblyStatement(type.operateFloatVV, []));
 						code;
 				};
 			case BinaryOperator(type, operandA, operandB):
-				final code: AssemblyCode = [];
+				final code:AssemblyCode = [];
+				final operateConstantFloats = type.operateConstantFloats;
 				final operateFloatsVCV = type.operateFloatsVCV;
 				final operateFloatsCVV = type.operateFloatsCVV;
 				final operateFloatsVVV = type.operateFloatsVVV;
@@ -36,13 +49,21 @@ abstract FloatLikeRuntimeExpression(
 					case Constant(valueA):
 						switch operandB {
 							case Constant(valueB):
-								code.pushStatement(general(LoadFloatCV), [valueA]);
-								if (operateFloatsVCV.isSome())
-									code.pushStatement(operateFloatsVCV.unwrap(), [valueB]);
-								else {
-									code.pushStatement(general(SaveFloatV));
-									code.pushStatement(general(LoadFloatCV), [valueB]);
-									code.pushStatement(operateFloatsVVV, []);
+								if (operateConstantFloats.isSome()) {
+									final valueAB = operateConstantFloats.unwrap()(
+										valueA.toFloat(),
+										valueB.toFloat()
+									);
+									code.pushStatement(general(LoadFloatCV), [Float(valueAB)]);
+								} else {
+									code.pushStatement(general(LoadFloatCV), [valueA]);
+									if (operateFloatsVCV.isSome())
+										code.pushStatement(operateFloatsVCV.unwrap(), [valueB]);
+									else {
+										code.pushStatement(general(SaveFloatV));
+										code.pushStatement(general(LoadFloatCV), [valueB]);
+										code.pushStatement(operateFloatsVVV, []);
+									}
 								}
 							case Runtime(expressionB):
 								if (operateFloatsCVV.isSome()) {

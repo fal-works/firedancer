@@ -54,17 +54,8 @@ class FloatLikeExpressionExtensionEnum {
 		_this: FloatLikeExpressionEnum,
 		other: FloatLikeExpressionEnum
 	): FloatLikeExpressionEnum {
-		switch _this {
-			case Constant(valueA):
-				switch other {
-					case Constant(valueB):
-						return Constant(valueA + valueB);
-					case Runtime(_):
-				}
-			case Runtime(_):
-		}
-
 		return Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperator({
+			operateConstantFloats: (a, b) -> a + b,
 			operateFloatsVCV: general(AddFloatVCV),
 			operateFloatsCVV: general(AddFloatVCV),
 			operateFloatsVVV: general(AddFloatVVV)
@@ -75,17 +66,8 @@ class FloatLikeExpressionExtensionEnum {
 		_this: FloatLikeExpressionEnum,
 		other: FloatLikeExpressionEnum
 	): FloatLikeExpressionEnum {
-		switch _this {
-			case Constant(valueA):
-				switch other {
-					case Constant(valueB):
-						return Constant(valueA - valueB);
-					case Runtime(_):
-				}
-			case Runtime(_):
-		}
-
 		return Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperator({
+			operateConstantFloats: (a, b) -> a - b,
 			operateFloatsVCV: general(SubFloatVCV),
 			operateFloatsCVV: general(SubFloatCVV),
 			operateFloatsVVV: general(SubFloatVVV)
@@ -96,17 +78,8 @@ class FloatLikeExpressionExtensionEnum {
 		_this: FloatLikeExpressionEnum,
 		other: FloatLikeExpressionEnum
 	): FloatLikeExpressionEnum {
-		switch _this {
-			case Constant(valueA):
-				switch other {
-					case Constant(valueB):
-						return Constant(valueA * valueB);
-					case Runtime(_):
-				};
-			case Runtime(_):
-		}
-
 		return Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperator({
+			operateConstantFloats: (a, b) -> a * b,
 			operateFloatsVCV: general(MultFloatVCV),
 			operateFloatsCVV: general(MultFloatVCV),
 			operateFloatsVVV: general(MultFloatVVV)
@@ -117,32 +90,20 @@ class FloatLikeExpressionExtensionEnum {
 		_this: FloatLikeExpressionEnum,
 		other: FloatLikeExpressionEnum
 	): FloatLikeExpressionEnum {
-		// TODO: refactor
-
 		switch _this {
-			case Constant(valueA):
-				switch other {
-					case Constant(valueB):
-						return Constant(valueA / valueB);
-					case Runtime(_):
-				};
+			case Constant(_):
 			case Runtime(_):
 				switch other {
 					case Constant(valueB):
-						// multiply the reciprocal
-						return Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperator(
-							{
-								operateFloatsVCV: general(MultFloatVCV),
-								operateFloatsVVV: general(DivFloatVVV)
-							},
-							_this,
-							Constant(FloatLikeConstant.fromFloat(1.0) / valueB)
-						));
+						// multiply by the reciprocal: rt / c => rt * (1 / c)
+						other = Constant(FloatLikeConstant.fromFloat(1.0) / valueB);
 					case Runtime(_):
 				}
 		}
 
 		return Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperator({
+			operateConstantFloats: (a, b) -> a / b,
+			operateFloatsVCV: general(MultFloatVCV), // multiply by the reciprocal
 			operateFloatsCVV: general(DivFloatCVV),
 			operateFloatsVVV: general(DivFloatVVV)
 		}, _this, other));

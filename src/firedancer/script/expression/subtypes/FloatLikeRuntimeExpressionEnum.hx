@@ -35,18 +35,42 @@ enum FloatLikeRuntimeExpressionEnum {
 @:structInit
 class FloatUnaryOperatorType {
 	/**
+		Any function that takes two float values and returns another float.
+
+		This can only be set if the result can be calculated in compile-time.
+	**/
+	public final operateConstantFloat: Maybe<(v: Float) -> Float>;
+
+	/**
 		Any `Opcode` that operates a given constant float and assigns the result to the volatile float.
 	**/
-	public final operateFloatCV: Opcode;
+	public final operateFloatCV: Maybe<Opcode>;
 
 	/**
 		Any `Opcode` that operates the volatile float and reassigns the result to the volatile float.
 	**/
 	public final operateFloatVV: Opcode;
+
+	function new(
+		operateFloatVV: Opcode,
+		?operateConstantFloat: Float->Float,
+		?operateFloatCV: Opcode
+	) {
+		this.operateConstantFloat = Maybe.from(operateConstantFloat);
+		this.operateFloatCV = Maybe.from(operateFloatCV);
+		this.operateFloatVV = operateFloatVV;
+	}
 }
 
 @:structInit
 class FloatBinaryOperatorType {
+	/**
+		Any function that takes two float values and returns another float.
+
+		This can only be set if the result can be calculated in compile-time.
+	**/
+	public final operateConstantFloats: Maybe<(a: Float, b: Float) -> Float>;
+
 	/**
 		Any `Opcode` that operates the two below and reassigns the result to the volatile float.
 		1. The current volatile float
@@ -68,7 +92,13 @@ class FloatBinaryOperatorType {
 	**/
 	public final operateFloatsVVV: Opcode;
 
-	function new(operateFloatsVVV: Opcode, ?operateFloatsVCV: Opcode, ?operateFloatsCVV: Opcode) {
+	function new(
+		operateFloatsVVV: Opcode,
+		?operateConstantFloats: Float->Float->Float,
+		?operateFloatsVCV: Opcode,
+		?operateFloatsCVV: Opcode
+	) {
+		this.operateConstantFloats = Maybe.from(operateConstantFloats);
 		this.operateFloatsVCV = Maybe.from(operateFloatsVCV);
 		this.operateFloatsCVV = Maybe.from(operateFloatsCVV);
 		this.operateFloatsVVV = operateFloatsVVV;
