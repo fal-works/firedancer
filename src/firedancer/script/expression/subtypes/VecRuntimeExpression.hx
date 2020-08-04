@@ -10,20 +10,17 @@ import firedancer.assembly.AssemblyCode;
 **/
 @:notNull @:forward
 abstract VecRuntimeExpression(VecRuntimeExpressionEnum) from VecRuntimeExpressionEnum to VecRuntimeExpressionEnum {
-	@:op(A / B) public function divide(divisor: Float): VecRuntimeExpression {
+	@:op(A / B) public function divide(divisor: FloatExpression): VecRuntimeExpression {
 		final expression: VecRuntimeExpressionEnum = switch this {
 			case Cartesian(x, y):
 				Cartesian(x / divisor, y / divisor);
 			case Polar(length, angle):
 				Polar(length / divisor, angle);
-			case Variable(loadVolatileOpcode):
-				throw "Not yet implemented.";
+			default:
+				BinaryOperatorWithFloat(VecExpressionEnum.Runtime(this), divisor);
 		}
 		return expression;
 	}
-
-	@:op(A / B) extern inline function divideInt(divisor: Int): VecRuntimeExpression
-		return divide(divisor);
 
 	/**
 		Creates an `AssemblyCode` that loads `this` evaluated value to the volatile vector.
@@ -46,6 +43,12 @@ abstract VecRuntimeExpression(VecRuntimeExpressionEnum) from VecRuntimeExpressio
 				].flatten();
 			case Variable(loadV):
 				new AssemblyStatement(loadV, []);
+			case UnaryOperator(_):
+				throw "Not yet implemented.";
+			case BinaryOperator(_, _):
+				throw "Not yet implemented.";
+			case BinaryOperatorWithFloat(_, _):
+				throw "Not yet implemented.";
 		}
 	}
 

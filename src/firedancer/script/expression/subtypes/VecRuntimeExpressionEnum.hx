@@ -13,4 +13,8 @@ enum VecRuntimeExpressionEnum {
 		@param loadV `Opcode` for loading the value to the current volatile vector.
 	**/
 	Variable(loadV: Opcode);
+
+	UnaryOperator(vec: VecExpression);
+	BinaryOperator(vecA: VecExpression, vecB: VecExpression);
+	BinaryOperatorWithFloat(vec: VecExpression, float: FloatExpression);
 }
