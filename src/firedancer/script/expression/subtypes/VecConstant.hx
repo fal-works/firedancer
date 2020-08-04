@@ -1,5 +1,7 @@
 package firedancer.script.expression.subtypes;
 
+import reckoner.Geometry;
+import reckoner.TmpVec2D;
 import firedancer.types.Azimuth;
 import firedancer.assembly.ConstantOperand;
 import firedancer.assembly.Opcode;
@@ -50,6 +52,51 @@ abstract VecConstant(VecConstantEnum) from VecConstantEnum to VecConstantEnum {
 		}
 	}
 
+	@:op(-A) function unaryMinus(): VecConstant {
+		return switch this {
+			case Cartesian(x, y):
+				VecConstantEnum.Cartesian(-x, -y);
+			case Polar(length, angle):
+				VecConstantEnum.Polar(-length, angle);
+		}
+	}
+
+	@:op(A + B) static function add(a: VecConstant, b: VecConstant): VecConstant {
+		final aVec = a.getComponents();
+		final bVec = b.getComponents();
+
+		final result: VecConstantEnum = Cartesian(
+			aVec.x + bVec.x,
+			aVec.y + bVec.y
+		);
+
+		return result;
+	}
+
+	@:op(A - B) static function subtract(a: VecConstant, b: VecConstant): VecConstant {
+		final aVec = a.getComponents();
+		final bVec = b.getComponents();
+
+		final result: VecConstantEnum = Cartesian(
+			aVec.x - bVec.x,
+			aVec.y - bVec.y
+		);
+
+		return result;
+	}
+
+	@:op(A * B) @:commutative
+	public static function multiply(
+		vec: VecConstant,
+		factor: FloatLikeConstant
+	): VecConstant {
+		final expression: VecConstantEnum = switch vec.toEnum() {
+			case Cartesian(x, y): Cartesian(x * factor, y * factor);
+			case Polar(length, angle): Polar(length * factor, angle);
+		}
+		return expression;
+	}
+
 	@:op(A / B) public function divide(divisor: FloatLikeConstant): VecConstant {
 		final expression: VecConstantEnum = switch this {
 			case Cartesian(x, y): Cartesian(x / divisor, y / divisor);
@@ -64,6 +111,15 @@ abstract VecConstant(VecConstantEnum) from VecConstantEnum to VecConstantEnum {
 	**/
 	public function use(processConstantVector: Opcode): AssemblyCode {
 		return new AssemblyStatement(processConstantVector, [toOperand()]);
+	}
+
+	function getComponents(): { x: FloatLikeConstant, y: FloatLikeConstant } {
+		return switch this {
+			case Cartesian(x, y): { x: x, y: y };
+			case Polar(length, angle):
+				final vec = angle.toAzimuth().toVec2D(length.toFloat());
+				{ x: FloatLikeConstant.fromFloat(vec.x), y: FloatLikeConstant.fromFloat(vec.y) };
+		}
 	}
 
 	public extern inline function toEnum(): VecConstantEnum

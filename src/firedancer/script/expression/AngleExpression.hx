@@ -18,6 +18,10 @@ abstract AngleExpression(
 	@:from static extern inline function fromConstantInt(value: Int): AngleExpression
 		return fromConstantAngle(value);
 
+	@:op(-A)
+	extern inline function unaryMinus(): AngleExpression
+		return this.unaryMinus();
+
 	@:op(A + B)
 	static extern inline function add(
 		a: AngleExpression,

@@ -9,7 +9,9 @@ import firedancer.assembly.AssemblyCode;
 	Abstract over `VecRuntimeExpressionEnum` that can be implicitly cast from vector objects.
 **/
 @:notNull @:forward
-abstract VecRuntimeExpression(VecRuntimeExpressionEnum) from VecRuntimeExpressionEnum to VecRuntimeExpressionEnum {
+abstract VecRuntimeExpression(
+	VecRuntimeExpressionEnum
+) from VecRuntimeExpressionEnum to VecRuntimeExpressionEnum {
 	@:op(A / B) public function divide(divisor: FloatExpression): VecRuntimeExpression {
 		final expression: VecRuntimeExpressionEnum = switch this {
 			case Cartesian(x, y):
@@ -43,8 +45,20 @@ abstract VecRuntimeExpression(VecRuntimeExpressionEnum) from VecRuntimeExpressio
 				].flatten();
 			case Variable(loadV):
 				new AssemblyStatement(loadV, []);
-			case UnaryOperator(_):
-				throw "Not yet implemented.";
+			case UnaryOperator(type, operand):
+				switch operand.toEnum() {
+					case Constant(vec):
+						switch type.constantOperator {
+							case Immediate(func):
+								new AssemblyStatement(general(LoadFloatCV), [func(vec)]);
+							case Instruction(opcodeCV):
+								new AssemblyStatement(opcodeCV, [vec]);
+						}
+					case Runtime(expression):
+						final code = expression.loadToVolatileVector();
+						code.push(new AssemblyStatement(type.operateVV, []));
+						code;
+				};
 			case BinaryOperator(_, _):
 				throw "Not yet implemented.";
 			case BinaryOperatorWithFloat(_, _):

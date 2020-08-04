@@ -13,6 +13,10 @@ abstract FloatExpression(
 	@:from static extern inline function fromConstantInt(value: Int): FloatExpression
 		return fromConstant(value);
 
+	@:op(-A)
+	extern inline function unaryMinus(): FloatExpression
+		return this.unaryMinus();
+
 	@:op(A + B)
 	static extern inline function add(
 		a: FloatExpression,

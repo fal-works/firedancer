@@ -1,5 +1,6 @@
 package firedancer.script.expression.subtypes;
 
+import reckoner.Geometry;
 import firedancer.assembly.ConstantOperand;
 import firedancer.types.Azimuth;
 import firedancer.types.Angle;
@@ -26,60 +27,79 @@ abstract FloatLikeConstant(
 	@:to public extern inline function toOperand(): ConstantOperand
 		return Float(toFloat());
 
-	@:op(A + B) function add(other: FloatLikeConstant): FloatLikeConstant {
+	@:op(-A) function unaryMinus(): FloatLikeConstant {
 		return switch this {
+			case Float(value): Float(-value);
+			case Angle(value): Angle(-value);
+		}
+	}
+
+	@:op(A + B) static function add(
+		a: FloatLikeConstant,
+		b: FloatLikeConstant
+	): FloatLikeConstant {
+		return switch a.toEnum() {
 			case Float(valueA):
-				switch other.toEnum() {
+				switch b.toEnum() {
 					case Float(valueB): fromFloat(valueA + valueB);
 					case Angle(valueB): fromFloat(valueA + valueB.toDegrees());
 				}
 			case Angle(valueA):
-				switch other.toEnum() {
+				switch b.toEnum() {
 					case Float(valueB): fromAngle(valueA + valueB);
 					case Angle(valueB): fromAngle(valueA + valueB);
 				}
 		}
 	}
 
-	@:op(A - B) function subtract(other: FloatLikeConstant): FloatLikeConstant {
-		return switch this {
+	@:op(A - B) static function subtract(
+		a: FloatLikeConstant,
+		b: FloatLikeConstant
+	): FloatLikeConstant {
+		return switch a.toEnum() {
 			case Float(valueA):
-				switch other.toEnum() {
+				switch b.toEnum() {
 					case Float(valueB): fromFloat(valueA - valueB);
 					case Angle(valueB): fromFloat(valueA - valueB.toDegrees());
 				}
 			case Angle(valueA):
-				switch other.toEnum() {
+				switch b.toEnum() {
 					case Float(valueB): fromAngle(valueA - valueB);
 					case Angle(valueB): fromAngle(valueA - valueB);
 				}
 		}
 	}
 
-	@:op(A * B) function multiply(other: FloatLikeConstant): FloatLikeConstant {
-		return switch this {
+	@:op(A * B) static function multiply(
+		a: FloatLikeConstant,
+		b: FloatLikeConstant
+	): FloatLikeConstant {
+		return switch a.toEnum() {
 			case Float(valueA):
-				switch other.toEnum() {
+				switch b.toEnum() {
 					case Float(valueB): fromFloat(valueA * valueB);
 					case Angle(valueB): fromAngle(valueA * valueB.toDegrees());
 				}
 			case Angle(valueA):
-				switch other.toEnum() {
+				switch b.toEnum() {
 					case Float(valueB): fromAngle(valueA * valueB);
 					case Angle(valueB): fromFloat(valueA.toDegrees() * valueB.toDegrees());
 				}
 		}
 	}
 
-	@:op(A / B) function divide(divisor: FloatLikeConstant): FloatLikeConstant {
-		return switch this {
+	@:op(A / B) static function divide(
+		a: FloatLikeConstant,
+		b: FloatLikeConstant
+	): FloatLikeConstant {
+		return switch a.toEnum() {
 			case Float(valueA):
-				switch divisor.toEnum() {
+				switch b.toEnum() {
 					case Float(valueB): fromFloat(valueA / valueB);
 					case Angle(valueB): fromAngle(valueA / valueB.toDegrees());
 				}
 			case Angle(valueA):
-				switch divisor.toEnum() {
+				switch b.toEnum() {
 					case Float(valueB): fromAngle(valueA / valueB);
 					case Angle(valueB): fromFloat(valueA.toDegrees() / valueB.toDegrees());
 				}

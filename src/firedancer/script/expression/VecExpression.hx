@@ -1,5 +1,6 @@
 package firedancer.script.expression;
 
+import firedancer.script.expression.subtypes.VecRuntimeExpressionEnum;
 import firedancer.script.expression.subtypes.FloatLikeConstant;
 import firedancer.types.Azimuth;
 import firedancer.assembly.Opcode;
@@ -57,6 +58,13 @@ abstract VecExpression(VecExpressionEnum) from VecExpressionEnum to VecExpressio
 			default:
 				VecExpressionEnum.Runtime(Polar(length, angle));
 		}
+	}
+
+	@:op(-A) static function unaryMinus(vec): VecExpression {
+		return VecExpressionEnum.Runtime(VecRuntimeExpressionEnum.UnaryOperator(
+			{ constantOperator: Immediate(vec -> -vec), operateVV: Opcode.general(MinusVecV) },
+			vec
+		));
 	}
 
 	@:op(A / B) public function divide(divisor: FloatLikeConstant): VecExpression {

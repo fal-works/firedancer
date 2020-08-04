@@ -50,6 +50,15 @@ class FloatLikeExpressionExtensionEnum {
 		}
 	}
 
+	public static function unaryMinus(
+		_this: FloatLikeExpressionEnum
+	): FloatLikeExpressionEnum {
+		return Runtime(FloatLikeRuntimeExpressionEnum.UnaryOperator({
+			operateConstantFloat: v -> -v,
+			operateFloatVV: general(MinusFloatV)
+		}, _this));
+	}
+
 	public static function add(
 		_this: FloatLikeExpressionEnum,
 		other: FloatLikeExpressionEnum
