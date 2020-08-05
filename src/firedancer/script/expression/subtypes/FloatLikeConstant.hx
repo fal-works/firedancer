@@ -1,6 +1,5 @@
 package firedancer.script.expression.subtypes;
 
-import reckoner.Geometry;
 import firedancer.assembly.ConstantOperand;
 import firedancer.types.Azimuth;
 import firedancer.types.Angle;

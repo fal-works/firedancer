@@ -5,7 +5,6 @@ import haxe.Int32;
 import banker.vector.Vector as RVec;
 import banker.vector.WritableVector as Vec;
 import broker.geometry.Point;
-import reckoner.Geometry.*;
 import reckoner.Random;
 import firedancer.types.Emitter;
 import firedancer.assembly.Opcode;
@@ -14,7 +13,7 @@ import firedancer.assembly.operation.ReadOperation;
 import firedancer.assembly.operation.WriteOperation;
 import firedancer.assembly.operation.WriteShotOperation;
 import firedancer.bytecode.internal.Constants.*;
-import firedancer.common.Vec2DStatics.*;
+import firedancer.common.Geometry;
 
 #if firedancer_verbose
 using firedancer.assembly.OpcodeExtension;
@@ -195,54 +194,54 @@ class Vm {
 		}
 
 		inline function getDistance(): Float
-			return hypot(getX(), getY());
+			return Geometry.getLength(getX(), getY());
 
 		inline function getBearing(): Float
-			return atan2(getY(), getX());
+			return Geometry.getAngle(getX(), getY());
 
 		inline function getSpeed(): Float
-			return hypot(getVx(), getVy());
+			return Geometry.getLength(getVx(), getVy());
 
 		inline function getDirection(): Float
-			return atan2(getVy(), getVx());
+			return Geometry.getAngle(getVx(), getVy());
 
 		inline function setDistance(value: Float): Void {
-			final newPosition = setLength(getX(), getY(), value);
+			final newPosition = Geometry.setLength(getX(), getY(), value);
 			setPosition(newPosition.x, newPosition.y);
 		}
 
 		inline function addDistance(value: Float): Void {
-			final newPosition = addLength(getX(), getY(), value);
+			final newPosition = Geometry.addLength(getX(), getY(), value);
 			setPosition(newPosition.x, newPosition.y);
 		}
 
 		inline function setBearing(value: Float): Void {
-			final newPosition = setAngle(getX(), getY(), value);
+			final newPosition = Geometry.setAngle(getX(), getY(), value);
 			setPosition(newPosition.x, newPosition.y);
 		}
 
 		inline function addBearing(value: Float): Void {
-			final newPosition = addAngle(getX(), getY(), value);
+			final newPosition = Geometry.addAngle(getX(), getY(), value);
 			setPosition(newPosition.x, newPosition.y);
 		}
 
 		inline function setSpeed(value: Float): Void {
-			final newVelocity = setLength(getVx(), getVy(), value);
+			final newVelocity = Geometry.setLength(getVx(), getVy(), value);
 			setVelocity(newVelocity.x, newVelocity.y);
 		}
 
 		inline function addSpeed(value: Float): Void {
-			final newVelocity = addLength(getVx(), getVy(), value);
+			final newVelocity = Geometry.addLength(getVx(), getVy(), value);
 			setVelocity(newVelocity.x, newVelocity.y);
 		}
 
 		inline function setDirection(value: Float): Void {
-			final newVelocity = setAngle(getVx(), getVy(), value);
+			final newVelocity = Geometry.setAngle(getVx(), getVy(), value);
 			setVelocity(newVelocity.x, newVelocity.y);
 		}
 
 		inline function addDirection(value: Float): Void {
-			final newVelocity = addAngle(getVx(), getVy(), value);
+			final newVelocity = Geometry.addAngle(getVx(), getVy(), value);
 			setVelocity(newVelocity.x, newVelocity.y);
 		}
 
@@ -373,8 +372,8 @@ class Vm {
 							case CastCartesianVV:
 								setVolVec(volFloatSaved, volFloat);
 							case CastPolarVV:
-								// north-based & clockwise
-								setVolVec(volFloatSaved * sin(volFloat), volFloatSaved * -cos(volFloat));
+								final vec = Geometry.toVec(volFloatSaved, volFloat);
+								setVolVec(vec.x, vec.y);
 							case RandomFloatCV:
 								setVolFloat(Random.float(readCodeF64()));
 							case RandomFloatVV:
@@ -425,9 +424,9 @@ class Vm {
 							case LoadTargetYV:
 								setVolY(targetPosition.y());
 							case LoadBearingToTargetV:
-								setVolFloat(atan2(
-									targetPosition.y() - getY(),
-									targetPosition.x() - getX()
+								setVolFloat(Geometry.getAngle(
+									targetPosition.x() - getX(),
+									targetPosition.y() - getY()
 								));
 
 							case CalcRelativePositionCV:
@@ -441,19 +440,19 @@ class Vm {
 							case CalcRelativeDistanceCV:
 								setVolFloat(readCodeF64() - getDistance());
 							case CalcRelativeBearingCV:
-								setVolFloat(normalizeAngle(readCodeF64() - getBearing()));
+								setVolFloat(Geometry.getAngleDistance(readCodeF64(), getBearing()));
 							case CalcRelativeSpeedCV:
 								setVolFloat(readCodeF64() - getSpeed());
 							case CalcRelativeDirectionCV:
-								setVolFloat(normalizeAngle(readCodeF64() - getDirection()));
+								setVolFloat(Geometry.getAngleDistance(readCodeF64(), getDirection()));
 							case CalcRelativeDistanceVV:
 								setVolFloat(volFloat - getDistance());
 							case CalcRelativeBearingVV:
-								setVolFloat(normalizeAngle(volFloat - getBearing()));
+								setVolFloat(Geometry.getAngleDistance(volFloat, getBearing()));
 							case CalcRelativeSpeedVV:
 								setVolFloat(volFloat - getSpeed());
 							case CalcRelativeDirectionVV:
-								setVolFloat(normalizeAngle(volFloat - getDirection()));
+								setVolFloat(Geometry.getAngleDistance(volFloat, getDirection()));
 
 							case CalcRelativeShotPositionCV:
 								setVolVec(readCodeF64() - thread.shotX, readCodeF64() - thread.shotY);
@@ -469,19 +468,19 @@ class Vm {
 							case CalcRelativeShotDistanceCV:
 								setVolFloat(readCodeF64() - thread.getShotDistance());
 							case CalcRelativeShotBearingCV:
-								setVolFloat(normalizeAngle(readCodeF64() - thread.getShotBearing()));
+								setVolFloat(Geometry.getAngleDistance(readCodeF64(), thread.getShotBearing()));
 							case CalcRelativeShotSpeedCV:
 								setVolFloat(readCodeF64() - thread.getShotSpeed());
 							case CalcRelativeShotDirectionCV:
-								setVolFloat(normalizeAngle(readCodeF64() - thread.getShotDirection()));
+								setVolFloat(Geometry.getAngleDistance(readCodeF64(), thread.getShotDirection()));
 							case CalcRelativeShotDistanceVV:
 								setVolFloat(volFloat - thread.getShotDistance());
 							case CalcRelativeShotBearingVV:
-								setVolFloat(normalizeAngle(volFloat - thread.getShotBearing()));
+								setVolFloat(Geometry.getAngleDistance(volFloat, thread.getShotBearing()));
 							case CalcRelativeShotSpeedVV:
 								setVolFloat(volFloat - thread.getShotSpeed());
 							case CalcRelativeShotDirectionVV:
-								setVolFloat(normalizeAngle(volFloat - thread.getShotDirection()));
+								setVolFloat(Geometry.getAngleDistance(volFloat, thread.getShotDirection()));
 
 							#if debug
 							case other:

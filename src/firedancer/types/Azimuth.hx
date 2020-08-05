@@ -1,8 +1,8 @@
 package firedancer.types;
 
 import reckoner.TmpVec2D;
-import reckoner.Geometry;
 import reckoner.Numeric.nearlyEqual;
+import firedancer.common.Geometry;
 
 /**
 	Azimuth value in degrees (north-based and clockwise, 360 for a full rotation).
@@ -40,7 +40,9 @@ abstract Azimuth(Angle) {
 		Should not be used in runtime as this also does some error correction.
 	**/
 	public extern inline function toVec2D(length: Float): TmpVec2D {
-		var xFactor = Geometry.sin(this.toRadians());
+		final unitVec = Geometry.toUnitVec(this.toRadians());
+
+		var xFactor = unitVec.x;
 
 		if (nearlyEqual(xFactor, 0.0)) xFactor = 0.0;
 		if (nearlyEqual(xFactor, 1.0)) xFactor = 1.0;
@@ -48,7 +50,7 @@ abstract Azimuth(Angle) {
 		if (nearlyEqual(xFactor, 0.5)) xFactor = 0.5;
 		if (nearlyEqual(xFactor, -0.5)) xFactor = -0.5;
 
-		var yFactor = -Geometry.cos(this.toRadians());
+		var yFactor = unitVec.y;
 
 		if (nearlyEqual(yFactor, 0.0)) yFactor = 0.0;
 		if (nearlyEqual(yFactor, 1.0)) yFactor = 1.0;

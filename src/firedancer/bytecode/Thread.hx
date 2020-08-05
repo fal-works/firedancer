@@ -1,9 +1,7 @@
 package firedancer.bytecode;
 
 import banker.binary.ByteStackData;
-import reckoner.Geometry.hypot;
-import reckoner.Geometry.atan2;
-import firedancer.common.Vec2DStatics.*;
+import firedancer.common.Geometry;
 
 /**
 	Virtual thread for running `firedancer` bytecode.
@@ -138,25 +136,25 @@ class Thread {
 		@return The length of current shot position vector.
 	**/
 	public extern inline function getShotDistance(): Float
-		return hypot(this.shotX, this.shotY);
+		return Geometry.getLength(this.shotX, this.shotY);
 
 	/**
 		@return The angle of current shot position vector.
 	**/
 	public extern inline function getShotBearing(): Float
-		return atan2(this.shotY, this.shotX);
+		return Geometry.getAngle(this.shotY, this.shotX);
 
 	/**
 		@return The length of current shot velocity vector.
 	**/
 	public extern inline function getShotSpeed(): Float
-		return hypot(this.shotVx, this.shotVy);
+		return Geometry.getLength(this.shotVx, this.shotVy);
 
 	/**
 		@return The angle of current shot velocity vector.
 	**/
 	public extern inline function getShotDirection(): Float
-		return atan2(this.shotVy, this.shotVx);
+		return Geometry.getAngle(this.shotVy, this.shotVx);
 
 
 	public extern inline function setShotPosition(x: Float, y: Float): Void {
@@ -180,42 +178,42 @@ class Thread {
 	}
 
 	public extern inline function setShotDistance(value: Float): Void {
-		final newPosition = setLength(this.shotX, this.shotY, value);
+		final newPosition = Geometry.setLength(this.shotX, this.shotY, value);
 		setShotPosition(newPosition.x, newPosition.y);
 	}
 
 	public extern inline function addShotDistance(value: Float): Void {
-		final newPosition = addLength(this.shotX, this.shotY, value);
+		final newPosition = Geometry.addLength(this.shotX, this.shotY, value);
 		setShotPosition(newPosition.x, newPosition.y);
 	}
 
 	public extern inline function setShotBearing(value: Float): Void {
-		final newPosition = setAngle(this.shotX, this.shotY, value);
+		final newPosition = Geometry.setAngle(this.shotX, this.shotY, value);
 		setShotPosition(newPosition.x, newPosition.y);
 	}
 
 	public extern inline function addShotBearing(value: Float): Void {
-		final newPosition = addAngle(this.shotX, this.shotY, value);
+		final newPosition = Geometry.addAngle(this.shotX, this.shotY, value);
 		setShotPosition(newPosition.x, newPosition.y);
 	}
 
 	public extern inline function setShotSpeed(value: Float): Void {
-		final newVelocity = setLength(this.shotVx, this.shotVy, value);
+		final newVelocity = Geometry.setLength(this.shotVx, this.shotVy, value);
 		setShotVelocity(newVelocity.x, newVelocity.y);
 	}
 
 	public extern inline function addShotSpeed(value: Float): Void {
-		final newVelocity = addLength(this.shotVx, this.shotVy, value);
+		final newVelocity = Geometry.addLength(this.shotVx, this.shotVy, value);
 		setShotVelocity(newVelocity.x, newVelocity.y);
 	}
 
 	public extern inline function setShotDirection(value: Float): Void {
-		final newVelocity = setAngle(this.shotVx, this.shotVy, value);
+		final newVelocity = Geometry.setAngle(this.shotVx, this.shotVy, value);
 		setShotVelocity(newVelocity.x, newVelocity.y);
 	}
 
 	public extern inline function addShotDirection(value: Float): Void {
-		final newVelocity = addAngle(this.shotVx, this.shotVy, value);
+		final newVelocity = Geometry.addAngle(this.shotVx, this.shotVy, value);
 		setShotVelocity(newVelocity.x, newVelocity.y);
 	}
 }

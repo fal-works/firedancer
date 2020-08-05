@@ -39,7 +39,7 @@ class World {
 			0.5 * worldWidth,
 			-32,
 			3,
-			0.5 * Math.PI,
+			Math.PI,
 			BulletPatterns.testPattern
 		);
 	}
