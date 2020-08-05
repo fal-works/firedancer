@@ -15,8 +15,8 @@ class Random {
 	**/
 	public inline function float(max: FloatExpression): FloatExpression {
 		return FloatLikeExpressionEnum.Runtime(UnaryOperator({
-			operateFloatCV: general(RandomFloatCV),
-			operateFloatVV: general(RandomFloatVV)
+			constantOperator: Instruction(general(RandomFloatCV)),
+			operateVV: general(RandomFloatVV)
 		}, max));
 	}
 
@@ -27,8 +27,8 @@ class Random {
 		final centralAngle = Nulls.coalesce(centralAngle, 360.0);
 
 		return FloatLikeExpressionEnum.Runtime(UnaryOperator({
-			operateFloatCV: general(RandomFloatSignedCV),
-			operateFloatVV: general(RandomFloatSignedVV)
+			constantOperator: Instruction(general(RandomFloatSignedCV)),
+			operateVV: general(RandomFloatSignedVV)
 		}, centralAngle / 2));
 	}
 }

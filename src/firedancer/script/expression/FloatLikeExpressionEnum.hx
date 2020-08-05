@@ -54,8 +54,8 @@ class FloatLikeExpressionExtensionEnum {
 		_this: FloatLikeExpressionEnum
 	): FloatLikeExpressionEnum {
 		return Runtime(FloatLikeRuntimeExpressionEnum.UnaryOperator({
-			operateConstantFloat: v -> -v,
-			operateFloatVV: general(MinusFloatV)
+			constantOperator: Immediate(v -> -v),
+			operateVV: general(MinusFloatV)
 		}, _this));
 	}
 

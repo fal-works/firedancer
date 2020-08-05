@@ -34,32 +34,31 @@ enum FloatLikeRuntimeExpressionEnum {
 
 @:structInit
 class FloatUnaryOperatorType {
-	/**
-		Any function that takes a float value and returns another float.
-
-		This can only be set if the result can be calculated in compile-time.
-	**/
-	public final operateConstantFloat: Maybe<(v: Float) -> Float>;
-
-	/**
-		Any `Opcode` that operates a given constant float and assigns the result to the volatile float.
-	**/
-	public final operateFloatCV: Maybe<Opcode>;
+	public final constantOperator: FloatConstantUnaryOperator;
 
 	/**
 		Any `Opcode` that operates the volatile float and reassigns the result to the volatile float.
 	**/
-	public final operateFloatVV: Opcode;
+	public final operateVV: Opcode;
+}
 
-	function new(
-		operateFloatVV: Opcode,
-		?operateConstantFloat: Float->Float,
-		?operateFloatCV: Opcode
-	) {
-		this.operateConstantFloat = Maybe.from(operateConstantFloat);
-		this.operateFloatCV = Maybe.from(operateFloatCV);
-		this.operateFloatVV = operateFloatVV;
-	}
+enum FloatConstantUnaryOperator {
+	/**
+		Calculates immediately in compile-time.
+		@param func Any function that takes a float value and returns another float.
+	**/
+	Immediate(func: (v: Float) -> Float);
+
+	/**
+		Applies a single instruction.
+		@param opcodeCV Any `Opcode` that operates a given constant float and assigns the result to the volatile float.
+	**/
+	Instruction(opcodeCV: Opcode);
+
+	/**
+		Uses `FloatUnaryOperatorType.operateVV`.
+	**/
+	None;
 }
 
 @:structInit

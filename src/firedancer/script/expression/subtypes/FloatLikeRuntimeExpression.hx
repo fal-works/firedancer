@@ -18,27 +18,30 @@ abstract FloatLikeRuntimeExpression(
 		return switch this {
 			case Variable(loadV):
 				new AssemblyStatement(loadV, []);
+
 			case UnaryOperator(type, operand):
 				switch operand {
 					case Constant(value):
-						final operateConstantFloat = type.operateConstantFloat;
-						final operateFloatCV = type.operateFloatCV;
-						if (operateConstantFloat.isSome()) {
-							new AssemblyStatement(
-								general(LoadFloatCV),
-								[Float(operateConstantFloat.unwrap()(value.toFloat()))]
-							);
-						} else if (operateFloatCV.isSome()) {
-							new AssemblyStatement(operateFloatCV.unwrap(), [value]);
-						} else [
-							new AssemblyStatement(general(LoadFloatCV), [value]),
-							new AssemblyStatement(type.operateFloatVV, [])
-						];
+						switch type.constantOperator {
+							case Immediate(func):
+								new AssemblyStatement(
+									general(LoadFloatCV),
+									[Float(func(value.toFloat()))]
+								);
+							case Instruction(opcodeCV):
+								new AssemblyStatement(opcodeCV, [value]);
+							case None:
+								[
+									new AssemblyStatement(general(LoadFloatCV), [value]),
+									new AssemblyStatement(type.operateVV, [])
+								];
+						}
 					case Runtime(expression):
 						final code = expression.loadToVolatileFloat();
-						code.push(new AssemblyStatement(type.operateFloatVV, []));
+						code.push(new AssemblyStatement(type.operateVV, []));
 						code;
 				};
+
 			case BinaryOperator(type, operandA, operandB):
 				final code:AssemblyCode = [];
 				final operateConstantFloats = type.operateConstantFloats;
