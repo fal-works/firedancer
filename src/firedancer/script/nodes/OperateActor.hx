@@ -244,7 +244,7 @@ class ActorAttributeOperationExtension {
 					case ShotVelocity: writeShot(AddShotVelocityV);
 				};
 
-				final const = vec.toConstantOperand();
+				final const = vec.tryGetConstantOperand();
 				if (const.isSome()) {
 					final calcRelativeCV: ReadOperation = switch attribute {
 						case Position: CalcRelativePositionCV;
@@ -265,6 +265,7 @@ class ActorAttributeOperationExtension {
 						[statement(read(calcRelativeVV))]
 					].flatten();
 				}
+
 			case SetLength(length):
 				multChangeVCS = statement(general(MultFloatVCS), [Float(1.0 / frames)]);
 				peekChange = peekFloat(LEN32); // skip the loop counter
@@ -297,6 +298,7 @@ class ActorAttributeOperationExtension {
 						calcRelative = expression.loadToVolatileFloat();
 						calcRelative.push(statement(read(calcRelativeVV)));
 				}
+
 			case SetAngle(angle):
 				multChangeVCS = statement(general(MultFloatVCS), [Float(1.0 / frames)]);
 				peekChange = peekFloat(LEN32); // skip the loop counter
@@ -329,6 +331,7 @@ class ActorAttributeOperationExtension {
 						calcRelative = expression.loadToVolatileFloat();
 						calcRelative.push(statement(read(calcRelativeVV)));
 				}
+
 			default: throw "Unsupported operation.";
 		}
 
