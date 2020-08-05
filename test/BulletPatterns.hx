@@ -83,17 +83,14 @@ class BulletPatterns {
 		])
 	];
 
-	static final randomTest: Ast = [
-		shot.velocity.set(5, 180),
-		loop([
-			shot.velocity.set(
-				random.between(1, 4),
-				180 + random.grouping(90)
-			),
-			fire(),
-			wait(1)
-		])
-	];
+	static final randomTest: Ast = loop([
+		shot.velocity.set(
+			random.between(1, 4),
+			180 + random.grouping(90)
+		),
+		fire(),
+		wait(2)
+	]);
 
 	static final sandbox: Ast = loop([
 		wait(30),
