@@ -87,8 +87,8 @@ class BulletPatterns {
 		shot.velocity.set(5, 180),
 		loop([
 			shot.velocity.set(
-				1 + random.float(4),
-				180 + random.angle(90)
+				random.between(1, 4),
+				180 + random.grouping(90)
 			),
 			fire(),
 			wait(1)
