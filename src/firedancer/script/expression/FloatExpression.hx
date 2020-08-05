@@ -1,5 +1,7 @@
 package firedancer.script.expression;
 
+import firedancer.script.expression.subtypes.FloatLikeConstant;
+
 /**
 	Abstract over `FloatLikeExpressionEnum` that can be implicitly cast from `Float`.
 **/
@@ -7,11 +9,11 @@ package firedancer.script.expression;
 abstract FloatExpression(
 	FloatLikeExpressionEnum
 ) from FloatLikeExpressionEnum to FloatLikeExpressionEnum {
-	@:from public static extern inline function fromConstant(value: Float): FloatExpression
+	@:from public static extern inline function fromFloat(value: Float): FloatExpression
 		return FloatLikeExpressionEnum.Constant(constantFloat(value));
 
-	@:from static extern inline function fromConstantInt(value: Int): FloatExpression
-		return fromConstant(value);
+	@:from static extern inline function fromInt(value: Int): FloatExpression
+		return fromFloat(value);
 
 	@:op(-A)
 	extern inline function unaryMinus(): FloatExpression

@@ -232,7 +232,7 @@ class ActorAttributeOperationExtension {
 		var dropChange: AssemblyStatement; // Drop change rate (after the loop)
 
 		switch setOperation {
-			case SetVector(arg):
+			case SetVector(vec):
 				multChangeVCS = statement(general(MultVecVCS), [Float(1.0 / frames)]);
 				peekChange = peekVec(LEN32); // skip the loop counter
 				dropChange = dropVec();
@@ -244,28 +244,28 @@ class ActorAttributeOperationExtension {
 					case ShotVelocity: writeShot(AddShotVelocityV);
 				};
 
-				switch arg.toEnum() {
-					case Constant(value):
-						final calcRelativeCV:ReadOperation = switch attribute {
-							case Position: CalcRelativePositionCV;
-							case Velocity: CalcRelativeVelocityCV;
-							case ShotPosition: CalcRelativeShotPositionCV;
-							case ShotVelocity: CalcRelativeShotVelocityCV;
-						};
-						calcRelative = statement(read(calcRelativeCV), [value]);
-					case Runtime(expression):
-						final calcRelativeVV:ReadOperation = switch attribute {
-							case Position: CalcRelativePositionVV;
-							case Velocity: CalcRelativeVelocityVV;
-							case ShotPosition: CalcRelativeShotPositionVV;
-							case ShotVelocity: CalcRelativeShotVelocityVV;
-						};
-						calcRelative = [
-							expression.loadToVolatileVector(),
-							[statement(read(calcRelativeVV))]
-						].flatten();
+				final const = vec.toConstantOperand();
+				if (const.isSome()) {
+					final calcRelativeCV: ReadOperation = switch attribute {
+						case Position: CalcRelativePositionCV;
+						case Velocity: CalcRelativeVelocityCV;
+						case ShotPosition: CalcRelativeShotPositionCV;
+						case ShotVelocity: CalcRelativeShotVelocityCV;
+					};
+					calcRelative = statement(read(calcRelativeCV), [const.unwrap()]);
+				} else {
+					final calcRelativeVV: ReadOperation = switch attribute {
+						case Position: CalcRelativePositionVV;
+						case Velocity: CalcRelativeVelocityVV;
+						case ShotPosition: CalcRelativeShotPositionVV;
+						case ShotVelocity: CalcRelativeShotVelocityVV;
+					};
+					calcRelative = [
+						vec.loadToVolatileVector(),
+						[statement(read(calcRelativeVV))]
+					].flatten();
 				}
-			case SetLength(arg):
+			case SetLength(vec):
 				multChangeVCS = statement(general(MultFloatVCS), [Float(1.0 / frames)]);
 				peekChange = peekFloat(LEN32); // skip the loop counter
 				dropChange = dropFloat();
@@ -277,7 +277,7 @@ class ActorAttributeOperationExtension {
 					case ShotVelocity: writeShot(AddShotSpeedV);
 				}
 
-				switch arg.toEnum() {
+				switch vec.toEnum() {
 					case Constant(value):
 						final operation:ReadOperation = switch attribute {
 							case Position: CalcRelativeDistanceCV;
@@ -297,7 +297,7 @@ class ActorAttributeOperationExtension {
 						calcRelative = expression.loadToVolatileFloat();
 						calcRelative.push(statement(read(calcRelativeVV)));
 				}
-			case SetAngle(arg):
+			case SetAngle(vec):
 				multChangeVCS = statement(general(MultFloatVCS), [Float(1.0 / frames)]);
 				peekChange = peekFloat(LEN32); // skip the loop counter
 				dropChange = dropFloat();
@@ -309,7 +309,7 @@ class ActorAttributeOperationExtension {
 					case ShotVelocity: writeShot(AddShotDirectionV);
 				}
 
-				switch arg.toEnum() {
+				switch vec.toEnum() {
 					case Constant(value):
 						final operation:ReadOperation = switch attribute {
 							case Position: CalcRelativeBearingCV;
