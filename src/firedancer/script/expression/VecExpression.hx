@@ -1,11 +1,7 @@
 package firedancer.script.expression;
 
 import firedancer.assembly.ConstantOperand;
-import reckoner.TmpVec2D;
-import firedancer.script.expression.subtypes.FloatLikeConstant;
 import firedancer.types.Azimuth;
-import firedancer.assembly.Opcode;
-import firedancer.assembly.AssemblyCode;
 import firedancer.assembly.Opcode;
 import firedancer.assembly.Opcode.*;
 import firedancer.assembly.AssemblyStatement;

@@ -1,7 +1,5 @@
 package firedancer.script.expression;
 
-import firedancer.script.expression.subtypes.FloatLikeConstant;
-
 /**
 	Abstract over `FloatLikeExpressionEnum` that can be implicitly cast from `Float`.
 **/

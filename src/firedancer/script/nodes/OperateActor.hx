@@ -265,7 +265,7 @@ class ActorAttributeOperationExtension {
 						[statement(read(calcRelativeVV))]
 					].flatten();
 				}
-			case SetLength(vec):
+			case SetLength(length):
 				multChangeVCS = statement(general(MultFloatVCS), [Float(1.0 / frames)]);
 				peekChange = peekFloat(LEN32); // skip the loop counter
 				dropChange = dropFloat();
@@ -277,7 +277,7 @@ class ActorAttributeOperationExtension {
 					case ShotVelocity: writeShot(AddShotSpeedV);
 				}
 
-				switch vec.toEnum() {
+				switch length.toEnum() {
 					case Constant(value):
 						final operation:ReadOperation = switch attribute {
 							case Position: CalcRelativeDistanceCV;
@@ -297,7 +297,7 @@ class ActorAttributeOperationExtension {
 						calcRelative = expression.loadToVolatileFloat();
 						calcRelative.push(statement(read(calcRelativeVV)));
 				}
-			case SetAngle(vec):
+			case SetAngle(angle):
 				multChangeVCS = statement(general(MultFloatVCS), [Float(1.0 / frames)]);
 				peekChange = peekFloat(LEN32); // skip the loop counter
 				dropChange = dropFloat();
@@ -309,7 +309,7 @@ class ActorAttributeOperationExtension {
 					case ShotVelocity: writeShot(AddShotDirectionV);
 				}
 
-				switch vec.toEnum() {
+				switch angle.toEnum() {
 					case Constant(value):
 						final operation:ReadOperation = switch attribute {
 							case Position: CalcRelativeBearingCV;
