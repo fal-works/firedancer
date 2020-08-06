@@ -125,4 +125,16 @@ class FloatLikeExpressionExtensionEnum {
 			operateFloatsVVV: general(DivFloatVVV)
 		}, _this, other));
 	}
+
+	public static function modulo(
+		_this: FloatLikeExpressionEnum,
+		other: FloatLikeExpressionEnum
+	): FloatLikeExpressionEnum {
+		return Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperator({
+			operateConstantFloats: (a, b) -> a % b,
+			operateFloatsVCV: general(ModFloatVCV),
+			operateFloatsCVV: general(ModFloatCVV),
+			operateFloatsVVV: general(ModFloatVVV)
+		}, _this, other));
+	}
 }

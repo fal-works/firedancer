@@ -43,7 +43,11 @@ enum abstract GeneralOperation(Int) to Int {
 			case GeneralOperation.MultFloatVCV: MultFloatVCV;
 			case GeneralOperation.MultFloatVVV: MultFloatVVV;
 			case GeneralOperation.MultFloatVCS: MultFloatVCS;
+			case GeneralOperation.DivFloatCVV: DivFloatCVV;
 			case GeneralOperation.DivFloatVVV: DivFloatVVV;
+			case GeneralOperation.ModFloatVCV: ModFloatVCV;
+			case GeneralOperation.ModFloatCVV: ModFloatCVV;
+			case GeneralOperation.ModFloatVVV: ModFloatVVV;
 			case GeneralOperation.MinusVecV: MinusVecV;
 			case GeneralOperation.MultVecVCS: MultVecVCS;
 			case GeneralOperation.SaveFloatV: SaveFloatV;
@@ -234,6 +238,21 @@ enum abstract GeneralOperation(Int) to Int {
 	final DivFloatVVV;
 
 	/**
+		Divides the current volatile float by a given constant float and assigns the modulo to the volatile float.
+	**/
+	final ModFloatVCV;
+
+	/**
+		Divides a given constant float by the current volatile float and assigns the modulo to the volatile float.
+	**/
+	final ModFloatCVV;
+
+	/**
+		Divides the last saved volatile float by the current volatile float, and assigns the modulo to the volatile float.
+	**/
+	final ModFloatVVV;
+
+	/**
 		Changes the sign of the current volatile vector.
 	**/
 	final MinusVecV;
@@ -343,6 +362,9 @@ class GeneralOperationExtension {
 			case MultFloatVCV: "mult_float_vcv";
 			case MultFloatVVV: "mult_float_vvv";
 			case MultFloatVCS: "mult_float_vcs";
+			case ModFloatVCV: "mod_float_vcv";
+			case ModFloatCVV: "mod_float_cvv";
+			case ModFloatVVV: "mod_float_vvv";
 			case DivFloatCVV: "div_float_cvv";
 			case DivFloatVVV: "div_float_vvv";
 			case MinusVecV: "minus_vec_v";
@@ -388,6 +410,9 @@ class GeneralOperationExtension {
 			case MinusFloatV: [];
 			case MultFloatVVV: [];
 			case MultFloatVCV | MultFloatVCS: [Float]; // multiplier value
+			case ModFloatVCV: [Float]; // divisor
+			case ModFloatCVV: [Float]; // value to be divided
+			case ModFloatVVV: [];
 			case DivFloatCVV: [Float]; // value to be divided
 			case DivFloatVVV: [];
 			case MinusVecV: [];

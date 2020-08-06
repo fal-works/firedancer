@@ -49,8 +49,21 @@ abstract FloatExpression(
 		return a.multiply(b);
 	}
 
-	@:op(A / B) extern inline function divide(divisor: FloatExpression): FloatExpression
-		return this.divide(divisor);
+	@:op(A / B)
+	static extern inline function divide(
+		a: FloatExpression,
+		b: FloatExpression
+	): FloatExpression {
+		return a.divide(b);
+	}
+
+	@:op(A % B)
+	static extern inline function modulo(
+		a: FloatExpression,
+		b: FloatExpression
+	): FloatExpression {
+		return a.modulo(b);
+	}
 
 	/**
 		Creates an `AssemblyCode` that assigns `this` value to the current volatile float.

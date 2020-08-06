@@ -57,9 +57,22 @@ abstract AngleExpression(
 		return expr.multiply(factor);
 	}
 
+
 	@:op(A / B)
-	extern inline function divide(divisor: FloatExpression): AngleExpression
-		return this.divide(divisor);
+	static extern inline function divide(
+		a: AngleExpression,
+		b: FloatExpression
+	): AngleExpression {
+		return a.divide(b);
+	}
+
+	@:op(A % B)
+	static extern inline function modulo(
+		a: AngleExpression,
+		b: FloatExpression
+	): AngleExpression {
+		return a.modulo(b);
+	}
 
 	/**
 		Creates an `AssemblyCode` that assigns `this` value to the current volatile float.
