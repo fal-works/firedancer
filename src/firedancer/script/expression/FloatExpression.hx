@@ -1,5 +1,8 @@
 package firedancer.script.expression;
 
+import firedancer.assembly.AssemblyCode;
+import firedancer.assembly.Opcode;
+
 /**
 	Abstract over `FloatLikeExpressionEnum` that can be implicitly cast from `Float`.
 **/
@@ -7,8 +10,13 @@ package firedancer.script.expression;
 abstract FloatExpression(
 	FloatLikeExpressionEnum
 ) from FloatLikeExpressionEnum to FloatLikeExpressionEnum {
+	/**
+		The factor by which the constant values should be multiplied when writing into `AssemblyCode`.
+	**/
+	public static extern inline final constantFactor = 1.0;
+
 	@:from public static extern inline function fromFloat(value: Float): FloatExpression
-		return FloatLikeExpressionEnum.Constant(constantFloat(value));
+		return FloatLikeExpressionEnum.Constant(value);
 
 	@:from static extern inline function fromInt(value: Int): FloatExpression
 		return fromFloat(value);
@@ -43,6 +51,19 @@ abstract FloatExpression(
 
 	@:op(A / B) extern inline function divide(divisor: FloatExpression): FloatExpression
 		return this.divide(divisor);
+
+	/**
+		Creates an `AssemblyCode` that assigns `this` value to the current volatile float.
+	**/
+	public function loadToVolatileFloat(): AssemblyCode
+		return this.loadToVolatileFloat(constantFactor);
+
+	/**
+		Creates an `AssemblyCode` that runs either `constantOpcode` or `volatileOpcode`
+		receiving `this` value as argument.
+	**/
+	public function use(constantOpcode: Opcode, volatileOpcode: Opcode): AssemblyCode
+		return this.use(constantOpcode, volatileOpcode, constantFactor);
 
 	public extern inline function toEnum(): FloatLikeExpressionEnum
 		return this;

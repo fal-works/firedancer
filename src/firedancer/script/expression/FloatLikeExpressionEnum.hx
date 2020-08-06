@@ -21,13 +21,17 @@ class FloatLikeExpressionExtensionEnum {
 		Creates an `AssemblyCode` that assigns `this` value to the current volatile float.
 	**/
 	public static function loadToVolatileFloat(
-		_this: FloatLikeExpressionEnum
+		_this: FloatLikeExpressionEnum,
+		constantFactor: Float
 	): AssemblyCode {
 		return switch _this {
 			case Constant(value):
-				new AssemblyStatement(general(LoadFloatCV), [value]);
+				new AssemblyStatement(
+					general(LoadFloatCV),
+					[value.toOperand(constantFactor)]
+				);
 			case Runtime(expression):
-				expression.loadToVolatileFloat();
+				expression.loadToVolatileFloat(constantFactor);
 		}
 	}
 
@@ -38,13 +42,17 @@ class FloatLikeExpressionExtensionEnum {
 	public static function use(
 		_this: FloatLikeExpressionEnum,
 		constantOpcode: Opcode,
-		volatileOpcode: Opcode
+		volatileOpcode: Opcode,
+		constantFactor: Float
 	): AssemblyCode {
 		return switch _this {
 			case Constant(value):
-				new AssemblyStatement(constantOpcode, [value]);
+				new AssemblyStatement(
+					constantOpcode,
+					[value.toOperand(constantFactor)]
+				);
 			case Runtime(expression):
-				final code = expression.loadToVolatileFloat();
+				final code = expression.loadToVolatileFloat(constantFactor);
 				code.push(new AssemblyStatement(volatileOpcode, []));
 				code;
 		}
@@ -105,7 +113,7 @@ class FloatLikeExpressionExtensionEnum {
 				switch other {
 					case Constant(valueB):
 						// multiply by the reciprocal: rt / c => rt * (1 / c)
-						other = Constant(FloatLikeConstant.fromFloat(1.0) / valueB);
+						other = Constant(1.0 / valueB);
 					case Runtime(_):
 				}
 		}

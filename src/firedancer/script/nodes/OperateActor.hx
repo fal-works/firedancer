@@ -286,7 +286,7 @@ class ActorAttributeOperationExtension {
 							case ShotPosition: CalcRelativeShotDistanceCV;
 							case ShotVelocity: CalcRelativeShotSpeedCV;
 						};
-						final operands:Array<ConstantOperand> = [value.toOperand()];
+						final operands:Array<ConstantOperand> = [value.toOperand(FloatExpression.constantFactor)];
 						calcRelative = statement(read(operation), operands);
 					case Runtime(expression):
 						final calcRelativeVV:ReadOperation = switch attribute {
@@ -295,7 +295,7 @@ class ActorAttributeOperationExtension {
 							case ShotPosition: CalcRelativeShotDistanceVV;
 							case ShotVelocity: CalcRelativeShotDirectionVV;
 						}
-						calcRelative = expression.loadToVolatileFloat();
+						calcRelative = expression.loadToVolatileFloat(FloatExpression.constantFactor);
 						calcRelative.push(statement(read(calcRelativeVV)));
 				}
 
@@ -319,7 +319,7 @@ class ActorAttributeOperationExtension {
 							case ShotPosition: CalcRelativeShotBearingCV;
 							case ShotVelocity: CalcRelativeShotDirectionCV;
 						};
-						final operands:Array<ConstantOperand> = [value];
+						final operands:Array<ConstantOperand> = [value.toOperand(AngleExpression.constantFactor)];
 						calcRelative = statement(read(operation), operands);
 					case Runtime(expression):
 						final calcRelativeVV:ReadOperation = switch attribute {
@@ -328,7 +328,7 @@ class ActorAttributeOperationExtension {
 							case ShotPosition: CalcRelativeShotBearingVV;
 							case ShotVelocity: CalcRelativeShotDirectionVV;
 						}
-						calcRelative = expression.loadToVolatileFloat();
+						calcRelative = expression.loadToVolatileFloat(AngleExpression.constantFactor);
 						calcRelative.push(statement(read(calcRelativeVV)));
 				}
 

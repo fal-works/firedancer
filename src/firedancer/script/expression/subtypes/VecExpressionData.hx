@@ -1,6 +1,7 @@
 package firedancer.script.expression.subtypes;
 
 import sneaker.exception.NotOverriddenException;
+import firedancer.types.Azimuth;
 import firedancer.assembly.AssemblyStatement;
 import firedancer.assembly.AssemblyCode;
 import firedancer.assembly.ConstantOperand;
@@ -32,7 +33,7 @@ class VecExpressionData {
 	): AssemblyCode {
 		final const = tryGetConstantOperand();
 		return if (const.isSome()) {
-			[new AssemblyStatement(processConstantVector, [const.unwrap()])];
+			new AssemblyStatement(processConstantVector, [const.unwrap()]);
 		} else {
 			final code = loadToVolatileVector();
 			code.push(new AssemblyStatement(processVolatileVector, []));
@@ -51,12 +52,13 @@ class CartesianVecExpressionData extends VecExpressionData implements ripper.Dat
 			case Constant(valX):
 				switch y.toEnum() {
 					case Constant(valY):
-						return Maybe.from(Vec(valX.toFloat(), valY.toFloat()));
-					default:
-						Maybe.none();
+						return Maybe.from(Vec(
+							valX.toOperandValue(FloatExpression.constantFactor),
+							valY.toOperandValue(FloatExpression.constantFactor)
+						));
+					default: Maybe.none();
 				}
-			default:
-				Maybe.none();
+			default: Maybe.none();
 		}
 	}
 
@@ -84,7 +86,7 @@ class PolarVecExpressionData extends VecExpressionData implements ripper.Data {
 			case Constant(valLen):
 				switch angle.toEnum() {
 					case Constant(valAng):
-						final vec = valAng.toAzimuth().toVec2D(valLen.toFloat());
+						final vec = Azimuth.fromDegrees(valAng).toVec2D(valLen);
 						return Maybe.from(Vec(vec.x, vec.y));
 					default:
 						Maybe.none();

@@ -14,7 +14,7 @@ abstract FloatLikeRuntimeExpression(
 	/**
 		Creates an `AssemblyCode` that assigns `this` value to the current volatile float.
 	**/
-	public function loadToVolatileFloat(): AssemblyCode {
+	public function loadToVolatileFloat(constantFactor: Float): AssemblyCode {
 		return switch this {
 			case Variable(loadV):
 				new AssemblyStatement(loadV, []);
@@ -22,22 +22,23 @@ abstract FloatLikeRuntimeExpression(
 			case UnaryOperator(type, operand):
 				switch operand {
 					case Constant(value):
+						final operandValue = value.toOperandValue(constantFactor);
 						switch type.constantOperator {
 							case Immediate(func):
 								new AssemblyStatement(
 									general(LoadFloatCV),
-									[Float(func(value.toFloat()))]
+									[Float(func(operandValue))]
 								);
 							case Instruction(opcodeCV):
-								new AssemblyStatement(opcodeCV, [value]);
+								new AssemblyStatement(opcodeCV, [Float(operandValue)]);
 							case None:
 								[
-									new AssemblyStatement(general(LoadFloatCV), [value]),
+									new AssemblyStatement(general(LoadFloatCV), [Float(operandValue)]),
 									new AssemblyStatement(type.operateVV, [])
 								];
 						}
 					case Runtime(expression):
-						final code = expression.loadToVolatileFloat();
+						final code = expression.loadToVolatileFloat(constantFactor);
 						code.push(new AssemblyStatement(type.operateVV, []));
 						code;
 				};
@@ -50,51 +51,54 @@ abstract FloatLikeRuntimeExpression(
 				final operateFloatsVVV = type.operateFloatsVVV;
 				switch operandA {
 					case Constant(valueA):
+						final operandsA = [valueA.toOperand(constantFactor)];
 						switch operandB {
 							case Constant(valueB):
 								if (operateConstantFloats.isSome()) {
-									final valueAB = operateConstantFloats.unwrap()(
-										valueA.toFloat(),
-										valueB.toFloat()
+									final valueAB: FloatLikeConstant = operateConstantFloats.unwrap()(
+										valueA,
+										valueB
 									);
-									code.pushStatement(general(LoadFloatCV), [Float(valueAB)]);
+									code.pushStatement(general(LoadFloatCV), [valueAB.toOperand(constantFactor)]);
 								} else {
-									code.pushStatement(general(LoadFloatCV), [valueA]);
+									final operandsB = [valueB.toOperand(constantFactor)];
+									code.pushStatement(general(LoadFloatCV), operandsA);
 									if (operateFloatsVCV.isSome())
-										code.pushStatement(operateFloatsVCV.unwrap(), [valueB]);
+										code.pushStatement(operateFloatsVCV.unwrap(), operandsB);
 									else {
 										code.pushStatement(general(SaveFloatV));
-										code.pushStatement(general(LoadFloatCV), [valueB]);
+										code.pushStatement(general(LoadFloatCV), operandsB);
 										code.pushStatement(operateFloatsVVV, []);
 									}
 								}
 							case Runtime(expressionB):
 								if (operateFloatsCVV.isSome()) {
-									code.pushFromArray(expressionB.loadToVolatileFloat());
-									code.pushStatement(operateFloatsCVV.unwrap(), [valueA]);
+									code.pushFromArray(expressionB.loadToVolatileFloat(constantFactor));
+									code.pushStatement(operateFloatsCVV.unwrap(), operandsA);
 								} else {
-									code.pushStatement(general(LoadFloatCV), [valueA]);
+									code.pushStatement(general(LoadFloatCV), operandsA);
 									code.pushStatement(general(SaveFloatV));
-									code.pushFromArray(expressionB.loadToVolatileFloat());
+									code.pushFromArray(expressionB.loadToVolatileFloat(constantFactor));
 									code.pushStatement(operateFloatsVVV);
 								}
 						};
 					case Runtime(expressionA):
 						switch operandB {
 							case Constant(valueB):
+								final operandsB = [valueB.toOperand(constantFactor)];
 								if (operateFloatsVCV.isSome()) {
-									code.pushFromArray(expressionA.loadToVolatileFloat());
-									code.pushStatement(operateFloatsVCV.unwrap(), [valueB]);
+									code.pushFromArray(expressionA.loadToVolatileFloat(constantFactor));
+									code.pushStatement(operateFloatsVCV.unwrap(), operandsB);
 								} else {
-									code.pushFromArray(expressionA.loadToVolatileFloat());
+									code.pushFromArray(expressionA.loadToVolatileFloat(constantFactor));
 									code.pushStatement(general(SaveFloatV));
-									code.pushStatement(general(LoadFloatCV), [valueB]);
+									code.pushStatement(general(LoadFloatCV), operandsB);
 									code.pushStatement(operateFloatsVVV);
 								}
 							case Runtime(expressionB):
-								code.pushFromArray(expressionA.loadToVolatileFloat());
+								code.pushFromArray(expressionA.loadToVolatileFloat(constantFactor));
 								code.pushStatement(general(SaveFloatV));
-								code.pushFromArray(expressionB.loadToVolatileFloat());
+								code.pushFromArray(expressionB.loadToVolatileFloat(constantFactor));
 								code.pushStatement(operateFloatsVVV);
 						};
 				};
