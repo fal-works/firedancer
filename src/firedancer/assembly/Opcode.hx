@@ -20,7 +20,10 @@ abstract Opcode(Int) {
 	static extern inline final b00000011 = 0x03;
 	static extern inline final b00111111 = 0x3f;
 
-	public static inline function from(category: OperationCategory, operation: Int): Opcode {
+	public static inline function from(
+		category: OperationCategory,
+		operation: Int
+	): Opcode {
 		return new Opcode(category.int() << opBitCount | operation);
 	}
 

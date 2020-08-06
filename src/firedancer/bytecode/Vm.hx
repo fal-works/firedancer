@@ -328,7 +328,10 @@ class Vm {
 								threads.useSubThread(bytecodeTable[bytecodeId], thread);
 							case UseThreadS:
 								final bytecodeId = readCodeI32();
-								final threadId = threads.useSubThread(bytecodeTable[bytecodeId], thread);
+								final threadId = threads.useSubThread(
+									bytecodeTable[bytecodeId],
+									thread
+								);
 								pushInt(threadId.int());
 							case AwaitThread:
 								if (threads[peekInt()].active) {
@@ -479,11 +482,17 @@ class Vm {
 							case CalcRelativeDistanceCV:
 								setVolFloat(readCodeF64() - getDistance());
 							case CalcRelativeBearingCV:
-								setVolFloat(Geometry.getAngleDistance(readCodeF64(), getBearing()));
+								setVolFloat(Geometry.getAngleDistance(
+									readCodeF64(),
+									getBearing()
+								));
 							case CalcRelativeSpeedCV:
 								setVolFloat(readCodeF64() - getSpeed());
 							case CalcRelativeDirectionCV:
-								setVolFloat(Geometry.getAngleDistance(readCodeF64(), getDirection()));
+								setVolFloat(Geometry.getAngleDistance(
+									readCodeF64(),
+									getDirection()
+								));
 							case CalcRelativeDistanceVV:
 								setVolFloat(volFloat - getDistance());
 							case CalcRelativeBearingVV:
@@ -491,10 +500,16 @@ class Vm {
 							case CalcRelativeSpeedVV:
 								setVolFloat(volFloat - getSpeed());
 							case CalcRelativeDirectionVV:
-								setVolFloat(Geometry.getAngleDistance(volFloat, getDirection()));
+								setVolFloat(Geometry.getAngleDistance(
+									volFloat,
+									getDirection()
+								));
 
 							case CalcRelativeShotPositionCV:
-								setVolVec(readCodeF64() - thread.shotX, readCodeF64() - thread.shotY);
+								setVolVec(
+									readCodeF64() - thread.shotX,
+									readCodeF64() - thread.shotY
+								);
 							case CalcRelativeShotVelocityCV:
 								setVolVec(
 									readCodeF64() - thread.shotVx,
@@ -507,19 +522,31 @@ class Vm {
 							case CalcRelativeShotDistanceCV:
 								setVolFloat(readCodeF64() - thread.getShotDistance());
 							case CalcRelativeShotBearingCV:
-								setVolFloat(Geometry.getAngleDistance(readCodeF64(), thread.getShotBearing()));
+								setVolFloat(Geometry.getAngleDistance(
+									readCodeF64(),
+									thread.getShotBearing()
+								));
 							case CalcRelativeShotSpeedCV:
 								setVolFloat(readCodeF64() - thread.getShotSpeed());
 							case CalcRelativeShotDirectionCV:
-								setVolFloat(Geometry.getAngleDistance(readCodeF64(), thread.getShotDirection()));
+								setVolFloat(Geometry.getAngleDistance(
+									readCodeF64(),
+									thread.getShotDirection()
+								));
 							case CalcRelativeShotDistanceVV:
 								setVolFloat(volFloat - thread.getShotDistance());
 							case CalcRelativeShotBearingVV:
-								setVolFloat(Geometry.getAngleDistance(volFloat, thread.getShotBearing()));
+								setVolFloat(Geometry.getAngleDistance(
+									volFloat,
+									thread.getShotBearing()
+								));
 							case CalcRelativeShotSpeedVV:
 								setVolFloat(volFloat - thread.getShotSpeed());
 							case CalcRelativeShotDirectionVV:
-								setVolFloat(Geometry.getAngleDistance(volFloat, thread.getShotDirection()));
+								setVolFloat(Geometry.getAngleDistance(
+									volFloat,
+									thread.getShotDirection()
+								));
 
 							#if debug
 							case other:
@@ -671,7 +698,11 @@ class Vm {
 		return 0;
 	}
 
-	public static function dryRun(context: RuntimeContext, bytecode: Bytecode, stackCapacity: UInt = 256): Void {
+	public static function dryRun(
+		context: RuntimeContext,
+		bytecode: Bytecode,
+		stackCapacity: UInt = 256
+	): Void {
 		final threads = new ThreadList(1, stackCapacity);
 		threads.set(bytecode);
 		final xVec = Vec.fromArrayCopy([0.0]);

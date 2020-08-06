@@ -27,7 +27,10 @@ abstract Azimuth(Angle) {
 	}
 
 	@:op(A - B)
-	static extern inline function subtract(azimuth: Azimuth, displacement: Angle): Azimuth {
+	static extern inline function subtract(
+		azimuth: Azimuth,
+		displacement: Angle
+	): Azimuth {
 		return new Azimuth(azimuth.toAngle() - displacement);
 	}
 

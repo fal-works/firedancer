@@ -142,7 +142,6 @@ enum abstract WriteOperation(Int) to Int {
 	final SetBearingV;
 	final AddBearingV;
 	final AddBearingS;
-
 	final SetSpeedC;
 	final AddSpeedC;
 	final SetSpeedV;
@@ -153,8 +152,6 @@ enum abstract WriteOperation(Int) to Int {
 	final SetDirectionV;
 	final AddDirectionV;
 	final AddDirectionS;
-
-
 	// ---- read/write/calc shot position/velocity ------------------------------
 
 	/**
@@ -217,7 +214,6 @@ enum abstract WriteOperation(Int) to Int {
 	final SetShotBearingV;
 	final AddShotBearingV;
 	final AddShotBearingS;
-
 	final SetShotSpeedC;
 	final AddShotSpeedC;
 	final SetShotSpeedV;
@@ -228,8 +224,6 @@ enum abstract WriteOperation(Int) to Int {
 	final SetShotDirectionV;
 	final AddShotDirectionV;
 	final AddShotDirectionS;
-
-
 	public extern inline function int(): Int
 		return this;
 }

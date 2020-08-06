@@ -23,7 +23,10 @@ class Random {
 	/**
 		Gets a random value between `min` and `max`.
 	**/
-	public inline function between(min: FloatExpression, max: FloatExpression): FloatExpression {
+	public inline function between(
+		min: FloatExpression,
+		max: FloatExpression
+	): FloatExpression {
 		return min + FloatLikeExpressionEnum.Runtime(UnaryOperator({
 			constantOperator: Instruction(calc(RandomFloatCV)),
 			operateVV: calc(RandomFloatVV)

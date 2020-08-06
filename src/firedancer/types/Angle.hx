@@ -15,13 +15,17 @@ abstract Angle(ArcDegrees) from ArcDegrees from Float {
 
 	@:op(-A) function unaryMinus(): Angle;
 
-	@:op(A + B) function plus(other: Angle): Angle;
+	@:op(A + B)
+	static function add(a: Angle, b: Angle): Angle;
 
-	@:op(A - B) function minus(other: Angle): Angle;
+	@:op(A - B)
+	static function subtract(a: Angle, b: Angle): Angle;
 
-	@:op(A * B) @:commutative static function multiply(angle: Angle, factor: Float): Angle;
+	@:op(A * B) @:commutative
+	static function multiply(angle: Angle, factor: Float): Angle;
 
-	@:op(A * B) @:commutative static function multiplyInt(angle: Angle, factor: Int): Angle;
+	@:op(A * B) @:commutative
+	static function multiplyInt(angle: Angle, factor: Int): Angle;
 
 	@:op(A / B) function divide(divisor: Float): Angle;
 

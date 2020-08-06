@@ -156,7 +156,6 @@ class Thread {
 	public extern inline function getShotDirection(): Float
 		return Geometry.getAngle(this.shotVy, this.shotVx);
 
-
 	public extern inline function setShotPosition(x: Float, y: Float): Void {
 		this.shotX = x;
 		this.shotY = y;

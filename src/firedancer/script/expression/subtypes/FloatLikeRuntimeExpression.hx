@@ -33,7 +33,10 @@ abstract FloatLikeRuntimeExpression(
 								new AssemblyStatement(opcodeCV, [Float(operandValue)]);
 							case None:
 								[
-									new AssemblyStatement(calc(LoadFloatCV), [Float(operandValue)]),
+									new AssemblyStatement(
+										calc(LoadFloatCV),
+										[Float(operandValue)]
+									),
 									new AssemblyStatement(type.operateVV, [])
 								];
 						}
@@ -59,7 +62,10 @@ abstract FloatLikeRuntimeExpression(
 										valueA,
 										valueB
 									);
-									code.pushStatement(calc(LoadFloatCV), [valueAB.toOperand(constantFactor)]);
+									code.pushStatement(
+										calc(LoadFloatCV),
+										[valueAB.toOperand(constantFactor)]
+									);
 								} else {
 									final operandsB = [valueB.toOperand(constantFactor)];
 									code.pushStatement(calc(LoadFloatCV), operandsA);

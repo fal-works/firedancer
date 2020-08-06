@@ -89,7 +89,10 @@ class Builder {
 		Creates a `CountDownJump` statement.
 	**/
 	public static inline function countDownJump(lengthInBytes: UInt): AssemblyStatement {
-		return new AssemblyStatement(general(CountDownJump), [Int(lengthInBytes.int())]);
+		return new AssemblyStatement(
+			general(CountDownJump),
+			[Int(lengthInBytes.int())]
+		);
 	}
 
 	/**
@@ -105,7 +108,8 @@ class Builder {
 			],
 			body,
 			[
-				jumpBack(body.bytecodeLength() + GeneralOperation.CountDownJump.getBytecodeLength())
+				jumpBack(body.bytecodeLength()
+					+ GeneralOperation.CountDownJump.getBytecodeLength())
 			]
 		].flatten();
 	}
@@ -130,7 +134,10 @@ class Builder {
 		return if (fireType == 0) {
 			new AssemblyStatement(general(Fire), [Int(bytecodeId)]);
 		} else {
-			new AssemblyStatement(general(FireWithType), [Int(bytecodeId), Int(fireType)]);
+			new AssemblyStatement(
+				general(FireWithType),
+				[Int(bytecodeId), Int(fireType)]
+			);
 		}
 	}
 

@@ -8,7 +8,6 @@ enum abstract OperationCategory(Int) {
 	final Calc = 1;
 	final Read = 2;
 	final Write = 3;
-
 	public inline function int()
 		return this;
 }

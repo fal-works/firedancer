@@ -26,8 +26,11 @@ abstract AngleExpression(
 	@:from static extern inline function fromInt(value: Int): AngleExpression
 		return fromFloat(value);
 
-	@:from static extern inline function fromFloatExpression(expr: FloatExpression): AngleExpression
+	@:from static extern inline function fromFloatExpression(
+		expr: FloatExpression
+	): AngleExpression {
 		return expr.toEnum();
+	}
 
 	@:op(-A)
 	extern inline function unaryMinus(): AngleExpression
@@ -56,7 +59,6 @@ abstract AngleExpression(
 	): AngleExpression {
 		return expr.multiply(factor);
 	}
-
 
 	@:op(A / B)
 	static extern inline function divide(

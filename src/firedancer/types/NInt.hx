@@ -23,6 +23,6 @@ abstract NInt(Int) to Int32 to Int to UInt {
 	public extern inline function uint(): UInt
 		return this;
 
-	extern inline function new(v:Int)
+	extern inline function new(v: Int)
 		this = v;
 }

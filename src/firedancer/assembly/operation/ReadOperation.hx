@@ -96,7 +96,6 @@ enum abstract ReadOperation(Int) to Int {
 	final CalcRelativeBearingCV;
 	final CalcRelativeSpeedCV;
 	final CalcRelativeDirectionCV;
-
 	final CalcRelativeDistanceVV;
 	final CalcRelativeBearingVV;
 	final CalcRelativeSpeedVV;
@@ -130,13 +129,10 @@ enum abstract ReadOperation(Int) to Int {
 	final CalcRelativeShotBearingCV;
 	final CalcRelativeShotSpeedCV;
 	final CalcRelativeShotDirectionCV;
-
 	final CalcRelativeShotDistanceVV;
 	final CalcRelativeShotBearingVV;
 	final CalcRelativeShotSpeedVV;
 	final CalcRelativeShotDirectionVV;
-
-
 	public extern inline function int(): Int
 		return this;
 }

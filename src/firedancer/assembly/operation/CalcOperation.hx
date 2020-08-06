@@ -17,6 +17,7 @@ enum abstract CalcOperation(Int) to Int {
 			case CalcOperation.LoadIntCV: LoadIntCV;
 			case CalcOperation.LoadFloatCV: LoadFloatCV;
 			case CalcOperation.LoadVecCV: LoadVecCV;
+
 			case CalcOperation.AddIntVCV: AddIntVCV;
 			case CalcOperation.AddIntVVV: AddIntVVV;
 			case CalcOperation.SubIntVCV: SubIntVCV;
@@ -30,6 +31,7 @@ enum abstract CalcOperation(Int) to Int {
 			case CalcOperation.ModIntVCV: ModIntVCV;
 			case CalcOperation.ModIntCVV: ModIntCVV;
 			case CalcOperation.ModIntVVV: ModIntVVV;
+
 			case CalcOperation.AddFloatVCV: AddFloatVCV;
 			case CalcOperation.AddFloatVVV: AddFloatVVV;
 			case CalcOperation.SubFloatVCV: SubFloatVCV;
@@ -43,19 +45,22 @@ enum abstract CalcOperation(Int) to Int {
 			case CalcOperation.ModFloatVCV: ModFloatVCV;
 			case CalcOperation.ModFloatCVV: ModFloatCVV;
 			case CalcOperation.ModFloatVVV: ModFloatVVV;
+
 			case CalcOperation.MinusVecV: MinusVecV;
 			case CalcOperation.MultVecVCS: MultVecVCS;
+
 			case CalcOperation.SaveFloatV: SaveFloatV;
 			case CalcOperation.CastCartesianVV: CastCartesianVV;
 			case CalcOperation.CastPolarVV: CastPolarVV;
+
 			case CalcOperation.RandomFloatCV: RandomFloatCV;
 			case CalcOperation.RandomFloatVV: RandomFloatVV;
 			case CalcOperation.RandomFloatSignedCV: RandomFloatSignedCV;
 			case CalcOperation.RandomFloatSignedVV: RandomFloatSignedVV;
+
 			default: throw error(value);
 		}
 	}
-
 
 	// ---- calc values ----------------------------------------------
 
@@ -255,7 +260,6 @@ enum abstract CalcOperation(Int) to Int {
 	**/
 	final RandomFloatSignedVV;
 
-
 	public extern inline function int(): Int
 		return this;
 }
@@ -269,6 +273,7 @@ class CalcOperationExtension {
 			case LoadFloatCV: "load_float_cv";
 			case LoadIntCV: "load_int_cv";
 			case LoadVecCV: "load_vec_cv";
+
 			case AddIntVCV: "add_int_vcv";
 			case AddIntVVV: "add_int_vvv";
 			case SubIntVCV: "sub_int_vcv";
@@ -282,6 +287,7 @@ class CalcOperationExtension {
 			case ModIntVVV: "mod_int_vvv";
 			case DivIntCVV: "div_int_cvv";
 			case DivIntVVV: "div_int_vvv";
+
 			case AddFloatVCV: "add_float_vcv";
 			case AddFloatVVV: "add_float_vvv";
 			case SubFloatVCV: "sub_float_vcv";
@@ -295,11 +301,14 @@ class CalcOperationExtension {
 			case ModFloatVVV: "mod_float_vvv";
 			case DivFloatCVV: "div_float_cvv";
 			case DivFloatVVV: "div_float_vvv";
+
 			case MinusVecV: "minus_vec_v";
 			case MultVecVCS: "mult_vec_vcs";
+
 			case SaveFloatV: "save_float_v";
 			case CastCartesianVV: "cast_cartesian_vv";
 			case CastPolarVV: "cast_polar_vv";
+
 			case RandomFloatCV: "random_float_cv";
 			case RandomFloatVV: "random_float_vv";
 			case RandomFloatSignedCV: "random_float_signed_cv";
@@ -343,10 +352,13 @@ class CalcOperationExtension {
 			case ModFloatVVV: [];
 			case DivFloatCVV: [Float]; // value to be divided
 			case DivFloatVVV: [];
+
 			case MinusVecV: [];
 			case MultVecVCS: [Float]; // multiplier value
+
 			case SaveFloatV: [];
 			case CastCartesianVV | CastPolarVV: [];
+
 			case RandomFloatCV: [Float];
 			case RandomFloatVV: [];
 			case RandomFloatSignedCV: [Float];

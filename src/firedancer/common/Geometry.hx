@@ -97,6 +97,9 @@ class Geometry {
 	/**
 		@return Angle distance between `-PI` and `PI`.
 	**/
-	public static extern inline function getAngleDistance(angleA: Float, angleB: Float): Float
+	public static extern inline function getAngleDistance(
+		angleA: Float,
+		angleB: Float
+	): Float
 		return normalizeAngle(angleB - angleA);
 }

@@ -46,7 +46,7 @@ enum abstract GeneralOperation(Int) to Int {
 		Peeks the top integer (which should be the remaining loop count) from the stack
 		and checks if it is zero.
 		- If not zero, decrements the loop counter at the stack top and breaks the current frame.
-		  The next frame will begin with this `CountDownBreak` opcode again.
+			The next frame will begin with this `CountDownBreak` opcode again.
 		- If zero, drops the loop counter from the stack and goes to next.
 	**/
 	final CountDownBreak;
@@ -80,7 +80,7 @@ enum abstract GeneralOperation(Int) to Int {
 		Peeks the top integer (which should be a thread ID) from the stack
 		and checks if the thread is currently active.
 		- If active, breaks the current frame.
-		  The next frame will begin with this `AwaitThread` opcode again.
+			The next frame will begin with this `AwaitThread` opcode again.
 		- If not active, drops the thread ID from the stack and goes to next.
 	**/
 	final AwaitThread;
@@ -89,7 +89,6 @@ enum abstract GeneralOperation(Int) to Int {
 		Ends running bytecode and returns an end code specified by a given constant integer.
 	**/
 	final End;
-
 
 	// ---- read/write stack ----------------------------------------------
 
@@ -130,7 +129,6 @@ enum abstract GeneralOperation(Int) to Int {
 	**/
 	final DropVec;
 
-
 	// ---- other operations ----------------------------------------------------
 
 	/**
@@ -149,7 +147,6 @@ enum abstract GeneralOperation(Int) to Int {
 		2. (int) Fire type
 	**/
 	final FireWithType;
-
 
 	public extern inline function int(): Int
 		return this;
