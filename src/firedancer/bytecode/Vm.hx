@@ -47,10 +47,18 @@ class Vm {
 		var stack: ByteStackData;
 		var stackSize: UInt;
 
+		var volIntSaved: Int;
+		var volInt: Int;
 		var volFloatSaved: Float;
 		var volFloat: Float;
 		var volX: Float;
 		var volY: Float;
+
+		inline function setVolInt(v: Int): Void
+			volInt = v;
+
+		inline function saveInt(v: Int): Void
+			volIntSaved = v;
 
 		inline function setVolFloat(v: Float): Void
 			volFloat = v;
@@ -256,6 +264,8 @@ class Vm {
 			stack = thread.stack;
 			stackSize = thread.stackSize;
 
+			volIntSaved = 0;
+			volInt = 0;
 			volFloatSaved = 0.0;
 			volFloat = 0.0;
 			volX = 0.0;
@@ -370,6 +380,34 @@ class Vm {
 								setVolFloat(readCodeF64());
 							case LoadVecCV:
 								setVolVec(readCodeF64(), readCodeF64());
+
+							case AddIntVCV:
+								setVolInt(volInt + readCodeI32());
+							case AddIntVVV:
+								setVolInt(volIntSaved + volInt);
+							case SubIntVCV:
+								setVolInt(volInt - readCodeI32());
+							case SubIntCVV:
+								setVolInt(readCodeI32() - volInt);
+							case SubIntVVV:
+								setVolInt(volIntSaved - volInt);
+							case MinusIntV:
+								setVolInt(-volInt);
+							case MultIntVCV:
+								setVolInt(volInt * readCodeI32());
+							case MultIntVVV:
+								setVolInt(volIntSaved * volInt);
+							case DivIntCVV:
+								setVolInt(Ints.divide(readCodeI32(), volInt));
+							case DivIntVVV:
+								setVolInt(Ints.divide(volIntSaved, volInt));
+							case ModIntVCV:
+								setVolInt(volInt % readCodeI32());
+							case ModIntCVV:
+								setVolInt(readCodeI32() % volInt);
+							case ModIntVVV:
+								setVolInt(volIntSaved % volInt);
+
 							case AddFloatVCV:
 								setVolFloat(volFloat + readCodeF64());
 							case AddFloatVVV:
