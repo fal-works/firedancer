@@ -498,18 +498,6 @@ class Vm {
 								setVelocity(readCodeF64(), readCodeF64());
 							case AddVelocityC:
 								addVelocity(readCodeF64(), readCodeF64());
-							case SetPositionS:
-								final vec = peekVecSkipped(0);
-								setPosition(vec.x, vec.y);
-							case AddPositionS:
-								final vec = peekVecSkipped(0);
-								addPosition(vec.x, vec.y);
-							case SetVelocityS:
-								final vec = peekVecSkipped(0);
-								setPosition(vec.x, vec.y);
-							case AddVelocityS:
-								final vec = peekVecSkipped(0);
-								addPosition(vec.x, vec.y);
 							case SetPositionV:
 								setPosition(volX, volY);
 							case AddPositionV:
@@ -518,54 +506,52 @@ class Vm {
 								setVelocity(volX, volY);
 							case AddVelocityV:
 								addVelocity(volX, volY);
+							case AddPositionS:
+								final vec = peekVecSkipped(0);
+								addPosition(vec.x, vec.y);
+							case AddVelocityS:
+								final vec = peekVecSkipped(0);
+								addPosition(vec.x, vec.y);
 							case SetDistanceC:
 								setDistance(readCodeF64());
 							case AddDistanceC:
 								addDistance(readCodeF64());
-							case SetBearingC:
-								setBearing(readCodeF64());
-							case AddBearingC:
-								addBearing(readCodeF64());
-							case SetSpeedC:
-								setSpeed(readCodeF64());
-							case AddSpeedC:
-								addSpeed(readCodeF64());
-							case SetDirectionC:
-								setDirection(readCodeF64());
-							case AddDirectionC:
-								addDirection(readCodeF64());
-							case SetDistanceS:
-								setDistance(peekFloat());
-							case AddDistanceS:
-								addDistance(peekFloat());
-							case SetBearingS:
-								setBearing(peekFloat());
-							case AddBearingS:
-								addBearing(peekFloat());
-							case SetSpeedS:
-								setSpeed(peekFloat());
-							case AddSpeedS:
-								addSpeed(peekFloat());
-							case SetDirectionS:
-								setDirection(peekFloat());
-							case AddDirectionS:
-								addDirection(peekFloat());
 							case SetDistanceV:
 								setDistance(volFloat);
 							case AddDistanceV:
 								addDistance(volFloat);
+							case AddDistanceS:
+								addDistance(peekFloat());
+							case SetBearingC:
+								setBearing(readCodeF64());
+							case AddBearingC:
+								addBearing(readCodeF64());
 							case SetBearingV:
 								setBearing(volFloat);
 							case AddBearingV:
 								addBearing(volFloat);
+							case AddBearingS:
+								addBearing(peekFloat());
+							case SetSpeedC:
+								setSpeed(readCodeF64());
+							case AddSpeedC:
+								addSpeed(readCodeF64());
 							case SetSpeedV:
 								setSpeed(volFloat);
 							case AddSpeedV:
 								addSpeed(volFloat);
+							case AddSpeedS:
+								addSpeed(peekFloat());
+							case SetDirectionC:
+								setDirection(readCodeF64());
+							case AddDirectionC:
+								addDirection(readCodeF64());
 							case SetDirectionV:
 								setDirection(volFloat);
 							case AddDirectionV:
 								addDirection(volFloat);
+							case AddDirectionS:
+								addDirection(peekFloat());
 
 							#if debug
 							case other: throw 'Unknown opcode: $other';
@@ -582,18 +568,6 @@ class Vm {
 								thread.setShotVelocity(readCodeF64(), readCodeF64());
 							case AddShotVelocityC:
 								thread.addShotVelocity(readCodeF64(), readCodeF64());
-							case SetShotPositionS:
-								final vec = peekVecSkipped(0);
-								thread.setShotPosition(vec.x, vec.y);
-							case AddShotPositionS:
-								final vec = peekVecSkipped(0);
-								thread.addShotPosition(vec.x, vec.y);
-							case SetShotVelocityS:
-								final vec = peekVecSkipped(0);
-								thread.setShotVelocity(vec.x, vec.y);
-							case AddShotVelocityS:
-								final vec = peekVecSkipped(0);
-								thread.addShotVelocity(vec.x, vec.y);
 							case SetShotPositionV:
 								thread.setShotPosition(volX, volY);
 							case AddShotPositionV:
@@ -602,50 +576,48 @@ class Vm {
 								thread.setShotVelocity(volX, volY);
 							case AddShotVelocityV:
 								thread.addShotVelocity(volX, volY);
+							case AddShotPositionS:
+								final vec = peekVecSkipped(0);
+								thread.addShotPosition(vec.x, vec.y);
+							case AddShotVelocityS:
+								final vec = peekVecSkipped(0);
+								thread.addShotVelocity(vec.x, vec.y);
 							case SetShotDistanceC:
 								thread.setShotDistance(readCodeF64());
 							case AddShotDistanceC:
 								thread.addShotDistance(readCodeF64());
-							case SetShotBearingC:
-								thread.setShotBearing(readCodeF64());
-							case AddShotBearingC:
-								thread.addShotBearing(readCodeF64());
-							case SetShotSpeedC:
-								thread.setShotSpeed(readCodeF64());
-							case AddShotSpeedC:
-								thread.addShotSpeed(readCodeF64());
-							case SetShotDirectionC:
-								thread.setShotDirection(readCodeF64());
-							case AddShotDirectionC:
-								thread.addShotDirection(readCodeF64());
-							case SetShotDistanceS:
-								thread.setShotDistance(peekFloat());
-							case AddShotDistanceS:
-								thread.addShotDistance(peekFloat());
-							case SetShotBearingS:
-								thread.setShotBearing(peekFloat());
-							case AddShotBearingS:
-								thread.addShotBearing(peekFloat());
-							case SetShotSpeedS:
-								thread.setShotSpeed(peekFloat());
-							case AddShotSpeedS:
-								thread.addShotSpeed(peekFloat());
-							case SetShotDirectionS:
-								thread.setShotDirection(peekFloat());
-							case AddShotDirectionS:
-								thread.addShotDirection(peekFloat());
 							case SetShotDistanceV:
 								thread.setShotDistance(volFloat);
 							case AddShotDistanceV:
 								thread.addShotDistance(volFloat);
+							case AddShotDistanceS:
+								thread.addShotDistance(peekFloat());
+							case SetShotBearingC:
+								thread.setShotBearing(readCodeF64());
+							case AddShotBearingC:
+								thread.addShotBearing(readCodeF64());
 							case SetShotBearingV:
 								thread.setShotBearing(volFloat);
 							case AddShotBearingV:
 								thread.addShotBearing(volFloat);
+							case AddShotBearingS:
+								thread.addShotBearing(peekFloat());
+							case SetShotSpeedC:
+								thread.setShotSpeed(readCodeF64());
+							case AddShotSpeedC:
+								thread.addShotSpeed(readCodeF64());
 							case SetShotSpeedV:
 								thread.setShotSpeed(volFloat);
 							case AddShotSpeedV:
 								thread.addShotSpeed(volFloat);
+							case AddShotSpeedS:
+								thread.addShotSpeed(peekFloat());
+							case SetShotDirectionC:
+								thread.setShotDirection(readCodeF64());
+							case AddShotDirectionC:
+								thread.addShotDirection(readCodeF64());
+							case AddShotDirectionS:
+								thread.addShotDirection(peekFloat());
 							case SetShotDirectionV:
 								thread.setShotDirection(volFloat);
 							case AddShotDirectionV:

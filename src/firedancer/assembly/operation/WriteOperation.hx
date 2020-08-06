@@ -18,38 +18,32 @@ enum abstract WriteOperation(Int) to Int {
 			case WriteOperation.AddPositionC: AddPositionC;
 			case WriteOperation.SetVelocityC: SetVelocityC;
 			case WriteOperation.AddVelocityC: AddVelocityC;
-			case WriteOperation.SetPositionS: SetPositionS;
-			case WriteOperation.AddPositionS: AddPositionS;
-			case WriteOperation.SetVelocityS: SetVelocityS;
-			case WriteOperation.AddVelocityS: AddVelocityS;
 			case WriteOperation.SetPositionV: SetPositionV;
 			case WriteOperation.AddPositionV: AddPositionV;
 			case WriteOperation.SetVelocityV: SetVelocityV;
 			case WriteOperation.AddVelocityV: AddVelocityV;
+			case WriteOperation.AddPositionS: AddPositionS;
+			case WriteOperation.AddVelocityS: AddVelocityS;
 			case WriteOperation.SetDistanceC: SetDistanceC;
 			case WriteOperation.AddDistanceC: AddDistanceC;
-			case WriteOperation.SetDistanceS: SetDistanceS;
-			case WriteOperation.AddDistanceS: AddDistanceS;
 			case WriteOperation.SetDistanceV: SetDistanceV;
 			case WriteOperation.AddDistanceV: AddDistanceV;
+			case WriteOperation.AddDistanceS: AddDistanceS;
 			case WriteOperation.SetBearingC: SetBearingC;
 			case WriteOperation.AddBearingC: AddBearingC;
-			case WriteOperation.SetBearingS: SetBearingS;
-			case WriteOperation.AddBearingS: AddBearingS;
 			case WriteOperation.SetBearingV: SetBearingV;
 			case WriteOperation.AddBearingV: AddBearingV;
+			case WriteOperation.AddBearingS: AddBearingS;
 			case WriteOperation.SetSpeedC: SetSpeedC;
 			case WriteOperation.AddSpeedC: AddSpeedC;
-			case WriteOperation.SetSpeedS: SetSpeedS;
-			case WriteOperation.AddSpeedS: AddSpeedS;
 			case WriteOperation.SetSpeedV: SetSpeedV;
 			case WriteOperation.AddSpeedV: AddSpeedV;
+			case WriteOperation.AddSpeedS: AddSpeedS;
 			case WriteOperation.SetDirectionC: SetDirectionC;
 			case WriteOperation.AddDirectionC: AddDirectionC;
-			case WriteOperation.SetDirectionS: SetDirectionS;
-			case WriteOperation.AddDirectionS: AddDirectionS;
 			case WriteOperation.SetDirectionV: SetDirectionV;
 			case WriteOperation.AddDirectionV: AddDirectionV;
+			case WriteOperation.AddDirectionS: AddDirectionS;
 			default: throw error(value);
 		}
 	}
@@ -77,26 +71,6 @@ enum abstract WriteOperation(Int) to Int {
 	final AddVelocityC;
 
 	/**
-		Sets actor's position to the vector at the stack top.
-	**/
-	final SetPositionS;
-
-	/**
-		Adds the vector at the stack top to actor's position.
-	**/
-	final AddPositionS;
-
-	/**
-		Sets actor's velocity to the vector at the stack top.
-	**/
-	final SetVelocityS;
-
-	/**
-		Adds the vector at the stack top to actor's velocity.
-	**/
-	final AddVelocityS;
-
-	/**
 		Sets actor's position to the current volatile vector.
 	**/
 	final SetPositionV;
@@ -116,32 +90,37 @@ enum abstract WriteOperation(Int) to Int {
 	**/
 	final AddVelocityV;
 
+	/**
+		Adds the vector at the stack top to actor's position.
+	**/
+	final AddPositionS;
+
+	/**
+		Adds the vector at the stack top to actor's velocity.
+	**/
+	final AddVelocityS;
 
 	final SetDistanceC;
 	final AddDistanceC;
-	final SetDistanceS;
-	final AddDistanceS;
 	final SetDistanceV;
 	final AddDistanceV;
+	final AddDistanceS;
 	final SetBearingC;
 	final AddBearingC;
-	final SetBearingS;
-	final AddBearingS;
 	final SetBearingV;
 	final AddBearingV;
+	final AddBearingS;
 
 	final SetSpeedC;
 	final AddSpeedC;
-	final SetSpeedS;
-	final AddSpeedS;
 	final SetSpeedV;
 	final AddSpeedV;
+	final AddSpeedS;
 	final SetDirectionC;
 	final AddDirectionC;
-	final SetDirectionS;
-	final AddDirectionS;
 	final SetDirectionV;
 	final AddDirectionV;
+	final AddDirectionS;
 
 	public extern inline function int(): Int
 		return this;
@@ -157,38 +136,32 @@ class WriteOperationExtension {
 			case AddPositionC: "add_position_c";
 			case SetVelocityC: "set_velocity_c";
 			case AddVelocityC: "add_velocity_c";
-			case SetPositionS: "set_position_s";
-			case AddPositionS: "add_position_s";
-			case SetVelocityS: "set_velocity_s";
-			case AddVelocityS: "add_velocity_s";
 			case SetPositionV: "set_position_v";
 			case AddPositionV: "add_position_v";
 			case SetVelocityV: "set_velocity_v";
 			case AddVelocityV: "add_velocity_v";
+			case AddPositionS: "add_position_s";
+			case AddVelocityS: "add_velocity_s";
 			case SetDistanceC: "set_distance_c";
 			case AddDistanceC: "add_distance_c";
-			case SetDistanceS: "set_distance_s";
-			case AddDistanceS: "add_distance_s";
 			case SetDistanceV: "set_distance_v";
 			case AddDistanceV: "add_distance_v";
+			case AddDistanceS: "add_distance_s";
 			case SetBearingC: "set_bearing_c";
 			case AddBearingC: "add_bearing_c";
-			case SetBearingS: "set_bearing_s";
-			case AddBearingS: "add_bearing_s";
 			case SetBearingV: "set_bearing_v";
 			case AddBearingV: "add_bearing_v";
+			case AddBearingS: "add_bearing_s";
 			case SetSpeedC: "set_speed_c";
 			case AddSpeedC: "add_speed_c";
-			case SetSpeedS: "set_speed_s";
-			case AddSpeedS: "add_speed_s";
 			case SetSpeedV: "set_speed_v";
 			case AddSpeedV: "add_speed_v";
+			case AddSpeedS: "add_speed_s";
 			case SetDirectionC: "set_direction_c";
 			case AddDirectionC: "add_direction_c";
-			case SetDirectionS: "set_direction_s";
-			case AddDirectionS: "add_direction_s";
 			case SetDirectionV: "set_direction_v";
 			case AddDirectionV: "add_direction_v";
+			case AddDirectionS: "add_direction_s";
 		}
 	}
 
@@ -198,14 +171,14 @@ class WriteOperationExtension {
 	public static inline function toStatementType(op: WriteOperation): StatementType {
 		return switch op {
 			case SetPositionC | AddPositionC | SetVelocityC | AddVelocityC: [Vec];
-			case SetPositionS | AddPositionS | SetVelocityS | AddVelocityS: [];
 			case SetPositionV | AddPositionV | SetVelocityV | AddVelocityV: [];
+			case AddPositionS | AddVelocityS: [];
 			case SetDistanceC | AddDistanceC | SetBearingC | AddBearingC: [Float];
 			case SetSpeedC | AddSpeedC | SetDirectionC | AddDirectionC: [Float];
-			case SetDistanceS | AddDistanceS | SetBearingS | AddBearingS: [];
-			case SetSpeedS | AddSpeedS | SetDirectionS | AddDirectionS: [];
 			case SetDistanceV | AddDistanceV | SetBearingV | AddBearingV: [];
 			case SetSpeedV | AddSpeedV | SetDirectionV | AddDirectionV: [];
+			case AddDistanceS | AddBearingS: [];
+			case AddSpeedS | AddDirectionS: [];
 		}
 	}
 

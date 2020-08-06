@@ -18,38 +18,32 @@ enum abstract WriteShotOperation(Int) to Int {
 			case WriteShotOperation.AddShotPositionC: AddShotPositionC;
 			case WriteShotOperation.SetShotVelocityC: SetShotVelocityC;
 			case WriteShotOperation.AddShotVelocityC: AddShotVelocityC;
-			case WriteShotOperation.SetShotPositionS: SetShotPositionS;
-			case WriteShotOperation.AddShotPositionS: AddShotPositionS;
-			case WriteShotOperation.SetShotVelocityS: SetShotVelocityS;
-			case WriteShotOperation.AddShotVelocityS: AddShotVelocityS;
 			case WriteShotOperation.SetShotPositionV: SetShotPositionV;
 			case WriteShotOperation.AddShotPositionV: AddShotPositionV;
 			case WriteShotOperation.SetShotVelocityV: SetShotVelocityV;
 			case WriteShotOperation.AddShotVelocityV: AddShotVelocityV;
+			case WriteShotOperation.AddShotPositionS: AddShotPositionS;
+			case WriteShotOperation.AddShotVelocityS: AddShotVelocityS;
 			case WriteShotOperation.SetShotDistanceC: SetShotDistanceC;
 			case WriteShotOperation.AddShotDistanceC: AddShotDistanceC;
-			case WriteShotOperation.SetShotDistanceS: SetShotDistanceS;
-			case WriteShotOperation.AddShotDistanceS: AddShotDistanceS;
 			case WriteShotOperation.SetShotDistanceV: SetShotDistanceV;
 			case WriteShotOperation.AddShotDistanceV: AddShotDistanceV;
+			case WriteShotOperation.AddShotDistanceS: AddShotDistanceS;
 			case WriteShotOperation.SetShotBearingC: SetShotBearingC;
 			case WriteShotOperation.AddShotBearingC: AddShotBearingC;
-			case WriteShotOperation.SetShotBearingS: SetShotBearingS;
-			case WriteShotOperation.AddShotBearingS: AddShotBearingS;
 			case WriteShotOperation.SetShotBearingV: SetShotBearingV;
 			case WriteShotOperation.AddShotBearingV: AddShotBearingV;
+			case WriteShotOperation.AddShotBearingS: AddShotBearingS;
 			case WriteShotOperation.SetShotSpeedC: SetShotSpeedC;
 			case WriteShotOperation.AddShotSpeedC: AddShotSpeedC;
-			case WriteShotOperation.SetShotSpeedS: SetShotSpeedS;
-			case WriteShotOperation.AddShotSpeedS: AddShotSpeedS;
 			case WriteShotOperation.SetShotSpeedV: SetShotSpeedV;
 			case WriteShotOperation.AddShotSpeedV: AddShotSpeedV;
+			case WriteShotOperation.AddShotSpeedS: AddShotSpeedS;
 			case WriteShotOperation.SetShotDirectionC: SetShotDirectionC;
 			case WriteShotOperation.AddShotDirectionC: AddShotDirectionC;
-			case WriteShotOperation.SetShotDirectionS: SetShotDirectionS;
-			case WriteShotOperation.AddShotDirectionS: AddShotDirectionS;
 			case WriteShotOperation.SetShotDirectionV: SetShotDirectionV;
 			case WriteShotOperation.AddShotDirectionV: AddShotDirectionV;
+			case WriteShotOperation.AddShotDirectionS: AddShotDirectionS;
 
 			default: throw error(value);
 		}
@@ -79,26 +73,6 @@ enum abstract WriteShotOperation(Int) to Int {
 	final AddShotVelocityC;
 
 	/**
-		Sets actor's shot position to the vector at the stack top.
-	**/
-	final SetShotPositionS;
-
-	/**
-		Adds the vector at the stack top to actor's shot position.
-	**/
-	final AddShotPositionS;
-
-	/**
-		Sets actor's shot velocity to the vector at the stack top.
-	**/
-	final SetShotVelocityS;
-
-	/**
-		Adds the vector at the stack top to actor's shot velocity.
-	**/
-	final AddShotVelocityS;
-
-	/**
 		Sets actor's shot position to the current volatile vector.
 	**/
 	final SetShotPositionV;
@@ -118,31 +92,37 @@ enum abstract WriteShotOperation(Int) to Int {
 	**/
 	final AddShotVelocityV;
 
+	/**
+		Adds the vector at the stack top to actor's shot position.
+	**/
+	final AddShotPositionS;
+
+	/**
+		Adds the vector at the stack top to actor's shot velocity.
+	**/
+	final AddShotVelocityS;
+
 	final SetShotDistanceC;
 	final AddShotDistanceC;
-	final SetShotDistanceS;
-	final AddShotDistanceS;
 	final SetShotDistanceV;
 	final AddShotDistanceV;
+	final AddShotDistanceS;
 	final SetShotBearingC;
 	final AddShotBearingC;
-	final SetShotBearingS;
-	final AddShotBearingS;
 	final SetShotBearingV;
 	final AddShotBearingV;
+	final AddShotBearingS;
 
 	final SetShotSpeedC;
 	final AddShotSpeedC;
-	final SetShotSpeedS;
-	final AddShotSpeedS;
 	final SetShotSpeedV;
 	final AddShotSpeedV;
+	final AddShotSpeedS;
 	final SetShotDirectionC;
 	final AddShotDirectionC;
-	final SetShotDirectionS;
-	final AddShotDirectionS;
 	final SetShotDirectionV;
 	final AddShotDirectionV;
+	final AddShotDirectionS;
 
 
 	public extern inline function int(): Int
@@ -159,38 +139,32 @@ class WriteShotOperationExtension {
 			case AddShotPositionC: "add_shot_position_c";
 			case SetShotVelocityC: "set_shot_velocity_c";
 			case AddShotVelocityC: "add_shot_velocity_c";
-			case SetShotPositionS: "set_shot_position_s";
-			case AddShotPositionS: "add_shot_position_s";
-			case SetShotVelocityS: "set_shot_velocity_s";
-			case AddShotVelocityS: "add_shot_velocity_s";
 			case SetShotPositionV: "set_shot_position_v";
 			case AddShotPositionV: "add_shot_position_v";
 			case SetShotVelocityV: "set_shot_velocity_v";
 			case AddShotVelocityV: "add_shot_velocity_v";
+			case AddShotPositionS: "add_shot_position_s";
+			case AddShotVelocityS: "add_shot_velocity_s";
 			case SetShotDistanceC: "set_shot_distance_c";
 			case AddShotDistanceC: "add_shot_distance_c";
-			case SetShotDistanceS: "set_shot_distance_s";
-			case AddShotDistanceS: "add_shot_distance_s";
 			case SetShotDistanceV: "set_shot_distance_v";
 			case AddShotDistanceV: "add_shot_distance_v";
+			case AddShotDistanceS: "add_shot_distance_s";
 			case SetShotBearingC: "set_shot_bearing_c";
 			case AddShotBearingC: "add_shot_bearing_c";
-			case SetShotBearingS: "set_shot_bearing_s";
-			case AddShotBearingS: "add_shot_bearing_s";
 			case SetShotBearingV: "set_shot_bearing_v";
 			case AddShotBearingV: "add_shot_bearing_v";
+			case AddShotBearingS: "add_shot_bearing_s";
 			case SetShotSpeedC: "set_shot_speed_c";
 			case AddShotSpeedC: "add_shot_speed_c";
-			case SetShotSpeedS: "set_shot_speed_s";
-			case AddShotSpeedS: "add_shot_speed_s";
 			case SetShotSpeedV: "set_shot_speed_v";
 			case AddShotSpeedV: "add_shot_speed_v";
+			case AddShotSpeedS: "add_shot_speed_s";
 			case SetShotDirectionC: "set_shot_direction_c";
 			case AddShotDirectionC: "add_shot_direction_c";
-			case SetShotDirectionS: "set_shot_direction_s";
-			case AddShotDirectionS: "add_shot_direction_s";
 			case SetShotDirectionV: "set_shot_direction_v";
 			case AddShotDirectionV: "add_shot_direction_v";
+			case AddShotDirectionS: "add_shot_direction_s";
 		}
 	}
 
@@ -200,14 +174,14 @@ class WriteShotOperationExtension {
 	public static inline function toStatementType(op: WriteShotOperation): StatementType {
 		return switch op {
 			case SetShotPositionC | AddShotPositionC | SetShotVelocityC | AddShotVelocityC: [Vec];
-			case SetShotPositionS | AddShotPositionS | SetShotVelocityS | AddShotVelocityS: [];
 			case SetShotPositionV | AddShotPositionV | SetShotVelocityV | AddShotVelocityV: [];
+			case AddShotPositionS | AddShotVelocityS: [];
 			case SetShotDistanceC | AddShotDistanceC | SetShotBearingC | AddShotBearingC: [Float];
 			case SetShotSpeedC | AddShotSpeedC | SetShotDirectionC | AddShotDirectionC: [Float];
-			case SetShotDistanceS | AddShotDistanceS | SetShotBearingS | AddShotBearingS: [];
-			case SetShotSpeedS | AddShotSpeedS | SetShotDirectionS | AddShotDirectionS: [];
 			case SetShotDistanceV | AddShotDistanceV | SetShotBearingV | AddShotBearingV: [];
 			case SetShotSpeedV | AddShotSpeedV | SetShotDirectionV | AddShotDirectionV: [];
+			case AddShotDistanceS | AddShotBearingS: [];
+			case AddShotSpeedS | AddShotDirectionS: [];
 		}
 	}
 
