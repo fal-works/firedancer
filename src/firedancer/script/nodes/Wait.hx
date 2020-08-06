@@ -1,6 +1,6 @@
 package firedancer.script.nodes;
 
-import firedancer.types.NInt;
+import firedancer.script.expression.IntExpression;
 
 /**
 	Waits for a specific number of frames.
@@ -15,28 +15,28 @@ class Wait extends AstNode implements ripper.Data {
 	/**
 		Wait duration in frames.
 	**/
-	public final frames: NInt;
+	public final frames: IntExpression;
 
 	override public inline function containsWait(): Bool
 		return true;
 
 	override public function toAssembly(context: CompileContext): AssemblyCode {
 		final injectionCode = context.getInjectionCode();
-
-		if (injectionCode.length == 0) {
-			return if (frames.int() <= unrollThreshold) {
-				loopUnrolled(0...frames, _ -> breakFrame());
-			} else {
-				[pushIntC(frames), countDownbreak()];
-			}
-		}
-
 		final loopBody: AssemblyCode = injectionCode.concat([breakFrame()]);
-		final totalLength = frames * loopBody.bytecodeLength();
-		return if (totalLength <= unrollThreshold) {
-			loopUnrolled(0...frames, _ -> loopBody);
-		} else {
-			loop(loopBody, frames);
+
+		switch frames.toEnum() {
+			case Constant(constFrames):
+				final totalLength = constFrames.toInt() * loopBody.bytecodeLength();
+
+				if (totalLength <= unrollThreshold)
+					return loopUnrolled(0...constFrames, _ -> loopBody);
+
+				if (injectionCode.length == 0)
+					return [pushIntC(constFrames), countDownbreak()];
+
+			default:
 		}
+
+		return loop(loopBody, frames);
 	}
 }

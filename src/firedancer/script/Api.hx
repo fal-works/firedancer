@@ -1,12 +1,13 @@
 package firedancer.script;
 
-import firedancer.types.NInt;
 import firedancer.bytecode.RuntimeContext;
 import firedancer.script.nodes.*;
 import firedancer.script.api_components.Position;
 import firedancer.script.api_components.Velocity;
 import firedancer.script.api_components.Shot;
 import firedancer.script.api_components.Random;
+import firedancer.script.expression.IntExpression;
+
 #if debug
 import sneaker.print.Printer.println;
 #end
@@ -55,7 +56,7 @@ class Api {
 	/**
 		Waits `frames`.
 	**/
-	public static inline function wait(frames: NInt): Wait
+	public static inline function wait(frames: IntExpression): Wait
 		return new Wait(frames);
 
 	/**

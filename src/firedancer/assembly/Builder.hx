@@ -1,5 +1,6 @@
 package firedancer.assembly;
 
+import firedancer.script.expression.IntExpression;
 import firedancer.assembly.Opcode.*;
 import firedancer.assembly.operation.GeneralOperation;
 
@@ -74,7 +75,7 @@ class Builder {
 		Creates a `Jump` statement with a negative argument.
 	**/
 	public static inline function jumpBack(lengthInBytes: UInt): AssemblyStatement {
-		final jumpBackLength = GeneralOperation.Jump.toStatementType().bytecodeLength();
+		final jumpBackLength = Jump.toStatementType().bytecodeLength();
 		final totalBackLength = -jumpBackLength - lengthInBytes.int();
 
 		#if debug
@@ -98,19 +99,27 @@ class Builder {
 	/**
 		Creates a code instance that repeats `body` in runtime.
 	**/
-	public static function loop(body: AssemblyCode, count: UInt): AssemblyCode {
+	public static function loop(body: AssemblyCode, count: IntExpression): AssemblyCode {
 		final bodyLength = body.bytecodeLength().int();
 
+		final prepareLoop: AssemblyCode = switch count.toEnum() {
+			case Constant(value):
+				pushIntC(value.toInt());
+			case Runtime(expression):
+				final code = expression.loadToVolatileInt();
+				code.pushStatement(Opcode.general(PushIntV));
+				code;
+		};
+		prepareLoop.push(countDownJump(bodyLength + Jump.getBytecodeLength()));
+
+		final closeLoop: AssemblyCode = {
+			jumpBack(body.bytecodeLength() + CountDownJump.getBytecodeLength());
+		};
+
 		return [
-			[
-				pushIntC(count),
-				countDownJump(bodyLength + GeneralOperation.Jump.getBytecodeLength())
-			],
+			prepareLoop,
 			body,
-			[
-				jumpBack(body.bytecodeLength()
-					+ GeneralOperation.CountDownJump.getBytecodeLength())
-			]
+			closeLoop
 		].flatten();
 	}
 
