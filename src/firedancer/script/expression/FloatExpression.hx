@@ -45,7 +45,7 @@ abstract FloatExpression(
 	static extern inline function multiply(
 		a: FloatExpression,
 		b: FloatExpression
-	): AngleExpression {
+	): FloatExpression {
 		return a.multiply(b);
 	}
 
