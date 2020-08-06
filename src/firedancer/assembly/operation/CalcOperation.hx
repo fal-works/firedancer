@@ -38,7 +38,6 @@ enum abstract CalcOperation(Int) to Int {
 			case CalcOperation.MinusFloatV: MinusFloatV;
 			case CalcOperation.MultFloatVCV: MultFloatVCV;
 			case CalcOperation.MultFloatVVV: MultFloatVVV;
-			case CalcOperation.MultFloatVCS: MultFloatVCS;
 			case CalcOperation.DivFloatCVV: DivFloatCVV;
 			case CalcOperation.DivFloatVVV: DivFloatVVV;
 			case CalcOperation.ModFloatVCV: ModFloatVCV;
@@ -181,11 +180,6 @@ enum abstract CalcOperation(Int) to Int {
 	final MultFloatVVV;
 
 	/**
-		Multiplicates the current volatile float by a given constant float and pushes it to the stack top.
-	**/
-	final MultFloatVCS;
-
-	/**
 		Divides a given constant float by the current volatile float and reassigns it to the volatile float.
 	**/
 	final DivFloatCVV;
@@ -296,7 +290,6 @@ class CalcOperationExtension {
 			case MinusFloatV: "minus_float_v";
 			case MultFloatVCV: "mult_float_vcv";
 			case MultFloatVVV: "mult_float_vvv";
-			case MultFloatVCS: "mult_float_vcs";
 			case ModFloatVCV: "mod_float_vcv";
 			case ModFloatCVV: "mod_float_cvv";
 			case ModFloatVVV: "mod_float_vvv";
@@ -344,7 +337,7 @@ class CalcOperationExtension {
 			case SubFloatVVV: [];
 			case MinusFloatV: [];
 			case MultFloatVVV: [];
-			case MultFloatVCV | MultFloatVCS: [Float]; // multiplier value
+			case MultFloatVCV: [Float]; // multiplier value
 			case ModFloatVCV: [Float]; // divisor
 			case ModFloatCVV: [Float]; // value to be divided
 			case ModFloatVVV: [];

@@ -424,9 +424,6 @@ class Vm {
 								setVolFloat(volFloat * readCodeF64());
 							case MultFloatVVV:
 								setVolFloat(volFloatSaved * volFloat);
-							case MultFloatVCS:
-								final multiplier = readCodeF64();
-								pushFloat(volFloat * multiplier);
 							case DivFloatCVV:
 								setVolFloat(readCodeF64() / volFloat);
 							case DivFloatVVV:
