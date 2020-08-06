@@ -54,12 +54,12 @@ enum abstract ReadOperation(Int) to Int {
 	final LoadTargetPositionV;
 
 	/**
-		Assigns the x-component of actor's target position to the x-component of the volatile vector.
+		Assigns the x-component of actor's target position to the volatile float.
 	**/
 	final LoadTargetXV;
 
 	/**
-		Assigns the y-component of actor's target position to the y-component of the volatile vector.
+		Assigns the y-component of actor's target position to the volatile float.
 	**/
 	final LoadTargetYV;
 

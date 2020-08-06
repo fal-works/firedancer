@@ -420,9 +420,9 @@ class Vm {
 							case LoadTargetPositionV:
 								setVolVec(targetPosition.x(), targetPosition.y());
 							case LoadTargetXV:
-								setVolX(targetPosition.x());
+								setVolFloat(targetPosition.x());
 							case LoadTargetYV:
-								setVolY(targetPosition.y());
+								setVolFloat(targetPosition.y());
 							case LoadBearingToTargetV:
 								setVolFloat(Geometry.getAngle(
 									targetPosition.x() - getX(),
