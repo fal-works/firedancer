@@ -15,6 +15,9 @@ class VecExpressionData {
 	public function tryGetConstantOperand(): Maybe<ConstantOperand>
 		throw new NotOverriddenException();
 
+	public function divide(divisor: FloatExpression): VecExpressionData
+		throw new NotOverriddenException();
+
 	public function divideByFloat(divisor: Float): VecExpressionData
 		throw new NotOverriddenException();
 
@@ -62,6 +65,9 @@ class CartesianVecExpressionData extends VecExpressionData implements ripper.Dat
 		}
 	}
 
+	override public function divide(divisor: FloatExpression): CartesianVecExpressionData
+		return { x: x / divisor, y: y / divisor };
+
 	override public function divideByFloat(divisor: Float): CartesianVecExpressionData
 		return { x: x / divisor, y: y / divisor };
 
@@ -95,6 +101,9 @@ class PolarVecExpressionData extends VecExpressionData implements ripper.Data {
 				Maybe.none();
 		}
 	}
+
+	override public function divide(divisor: FloatExpression): PolarVecExpressionData
+		return { length: length / divisor, angle: angle };
 
 	override public function divideByFloat(divisor: Float): PolarVecExpressionData
 		return { length: length / divisor, angle: angle };

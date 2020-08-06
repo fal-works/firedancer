@@ -48,6 +48,9 @@ abstract VecExpression(VecExpressionData) from VecExpressionData to VecExpressio
 		return data;
 	}
 
+	@:op(A / B) extern inline function divide(divisor: FloatExpression): VecExpression
+		return this.divide(divisor);
+
 	@:op(A / B) extern inline function divideByFloat(divisor: Float): VecExpression
 		return this.divideByFloat(divisor);
 
