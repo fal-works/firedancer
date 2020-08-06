@@ -26,6 +26,7 @@ enum abstract GeneralOperation(Int) to Int {
 			case GeneralOperation.PushIntV: PushIntV;
 			case GeneralOperation.PushFloatC: PushFloatC;
 			case GeneralOperation.PushFloatV: PushFloatV;
+			case GeneralOperation.PushVecV: PushVecV;
 			case GeneralOperation.PeekFloat: PeekFloat;
 			case GeneralOperation.DropFloat: DropFloat;
 			case GeneralOperation.PeekVec: PeekVec;
@@ -112,6 +113,11 @@ enum abstract GeneralOperation(Int) to Int {
 	final PushFloatV;
 
 	/**
+		Pushes the current volatile vector to the stack top.
+	**/
+	final PushVecV;
+
+	/**
 		Reads a float at the stack top (skipping a given constant bytes from the top)
 		and assigns it to the volatile float.
 	**/
@@ -174,6 +180,7 @@ class GeneralOperationExtension {
 			case PushIntV: "push_int_v";
 			case PushFloatC: "push_float_c";
 			case PushFloatV: "push_float_v";
+			case PushVecV: "push_vec_v";
 			case PeekFloat: "peek_float";
 			case DropFloat: "drop_float";
 			case PeekVec: "peek_vec";
@@ -199,6 +206,7 @@ class GeneralOperationExtension {
 			case PushIntV: [];
 			case PushFloatC: [Float]; // float to push
 			case PushFloatV: [];
+			case PushVecV: [];
 			case PeekFloat | PeekVec: [Int]; // bytes to be skipped from the stack top
 			case DropFloat | DropVec: [];
 			case Fire: [Int]; // bytecode ID or negative for null

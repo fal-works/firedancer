@@ -294,6 +294,8 @@ class Vm {
 								pushFloat(readCodeF64());
 							case PushFloatV:
 								pushFloat(volFloat);
+							case PushVecV:
+								pushVec(volX, volY);
 							case PeekFloat:
 								setVolFloat(peekFloatSkipped(readCodeI32()));
 							case DropFloat:
@@ -441,9 +443,11 @@ class Vm {
 								setVolFloat(readCodeF64() % volFloat);
 							case ModFloatVVV:
 								setVolFloat(volFloatSaved % volFloat);
-							case MultVecVCS:
+							case MultVecVCV:
 								final multiplier = readCodeF64();
-								pushVec(volX * multiplier, volY * multiplier);
+								setVolVec(multiplier * volX, multiplier * volY);
+							case MultVecVVV:
+								setVolVec(volFloat * volX, volFloat * volY);
 							case SaveIntV:
 								saveInt(volInt);
 							case SaveFloatV:

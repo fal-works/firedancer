@@ -205,13 +205,15 @@ class ActorAttributeOperationExtension {
 	) {
 		var calcRelative: AssemblyCode; // Calculate total change (before the loop)
 		var multChange: AssemblyStatement; // Get change rate (before the loop)
+		var pushChange: AssemblyStatement; // Push change rate (before the loop)
 		var peekChange: AssemblyStatement; // Peek change rate (in the loop)
 		var addFromVolatile: Opcode; // Apply change rate (in the loop)
 		var dropChange: AssemblyStatement; // Drop change rate (after the loop)
 
 		switch setOperation {
 			case SetVector(vec):
-				multChange = statement(calc(MultVecVCS), [Float(1.0 / frames)]);
+				multChange = statement(calc(MultVecVCV), [Float(1.0 / frames)]);
+				pushChange = statement(general(PushVecV));
 				peekChange = peekVec(LEN32); // skip the loop counter
 				dropChange = dropVec();
 
@@ -246,6 +248,7 @@ class ActorAttributeOperationExtension {
 
 			case SetLength(length):
 				multChange = statement(calc(MultFloatVCV), [Float(1.0 / frames)]);
+				pushChange = statement(general(PushFloatV));
 				peekChange = peekFloat(LEN32); // skip the loop counter
 				dropChange = dropFloat();
 
@@ -279,6 +282,7 @@ class ActorAttributeOperationExtension {
 
 			case SetAngle(angle):
 				multChange = statement(calc(MultFloatVCV), [Float(1.0 / frames)]);
+				pushChange = statement(general(PushFloatV));
 				peekChange = peekFloat(LEN32); // skip the loop counter
 				dropChange = dropFloat();
 
