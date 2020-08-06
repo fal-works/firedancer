@@ -44,11 +44,10 @@ enum abstract GeneralOperation(Int) to Int {
 	final Break;
 
 	/**
-		Peeks the top integer (which should be the remaining loop count) from the stack
-		and checks if it is zero.
-		- If not zero, decrements the loop counter at the stack top and breaks the current frame.
+		Peeks the top integer (which should be the remaining loop count) from the stack and checks the value.
+		- If `1` or more, decrements the loop counter at the stack top and breaks the current frame.
 			The next frame will begin with this `CountDownBreak` opcode again.
-		- If zero, drops the loop counter from the stack and goes to next.
+		- If `0` or less, drops the loop counter from the stack and goes to next.
 	**/
 	final CountDownBreak;
 
@@ -58,10 +57,9 @@ enum abstract GeneralOperation(Int) to Int {
 	final Jump;
 
 	/**
-		Peeks the top integer (which should be the remaining loop count) from the stack
-		and checks if it is zero.
-		- If not zero, decrements the loop counter at the stack top and goes to next.
-		- If zero, drops the loop counter from the stack and
+		Peeks the top integer (which should be the remaining loop count) from the stack and checks the value.
+		- If `1` or more, decrements the loop counter at the stack top and goes to next.
+		- If `0` or less, drops the loop counter from the stack and
 			adds a given constant value to the current bytecode position.
 	**/
 	final CountDownJump;

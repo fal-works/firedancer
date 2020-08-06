@@ -304,7 +304,7 @@ class Vm {
 							case DropVec:
 								dropVec();
 							case CountDownBreak:
-								if (0 != peekInt()) {
+								if (0 < peekInt()) {
 									decrement();
 									codePos -= Opcode.size;
 									break;
@@ -317,7 +317,7 @@ class Vm {
 								final jumpLength = readCodeI32();
 								codePos += jumpLength;
 							case CountDownJump:
-								if (0 != peekInt()) {
+								if (0 < peekInt()) {
 									decrement();
 									codePos += LEN32; // skip the operand
 								} else {
