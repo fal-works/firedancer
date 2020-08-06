@@ -68,38 +68,38 @@ class FloatBinaryOperatorType {
 
 		This can only be set if the result can be calculated in compile-time.
 	**/
-	public final operateConstantFloats: Maybe<(a: Float, b: Float) -> Float>;
+	public final operateConstants: Maybe<(a: Float, b: Float) -> Float>;
 
 	/**
 		Any `Opcode` that operates the two below and reassigns the result to the volatile float.
 		1. The current volatile float
 		2. The given constant float
 	**/
-	public final operateFloatsVCV: Maybe<Opcode>;
+	public final operateVCV: Maybe<Opcode>;
 
 	/**
 		Any `Opcode` that operates the two below and reassigns the result to the volatile float.
 		1. The given constant float
 		2. The current volatile float
 	**/
-	public final operateFloatsCVV: Maybe<Opcode>;
+	public final operateCVV: Maybe<Opcode>;
 
 	/**
 		Any `Opcode` that operates the two below and reassigns the result to the volatile float.
 		1. The last saved volatile float
 		2. The current volatile float
 	**/
-	public final operateFloatsVVV: Opcode;
+	public final operateVVV: Opcode;
 
 	function new(
-		operateFloatsVVV: Opcode,
-		?operateConstantFloats: Float->Float->Float,
-		?operateFloatsVCV: Opcode,
-		?operateFloatsCVV: Opcode
+		operateVVV: Opcode,
+		?operateConstants: Float->Float->Float,
+		?operateVCV: Opcode,
+		?operateCVV: Opcode
 	) {
-		this.operateConstantFloats = Maybe.from(operateConstantFloats);
-		this.operateFloatsVCV = Maybe.from(operateFloatsVCV);
-		this.operateFloatsCVV = Maybe.from(operateFloatsCVV);
-		this.operateFloatsVVV = operateFloatsVVV;
+		this.operateConstants = Maybe.from(operateConstants);
+		this.operateVCV = Maybe.from(operateVCV);
+		this.operateCVV = Maybe.from(operateCVV);
+		this.operateVVV = operateVVV;
 	}
 }
