@@ -29,7 +29,6 @@ enum abstract GeneralOperation(Int) to Int {
 			case GeneralOperation.DropFloat: DropFloat;
 			case GeneralOperation.PeekVec: PeekVec;
 			case GeneralOperation.DropVec: DropVec;
-			case GeneralOperation.Decrement: Decrement;
 			case GeneralOperation.LoadFloatCV: LoadFloatCV;
 			case GeneralOperation.LoadVecCV: LoadVecCV;
 			case GeneralOperation.LoadVecXCV: LoadVecXCV;
@@ -156,11 +155,6 @@ enum abstract GeneralOperation(Int) to Int {
 		Drops vector from the stack top.
 	**/
 	final DropVec;
-
-	/**
-		Decrements the integer at the stack top.
-	**/
-	final Decrement;
 
 	/**
 		Assigns a given constant float to the current volatile float.
@@ -348,7 +342,6 @@ class GeneralOperationExtension {
 			case DropFloat: "drop_float";
 			case PeekVec: "peek_vec";
 			case DropVec: "drop_vec";
-			case Decrement: "decrement";
 			case LoadFloatCV: "load_float_cv";
 			case LoadVecCV: "load_vec_cv";
 			case LoadVecXCV: "load_vec_x_cv";
@@ -398,7 +391,6 @@ class GeneralOperationExtension {
 			case PushFloatV: [];
 			case PeekFloat | PeekVec: [Int]; // bytes to be skipped from the stack top
 			case DropFloat | DropVec: [];
-			case Decrement: [];
 			case LoadFloatCV: [Float];
 			case LoadVecCV: [Vec];
 			case LoadVecXCV | LoadVecYCV: [Float];

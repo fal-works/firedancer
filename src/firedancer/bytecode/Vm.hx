@@ -331,8 +331,6 @@ class Vm {
 								final endCode = readCodeI32();
 								threads.deactivateAll();
 								return endCode;
-							case Decrement:
-								decrement();
 							case LoadFloatCV:
 								setVolFloat(readCodeF64());
 							case LoadVecCV:

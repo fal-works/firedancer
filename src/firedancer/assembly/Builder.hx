@@ -93,13 +93,6 @@ class Builder {
 	}
 
 	/**
-		Creates a `Decrement` statement.
-	**/
-	public static inline function decrement(): AssemblyStatement {
-		return new AssemblyStatement(general(Decrement), []);
-	}
-
-	/**
 		Creates a code instance that repeats `body` in runtime.
 	**/
 	public static function loop(body: AssemblyCode, count: UInt): AssemblyCode {
