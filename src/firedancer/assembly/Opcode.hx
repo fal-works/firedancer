@@ -43,12 +43,6 @@ abstract Opcode(Int) {
 		return from(Write, code);
 
 	/**
-		Converts `WriteShotOperation` to `Opcode`.
-	**/
-	public static inline function writeShot(code: WriteShotOperation): Opcode
-		return from(WriteShot, code);
-
-	/**
 		The category part of this `Opcode`.
 	**/
 	public var category(get, never): OperationCategory;

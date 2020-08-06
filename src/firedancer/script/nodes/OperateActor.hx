@@ -4,7 +4,6 @@ import firedancer.types.NInt;
 import firedancer.assembly.Opcode.*;
 import firedancer.assembly.operation.ReadOperation;
 import firedancer.assembly.operation.WriteOperation;
-import firedancer.assembly.operation.WriteShotOperation;
 import firedancer.assembly.ConstantOperand;
 import firedancer.assembly.AssemblyStatement;
 import firedancer.assembly.AssemblyCode;
@@ -44,21 +43,21 @@ class OperateActor extends AstNode implements ripper.Data {
 				}
 			case ShotPosition:
 				switch operation {
-					case SetVector(e): writeSVec(e, SetShotPositionC, SetShotPositionV);
-					case AddVector(e): writeSVec(e, AddShotPositionC, AddShotPositionV);
-					case SetLength(e): writeSF(e, SetShotDistanceC, SetShotDistanceV);
-					case AddLength(e): writeSF(e, AddShotDistanceC, AddShotDistanceV);
-					case SetAngle(e): writeSA(e, SetShotBearingC, SetShotBearingV);
-					case AddAngle(e): writeSA(e, AddShotBearingC, AddShotBearingV);
+					case SetVector(e): writeVec(e, SetShotPositionC, SetShotPositionV);
+					case AddVector(e): writeVec(e, AddShotPositionC, AddShotPositionV);
+					case SetLength(e): writeF(e, SetShotDistanceC, SetShotDistanceV);
+					case AddLength(e): writeF(e, AddShotDistanceC, AddShotDistanceV);
+					case SetAngle(e): writeA(e, SetShotBearingC, SetShotBearingV);
+					case AddAngle(e): writeA(e, AddShotBearingC, AddShotBearingV);
 				}
 			case ShotVelocity:
 				switch operation {
-					case SetVector(e): writeSVec(e, SetShotVelocityC, SetShotVelocityV);
-					case AddVector(e): writeSVec(e, AddShotVelocityC, AddShotVelocityV);
-					case SetLength(e): writeSF(e, SetShotSpeedC, SetShotSpeedV);
-					case AddLength(e): writeSF(e, AddShotSpeedC, AddShotSpeedV);
-					case SetAngle(e): writeSA(e, SetShotDirectionC, SetShotDirectionV);
-					case AddAngle(e): writeSA(e, AddShotDirectionC, AddShotDirectionV);
+					case SetVector(e): writeVec(e, SetShotVelocityC, SetShotVelocityV);
+					case AddVector(e): writeVec(e, AddShotVelocityC, AddShotVelocityV);
+					case SetLength(e): writeF(e, SetShotSpeedC, SetShotSpeedV);
+					case AddLength(e): writeF(e, AddShotSpeedC, AddShotSpeedV);
+					case SetAngle(e): writeA(e, SetShotDirectionC, SetShotDirectionV);
+					case AddAngle(e): writeA(e, AddShotDirectionC, AddShotDirectionV);
 				}
 		}
 	}
@@ -83,27 +82,6 @@ class OperateActor extends AstNode implements ripper.Data {
 		opV: WriteOperation
 	): AssemblyCode
 		return expr.use(write(opC), write(opV));
-
-	static extern inline function writeSVec(
-		expr: VecExpression,
-		opC: WriteShotOperation,
-		opV: WriteShotOperation
-	): AssemblyCode
-		return expr.use(writeShot(opC), writeShot(opV));
-
-	static extern inline function writeSF(
-		expr: FloatExpression,
-		opC: WriteShotOperation,
-		opV: WriteShotOperation
-	): AssemblyCode
-		return expr.use(writeShot(opC), writeShot(opV));
-
-	static extern inline function writeSA(
-		expr: AngleExpression,
-		opC: WriteShotOperation,
-		opV: WriteShotOperation
-	): AssemblyCode
-		return expr.use(writeShot(opC), writeShot(opV));
 
 	final attribute: ActorAttribute;
 	final operation: ActorAttributeOperation;
@@ -240,8 +218,8 @@ class ActorAttributeOperationExtension {
 				addFromVolatile = switch attribute {
 					case Position: write(AddPositionV);
 					case Velocity: write(AddVelocityV);
-					case ShotPosition: writeShot(AddShotPositionV);
-					case ShotVelocity: writeShot(AddShotVelocityV);
+					case ShotPosition: write(AddShotPositionV);
+					case ShotVelocity: write(AddShotVelocityV);
 				};
 
 				final const = vec.tryGetConstantOperand();
@@ -274,8 +252,8 @@ class ActorAttributeOperationExtension {
 				addFromVolatile = switch attribute {
 					case Position: write(AddDistanceV);
 					case Velocity: write(AddSpeedV);
-					case ShotPosition: writeShot(AddShotDistanceV);
-					case ShotVelocity: writeShot(AddShotSpeedV);
+					case ShotPosition: write(AddShotDistanceV);
+					case ShotVelocity: write(AddShotSpeedV);
 				}
 
 				switch length.toEnum() {
@@ -307,8 +285,8 @@ class ActorAttributeOperationExtension {
 				addFromVolatile = switch attribute {
 					case Position: write(AddBearingV);
 					case Velocity: write(AddDirectionV);
-					case ShotPosition: writeShot(AddShotBearingV);
-					case ShotVelocity: writeShot(AddShotDirectionV);
+					case ShotPosition: write(AddShotBearingV);
+					case ShotVelocity: write(AddShotDirectionV);
 				}
 
 				switch angle.toEnum() {

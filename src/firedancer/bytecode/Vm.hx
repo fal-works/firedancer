@@ -11,7 +11,6 @@ import firedancer.assembly.Opcode;
 import firedancer.assembly.operation.GeneralOperation;
 import firedancer.assembly.operation.ReadOperation;
 import firedancer.assembly.operation.WriteOperation;
-import firedancer.assembly.operation.WriteShotOperation;
 import firedancer.bytecode.internal.Constants.*;
 import firedancer.common.Geometry;
 
@@ -552,14 +551,6 @@ class Vm {
 								addDirection(volFloat);
 							case AddDirectionS:
 								addDirection(peekFloat());
-
-							#if debug
-							case other: throw 'Unknown opcode: $other';
-							#end
-						}
-
-					case WriteShot:
-						switch opcode.op {
 							case SetShotPositionC:
 								thread.setShotPosition(readCodeF64(), readCodeF64());
 							case AddShotPositionC:
@@ -616,12 +607,12 @@ class Vm {
 								thread.setShotDirection(readCodeF64());
 							case AddShotDirectionC:
 								thread.addShotDirection(readCodeF64());
-							case AddShotDirectionS:
-								thread.addShotDirection(peekFloat());
 							case SetShotDirectionV:
 								thread.setShotDirection(volFloat);
 							case AddShotDirectionV:
 								thread.addShotDirection(volFloat);
+							case AddShotDirectionS:
+								thread.addShotDirection(peekFloat());
 
 							#if debug
 							case other: throw 'Unknown opcode: $other';

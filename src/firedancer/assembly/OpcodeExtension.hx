@@ -15,7 +15,6 @@ class OpcodeExtension {
 			case General: GeneralOperation.from(opcode.op).toStatementType();
 			case Read: ReadOperation.from(opcode.op).toStatementType();
 			case Write: WriteOperation.from(opcode.op).toStatementType();
-			case WriteShot: WriteShotOperation.from(opcode.op).toStatementType();
 		}
 	}
 
@@ -27,7 +26,6 @@ class OpcodeExtension {
 			case General: GeneralOperation.from(opcode.op).getBytecodeLength();
 			case Read: ReadOperation.from(opcode.op).getBytecodeLength();
 			case Write: WriteOperation.from(opcode.op).getBytecodeLength();
-			case WriteShot: WriteShotOperation.from(opcode.op).getBytecodeLength();
 		}
 	}
 
@@ -39,7 +37,6 @@ class OpcodeExtension {
 			case General: GeneralOperation.from(opcode.op).toString();
 			case Read: ReadOperation.from(opcode.op).toString();
 			case Write: WriteOperation.from(opcode.op).toString();
-			case WriteShot: WriteShotOperation.from(opcode.op).toString();
 		}
 	}
 }
