@@ -23,6 +23,7 @@ enum abstract GeneralOperation(Int) to Int {
 			case GeneralOperation.AwaitThread: AwaitThread;
 			case GeneralOperation.End: End;
 			case GeneralOperation.PushIntC: PushIntC;
+			case GeneralOperation.PushIntV: PushIntV;
 			case GeneralOperation.PushFloatC: PushFloatC;
 			case GeneralOperation.PushFloatV: PushFloatV;
 			case GeneralOperation.PeekFloat: PeekFloat;
@@ -98,6 +99,11 @@ enum abstract GeneralOperation(Int) to Int {
 	final PushIntC;
 
 	/**
+		Pushes the current volatile integer to the stack top.
+	**/
+	final PushIntV;
+
+	/**
 		Pushes a given constant float to the stack top.
 	**/
 	final PushFloatC;
@@ -167,6 +173,7 @@ class GeneralOperationExtension {
 			case AwaitThread: "await_thread";
 			case End: "end";
 			case PushIntC: "push_int_c";
+			case PushIntV: "push_int_v";
 			case PushFloatC: "push_float_c";
 			case PushFloatV: "push_float_v";
 			case PeekFloat: "peek_float";
@@ -191,6 +198,7 @@ class GeneralOperationExtension {
 			case AwaitThread: [];
 			case End: [Int]; // end code
 			case PushIntC: [Int]; // integer to push
+			case PushIntV: [];
 			case PushFloatC: [Float]; // float to push
 			case PushFloatV: [];
 			case PeekFloat | PeekVec: [Int]; // bytes to be skipped from the stack top

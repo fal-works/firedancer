@@ -288,6 +288,8 @@ class Vm {
 						switch opcode.op {
 							case PushIntC:
 								pushInt(readCodeI32());
+							case PushIntV:
+								pushInt(volInt);
 							case PushFloatC:
 								pushFloat(readCodeF64());
 							case PushFloatV:
@@ -400,6 +402,8 @@ class Vm {
 								setVolInt(volInt * readCodeI32());
 							case MultIntVVV:
 								setVolInt(volIntSaved * volInt);
+							case DivIntVCV:
+								setVolInt(Ints.divide(volInt, readCodeI32()));
 							case DivIntCVV:
 								setVolInt(Ints.divide(readCodeI32(), volInt));
 							case DivIntVVV:
@@ -440,6 +444,8 @@ class Vm {
 							case MultVecVCS:
 								final multiplier = readCodeF64();
 								pushVec(volX * multiplier, volY * multiplier);
+							case SaveIntV:
+								saveInt(volInt);
 							case SaveFloatV:
 								saveFloat(volFloat);
 							case CastCartesianVV:

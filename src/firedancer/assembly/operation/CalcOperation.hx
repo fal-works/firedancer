@@ -26,6 +26,7 @@ enum abstract CalcOperation(Int) to Int {
 			case CalcOperation.MinusIntV: MinusIntV;
 			case CalcOperation.MultIntVCV: MultIntVCV;
 			case CalcOperation.MultIntVVV: MultIntVVV;
+			case CalcOperation.DivIntVCV: DivIntVCV;
 			case CalcOperation.DivIntCVV: DivIntCVV;
 			case CalcOperation.DivIntVVV: DivIntVVV;
 			case CalcOperation.ModIntVCV: ModIntVCV;
@@ -49,6 +50,7 @@ enum abstract CalcOperation(Int) to Int {
 			case CalcOperation.MinusVecV: MinusVecV;
 			case CalcOperation.MultVecVCS: MultVecVCS;
 
+			case CalcOperation.SaveIntV: SaveIntV;
 			case CalcOperation.SaveFloatV: SaveFloatV;
 			case CalcOperation.CastCartesianVV: CastCartesianVV;
 			case CalcOperation.CastPolarVV: CastPolarVV;
@@ -118,6 +120,11 @@ enum abstract CalcOperation(Int) to Int {
 		Multiplies the last saved volatile integer and the current volatile integer, and reassigns it to the volatile integer.
 	**/
 	final MultIntVVV;
+
+	/**
+		Divides the current volatile integer by a given constant integer.
+	**/
+	final DivIntVCV;
 
 	/**
 		Divides a given constant integer by the current volatile integer and reassigns it to the volatile integer.
@@ -220,6 +227,11 @@ enum abstract CalcOperation(Int) to Int {
 	final MultVecVCS;
 
 	/**
+		Saves the current volatile integer.
+	**/
+	final SaveIntV;
+
+	/**
 		Saves the current volatile float.
 	**/
 	final SaveFloatV;
@@ -285,6 +297,7 @@ class CalcOperationExtension {
 			case ModIntVCV: "mod_int_vcv";
 			case ModIntCVV: "mod_int_cvv";
 			case ModIntVVV: "mod_int_vvv";
+			case DivIntVCV: "div_int_vcv";
 			case DivIntCVV: "div_int_cvv";
 			case DivIntVVV: "div_int_vvv";
 
@@ -305,6 +318,7 @@ class CalcOperationExtension {
 			case MinusVecV: "minus_vec_v";
 			case MultVecVCS: "mult_vec_vcs";
 
+			case SaveIntV: "save_int_v";
 			case SaveFloatV: "save_float_v";
 			case CastCartesianVV: "cast_cartesian_vv";
 			case CastPolarVV: "cast_polar_vv";
@@ -336,6 +350,7 @@ class CalcOperationExtension {
 			case ModIntVCV: [Int]; // divisor
 			case ModIntCVV: [Int]; // value to be divided
 			case ModIntVVV: [];
+			case DivIntVCV: [Int]; // divisor value
 			case DivIntCVV: [Int]; // value to be divided
 			case DivIntVVV: [];
 
@@ -356,6 +371,7 @@ class CalcOperationExtension {
 			case MinusVecV: [];
 			case MultVecVCS: [Float]; // multiplier value
 
+			case SaveIntV: [];
 			case SaveFloatV: [];
 			case CastCartesianVV | CastPolarVV: [];
 
