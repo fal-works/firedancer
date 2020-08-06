@@ -211,7 +211,7 @@ class ActorAttributeOperationExtension {
 
 		switch setOperation {
 			case SetVector(vec):
-				multChangeVCS = statement(general(MultVecVCS), [Float(1.0 / frames)]);
+				multChangeVCS = statement(calc(MultVecVCS), [Float(1.0 / frames)]);
 				peekChange = peekVec(LEN32); // skip the loop counter
 				dropChange = dropVec();
 
@@ -245,7 +245,7 @@ class ActorAttributeOperationExtension {
 				}
 
 			case SetLength(length):
-				multChangeVCS = statement(general(MultFloatVCS), [Float(1.0 / frames)]);
+				multChangeVCS = statement(calc(MultFloatVCS), [Float(1.0 / frames)]);
 				peekChange = peekFloat(LEN32); // skip the loop counter
 				dropChange = dropFloat();
 
@@ -278,7 +278,7 @@ class ActorAttributeOperationExtension {
 				}
 
 			case SetAngle(angle):
-				multChangeVCS = statement(general(MultFloatVCS), [Float(1.0 / frames)]);
+				multChangeVCS = statement(calc(MultFloatVCS), [Float(1.0 / frames)]);
 				peekChange = peekFloat(LEN32); // skip the loop counter
 				dropChange = dropFloat();
 

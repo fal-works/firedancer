@@ -31,6 +31,12 @@ abstract Opcode(Int) {
 		return from(General, code);
 
 	/**
+		Converts `CalcOperation` to `Opcode`.
+	**/
+	public static inline function calc(code: CalcOperation): Opcode
+		return from(Calc, code);
+
+	/**
 		Converts `ReadOperation` to `Opcode`.
 	**/
 	public static inline function read(code: ReadOperation): Opcode

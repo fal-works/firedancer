@@ -26,14 +26,14 @@ abstract FloatLikeRuntimeExpression(
 						switch type.constantOperator {
 							case Immediate(func):
 								new AssemblyStatement(
-									general(LoadFloatCV),
+									calc(LoadFloatCV),
 									[Float(func(operandValue))]
 								);
 							case Instruction(opcodeCV):
 								new AssemblyStatement(opcodeCV, [Float(operandValue)]);
 							case None:
 								[
-									new AssemblyStatement(general(LoadFloatCV), [Float(operandValue)]),
+									new AssemblyStatement(calc(LoadFloatCV), [Float(operandValue)]),
 									new AssemblyStatement(type.operateVV, [])
 								];
 						}
@@ -59,15 +59,15 @@ abstract FloatLikeRuntimeExpression(
 										valueA,
 										valueB
 									);
-									code.pushStatement(general(LoadFloatCV), [valueAB.toOperand(constantFactor)]);
+									code.pushStatement(calc(LoadFloatCV), [valueAB.toOperand(constantFactor)]);
 								} else {
 									final operandsB = [valueB.toOperand(constantFactor)];
-									code.pushStatement(general(LoadFloatCV), operandsA);
+									code.pushStatement(calc(LoadFloatCV), operandsA);
 									if (operateVCV.isSome())
 										code.pushStatement(operateVCV.unwrap(), operandsB);
 									else {
-										code.pushStatement(general(SaveFloatV));
-										code.pushStatement(general(LoadFloatCV), operandsB);
+										code.pushStatement(calc(SaveFloatV));
+										code.pushStatement(calc(LoadFloatCV), operandsB);
 										code.pushStatement(operateVVV, []);
 									}
 								}
@@ -76,8 +76,8 @@ abstract FloatLikeRuntimeExpression(
 									code.pushFromArray(expressionB.loadToVolatileFloat(constantFactor));
 									code.pushStatement(operateCVV.unwrap(), operandsA);
 								} else {
-									code.pushStatement(general(LoadFloatCV), operandsA);
-									code.pushStatement(general(SaveFloatV));
+									code.pushStatement(calc(LoadFloatCV), operandsA);
+									code.pushStatement(calc(SaveFloatV));
 									code.pushFromArray(expressionB.loadToVolatileFloat(constantFactor));
 									code.pushStatement(operateVVV);
 								}
@@ -91,13 +91,13 @@ abstract FloatLikeRuntimeExpression(
 									code.pushStatement(operateVCV.unwrap(), operandsB);
 								} else {
 									code.pushFromArray(expressionA.loadToVolatileFloat(constantFactor));
-									code.pushStatement(general(SaveFloatV));
-									code.pushStatement(general(LoadFloatCV), operandsB);
+									code.pushStatement(calc(SaveFloatV));
+									code.pushStatement(calc(LoadFloatCV), operandsB);
 									code.pushStatement(operateVVV);
 								}
 							case Runtime(expressionB):
 								code.pushFromArray(expressionA.loadToVolatileFloat(constantFactor));
-								code.pushStatement(general(SaveFloatV));
+								code.pushStatement(calc(SaveFloatV));
 								code.pushFromArray(expressionB.loadToVolatileFloat(constantFactor));
 								code.pushStatement(operateVVV);
 						};

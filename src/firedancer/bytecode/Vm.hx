@@ -9,6 +9,7 @@ import reckoner.Random;
 import firedancer.types.Emitter;
 import firedancer.assembly.Opcode;
 import firedancer.assembly.operation.GeneralOperation;
+import firedancer.assembly.operation.CalcOperation;
 import firedancer.assembly.operation.ReadOperation;
 import firedancer.assembly.operation.WriteOperation;
 import firedancer.bytecode.internal.Constants.*;
@@ -330,6 +331,41 @@ class Vm {
 								final endCode = readCodeI32();
 								threads.deactivateAll();
 								return endCode;
+
+							case Fire:
+								final bytecodeId = readCodeI32();
+								final bytecode = if (bytecodeId < 0) Maybe.none() else
+									Maybe.from(bytecodeTable[bytecodeId]);
+								emitter.emit(
+									xVec[vecIndex] + thread.shotX,
+									yVec[vecIndex] + thread.shotY,
+									thread.shotVx,
+									thread.shotVy,
+									0,
+									bytecode
+								);
+							case FireWithType:
+								final bytecodeId = readCodeI32();
+								final bytecode = if (bytecodeId < 0) Maybe.none() else
+									Maybe.from(bytecodeTable[bytecodeId]);
+								final fireType = readCodeI32();
+								emitter.emit(
+									xVec[vecIndex] + thread.shotX,
+									yVec[vecIndex] + thread.shotY,
+									thread.shotVx,
+									thread.shotVy,
+									fireType,
+									bytecode
+								);
+
+							#if debug
+							case other:
+								throw 'Unknown opcode: $other';
+							#end
+						}
+
+					case Calc:
+						switch opcode.op {
 							case LoadFloatCV:
 								setVolFloat(readCodeF64());
 							case LoadVecCV:
@@ -381,37 +417,6 @@ class Vm {
 								setVolFloat(Random.signed(readCodeF64()));
 							case RandomFloatSignedVV:
 								setVolFloat(Random.signed(volFloat));
-
-							case Fire:
-								final bytecodeId = readCodeI32();
-								final bytecode = if (bytecodeId < 0) Maybe.none() else
-									Maybe.from(bytecodeTable[bytecodeId]);
-								emitter.emit(
-									xVec[vecIndex] + thread.shotX,
-									yVec[vecIndex] + thread.shotY,
-									thread.shotVx,
-									thread.shotVy,
-									0,
-									bytecode
-								);
-							case FireWithType:
-								final bytecodeId = readCodeI32();
-								final bytecode = if (bytecodeId < 0) Maybe.none() else
-									Maybe.from(bytecodeTable[bytecodeId]);
-								final fireType = readCodeI32();
-								emitter.emit(
-									xVec[vecIndex] + thread.shotX,
-									yVec[vecIndex] + thread.shotY,
-									thread.shotVx,
-									thread.shotVy,
-									fireType,
-									bytecode
-								);
-
-							#if debug
-							case other:
-								throw 'Unknown opcode: $other';
-							#end
 						}
 
 					case Read:

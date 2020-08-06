@@ -15,8 +15,8 @@ class Random {
 	**/
 	public inline function float(max: FloatExpression): FloatExpression {
 		return FloatLikeExpressionEnum.Runtime(UnaryOperator({
-			constantOperator: Instruction(general(RandomFloatCV)),
-			operateVV: general(RandomFloatVV)
+			constantOperator: Instruction(calc(RandomFloatCV)),
+			operateVV: calc(RandomFloatVV)
 		}, max));
 	}
 
@@ -25,8 +25,8 @@ class Random {
 	**/
 	public inline function between(min: FloatExpression, max: FloatExpression): FloatExpression {
 		return min + FloatLikeExpressionEnum.Runtime(UnaryOperator({
-			constantOperator: Instruction(general(RandomFloatCV)),
-			operateVV: general(RandomFloatVV)
+			constantOperator: Instruction(calc(RandomFloatCV)),
+			operateVV: calc(RandomFloatVV)
 		}, max - min));
 	}
 
@@ -35,8 +35,8 @@ class Random {
 	**/
 	public inline function signed(max: FloatExpression): FloatExpression {
 		return FloatLikeExpressionEnum.Runtime(UnaryOperator({
-			constantOperator: Instruction(general(RandomFloatSignedCV)),
-			operateVV: general(RandomFloatSignedVV)
+			constantOperator: Instruction(calc(RandomFloatSignedCV)),
+			operateVV: calc(RandomFloatSignedVV)
 		}, max));
 	}
 
@@ -47,8 +47,8 @@ class Random {
 	**/
 	public inline function grouping(centralAngle: AngleExpression): AngleExpression {
 		return FloatLikeExpressionEnum.Runtime(UnaryOperator({
-			constantOperator: Instruction(general(RandomFloatSignedCV)),
-			operateVV: general(RandomFloatSignedVV)
+			constantOperator: Instruction(calc(RandomFloatSignedCV)),
+			operateVV: calc(RandomFloatSignedVV)
 		}, centralAngle / 2));
 	}
 }

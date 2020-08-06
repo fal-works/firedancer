@@ -27,7 +27,7 @@ class FloatLikeExpressionExtensionEnum {
 		return switch _this {
 			case Constant(value):
 				new AssemblyStatement(
-					general(LoadFloatCV),
+					calc(LoadFloatCV),
 					[value.toOperand(constantFactor)]
 				);
 			case Runtime(expression):
@@ -63,7 +63,7 @@ class FloatLikeExpressionExtensionEnum {
 	): FloatLikeExpressionEnum {
 		return Runtime(FloatLikeRuntimeExpressionEnum.UnaryOperator({
 			constantOperator: Immediate(v -> -v),
-			operateVV: general(MinusFloatV)
+			operateVV: calc(MinusFloatV)
 		}, _this));
 	}
 
@@ -73,9 +73,9 @@ class FloatLikeExpressionExtensionEnum {
 	): FloatLikeExpressionEnum {
 		return Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperator({
 			operateConstants: (a, b) -> a + b,
-			operateVCV: general(AddFloatVCV),
-			operateCVV: general(AddFloatVCV),
-			operateVVV: general(AddFloatVVV)
+			operateVCV: calc(AddFloatVCV),
+			operateCVV: calc(AddFloatVCV),
+			operateVVV: calc(AddFloatVVV)
 		}, _this, other));
 	}
 
@@ -85,9 +85,9 @@ class FloatLikeExpressionExtensionEnum {
 	): FloatLikeExpressionEnum {
 		return Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperator({
 			operateConstants: (a, b) -> a - b,
-			operateVCV: general(SubFloatVCV),
-			operateCVV: general(SubFloatCVV),
-			operateVVV: general(SubFloatVVV)
+			operateVCV: calc(SubFloatVCV),
+			operateCVV: calc(SubFloatCVV),
+			operateVVV: calc(SubFloatVVV)
 		}, _this, other));
 	}
 
@@ -97,9 +97,9 @@ class FloatLikeExpressionExtensionEnum {
 	): FloatLikeExpressionEnum {
 		return Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperator({
 			operateConstants: (a, b) -> a * b,
-			operateVCV: general(MultFloatVCV),
-			operateCVV: general(MultFloatVCV),
-			operateVVV: general(MultFloatVVV)
+			operateVCV: calc(MultFloatVCV),
+			operateCVV: calc(MultFloatVCV),
+			operateVVV: calc(MultFloatVVV)
 		}, _this, other));
 	}
 
@@ -120,9 +120,9 @@ class FloatLikeExpressionExtensionEnum {
 
 		return Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperator({
 			operateConstants: (a, b) -> a / b,
-			operateVCV: general(MultFloatVCV), // multiply by the reciprocal
-			operateCVV: general(DivFloatCVV),
-			operateVVV: general(DivFloatVVV)
+			operateVCV: calc(MultFloatVCV), // multiply by the reciprocal
+			operateCVV: calc(DivFloatCVV),
+			operateVVV: calc(DivFloatVVV)
 		}, _this, other));
 	}
 
@@ -132,9 +132,9 @@ class FloatLikeExpressionExtensionEnum {
 	): FloatLikeExpressionEnum {
 		return Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperator({
 			operateConstants: (a, b) -> a % b,
-			operateVCV: general(ModFloatVCV),
-			operateCVV: general(ModFloatCVV),
-			operateVVV: general(ModFloatVVV)
+			operateVCV: calc(ModFloatVCV),
+			operateCVV: calc(ModFloatCVV),
+			operateVVV: calc(ModFloatVVV)
 		}, _this, other));
 	}
 }

@@ -29,31 +29,6 @@ enum abstract GeneralOperation(Int) to Int {
 			case GeneralOperation.DropFloat: DropFloat;
 			case GeneralOperation.PeekVec: PeekVec;
 			case GeneralOperation.DropVec: DropVec;
-			case GeneralOperation.LoadFloatCV: LoadFloatCV;
-			case GeneralOperation.LoadVecCV: LoadVecCV;
-			case GeneralOperation.AddFloatVCV: AddFloatVCV;
-			case GeneralOperation.AddFloatVVV: AddFloatVVV;
-			case GeneralOperation.SubFloatVCV: SubFloatVCV;
-			case GeneralOperation.SubFloatCVV: SubFloatCVV;
-			case GeneralOperation.SubFloatVVV: SubFloatVVV;
-			case GeneralOperation.MinusFloatV: MinusFloatV;
-			case GeneralOperation.MultFloatVCV: MultFloatVCV;
-			case GeneralOperation.MultFloatVVV: MultFloatVVV;
-			case GeneralOperation.MultFloatVCS: MultFloatVCS;
-			case GeneralOperation.DivFloatCVV: DivFloatCVV;
-			case GeneralOperation.DivFloatVVV: DivFloatVVV;
-			case GeneralOperation.ModFloatVCV: ModFloatVCV;
-			case GeneralOperation.ModFloatCVV: ModFloatCVV;
-			case GeneralOperation.ModFloatVVV: ModFloatVVV;
-			case GeneralOperation.MinusVecV: MinusVecV;
-			case GeneralOperation.MultVecVCS: MultVecVCS;
-			case GeneralOperation.SaveFloatV: SaveFloatV;
-			case GeneralOperation.CastCartesianVV: CastCartesianVV;
-			case GeneralOperation.CastPolarVV: CastPolarVV;
-			case GeneralOperation.RandomFloatCV: RandomFloatCV;
-			case GeneralOperation.RandomFloatVV: RandomFloatVV;
-			case GeneralOperation.RandomFloatSignedCV: RandomFloatSignedCV;
-			case GeneralOperation.RandomFloatSignedVV: RandomFloatSignedVV;
 			case GeneralOperation.Fire: Fire;
 			case GeneralOperation.FireWithType: FireWithType;
 			default: throw error(value);
@@ -115,7 +90,8 @@ enum abstract GeneralOperation(Int) to Int {
 	**/
 	final End;
 
-	// ---- read/write/calc values ----------------------------------------------
+
+	// ---- read/write stack ----------------------------------------------
 
 	/**
 		Pushes a given constant integer to the stack top.
@@ -154,137 +130,6 @@ enum abstract GeneralOperation(Int) to Int {
 	**/
 	final DropVec;
 
-	/**
-		Assigns a given constant float to the current volatile float.
-	**/
-	final LoadFloatCV;
-
-	/**
-		Assigns given constant float values to the current volatile vector.
-	**/
-	final LoadVecCV;
-
-	/**
-		Adds a given constant float to the current volatile float.
-	**/
-	final AddFloatVCV;
-
-	/**
-		Adds the last saved volatile float to the current volatile float.
-	**/
-	final AddFloatVVV;
-
-	/**
-		Subtracts a given constant float from the current volatile float.
-	**/
-	final SubFloatVCV;
-
-	/**
-		Subtracts the current volatile float from a given constant float and assigns it to the volatile float.
-	**/
-	final SubFloatCVV;
-
-	/**
-		Subtracts the current volatile float from the last saved volatile float and assigns it to the volatile float.
-	**/
-	final SubFloatVVV;
-
-	/**
-		Changes the sign of the current volatile float.
-	**/
-	final MinusFloatV;
-
-	/**
-		Multiplies the current volatile float by a given constant float.
-	**/
-	final MultFloatVCV;
-
-	/**
-		Multiplies the last saved volatile float and the current volatile float, and reassigns it to the volatile float.
-	**/
-	final MultFloatVVV;
-
-	/**
-		Multiplicates the current volatile float by a given constant float and pushes it to the stack top.
-	**/
-	final MultFloatVCS;
-
-	/**
-		Divides a given constant float by the current volatile float and reassigns it to the volatile float.
-	**/
-	final DivFloatCVV;
-
-	/**
-		Divides the last saved volatile float by the current volatile float, and reassigns it to the volatile float.
-	**/
-	final DivFloatVVV;
-
-	/**
-		Divides the current volatile float by a given constant float and assigns the modulo to the volatile float.
-	**/
-	final ModFloatVCV;
-
-	/**
-		Divides a given constant float by the current volatile float and assigns the modulo to the volatile float.
-	**/
-	final ModFloatCVV;
-
-	/**
-		Divides the last saved volatile float by the current volatile float, and assigns the modulo to the volatile float.
-	**/
-	final ModFloatVVV;
-
-	/**
-		Changes the sign of the current volatile vector.
-	**/
-	final MinusVecV;
-
-	/**
-		Multiplicates the current volatile vector by a given constant float and pushes it to the stack top.
-	**/
-	final MultVecVCS;
-
-	/**
-		Saves the current volatile float.
-	**/
-	final SaveFloatV;
-
-	/**
-		Interprets the last saved volatile float as `x` and the current volatile float as `y`,
-		and assigns them to the volatile vector.
-	**/
-	final CastCartesianVV;
-
-	/**
-		Interprets the last saved volatile float as `length` and the current volatile float as `angle`,
-		and assigns their cartesian representation to the volatile vector.
-	**/
-	final CastPolarVV;
-
-	/**
-		Multiplies the given constant float by a random value in range `[0, 1)`
-		and assigns it to the volatile float.
-	**/
-	final RandomFloatCV;
-
-	/**
-		Multiplies the current volatile float by a random value in range `[0, 1)`
-		and reassigns it to the volatile float.
-	**/
-	final RandomFloatVV;
-
-	/**
-		Multiplies the given constant float by a random value in range `[-1, 1)`
-		and assigns it to the volatile float.
-	**/
-	final RandomFloatSignedCV;
-
-	/**
-		Multiplies the current volatile float by a random value in range `[-1, 1)`
-		and reassigns it to the volatile float.
-	**/
-	final RandomFloatSignedVV;
-
 
 	// ---- other operations ----------------------------------------------------
 
@@ -304,6 +149,7 @@ enum abstract GeneralOperation(Int) to Int {
 		2. (int) Fire type
 	**/
 	final FireWithType;
+
 
 	public extern inline function int(): Int
 		return this;
@@ -330,31 +176,6 @@ class GeneralOperationExtension {
 			case DropFloat: "drop_float";
 			case PeekVec: "peek_vec";
 			case DropVec: "drop_vec";
-			case LoadFloatCV: "load_float_cv";
-			case LoadVecCV: "load_vec_cv";
-			case AddFloatVCV: "add_float_vcv";
-			case AddFloatVVV: "add_float_vvv";
-			case SubFloatVCV: "sub_float_vcv";
-			case SubFloatCVV: "sub_float_cvv";
-			case SubFloatVVV: "sub_float_vvv";
-			case MinusFloatV: "minus_float_v";
-			case MultFloatVCV: "mult_float_vcv";
-			case MultFloatVVV: "mult_float_vvv";
-			case MultFloatVCS: "mult_float_vcs";
-			case ModFloatVCV: "mod_float_vcv";
-			case ModFloatCVV: "mod_float_cvv";
-			case ModFloatVVV: "mod_float_vvv";
-			case DivFloatCVV: "div_float_cvv";
-			case DivFloatVVV: "div_float_vvv";
-			case MinusVecV: "minus_vec_v";
-			case MultVecVCS: "mult_vec_vcs";
-			case SaveFloatV: "save_float_v";
-			case CastCartesianVV: "cast_cartesian_vv";
-			case CastPolarVV: "cast_polar_vv";
-			case RandomFloatCV: "random_float_cv";
-			case RandomFloatVV: "random_float_vv";
-			case RandomFloatSignedCV: "random_float_signed_cv";
-			case RandomFloatSignedVV: "random_float_signed_vv";
 			case Fire: "fire";
 			case FireWithType: "fire_with_type";
 		}
@@ -377,29 +198,6 @@ class GeneralOperationExtension {
 			case PushFloatV: [];
 			case PeekFloat | PeekVec: [Int]; // bytes to be skipped from the stack top
 			case DropFloat | DropVec: [];
-			case LoadFloatCV: [Float];
-			case LoadVecCV: [Vec];
-			case AddFloatVCV: [Float]; // value to add
-			case AddFloatVVV: [];
-			case SubFloatVCV: [Float]; // value to subtract
-			case SubFloatCVV: [Float]; // value from which to subtract
-			case SubFloatVVV: [];
-			case MinusFloatV: [];
-			case MultFloatVVV: [];
-			case MultFloatVCV | MultFloatVCS: [Float]; // multiplier value
-			case ModFloatVCV: [Float]; // divisor
-			case ModFloatCVV: [Float]; // value to be divided
-			case ModFloatVVV: [];
-			case DivFloatCVV: [Float]; // value to be divided
-			case DivFloatVVV: [];
-			case MinusVecV: [];
-			case MultVecVCS: [Float]; // multiplier value
-			case SaveFloatV: [];
-			case CastCartesianVV | CastPolarVV: [];
-			case RandomFloatCV: [Float];
-			case RandomFloatVV: [];
-			case RandomFloatSignedCV: [Float];
-			case RandomFloatSignedVV: [];
 			case Fire: [Int]; // bytecode ID or negative for null
 			case FireWithType: [Int, Int]; // 1. bytecode ID or negative for null, 2. Fire type
 		}

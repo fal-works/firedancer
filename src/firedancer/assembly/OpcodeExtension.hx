@@ -13,6 +13,7 @@ class OpcodeExtension {
 	public static inline function toStatementType(opcode: Opcode): StatementType {
 		return switch opcode.category {
 			case General: GeneralOperation.from(opcode.op).toStatementType();
+			case Calc: CalcOperation.from(opcode.op).toStatementType();
 			case Read: ReadOperation.from(opcode.op).toStatementType();
 			case Write: WriteOperation.from(opcode.op).toStatementType();
 		}
@@ -24,6 +25,7 @@ class OpcodeExtension {
 	public static inline function getBytecodeLength(opcode: Opcode): UInt {
 		return switch opcode.category {
 			case General: GeneralOperation.from(opcode.op).getBytecodeLength();
+			case Calc: CalcOperation.from(opcode.op).getBytecodeLength();
 			case Read: ReadOperation.from(opcode.op).getBytecodeLength();
 			case Write: WriteOperation.from(opcode.op).getBytecodeLength();
 		}
@@ -35,6 +37,7 @@ class OpcodeExtension {
 	public static inline function toString(opcode: Opcode): String {
 		return switch opcode.category {
 			case General: GeneralOperation.from(opcode.op).toString();
+			case Calc: CalcOperation.from(opcode.op).toString();
 			case Read: ReadOperation.from(opcode.op).toString();
 			case Write: WriteOperation.from(opcode.op).toString();
 		}

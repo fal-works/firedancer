@@ -68,9 +68,9 @@ class CartesianVecExpressionData extends VecExpressionData implements ripper.Dat
 	override public function loadToVolatileVector(): AssemblyCode {
 		final code = [
 			x.loadToVolatileFloat(),
-			[new AssemblyStatement(general(SaveFloatV), [])],
+			[new AssemblyStatement(calc(SaveFloatV), [])],
 			y.loadToVolatileFloat(),
-			[new AssemblyStatement(general(CastCartesianVV), [])]
+			[new AssemblyStatement(calc(CastCartesianVV), [])]
 		].flatten();
 		return code;
 	}
@@ -102,9 +102,9 @@ class PolarVecExpressionData extends VecExpressionData implements ripper.Data {
 	override public function loadToVolatileVector(): AssemblyCode {
 		return [
 			length.loadToVolatileFloat(),
-			[new AssemblyStatement(general(SaveFloatV), [])],
+			[new AssemblyStatement(calc(SaveFloatV), [])],
 			angle.loadToVolatileFloat(),
-			[new AssemblyStatement(general(CastPolarVV), [])]
+			[new AssemblyStatement(calc(CastPolarVV), [])]
 		].flatten();
 	}
 }
