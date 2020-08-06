@@ -41,39 +41,9 @@ class Random {
 	}
 
 	/**
-		Gets a random angle between `0` and `max`.
-	**/
-	public inline function angle(max: AngleExpression): AngleExpression {
-		return FloatLikeExpressionEnum.Runtime(UnaryOperator({
-			constantOperator: Instruction(general(RandomFloatCV)),
-			operateVV: general(RandomFloatVV)
-		}, max));
-	}
-
-	/**
-		Gets a random angle between `-max` and `max`.
-	**/
-	public inline function signedAngle(max: AngleExpression): AngleExpression {
-		return FloatLikeExpressionEnum.Runtime(UnaryOperator({
-			constantOperator: Instruction(general(RandomFloatSignedCV)),
-			operateVV: general(RandomFloatSignedVV)
-		}, max));
-	}
-
-	/**
-		Gets a random value between `min` and `max`.
-	**/
-	public inline function angleBetween(min: AngleExpression, max: AngleExpression): AngleExpression {
-		return min + FloatLikeExpressionEnum.Runtime(UnaryOperator({
-			constantOperator: Instruction(general(RandomFloatCV)),
-			operateVV: general(RandomFloatVV)
-		}, max - min));
-	}
-
-	/**
 		Gets a random angle in range `[-centralAngle / 2, centralAngle / 2)`.
 
-		Same as `random.signed(centralAngle / 2)`.
+		Same effect as `random.signed(centralAngle / 2)`.
 	**/
 	public inline function grouping(centralAngle: AngleExpression): AngleExpression {
 		return FloatLikeExpressionEnum.Runtime(UnaryOperator({
