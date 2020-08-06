@@ -31,8 +31,6 @@ enum abstract GeneralOperation(Int) to Int {
 			case GeneralOperation.DropVec: DropVec;
 			case GeneralOperation.LoadFloatCV: LoadFloatCV;
 			case GeneralOperation.LoadVecCV: LoadVecCV;
-			case GeneralOperation.LoadVecXCV: LoadVecXCV;
-			case GeneralOperation.LoadVecYCV: LoadVecYCV;
 			case GeneralOperation.AddFloatVCV: AddFloatVCV;
 			case GeneralOperation.AddFloatVVV: AddFloatVVV;
 			case GeneralOperation.SubFloatVCV: SubFloatVCV;
@@ -165,16 +163,6 @@ enum abstract GeneralOperation(Int) to Int {
 		Assigns given constant float values to the current volatile vector.
 	**/
 	final LoadVecCV;
-
-	/**
-		Assigns a given constant float to the x-component of the current volatile vector.
-	**/
-	final LoadVecXCV;
-
-	/**
-		Assigns a given constant float to the y-component of the current volatile vector.
-	**/
-	final LoadVecYCV;
 
 	/**
 		Adds a given constant float to the current volatile float.
@@ -344,8 +332,6 @@ class GeneralOperationExtension {
 			case DropVec: "drop_vec";
 			case LoadFloatCV: "load_float_cv";
 			case LoadVecCV: "load_vec_cv";
-			case LoadVecXCV: "load_vec_x_cv";
-			case LoadVecYCV: "load_vec_y_cv";
 			case AddFloatVCV: "add_float_vcv";
 			case AddFloatVVV: "add_float_vvv";
 			case SubFloatVCV: "sub_float_vcv";
@@ -393,7 +379,6 @@ class GeneralOperationExtension {
 			case DropFloat | DropVec: [];
 			case LoadFloatCV: [Float];
 			case LoadVecCV: [Vec];
-			case LoadVecXCV | LoadVecYCV: [Float];
 			case AddFloatVCV: [Float]; // value to add
 			case AddFloatVVV: [];
 			case SubFloatVCV: [Float]; // value to subtract
