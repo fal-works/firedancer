@@ -24,20 +24,19 @@ abstract FloatLikeRuntimeExpression(
 			case UnaryOperation(type, operand):
 				switch operand.toEnum() {
 					case Constant(value):
-						final operandValue = value.toOperandValue();
 						switch type.constantOperator {
 							case Immediate(func):
 								new AssemblyStatement(
 									calc(LoadFloatCV),
-									[func(operandValue).toOperand()]
+									[func(value).toOperand()]
 								);
 							case Instruction(opcodeCV):
-								new AssemblyStatement(opcodeCV, [Float(operandValue)]);
+								new AssemblyStatement(opcodeCV, [value.toOperand()]);
 							case None:
 								[
 									new AssemblyStatement(
 										calc(LoadFloatCV),
-										[Float(operandValue)]
+										[value.toOperand()]
 									),
 									new AssemblyStatement(type.runtimeOperator, [])
 								];
