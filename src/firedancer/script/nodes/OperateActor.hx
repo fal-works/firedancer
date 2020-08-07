@@ -241,7 +241,7 @@ class ActorAttributeOperationExtension {
 						case ShotVelocity: CalcRelativeShotVelocityVV;
 					};
 					calcRelative = [
-						vec.loadToVolatileVector(),
+						vec.loadToVolatile(),
 						[statement(read(calcRelativeVV))]
 					].flatten();
 				}
@@ -276,7 +276,7 @@ class ActorAttributeOperationExtension {
 							case ShotPosition: CalcRelativeShotDistanceVV;
 							case ShotVelocity: CalcRelativeShotDirectionVV;
 						}
-						calcRelative = expression.loadToVolatileFloat(FloatExpression.constantFactor);
+						calcRelative = expression.loadToVolatile(FloatExpression.constantFactor);
 						calcRelative.push(statement(read(calcRelativeVV)));
 				}
 
@@ -310,7 +310,7 @@ class ActorAttributeOperationExtension {
 							case ShotPosition: CalcRelativeShotBearingVV;
 							case ShotVelocity: CalcRelativeShotDirectionVV;
 						}
-						calcRelative = expression.loadToVolatileFloat(AngleExpression.constantFactor);
+						calcRelative = expression.loadToVolatile(AngleExpression.constantFactor);
 						calcRelative.push(statement(read(calcRelativeVV)));
 				}
 

@@ -14,7 +14,7 @@ abstract IntLikeRuntimeExpression(
 	/**
 		Creates an `AssemblyCode` that assigns `this` value to the current volatile float.
 	**/
-	public function loadToVolatileInt(): AssemblyCode {
+	public function loadToVolatile(): AssemblyCode {
 		return switch this {
 			case Variable(loadV):
 				new AssemblyStatement(loadV, []);
@@ -40,7 +40,7 @@ abstract IntLikeRuntimeExpression(
 								];
 						}
 					case Runtime(expression):
-						final code = expression.loadToVolatileInt();
+						final code = expression.loadToVolatile();
 						code.push(new AssemblyStatement(type.operateVV, []));
 						code;
 				};
@@ -78,12 +78,12 @@ abstract IntLikeRuntimeExpression(
 								}
 							case Runtime(expressionB):
 								if (operateCVV.isSome()) {
-									code.pushFromArray(expressionB.loadToVolatileInt());
+									code.pushFromArray(expressionB.loadToVolatile());
 									code.pushStatement(operateCVV.unwrap(), operandsA);
 								} else {
 									code.pushStatement(calc(LoadIntCV), operandsA);
 									code.pushStatement(calc(SaveIntV));
-									code.pushFromArray(expressionB.loadToVolatileInt());
+									code.pushFromArray(expressionB.loadToVolatile());
 									code.pushStatement(operateVVV);
 								}
 						};
@@ -92,18 +92,18 @@ abstract IntLikeRuntimeExpression(
 							case Constant(valueB):
 								final operandsB = [valueB.toOperand()];
 								if (operateVCV.isSome()) {
-									code.pushFromArray(expressionA.loadToVolatileInt());
+									code.pushFromArray(expressionA.loadToVolatile());
 									code.pushStatement(operateVCV.unwrap(), operandsB);
 								} else {
-									code.pushFromArray(expressionA.loadToVolatileInt());
+									code.pushFromArray(expressionA.loadToVolatile());
 									code.pushStatement(calc(SaveIntV));
 									code.pushStatement(calc(LoadIntCV), operandsB);
 									code.pushStatement(operateVVV);
 								}
 							case Runtime(expressionB):
-								code.pushFromArray(expressionA.loadToVolatileInt());
+								code.pushFromArray(expressionA.loadToVolatile());
 								code.pushStatement(calc(SaveIntV));
-								code.pushFromArray(expressionB.loadToVolatileInt());
+								code.pushFromArray(expressionB.loadToVolatile());
 								code.pushStatement(operateVVV);
 						};
 				};

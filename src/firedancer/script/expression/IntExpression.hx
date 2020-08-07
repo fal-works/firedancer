@@ -60,8 +60,8 @@ abstract IntExpression(
 	/**
 		Creates an `AssemblyCode` that assigns `this` value to the current volatile float.
 	**/
-	public function loadToVolatileInt(): AssemblyCode
-		return this.loadToVolatileInt();
+	public function loadToVolatile(): AssemblyCode
+		return this.loadToVolatile();
 
 	/**
 		Creates an `AssemblyCode` that runs either `constantOpcode` or `volatileOpcode`

@@ -21,7 +21,7 @@ class VecExpressionData {
 	public function divideByFloat(divisor: Float): VecExpressionData
 		throw new NotOverriddenException();
 
-	public function loadToVolatileVector(): AssemblyCode
+	public function loadToVolatile(): AssemblyCode
 		throw new NotOverriddenException();
 
 	/**
@@ -38,7 +38,7 @@ class VecExpressionData {
 		return if (const.isSome()) {
 			new AssemblyStatement(processConstantVector, [const.unwrap()]);
 		} else {
-			final code = loadToVolatileVector();
+			final code = loadToVolatile();
 			code.push(new AssemblyStatement(processVolatileVector, []));
 			code;
 		}
@@ -71,11 +71,11 @@ class CartesianVecExpressionData extends VecExpressionData implements ripper.Dat
 	override public function divideByFloat(divisor: Float): CartesianVecExpressionData
 		return { x: x / divisor, y: y / divisor };
 
-	override public function loadToVolatileVector(): AssemblyCode {
+	override public function loadToVolatile(): AssemblyCode {
 		final code = [
-			x.loadToVolatileFloat(),
+			x.loadToVolatile(),
 			[new AssemblyStatement(calc(SaveFloatV), [])],
-			y.loadToVolatileFloat(),
+			y.loadToVolatile(),
 			[new AssemblyStatement(calc(CastCartesianVV), [])]
 		].flatten();
 		return code;
@@ -108,11 +108,11 @@ class PolarVecExpressionData extends VecExpressionData implements ripper.Data {
 	override public function divideByFloat(divisor: Float): PolarVecExpressionData
 		return { length: length / divisor, angle: angle };
 
-	override public function loadToVolatileVector(): AssemblyCode {
+	override public function loadToVolatile(): AssemblyCode {
 		return [
-			length.loadToVolatileFloat(),
+			length.loadToVolatile(),
 			[new AssemblyStatement(calc(SaveFloatV), [])],
-			angle.loadToVolatileFloat(),
+			angle.loadToVolatile(),
 			[new AssemblyStatement(calc(CastPolarVV), [])]
 		].flatten();
 	}

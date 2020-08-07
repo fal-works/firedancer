@@ -106,7 +106,7 @@ class Builder {
 			case Constant(value):
 				pushIntC(value.toInt());
 			case Runtime(expression):
-				final code = expression.loadToVolatileInt();
+				final code = expression.loadToVolatile();
 				code.pushStatement(Opcode.general(PushIntV));
 				code;
 		};

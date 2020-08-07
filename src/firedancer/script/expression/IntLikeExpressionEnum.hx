@@ -20,7 +20,7 @@ class IntLikeExpressionExtensionEnum {
 	/**
 		Creates an `AssemblyCode` that assigns `this` value to the current volatile float.
 	**/
-	public static function loadToVolatileInt(
+	public static function loadToVolatile(
 		_this: IntLikeExpressionEnum
 	): AssemblyCode {
 		return switch _this {
@@ -30,7 +30,7 @@ class IntLikeExpressionExtensionEnum {
 					[value.toOperand()]
 				);
 			case Runtime(expression):
-				expression.loadToVolatileInt();
+				expression.loadToVolatile();
 		}
 	}
 
@@ -50,7 +50,7 @@ class IntLikeExpressionExtensionEnum {
 					[value.toOperand()]
 				);
 			case Runtime(expression):
-				final code = expression.loadToVolatileInt();
+				final code = expression.loadToVolatile();
 				code.push(new AssemblyStatement(volatileOpcode, []));
 				code;
 		}
