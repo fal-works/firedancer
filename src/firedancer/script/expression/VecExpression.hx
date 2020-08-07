@@ -1,7 +1,7 @@
 package firedancer.script.expression;
 
 import firedancer.types.Azimuth;
-import firedancer.script.expression.subtypes.VecExpressionData;
+import firedancer.script.expression.VecExpressionData;
 
 /**
 	Expression representing any 2D vector.
@@ -22,8 +22,8 @@ abstract VecExpression(VecExpressionData) from VecExpressionData to VecExpressio
 		args: { x: FloatExpression, y: FloatExpression }
 	): VecExpression {
 		final data: VecExpressionData = new CartesianVecExpressionData(
-			args.x.toEnum(),
-			args.y.toEnum()
+			args.x,
+			args.y
 		);
 		return data;
 	}
@@ -42,8 +42,8 @@ abstract VecExpression(VecExpressionData) from VecExpressionData to VecExpressio
 		args: { length: FloatExpression, angle: AngleExpression }
 	): VecExpression {
 		final data: VecExpressionData = new PolarVecExpressionData(
-			args.length.toEnum(),
-			args.angle.toEnum()
+			args.length,
+			args.angle
 		);
 		return data;
 	}

@@ -1,4 +1,4 @@
-package firedancer.script.expression.subtypes;
+package firedancer.script.expression;
 
 import sneaker.exception.NotOverriddenException;
 import firedancer.types.Azimuth;
@@ -11,7 +11,7 @@ import firedancer.assembly.Opcode.*;
 /**
 	Underlying type of `VecExpression`.
 **/
-class VecExpressionData {
+class VecExpressionData implements ExpressionData {
 	public function tryGetConstantOperand(): Maybe<ConstantOperand>
 		throw new NotOverriddenException();
 

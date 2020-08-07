@@ -17,7 +17,7 @@ enum IntLikeRuntimeExpressionEnum {
 	**/
 	UnaryOperator(
 		type: IntUnaryOperatorType,
-		operand: IntLikeExpressionEnum
+		operand: IntLikeExpressionData
 	);
 
 	/**
@@ -27,8 +27,8 @@ enum IntLikeRuntimeExpressionEnum {
 	**/
 	BinaryOperator(
 		type: IntBinaryOperatorType,
-		operandA: IntLikeExpressionEnum,
-		operandB: IntLikeExpressionEnum
+		operandA: IntLikeExpressionData,
+		operandB: IntLikeExpressionData
 	);
 }
 

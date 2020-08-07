@@ -1,22 +1,34 @@
 package firedancer.script.expression;
 
-import firedancer.assembly.AssemblyCode;
-import firedancer.assembly.Opcode;
+import firedancer.script.expression.FloatLikeExpressionData;
 
 /**
-	Abstract over `FloatLikeExpressionEnum` that can be implicitly cast from `Float`.
+	Abstract over `FloatLikeExpressionData` that can be implicitly cast from `Float`.
 **/
 @:notNull @:forward
 abstract FloatExpression(
-	FloatLikeExpressionEnum
-) from FloatLikeExpressionEnum to FloatLikeExpressionEnum {
+	FloatLikeExpressionData
+) from FloatLikeExpressionData to FloatLikeExpressionData {
 	/**
 		The factor by which the constant values should be multiplied when writing into `AssemblyCode`.
 	**/
 	public static extern inline final constantFactor = 1.0;
 
-	@:from public static extern inline function fromFloat(value: Float): FloatExpression
-		return FloatLikeExpressionEnum.Constant(value);
+	@:from public static extern inline function fromEnum(e: FloatLikeExpressionEnum): FloatExpression {
+		final data: FloatLikeExpressionData = {
+			data: e,
+			constantFactor: constantFactor
+		};
+		return data;
+	}
+
+	@:from static extern inline function fromFloat(value: Float): FloatExpression {
+		final data: FloatLikeExpressionData = {
+			data: FloatLikeExpressionEnum.Constant(value),
+			constantFactor: constantFactor
+		};
+		return data;
+	}
 
 	@:from static extern inline function fromInt(value: Int): FloatExpression
 		return fromFloat(value);
@@ -64,20 +76,4 @@ abstract FloatExpression(
 	): FloatExpression {
 		return a.modulo(b);
 	}
-
-	/**
-		Creates an `AssemblyCode` that assigns `this` value to the current volatile float.
-	**/
-	public function loadToVolatile(): AssemblyCode
-		return this.loadToVolatile(constantFactor);
-
-	/**
-		Creates an `AssemblyCode` that runs either `constantOpcode` or `volatileOpcode`
-		receiving `this` value as argument.
-	**/
-	public function use(constantOpcode: Opcode, volatileOpcode: Opcode): AssemblyCode
-		return this.use(constantOpcode, volatileOpcode, constantFactor);
-
-	public extern inline function toEnum(): FloatLikeExpressionEnum
-		return this;
 }

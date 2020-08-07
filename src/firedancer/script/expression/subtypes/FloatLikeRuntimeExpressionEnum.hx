@@ -17,7 +17,7 @@ enum FloatLikeRuntimeExpressionEnum {
 	**/
 	UnaryOperator(
 		type: FloatUnaryOperatorType,
-		operand: FloatLikeExpressionEnum
+		operand: FloatLikeExpressionData
 	);
 
 	/**
@@ -27,8 +27,8 @@ enum FloatLikeRuntimeExpressionEnum {
 	**/
 	BinaryOperator(
 		type: FloatBinaryOperatorType,
-		operandA: FloatLikeExpressionEnum,
-		operandB: FloatLikeExpressionEnum
+		operandA: FloatLikeExpressionData,
+		operandB: FloatLikeExpressionData
 	);
 }
 

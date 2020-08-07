@@ -1,7 +1,6 @@
 package firedancer.script.api_components;
 
 import firedancer.script.expression.FloatExpression;
-import firedancer.script.expression.FloatLikeExpressionEnum;
 import firedancer.assembly.Opcode.*;
 
 /**
@@ -14,10 +13,10 @@ class Random {
 		Gets a random value between `0` and `max`.
 	**/
 	public inline function float(max: FloatExpression): FloatExpression {
-		return FloatLikeExpressionEnum.Runtime(UnaryOperator({
+		return FloatExpression.fromEnum(Runtime(UnaryOperator({
 			constantOperator: Instruction(calc(RandomFloatCV)),
 			operateVV: calc(RandomFloatVV)
-		}, max));
+		}, max)));
 	}
 
 	/**
@@ -27,20 +26,20 @@ class Random {
 		min: FloatExpression,
 		max: FloatExpression
 	): FloatExpression {
-		return min + FloatLikeExpressionEnum.Runtime(UnaryOperator({
+		return min + FloatExpression.fromEnum(Runtime(UnaryOperator({
 			constantOperator: Instruction(calc(RandomFloatCV)),
 			operateVV: calc(RandomFloatVV)
-		}, max - min));
+		}, max - min)));
 	}
 
 	/**
 		Gets a random value between `-max` and `max`.
 	**/
 	public inline function signed(max: FloatExpression): FloatExpression {
-		return FloatLikeExpressionEnum.Runtime(UnaryOperator({
+		return FloatExpression.fromEnum(Runtime(UnaryOperator({
 			constantOperator: Instruction(calc(RandomFloatSignedCV)),
 			operateVV: calc(RandomFloatSignedVV)
-		}, max));
+		}, max)));
 	}
 
 	/**
@@ -49,9 +48,9 @@ class Random {
 		Same effect as `random.signed(centralAngle / 2)`.
 	**/
 	public inline function grouping(centralAngle: AngleExpression): AngleExpression {
-		return FloatLikeExpressionEnum.Runtime(UnaryOperator({
+		return FloatExpression.fromEnum(Runtime(UnaryOperator({
 			constantOperator: Instruction(calc(RandomFloatSignedCV)),
 			operateVV: calc(RandomFloatSignedVV)
-		}, centralAngle / 2));
+		}, centralAngle / 2)));
 	}
 }

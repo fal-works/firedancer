@@ -1,6 +1,6 @@
 package firedancer.script.nodes;
 
-import firedancer.script.expression.FloatLikeExpressionEnum;
+import firedancer.script.expression.AngleExpression;
 import firedancer.script.expression.FloatExpression;
 
 /**
@@ -22,7 +22,7 @@ class Aim extends AstNode implements ripper.Data {
 		return false;
 
 	override public function toAssembly(context: CompileContext): AssemblyCode {
-		final bearingToTarget = FloatLikeExpressionEnum.Runtime(Variable(Opcode.read(LoadBearingToTargetV)));
+		final bearingToTarget = AngleExpression.fromEnum(Runtime(Variable(Opcode.read(LoadBearingToTargetV))));
 		final node = new OperateActor(ShotVelocity, if (speed.isSome()) {
 			SetVector({ length: speed.unwrap(), angle: bearingToTarget });
 		} else SetAngle(bearingToTarget));

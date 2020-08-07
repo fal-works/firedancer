@@ -20,7 +20,7 @@ abstract IntLikeRuntimeExpression(
 				new AssemblyStatement(loadV, []);
 
 			case UnaryOperator(type, operand):
-				switch operand {
+				switch operand.toEnum() {
 					case Constant(value):
 						switch type.constantOperator {
 							case Immediate(func):
@@ -51,10 +51,10 @@ abstract IntLikeRuntimeExpression(
 				final operateVCV = type.operateVCV;
 				final operateCVV = type.operateCVV;
 				final operateVVV = type.operateVVV;
-				switch operandA {
+				switch operandA.toEnum() {
 					case Constant(valueA):
 						final operandsA = [valueA.toOperand()];
-						switch operandB {
+						switch operandB.toEnum() {
 							case Constant(valueB):
 								if (operateConstants.isSome()) {
 									final valueAB: IntLikeConstant = operateConstants.unwrap()(
@@ -88,7 +88,7 @@ abstract IntLikeRuntimeExpression(
 								}
 						};
 					case Runtime(expressionA):
-						switch operandB {
+						switch operandB.toEnum() {
 							case Constant(valueB):
 								final operandsB = [valueB.toOperand()];
 								if (operateVCV.isSome()) {

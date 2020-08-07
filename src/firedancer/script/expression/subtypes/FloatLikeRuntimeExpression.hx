@@ -20,7 +20,7 @@ abstract FloatLikeRuntimeExpression(
 				new AssemblyStatement(loadV, []);
 
 			case UnaryOperator(type, operand):
-				switch operand {
+				switch operand.toEnum() {
 					case Constant(value):
 						final operandValue = value.toOperandValue(constantFactor);
 						switch type.constantOperator {
@@ -52,10 +52,10 @@ abstract FloatLikeRuntimeExpression(
 				final operateVCV = type.operateVCV;
 				final operateCVV = type.operateCVV;
 				final operateVVV = type.operateVVV;
-				switch operandA {
+				switch operandA.toEnum() {
 					case Constant(valueA):
 						final operandsA = [valueA.toOperand(constantFactor)];
-						switch operandB {
+						switch operandB.toEnum() {
 							case Constant(valueB):
 								if (operateConstants.isSome()) {
 									final valueAB: FloatLikeConstant = operateConstants.unwrap()(
@@ -89,7 +89,7 @@ abstract FloatLikeRuntimeExpression(
 								}
 						};
 					case Runtime(expressionA):
-						switch operandB {
+						switch operandB.toEnum() {
 							case Constant(valueB):
 								final operandsB = [valueB.toOperand(constantFactor)];
 								if (operateVCV.isSome()) {

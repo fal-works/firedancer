@@ -1,24 +1,38 @@
 package firedancer.script.expression;
 
 import reckoner.Geometry.DEGREES_TO_RADIANS;
-import firedancer.assembly.AssemblyCode;
-import firedancer.assembly.Opcode;
 import firedancer.types.Angle;
+import firedancer.script.expression.FloatLikeExpressionData;
 
 /**
-	Abstract over `FloatLikeExpressionEnum` that can be implicitly converted from `Angle`.
+	Abstract over `FloatLikeExpressionData` that can be implicitly converted from `Angle`.
 **/
 @:notNull @:forward
 abstract AngleExpression(
-	FloatLikeExpressionEnum
-) from FloatLikeExpressionEnum to FloatLikeExpressionEnum {
+	FloatLikeExpressionData
+) from FloatLikeExpressionData to FloatLikeExpressionData {
 	/**
 		The factor by which the constant values should be multiplied when writing into `AssemblyCode`.
 	**/
 	public static extern inline final constantFactor = DEGREES_TO_RADIANS;
 
-	@:from public static extern inline function fromAngle(value: Angle): AngleExpression
-		return FloatLikeExpressionEnum.Constant(value);
+	@:from public static extern inline function fromEnum(
+		e: FloatLikeExpressionEnum
+	): AngleExpression {
+		final data: FloatLikeExpressionData = {
+			data: e,
+			constantFactor: constantFactor
+		};
+		return data;
+	}
+
+	@:from public static extern inline function fromAngle(value: Angle): AngleExpression {
+		final data: FloatLikeExpressionData = {
+			data: FloatLikeExpressionEnum.Constant(value),
+			constantFactor: constantFactor
+		};
+		return data;
+	}
 
 	@:from static extern inline function fromFloat(value: Float): AngleExpression
 		return fromAngle(value);
@@ -29,7 +43,7 @@ abstract AngleExpression(
 	@:from static extern inline function fromFloatExpression(
 		expr: FloatExpression
 	): AngleExpression {
-		return expr.toEnum();
+		return FloatLikeExpressionData.create(expr.data, constantFactor);
 	}
 
 	@:op(-A)
@@ -75,20 +89,4 @@ abstract AngleExpression(
 	): AngleExpression {
 		return a.modulo(b);
 	}
-
-	/**
-		Creates an `AssemblyCode` that assigns `this` value to the current volatile float.
-	**/
-	public function loadToVolatile(): AssemblyCode
-		return this.loadToVolatile(constantFactor);
-
-	/**
-		Creates an `AssemblyCode` that runs either `constantOpcode` or `volatileOpcode`
-		receiving `this` value as argument.
-	**/
-	public function use(constantOpcode: Opcode, volatileOpcode: Opcode): AssemblyCode
-		return this.use(constantOpcode, volatileOpcode, constantFactor);
-
-	public extern inline function toEnum(): FloatLikeExpressionEnum
-		return this;
 }
