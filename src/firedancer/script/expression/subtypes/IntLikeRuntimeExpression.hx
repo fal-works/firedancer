@@ -4,6 +4,8 @@ import firedancer.assembly.AssemblyCode;
 import firedancer.assembly.AssemblyStatement;
 import firedancer.assembly.Opcode.*;
 
+typedef IntLikeRuntimeExpressionEnum = RuntimeExpressionEnum<IntLikeConstant, IntLikeExpressionData>;
+
 /**
 	Abstract over `IntLikeRuntimeExpressionEnum`.
 **/
@@ -22,19 +24,20 @@ abstract IntLikeRuntimeExpression(
 			case UnaryOperation(type, operand):
 				switch operand.toEnum() {
 					case Constant(value):
+						final operandValue = value.toOperandValue();
 						switch type.constantOperator {
 							case Immediate(func):
 								new AssemblyStatement(
 									calc(LoadIntCV),
-									[Int(func(value))]
+									[func(operandValue).toOperand()]
 								);
 							case Instruction(opcodeCV):
-								new AssemblyStatement(opcodeCV, [Int(value)]);
+								new AssemblyStatement(opcodeCV, [value.toOperand()]);
 							case None:
 								[
 									new AssemblyStatement(
 										calc(LoadIntCV),
-										[Int(value)]
+										[value.toOperand()]
 									),
 									new AssemblyStatement(type.runtimeOperator, [])
 								];

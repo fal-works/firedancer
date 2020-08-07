@@ -4,6 +4,8 @@ import firedancer.assembly.AssemblyCode;
 import firedancer.assembly.AssemblyStatement;
 import firedancer.assembly.Opcode.*;
 
+typedef FloatLikeRuntimeExpressionEnum = RuntimeExpressionEnum<FloatLikeConstant, FloatLikeExpressionData>;
+
 /**
 	Abstract over `FloatLikeRuntimeExpressionEnum`.
 **/

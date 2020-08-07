@@ -6,10 +6,11 @@ import firedancer.assembly.ConstantOperand;
 	Value that represents an int-like constant.
 **/
 @:notNull
-abstract IntLikeConstant(haxe.Int32) from Int from haxe.Int32 to haxe.Int32 {
-	@:op(-A) function unaryMinus(): IntLikeConstant {
-		return -this;
-	}
+abstract IntLikeConstant(haxe.Int32) from Int from haxe.Int32{
+	public inline function raw(): haxe.Int32
+		return this;
+
+	@:op(-A) function unaryMinus(): IntLikeConstant;
 
 	@:op(A + B) static function add(
 		a: IntLikeConstant,
@@ -30,6 +31,12 @@ abstract IntLikeConstant(haxe.Int32) from Int from haxe.Int32 to haxe.Int32 {
 		a: IntLikeConstant,
 		b: IntLikeConstant
 	): IntLikeConstant;
+
+	/**
+		Converts `this` to `Int` for writing into `AssemblyCode`.
+	**/
+	public extern inline function toOperandValue(): Int
+		return this;
 
 	/**
 		Converts `this` to `ConstantOperand`.

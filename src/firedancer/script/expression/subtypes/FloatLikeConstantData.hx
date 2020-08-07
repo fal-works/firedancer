@@ -25,6 +25,12 @@ class FloatLikeConstantData {
 	**/
 	public final factor: Float;
 
+	/**
+		@return The non-scaled value of `this`.
+	**/
+	public inline function raw(): Float
+		return this.value;
+
 	public function unaryMinus(): FloatLikeConstantData {
 		return { value: -value, factor: factor };
 	}
