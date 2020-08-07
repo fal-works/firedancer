@@ -457,6 +457,8 @@ class Vm {
 							case CastPolarVV:
 								final vec = Geometry.toVec(volFloatSaved, volFloat);
 								setVolVec(vec.x, vec.y);
+							case RandomRatioV:
+								setVolFloat(Random.random());
 							case RandomFloatCV:
 								setVolFloat(Random.float(readCodeF64()));
 							case RandomFloatVV:

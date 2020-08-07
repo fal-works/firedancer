@@ -56,6 +56,7 @@ enum abstract CalcOperation(Int) to Int {
 			case CalcOperation.CastCartesianVV: CastCartesianVV;
 			case CalcOperation.CastPolarVV: CastPolarVV;
 
+			case CalcOperation.RandomRatioV: RandomRatioV;
 			case CalcOperation.RandomFloatCV: RandomFloatCV;
 			case CalcOperation.RandomFloatVV: RandomFloatVV;
 			case CalcOperation.RandomFloatSignedCV: RandomFloatSignedCV;
@@ -255,6 +256,11 @@ enum abstract CalcOperation(Int) to Int {
 	final CastPolarVV;
 
 	/**
+		Assigns a random value in rante `[0, 1)` to the volatile float.
+	**/
+	final RandomRatioV;
+
+	/**
 		Multiplies the given constant float by a random value in range `[0, 1)`
 		and assigns it to the volatile float.
 	**/
@@ -330,6 +336,7 @@ class CalcOperationExtension {
 			case CastCartesianVV: "cast_cartesian_vv";
 			case CastPolarVV: "cast_polar_vv";
 
+			case RandomRatioV: "random_ratio_v";
 			case RandomFloatCV: "random_float_cv";
 			case RandomFloatVV: "random_float_vv";
 			case RandomFloatSignedCV: "random_float_signed_cv";
@@ -383,6 +390,7 @@ class CalcOperationExtension {
 			case SaveFloatV: [];
 			case CastCartesianVV | CastPolarVV: [];
 
+			case RandomRatioV: [];
 			case RandomFloatCV: [Float];
 			case RandomFloatVV: [];
 			case RandomFloatSignedCV: [Float];
