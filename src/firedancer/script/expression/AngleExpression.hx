@@ -17,21 +17,16 @@ abstract AngleExpression(
 	public static extern inline final constantFactor = DEGREES_TO_RADIANS;
 
 	@:from public static extern inline function fromEnum(
-		e: FloatLikeExpressionEnum
+		data: FloatLikeExpressionEnum
 	): AngleExpression {
-		final data: FloatLikeExpressionData = {
-			data: e,
-			constantFactor: constantFactor
-		};
-		return data;
+		return FloatLikeExpressionData.create(data);
 	}
 
 	@:from public static extern inline function fromAngle(value: Angle): AngleExpression {
-		final data: FloatLikeExpressionData = {
-			data: FloatLikeExpressionEnum.Constant(value),
-			constantFactor: constantFactor
-		};
-		return data;
+		return FloatLikeExpressionData.create(FloatLikeExpressionEnum.Constant(
+			value,
+			constantFactor
+		));
 	}
 
 	@:from static extern inline function fromFloat(value: Float): AngleExpression
@@ -39,12 +34,6 @@ abstract AngleExpression(
 
 	@:from static extern inline function fromInt(value: Int): AngleExpression
 		return fromFloat(value);
-
-	@:from static extern inline function fromFloatExpression(
-		expr: FloatExpression
-	): AngleExpression {
-		return FloatLikeExpressionData.create(expr.data, constantFactor);
-	}
 
 	@:op(-A)
 	extern inline function unaryMinus(): AngleExpression

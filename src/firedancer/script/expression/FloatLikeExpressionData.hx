@@ -13,7 +13,11 @@ import firedancer.script.expression.subtypes.BinaryOperator;
 	Expression representing any float value.
 **/
 enum FloatLikeExpressionEnum {
-	Constant(value: FloatLikeConstant);
+	/**
+		@param factor The factor by which the constant values should be multiplied when writing into `AssemblyCode`.
+	**/
+	Constant(value: FloatLikeConstant, factor: Float);
+
 	Runtime(expression: FloatLikeRuntimeExpression);
 }
 
@@ -23,13 +27,9 @@ enum FloatLikeExpressionEnum {
 @:structInit
 class FloatLikeExpressionData implements ExpressionData {
 	public static extern inline function create(
-		data: FloatLikeExpressionEnum,
-		constantFactor: Float
+		data: FloatLikeExpressionEnum
 	): FloatLikeExpressionData {
-		return {
-			data: data,
-			constantFactor: constantFactor
-		};
+		return { data: data };
 	}
 
 	/**
@@ -38,22 +38,14 @@ class FloatLikeExpressionData implements ExpressionData {
 	public final data: FloatLikeExpressionEnum;
 
 	/**
-		The factor by which the constant values should be multiplied when writing into `AssemblyCode`.
-	**/
-	public final constantFactor: Float;
-
-	/**
 		Creates an `AssemblyCode` that assigns `this` value to the current volatile float.
 	**/
 	public function loadToVolatile(): AssemblyCode {
 		return switch this.data {
-			case Constant(value):
-				new AssemblyStatement(
-					calc(LoadFloatCV),
-					[value.toOperand(this.constantFactor)]
-				);
+			case Constant(value, factor):
+				new AssemblyStatement(calc(LoadFloatCV), [value.toOperand(factor)]);
 			case Runtime(expression):
-				expression.loadToVolatile(this.constantFactor);
+				expression.loadToVolatile();
 		}
 	}
 
@@ -63,39 +55,31 @@ class FloatLikeExpressionData implements ExpressionData {
 	**/
 	public function use(constantOpcode: Opcode, volatileOpcode: Opcode): AssemblyCode {
 		return switch this.data {
-			case Constant(value):
-				new AssemblyStatement(
-					constantOpcode,
-					[value.toOperand(this.constantFactor)]
-				);
+			case Constant(value, factor):
+				new AssemblyStatement(constantOpcode, [value.toOperand(factor)]);
 			case Runtime(expression):
-				final code = expression.loadToVolatile(this.constantFactor);
+				final code = expression.loadToVolatile();
 				code.push(new AssemblyStatement(volatileOpcode, []));
 				code;
 		}
 	}
 
-	public function unaryOperation(
-		type: UnaryOperator<Float>
-	): FloatLikeExpressionData {
-		return create(
-			Runtime(FloatLikeRuntimeExpressionEnum.UnaryOperation(type, this)),
-			this.constantFactor
-		);
+	public function unaryOperation(type: UnaryOperator<Float>): FloatLikeExpressionData {
+		return create(Runtime(FloatLikeRuntimeExpressionEnum.UnaryOperation(
+			type,
+			this
+		)));
 	}
 
 	public function binaryOperation(
 		type: BinaryOperator<Float>,
 		otherOperand: FloatLikeExpressionData
 	): FloatLikeExpressionData {
-		return create(
-			Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperation(
-				type,
-				this,
-				otherOperand
-			)),
-			this.constantFactor
-		);
+		return create(Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperation(
+			type,
+			this,
+			otherOperand
+		)));
 	}
 
 	public function unaryMinus(): FloatLikeExpressionData {
@@ -123,7 +107,7 @@ class FloatLikeExpressionData implements ExpressionData {
 		}, other);
 	}
 
-	public function multiply(other: FloatLikeExpressionData): FloatLikeExpressionData {
+	public function multiply(other: FloatExpression): FloatLikeExpressionData {
 		return binaryOperation({
 			operateConstants: (a, b) -> a * b,
 			operateVCV: calc(MultFloatVCV),
@@ -132,14 +116,18 @@ class FloatLikeExpressionData implements ExpressionData {
 		}, other);
 	}
 
-	public function divide(other: FloatLikeExpressionData): FloatLikeExpressionData {
+	public function divide(other: FloatExpression): FloatLikeExpressionData {
 		switch this.data {
 			case Constant(_):
 			case Runtime(_):
 				switch other.data {
-					case Constant(valueB):
+					case Constant(valueB, factor):
+						if (factor != FloatExpression.constantFactor)
+							throw 'Detected FloatExpression with factor: $factor (which should be ${FloatExpression.constantFactor})';
+
 						// multiply by the reciprocal: rt / c => rt * (1 / c)
-						other = create(Constant(1.0 / valueB), other.constantFactor);
+						other = create(Constant(1.0 / valueB, factor));
+
 					case Runtime(_):
 				}
 		}

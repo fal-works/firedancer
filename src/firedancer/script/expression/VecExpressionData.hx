@@ -52,12 +52,12 @@ class CartesianVecExpressionData extends VecExpressionData implements ripper.Dat
 
 	override public function tryGetConstantOperand(): Maybe<ConstantOperand> {
 		return switch x.toEnum() {
-			case Constant(valX):
+			case Constant(valX, factor):
 				switch y.toEnum() {
-					case Constant(valY):
+					case Constant(valY, factor):
 						return Maybe.from(Vec(
-							valX.toOperandValue(FloatExpression.constantFactor),
-							valY.toOperandValue(FloatExpression.constantFactor)
+							valX.toOperandValue(factor),
+							valY.toOperandValue(factor)
 						));
 					default: Maybe.none();
 				}
@@ -89,9 +89,9 @@ class PolarVecExpressionData extends VecExpressionData implements ripper.Data {
 
 	override public function tryGetConstantOperand(): Maybe<ConstantOperand> {
 		return switch length.toEnum() {
-			case Constant(valLen):
+			case Constant(valLen, _):
 				switch angle.toEnum() {
-					case Constant(valAng):
+					case Constant(valAng, _):
 						final vec = Azimuth.fromDegrees(valAng).toVec2D(valLen);
 						return Maybe.from(Vec(vec.x, vec.y));
 					default:

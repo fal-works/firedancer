@@ -10,14 +10,15 @@ class Random {
 	public function new() {}
 
 	/**
-		Gets a random value between `0` and `max`.
+		Provides functions for generating pseudorandom angle values.
 	**/
-	public inline function float(max: FloatExpression): FloatExpression {
-		return FloatExpression.fromEnum(Runtime(UnaryOperation({
-			constantOperator: Instruction(calc(RandomFloatCV)),
-			runtimeOperator: calc(RandomFloatVV)
-		}, max)));
-	}
+	public final angle = new RandomAngle();
+
+	/**
+		Gets a random value between `0` and `1`.
+	**/
+	public inline function ratio(): FloatExpression
+		return FloatExpression.fromEnum(Runtime(Variable(calc(RandomRatioV))));
 
 	/**
 		Gets a random value between `min` and `max`.
@@ -41,16 +42,39 @@ class Random {
 			runtimeOperator: calc(RandomFloatSignedVV)
 		}, max)));
 	}
+}
+
+class RandomAngle {
+	public function new() {}
+
+	/**
+		Gets a random angle between `min` and `max`.
+	**/
+	public inline function between(
+		min: AngleExpression,
+		max: AngleExpression
+	): AngleExpression {
+		return min + AngleExpression.fromEnum(Runtime(UnaryOperation({
+			constantOperator: Instruction(calc(RandomFloatCV)),
+			runtimeOperator: calc(RandomFloatVV)
+		}, max - min)));
+	}
+
+	/**
+		Gets a random angle between `-max` and `max`.
+	**/
+	public inline function signed(max: AngleExpression): AngleExpression {
+		return max.unaryOperation({
+			constantOperator: Instruction(calc(RandomFloatSignedCV)),
+			runtimeOperator: calc(RandomFloatSignedVV)
+		});
+	}
 
 	/**
 		Gets a random angle in range `[-centralAngle / 2, centralAngle / 2)`.
 
 		Same effect as `random.signed(centralAngle / 2)`.
 	**/
-	public inline function grouping(centralAngle: AngleExpression): AngleExpression {
-		return FloatExpression.fromEnum(Runtime(UnaryOperation({
-			constantOperator: Instruction(calc(RandomFloatSignedCV)),
-			runtimeOperator: calc(RandomFloatSignedVV)
-		}, centralAngle / 2)));
-	}
+	public inline function grouping(centralAngle: AngleExpression): AngleExpression
+		return signed(centralAngle / 2);
 }

@@ -14,15 +14,15 @@ abstract FloatLikeRuntimeExpression(
 	/**
 		Creates an `AssemblyCode` that assigns `this` value to the current volatile float.
 	**/
-	public function loadToVolatile(constantFactor: Float): AssemblyCode {
+	public function loadToVolatile(): AssemblyCode {
 		return switch this {
 			case Variable(loadV):
 				new AssemblyStatement(loadV, []);
 
 			case UnaryOperation(type, operand):
 				switch operand.toEnum() {
-					case Constant(value):
-						final operandValue = value.toOperandValue(constantFactor);
+					case Constant(value, factor):
+						final operandValue = value.toOperandValue(factor);
 						switch type.constantOperator {
 							case Immediate(func):
 								new AssemblyStatement(
@@ -41,7 +41,7 @@ abstract FloatLikeRuntimeExpression(
 								];
 						}
 					case Runtime(expression):
-						final code = expression.loadToVolatile(constantFactor);
+						final code = expression.loadToVolatile();
 						code.push(new AssemblyStatement(type.runtimeOperator, []));
 						code;
 				};
@@ -53,10 +53,10 @@ abstract FloatLikeRuntimeExpression(
 				final operateCVV = type.operateCVV;
 				final operateVVV = type.operateVVV;
 				switch operandA.toEnum() {
-					case Constant(valueA):
-						final operandsA = [valueA.toOperand(constantFactor)];
+					case Constant(valueA, factorA):
+						final operandsA = [valueA.toOperand(factorA)];
 						switch operandB.toEnum() {
-							case Constant(valueB):
+							case Constant(valueB, factorB):
 								if (operateConstants.isSome()) {
 									final valueAB: FloatLikeConstant = operateConstants.unwrap()(
 										valueA,
@@ -64,10 +64,10 @@ abstract FloatLikeRuntimeExpression(
 									);
 									code.pushStatement(
 										calc(LoadFloatCV),
-										[valueAB.toOperand(constantFactor)]
+										[valueAB.toOperand(factorA * factorB)]
 									);
 								} else {
-									final operandsB = [valueB.toOperand(constantFactor)];
+									final operandsB = [valueB.toOperand(factorB)];
 									code.pushStatement(calc(LoadFloatCV), operandsA);
 									if (operateVCV.isSome())
 										code.pushStatement(operateVCV.unwrap(), operandsB);
@@ -79,32 +79,32 @@ abstract FloatLikeRuntimeExpression(
 								}
 							case Runtime(expressionB):
 								if (operateCVV.isSome()) {
-									code.pushFromArray(expressionB.loadToVolatile(constantFactor));
+									code.pushFromArray(expressionB.loadToVolatile());
 									code.pushStatement(operateCVV.unwrap(), operandsA);
 								} else {
 									code.pushStatement(calc(LoadFloatCV), operandsA);
 									code.pushStatement(calc(SaveFloatV));
-									code.pushFromArray(expressionB.loadToVolatile(constantFactor));
+									code.pushFromArray(expressionB.loadToVolatile());
 									code.pushStatement(operateVVV);
 								}
 						};
 					case Runtime(expressionA):
 						switch operandB.toEnum() {
-							case Constant(valueB):
-								final operandsB = [valueB.toOperand(constantFactor)];
+							case Constant(valueB, factorB):
+								final operandsB = [valueB.toOperand(factorB)];
 								if (operateVCV.isSome()) {
-									code.pushFromArray(expressionA.loadToVolatile(constantFactor));
+									code.pushFromArray(expressionA.loadToVolatile());
 									code.pushStatement(operateVCV.unwrap(), operandsB);
 								} else {
-									code.pushFromArray(expressionA.loadToVolatile(constantFactor));
+									code.pushFromArray(expressionA.loadToVolatile());
 									code.pushStatement(calc(SaveFloatV));
 									code.pushStatement(calc(LoadFloatCV), operandsB);
 									code.pushStatement(operateVVV);
 								}
 							case Runtime(expressionB):
-								code.pushFromArray(expressionA.loadToVolatile(constantFactor));
+								code.pushFromArray(expressionA.loadToVolatile());
 								code.pushStatement(calc(SaveFloatV));
-								code.pushFromArray(expressionB.loadToVolatile(constantFactor));
+								code.pushFromArray(expressionB.loadToVolatile());
 								code.pushStatement(operateVVV);
 						};
 				};

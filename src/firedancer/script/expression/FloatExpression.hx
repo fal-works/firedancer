@@ -14,20 +14,17 @@ abstract FloatExpression(
 	**/
 	public static extern inline final constantFactor = 1.0;
 
-	@:from public static extern inline function fromEnum(e: FloatLikeExpressionEnum): FloatExpression {
-		final data: FloatLikeExpressionData = {
-			data: e,
-			constantFactor: constantFactor
-		};
-		return data;
+	@:from public static extern inline function fromEnum(
+		data: FloatLikeExpressionEnum
+	): FloatExpression {
+		return FloatLikeExpressionData.create(data);
 	}
 
 	@:from static extern inline function fromFloat(value: Float): FloatExpression {
-		final data: FloatLikeExpressionData = {
-			data: FloatLikeExpressionEnum.Constant(value),
-			constantFactor: constantFactor
-		};
-		return data;
+		return FloatLikeExpressionData.create(FloatLikeExpressionEnum.Constant(
+			value,
+			constantFactor
+		));
 	}
 
 	@:from static extern inline function fromInt(value: Int): FloatExpression
