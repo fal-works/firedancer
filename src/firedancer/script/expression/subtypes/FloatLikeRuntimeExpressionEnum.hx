@@ -15,8 +15,8 @@ enum FloatLikeRuntimeExpressionEnum {
 		@param type Type that determines which `Opcode` to use.
 		@param operand A float-like expression to be operated.
 	**/
-	UnaryOperator(
-		type: FloatUnaryOperatorType,
+	UnaryOperation(
+		type: UnaryOperator<Float>,
 		operand: FloatLikeExpressionData
 	);
 
@@ -25,81 +25,9 @@ enum FloatLikeRuntimeExpressionEnum {
 		@param operandA The first float-like expression to be operated.
 		@param operandB The second float-like expression to be operated.
 	**/
-	BinaryOperator(
-		type: FloatBinaryOperatorType,
+	BinaryOperation(
+		type: BinaryOperator<Float>,
 		operandA: FloatLikeExpressionData,
 		operandB: FloatLikeExpressionData
 	);
-}
-
-@:structInit
-class FloatUnaryOperatorType {
-	public final constantOperator: FloatConstantUnaryOperator;
-
-	/**
-		Any `Opcode` that operates the volatile float and reassigns the result to the volatile float.
-	**/
-	public final operateVV: Opcode;
-}
-
-enum FloatConstantUnaryOperator {
-	/**
-		Calculates immediately in compile-time.
-		@param func Any function that takes a float value and returns another float.
-	**/
-	Immediate(func: (v: Float) -> Float);
-
-	/**
-		Applies a single instruction.
-		@param opcodeCV Any `Opcode` that operates a given constant float and assigns the result to the volatile float.
-	**/
-	Instruction(opcodeCV: Opcode);
-
-	/**
-		Uses `FloatUnaryOperatorType.operateVV`.
-	**/
-	None;
-}
-
-@:structInit
-class FloatBinaryOperatorType {
-	/**
-		Any function that takes two float values and returns another float.
-
-		This can only be set if the result can be calculated in compile-time.
-	**/
-	public final operateConstants: Maybe<(a: Float, b: Float) -> Float>;
-
-	/**
-		Any `Opcode` that operates the two below and reassigns the result to the volatile float.
-		1. The current volatile float
-		2. The given constant float
-	**/
-	public final operateVCV: Maybe<Opcode>;
-
-	/**
-		Any `Opcode` that operates the two below and reassigns the result to the volatile float.
-		1. The given constant float
-		2. The current volatile float
-	**/
-	public final operateCVV: Maybe<Opcode>;
-
-	/**
-		Any `Opcode` that operates the two below and reassigns the result to the volatile float.
-		1. The last saved volatile float
-		2. The current volatile float
-	**/
-	public final operateVVV: Opcode;
-
-	function new(
-		operateVVV: Opcode,
-		?operateConstants: Float->Float->Float,
-		?operateVCV: Opcode,
-		?operateCVV: Opcode
-	) {
-		this.operateConstants = Maybe.from(operateConstants);
-		this.operateVCV = Maybe.from(operateVCV);
-		this.operateCVV = Maybe.from(operateCVV);
-		this.operateVVV = operateVVV;
-	}
 }

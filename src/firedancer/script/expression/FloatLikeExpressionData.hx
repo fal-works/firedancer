@@ -6,6 +6,8 @@ import firedancer.assembly.AssemblyStatement;
 import firedancer.assembly.AssemblyCode;
 import firedancer.script.expression.subtypes.FloatLikeConstant;
 import firedancer.script.expression.subtypes.FloatLikeRuntimeExpression;
+import firedancer.script.expression.subtypes.UnaryOperator;
+import firedancer.script.expression.subtypes.BinaryOperator;
 
 /**
 	Expression representing any float value.
@@ -73,38 +75,61 @@ class FloatLikeExpressionData implements ExpressionData {
 		}
 	}
 
+	public function unaryOperation(
+		type: UnaryOperator<Float>
+	): FloatLikeExpressionData {
+		return create(
+			Runtime(FloatLikeRuntimeExpressionEnum.UnaryOperation(type, this)),
+			this.constantFactor
+		);
+	}
+
+	public function binaryOperation(
+		type: BinaryOperator<Float>,
+		otherOperand: FloatLikeExpressionData
+	): FloatLikeExpressionData {
+		return create(
+			Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperation(
+				type,
+				this,
+				otherOperand
+			)),
+			this.constantFactor
+		);
+	}
+
 	public function unaryMinus(): FloatLikeExpressionData {
-		return create(Runtime(FloatLikeRuntimeExpressionEnum.UnaryOperator({
+		return unaryOperation({
 			constantOperator: Immediate(v -> -v),
-			operateVV: calc(MinusFloatV)
-		}, this)), this.constantFactor);
+			runtimeOperator: calc(MinusFloatV)
+		});
 	}
 
 	public function add(other: FloatLikeExpressionData): FloatLikeExpressionData {
-		return create(Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperator({
+		return binaryOperation({
 			operateConstants: (a, b) -> a + b,
 			operateVCV: calc(AddFloatVCV),
 			operateCVV: calc(AddFloatVCV),
 			operateVVV: calc(AddFloatVVV)
-		}, this, other)), this.constantFactor);
+		}, other);
 	}
 
 	public function subtract(other: FloatLikeExpressionData): FloatLikeExpressionData {
-		return create(Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperator({
+		return binaryOperation({
 			operateConstants: (a, b) -> a - b,
 			operateVCV: calc(SubFloatVCV),
 			operateCVV: calc(SubFloatCVV),
 			operateVVV: calc(SubFloatVVV)
-		}, this, other)), this.constantFactor);
+		}, other);
 	}
 
 	public function multiply(other: FloatLikeExpressionData): FloatLikeExpressionData {
-		return create(Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperator({
+		return binaryOperation({
 			operateConstants: (a, b) -> a * b,
 			operateVCV: calc(MultFloatVCV),
 			operateCVV: calc(MultFloatVCV),
 			operateVVV: calc(MultFloatVVV)
-		}, this, other)), this.constantFactor);
+		}, other);
 	}
 
 	public function divide(other: FloatLikeExpressionData): FloatLikeExpressionData {
@@ -119,21 +144,21 @@ class FloatLikeExpressionData implements ExpressionData {
 				}
 		}
 
-		return create(Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperator({
+		return binaryOperation({
 			operateConstants: (a, b) -> a / b,
 			operateVCV: calc(MultFloatVCV), // multiply by the reciprocal
 			operateCVV: calc(DivFloatCVV),
 			operateVVV: calc(DivFloatVVV)
-		}, this, other)), this.constantFactor);
+		}, other);
 	}
 
 	public function modulo(other: FloatLikeExpressionData): FloatLikeExpressionData {
-		return create(Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperator({
+		return binaryOperation({
 			operateConstants: (a, b) -> a % b,
 			operateVCV: calc(ModFloatVCV),
 			operateCVV: calc(ModFloatCVV),
 			operateVVV: calc(ModFloatVVV)
-		}, this, other)), this.constantFactor);
+		}, other);
 	}
 
 	public extern inline function toEnum(): FloatLikeExpressionEnum

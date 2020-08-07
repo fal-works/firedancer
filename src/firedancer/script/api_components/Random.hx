@@ -13,9 +13,9 @@ class Random {
 		Gets a random value between `0` and `max`.
 	**/
 	public inline function float(max: FloatExpression): FloatExpression {
-		return FloatExpression.fromEnum(Runtime(UnaryOperator({
+		return FloatExpression.fromEnum(Runtime(UnaryOperation({
 			constantOperator: Instruction(calc(RandomFloatCV)),
-			operateVV: calc(RandomFloatVV)
+			runtimeOperator: calc(RandomFloatVV)
 		}, max)));
 	}
 
@@ -26,9 +26,9 @@ class Random {
 		min: FloatExpression,
 		max: FloatExpression
 	): FloatExpression {
-		return min + FloatExpression.fromEnum(Runtime(UnaryOperator({
+		return min + FloatExpression.fromEnum(Runtime(UnaryOperation({
 			constantOperator: Instruction(calc(RandomFloatCV)),
-			operateVV: calc(RandomFloatVV)
+			runtimeOperator: calc(RandomFloatVV)
 		}, max - min)));
 	}
 
@@ -36,9 +36,9 @@ class Random {
 		Gets a random value between `-max` and `max`.
 	**/
 	public inline function signed(max: FloatExpression): FloatExpression {
-		return FloatExpression.fromEnum(Runtime(UnaryOperator({
+		return FloatExpression.fromEnum(Runtime(UnaryOperation({
 			constantOperator: Instruction(calc(RandomFloatSignedCV)),
-			operateVV: calc(RandomFloatSignedVV)
+			runtimeOperator: calc(RandomFloatSignedVV)
 		}, max)));
 	}
 
@@ -48,9 +48,9 @@ class Random {
 		Same effect as `random.signed(centralAngle / 2)`.
 	**/
 	public inline function grouping(centralAngle: AngleExpression): AngleExpression {
-		return FloatExpression.fromEnum(Runtime(UnaryOperator({
+		return FloatExpression.fromEnum(Runtime(UnaryOperation({
 			constantOperator: Instruction(calc(RandomFloatSignedCV)),
-			operateVV: calc(RandomFloatSignedVV)
+			runtimeOperator: calc(RandomFloatSignedVV)
 		}, centralAngle / 2)));
 	}
 }

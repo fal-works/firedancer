@@ -1,0 +1,46 @@
+package firedancer.script.expression.subtypes;
+
+import firedancer.assembly.Opcode;
+
+@:structInit
+class BinaryOperator<T> {
+	/**
+		Any function that takes two constant values and returns another constant value.
+
+		This can only be set if the result can be calculated in compile-time.
+	**/
+	public final operateConstants: Maybe<(a: T, b: T) -> T>;
+
+	/**
+		Any `Opcode` that operates the two below and reassigns the result to the volatile value.
+		1. The current volatile value
+		2. The given constant value
+	**/
+	public final operateVCV: Maybe<Opcode>;
+
+	/**
+		Any `Opcode` that operates the two below and reassigns the result to the volatile value.
+		1. The given constant value
+		2. The current volatile value
+	**/
+	public final operateCVV: Maybe<Opcode>;
+
+	/**
+		Any `Opcode` that operates the two below and reassigns the result to the volatile value.
+		1. The last saved volatile value
+		2. The current volatile value
+	**/
+	public final operateVVV: Opcode;
+
+	function new(
+		operateVVV: Opcode,
+		?operateConstants: T->T->T,
+		?operateVCV: Opcode,
+		?operateCVV: Opcode
+	) {
+		this.operateConstants = Maybe.from(operateConstants);
+		this.operateVCV = Maybe.from(operateVCV);
+		this.operateCVV = Maybe.from(operateCVV);
+		this.operateVVV = operateVVV;
+	}
+}

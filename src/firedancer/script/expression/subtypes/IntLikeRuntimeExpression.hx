@@ -19,7 +19,7 @@ abstract IntLikeRuntimeExpression(
 			case Variable(loadV):
 				new AssemblyStatement(loadV, []);
 
-			case UnaryOperator(type, operand):
+			case UnaryOperation(type, operand):
 				switch operand.toEnum() {
 					case Constant(value):
 						switch type.constantOperator {
@@ -36,16 +36,16 @@ abstract IntLikeRuntimeExpression(
 										calc(LoadIntCV),
 										[Int(value)]
 									),
-									new AssemblyStatement(type.operateVV, [])
+									new AssemblyStatement(type.runtimeOperator, [])
 								];
 						}
 					case Runtime(expression):
 						final code = expression.loadToVolatile();
-						code.push(new AssemblyStatement(type.operateVV, []));
+						code.push(new AssemblyStatement(type.runtimeOperator, []));
 						code;
 				};
 
-			case BinaryOperator(type, operandA, operandB):
+			case BinaryOperation(type, operandA, operandB):
 				final code:AssemblyCode = [];
 				final operateConstants = type.operateConstants;
 				final operateVCV = type.operateVCV;

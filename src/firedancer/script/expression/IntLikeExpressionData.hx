@@ -6,6 +6,8 @@ import firedancer.assembly.AssemblyStatement;
 import firedancer.assembly.AssemblyCode;
 import firedancer.script.expression.subtypes.IntLikeRuntimeExpression;
 import firedancer.script.expression.subtypes.IntLikeConstant;
+import firedancer.script.expression.subtypes.UnaryOperator;
+import firedancer.script.expression.subtypes.BinaryOperator;
 
 enum IntLikeExpressionEnum {
 	Constant(value: IntLikeConstant);
@@ -19,8 +21,9 @@ enum IntLikeExpressionEnum {
 class IntLikeExpressionData implements ExpressionData {
 	public static extern inline function create(
 		data: IntLikeExpressionEnum
-	): IntLikeExpressionData
+	): IntLikeExpressionData {
 		return { data: data };
+	}
 
 	public final data: IntLikeExpressionEnum;
 
@@ -51,56 +54,76 @@ class IntLikeExpressionData implements ExpressionData {
 		}
 	}
 
+	public function unaryOperation(
+		type: UnaryOperator<Int>
+	): IntLikeExpressionData {
+		return create(Runtime(IntLikeRuntimeExpressionEnum.UnaryOperation(
+			type,
+			this
+		)));
+	}
+
+	public function binaryOperation(
+		type: BinaryOperator<Int>,
+		otherOperand: IntLikeExpressionData
+	): IntLikeExpressionData {
+		return create(Runtime(IntLikeRuntimeExpressionEnum.BinaryOperation(
+			type,
+			this,
+			otherOperand
+		)));
+	}
+
 	public function unaryMinus(): IntLikeExpressionData {
-		return create(Runtime(IntLikeRuntimeExpressionEnum.UnaryOperator({
+		return unaryOperation({
 			constantOperator: Immediate(v -> -v),
-			operateVV: calc(MinusIntV)
-		}, this)));
+			runtimeOperator: calc(MinusIntV)
+		});
 	}
 
 	public function add(other: IntLikeExpressionData): IntLikeExpressionData {
-		return create(Runtime(IntLikeRuntimeExpressionEnum.BinaryOperator({
+		return binaryOperation({
 			operateConstants: (a, b) -> a + b,
 			operateVCV: calc(AddIntVCV),
 			operateCVV: calc(AddIntVCV),
 			operateVVV: calc(AddIntVVV)
-		}, this, other)));
+		}, other);
 	}
 
 	public function subtract(other: IntLikeExpressionData): IntLikeExpressionData {
-		return create(Runtime(IntLikeRuntimeExpressionEnum.BinaryOperator({
+		return binaryOperation({
 			operateConstants: (a, b) -> a - b,
 			operateVCV: calc(SubIntVCV),
 			operateCVV: calc(SubIntCVV),
 			operateVVV: calc(SubIntVVV)
-		}, this, other)));
+		}, other);
 	}
 
 	public function multiply(other: IntLikeExpressionData): IntLikeExpressionData {
-		return create(Runtime(IntLikeRuntimeExpressionEnum.BinaryOperator({
+		return binaryOperation({
 			operateConstants: (a, b) -> a * b,
 			operateVCV: calc(MultIntVCV),
 			operateCVV: calc(MultIntVCV),
 			operateVVV: calc(MultIntVVV)
-		}, this, other)));
+		}, other);
 	}
 
 	public function divide(other: IntLikeExpressionData): IntLikeExpressionData {
-		return create(Runtime(IntLikeRuntimeExpressionEnum.BinaryOperator({
+		return binaryOperation({
 			operateConstants: (a, b) -> Ints.divide(a, b),
 			operateVCV: calc(DivIntVCV),
 			operateCVV: calc(DivIntCVV),
 			operateVVV: calc(DivIntVVV)
-		}, this, other)));
+		}, other);
 	}
 
 	public function modulo(other: IntLikeExpressionData): IntLikeExpressionData {
-		return create(Runtime(IntLikeRuntimeExpressionEnum.BinaryOperator({
+		return binaryOperation({
 			operateConstants: (a, b) -> a % b,
 			operateVCV: calc(ModIntVCV),
 			operateCVV: calc(ModIntCVV),
 			operateVVV: calc(ModIntVVV)
-		}, this, other)));
+		}, other);
 	}
 
 	public extern inline function toEnum()
