@@ -22,8 +22,7 @@ abstract FloatExpression(
 
 	@:from static extern inline function fromFloat(value: Float): FloatExpression {
 		return FloatLikeExpressionData.create(FloatLikeExpressionEnum.Constant(
-			value,
-			constantFactor
+			{ value: value, factor: constantFactor }
 		));
 	}
 

@@ -16,7 +16,7 @@ enum FloatLikeRuntimeExpressionEnum {
 		@param operand A float-like expression to be operated.
 	**/
 	UnaryOperation(
-		type: UnaryOperator<Float>,
+		type: UnaryOperator<FloatLikeConstant>,
 		operand: FloatLikeExpressionData
 	);
 
@@ -26,7 +26,7 @@ enum FloatLikeRuntimeExpressionEnum {
 		@param operandB The second float-like expression to be operated.
 	**/
 	BinaryOperation(
-		type: BinaryOperator<Float>,
+		type: BinaryOperator<FloatLikeConstant>,
 		operandA: FloatLikeExpressionData,
 		operandB: FloatLikeExpressionData
 	);

@@ -13,11 +13,7 @@ import firedancer.script.expression.subtypes.BinaryOperator;
 	Expression representing any float value.
 **/
 enum FloatLikeExpressionEnum {
-	/**
-		@param factor The factor by which the constant values should be multiplied when writing into `AssemblyCode`.
-	**/
-	Constant(value: FloatLikeConstant, factor: Float);
-
+	Constant(value: FloatLikeConstant);
 	Runtime(expression: FloatLikeRuntimeExpression);
 }
 
@@ -42,8 +38,8 @@ class FloatLikeExpressionData implements ExpressionData {
 	**/
 	public function loadToVolatile(): AssemblyCode {
 		return switch this.data {
-			case Constant(value, factor):
-				new AssemblyStatement(calc(LoadFloatCV), [value.toOperand(factor)]);
+			case Constant(value):
+				new AssemblyStatement(calc(LoadFloatCV), [value.toOperand()]);
 			case Runtime(expression):
 				expression.loadToVolatile();
 		}
@@ -55,8 +51,8 @@ class FloatLikeExpressionData implements ExpressionData {
 	**/
 	public function use(constantOpcode: Opcode, volatileOpcode: Opcode): AssemblyCode {
 		return switch this.data {
-			case Constant(value, factor):
-				new AssemblyStatement(constantOpcode, [value.toOperand(factor)]);
+			case Constant(value):
+				new AssemblyStatement(constantOpcode, [value.toOperand()]);
 			case Runtime(expression):
 				final code = expression.loadToVolatile();
 				code.push(new AssemblyStatement(volatileOpcode, []));
@@ -64,7 +60,7 @@ class FloatLikeExpressionData implements ExpressionData {
 		}
 	}
 
-	public function unaryOperation(type: UnaryOperator<Float>): FloatLikeExpressionData {
+	public function unaryOperation(type: UnaryOperator<FloatLikeConstant>): FloatLikeExpressionData {
 		return create(Runtime(FloatLikeRuntimeExpressionEnum.UnaryOperation(
 			type,
 			this
@@ -72,7 +68,7 @@ class FloatLikeExpressionData implements ExpressionData {
 	}
 
 	public function binaryOperation(
-		type: BinaryOperator<Float>,
+		type: BinaryOperator<FloatLikeConstant>,
 		otherOperand: FloatLikeExpressionData
 	): FloatLikeExpressionData {
 		return create(Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperation(
@@ -121,12 +117,9 @@ class FloatLikeExpressionData implements ExpressionData {
 			case Constant(_):
 			case Runtime(_):
 				switch other.data {
-					case Constant(valueB, factor):
-						if (factor != FloatExpression.constantFactor)
-							throw 'Detected FloatExpression with factor: $factor (which should be ${FloatExpression.constantFactor})';
-
+					case Constant(valueB):
 						// multiply by the reciprocal: rt / c => rt * (1 / c)
-						other = create(Constant(1.0 / valueB, factor));
+						other = create(Constant(1.0 / valueB));
 
 					case Runtime(_):
 				}

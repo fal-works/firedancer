@@ -24,8 +24,7 @@ abstract AngleExpression(
 
 	@:from public static extern inline function fromAngle(value: Angle): AngleExpression {
 		return FloatLikeExpressionData.create(FloatLikeExpressionEnum.Constant(
-			value,
-			constantFactor
+			{ value: value.toDegrees(), factor: constantFactor }
 		));
 	}
 

@@ -1,54 +1,59 @@
 package firedancer.script.expression.subtypes;
 
-import firedancer.assembly.ConstantOperand;
 import firedancer.types.Angle;
 
 /**
 	Value that represents a float-like constant.
 **/
-@:notNull
-abstract FloatLikeConstant(Float) from Float to Float {
+@:notNull @:forward
+abstract FloatLikeConstant(FloatLikeConstantData) from FloatLikeConstantData to FloatLikeConstantData {
+	/**
+		Casts `Float` to `FloatLikeConstant`.
+	**/
+	@:from static extern inline function fromFloat(value: Float): FloatLikeConstant
+		return FloatLikeConstantData.fromFloat(value);
+
 	/**
 		Casts `Angle` to `FloatLikeConstant`.
 	**/
 	@:from static extern inline function fromAngle(value: Angle): FloatLikeConstant
-		return value.toDegrees();
+		return FloatLikeConstantData.fromAngle(value);
 
-	@:op(-A) function unaryMinus(): FloatLikeConstant {
-		return -this;
-	}
+	@:op(-A) inline function unaryMinus(): FloatLikeConstant
+		return this.unaryMinus();
 
 	@:op(A + B) static function add(
 		a: FloatLikeConstant,
 		b: FloatLikeConstant
-	): FloatLikeConstant;
+	): FloatLikeConstant {
+		return a.add(b);
+	}
 
 	@:op(A - B) static function subtract(
 		a: FloatLikeConstant,
 		b: FloatLikeConstant
-	): FloatLikeConstant;
+	): FloatLikeConstant {
+		return a.subtract(b);
+	}
 
 	@:op(A * B) static function multiply(
 		a: FloatLikeConstant,
 		b: FloatLikeConstant
-	): FloatLikeConstant;
+	): FloatLikeConstant {
+		return a.multiply(b);
+	}
 
 	@:op(A / B) static function divide(
 		a: FloatLikeConstant,
 		b: FloatLikeConstant
-	): FloatLikeConstant;
+	): FloatLikeConstant {
+		return a.divide(b);
+	}
 
-	/**
-		Converts `this` to `Float` for writing into `AssemblyCode`.
-		@param factor The scale factor for multiplying `this` (e.g. the degrees-to-radians factor).
-	**/
-	public extern inline function toOperandValue(factor: Float): Float
-		return factor * this;
-
-	/**
-		Converts `this` to `ConstantOperand`.
-		@param factor The scale factor for multiplying `this` (e.g. the degrees-to-radians factor).
-	**/
-	public extern inline function toOperand(factor: Float): ConstantOperand
-		return Float(toOperandValue(factor));
+	@:op(A % B) static function modulo(
+		a: FloatLikeConstant,
+		b: FloatLikeConstant
+	): FloatLikeConstant {
+		return a.modulo(b);
+	}
 }

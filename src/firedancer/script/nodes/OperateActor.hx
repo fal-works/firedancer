@@ -260,14 +260,14 @@ class ActorAttributeOperationExtension {
 				}
 
 				switch length.toEnum() {
-					case Constant(value, factor):
+					case Constant(value):
 						final operation:ReadOperation = switch attribute {
 							case Position: CalcRelativeDistanceCV;
 							case Velocity: CalcRelativeSpeedCV;
 							case ShotPosition: CalcRelativeShotDistanceCV;
 							case ShotVelocity: CalcRelativeShotSpeedCV;
 						};
-						final operands:Array<ConstantOperand> = [value.toOperand(factor)];
+						final operands:Array<ConstantOperand> = [value.toOperand()];
 						calcRelative = statement(read(operation), operands);
 					case Runtime(expression):
 						final calcRelativeVV:ReadOperation = switch attribute {
@@ -294,14 +294,14 @@ class ActorAttributeOperationExtension {
 				}
 
 				switch angle.toEnum() {
-					case Constant(value, factor):
+					case Constant(value):
 						final operation:ReadOperation = switch attribute {
 							case Position: CalcRelativeBearingCV;
 							case Velocity: CalcRelativeDirectionCV;
 							case ShotPosition: CalcRelativeShotBearingCV;
 							case ShotVelocity: CalcRelativeShotDirectionCV;
 						};
-						final operands:Array<ConstantOperand> = [value.toOperand(factor)];
+						final operands:Array<ConstantOperand> = [value.toOperand()];
 						calcRelative = statement(read(operation), operands);
 					case Runtime(expression):
 						final calcRelativeVV:ReadOperation = switch attribute {

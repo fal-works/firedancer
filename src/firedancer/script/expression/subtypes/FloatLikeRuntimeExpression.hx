@@ -21,13 +21,13 @@ abstract FloatLikeRuntimeExpression(
 
 			case UnaryOperation(type, operand):
 				switch operand.toEnum() {
-					case Constant(value, factor):
-						final operandValue = value.toOperandValue(factor);
+					case Constant(value):
+						final operandValue = value.toOperandValue();
 						switch type.constantOperator {
 							case Immediate(func):
 								new AssemblyStatement(
 									calc(LoadFloatCV),
-									[Float(func(operandValue))]
+									[func(operandValue).toOperand()]
 								);
 							case Instruction(opcodeCV):
 								new AssemblyStatement(opcodeCV, [Float(operandValue)]);
@@ -53,10 +53,10 @@ abstract FloatLikeRuntimeExpression(
 				final operateCVV = type.operateCVV;
 				final operateVVV = type.operateVVV;
 				switch operandA.toEnum() {
-					case Constant(valueA, factorA):
-						final operandsA = [valueA.toOperand(factorA)];
+					case Constant(valueA):
+						final operandsA = [valueA.toOperand()];
 						switch operandB.toEnum() {
-							case Constant(valueB, factorB):
+							case Constant(valueB):
 								if (operateConstants.isSome()) {
 									final valueAB: FloatLikeConstant = operateConstants.unwrap()(
 										valueA,
@@ -64,10 +64,10 @@ abstract FloatLikeRuntimeExpression(
 									);
 									code.pushStatement(
 										calc(LoadFloatCV),
-										[valueAB.toOperand(factorA * factorB)]
+										[valueAB.toOperand()]
 									);
 								} else {
-									final operandsB = [valueB.toOperand(factorB)];
+									final operandsB = [valueB.toOperand()];
 									code.pushStatement(calc(LoadFloatCV), operandsA);
 									if (operateVCV.isSome())
 										code.pushStatement(operateVCV.unwrap(), operandsB);
@@ -90,8 +90,8 @@ abstract FloatLikeRuntimeExpression(
 						};
 					case Runtime(expressionA):
 						switch operandB.toEnum() {
-							case Constant(valueB, factorB):
-								final operandsB = [valueB.toOperand(factorB)];
+							case Constant(valueB):
+								final operandsB = [valueB.toOperand()];
 								if (operateVCV.isSome()) {
 									code.pushFromArray(expressionA.loadToVolatile());
 									code.pushStatement(operateVCV.unwrap(), operandsB);
