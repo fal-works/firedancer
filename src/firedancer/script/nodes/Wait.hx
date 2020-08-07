@@ -26,7 +26,7 @@ class Wait extends AstNode implements ripper.Data {
 
 		switch frames.toEnum() {
 			case Constant(constFrames):
-				final totalLength = constFrames.toInt() * loopBody.bytecodeLength();
+				final totalLength = constFrames * loopBody.bytecodeLength();
 
 				if (totalLength <= unrollThreshold)
 					return loopUnrolled(0...constFrames, _ -> loopBody);

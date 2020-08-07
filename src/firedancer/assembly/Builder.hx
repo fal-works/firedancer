@@ -104,7 +104,7 @@ class Builder {
 
 		final prepareLoop: AssemblyCode = switch count.toEnum() {
 			case Constant(value):
-				pushIntC(value.toInt());
+				pushIntC(value);
 			case Runtime(expression):
 				final code = expression.loadToVolatile();
 				code.pushStatement(Opcode.general(PushIntV));

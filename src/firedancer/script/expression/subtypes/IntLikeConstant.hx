@@ -7,9 +7,6 @@ import firedancer.assembly.ConstantOperand;
 **/
 @:notNull
 abstract IntLikeConstant(haxe.Int32) from Int from haxe.Int32 to haxe.Int32 {
-	public extern inline function toInt(): Int
-		return this;
-
 	@:op(-A) function unaryMinus(): IntLikeConstant {
 		return -this;
 	}
