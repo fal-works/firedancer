@@ -16,7 +16,7 @@ enum RuntimeExpressionEnum<C, E> {
 		@param operand An expression to be operated.
 	**/
 	UnaryOperation(
-		type: UnaryOperator<C>,
+		type: SimpleUnaryOperator<C>,
 		operand: E
 	);
 
@@ -26,7 +26,7 @@ enum RuntimeExpressionEnum<C, E> {
 		@param operandB The second expression to be operated.
 	**/
 	BinaryOperation(
-		type: BinaryOperator<C>,
+		type: SimpleBinaryOperator<C>,
 		operandA: E,
 		operandB: E
 	);

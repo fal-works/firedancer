@@ -6,8 +6,8 @@ import firedancer.assembly.AssemblyStatement;
 import firedancer.assembly.AssemblyCode;
 import firedancer.script.expression.subtypes.IntLikeRuntimeExpression;
 import firedancer.script.expression.subtypes.IntLikeConstant;
-import firedancer.script.expression.subtypes.UnaryOperator;
-import firedancer.script.expression.subtypes.BinaryOperator;
+import firedancer.script.expression.subtypes.SimpleUnaryOperator;
+import firedancer.script.expression.subtypes.SimpleBinaryOperator;
 
 enum IntLikeExpressionEnum {
 	Constant(value: IntLikeConstant);
@@ -55,7 +55,7 @@ class IntLikeExpressionData implements ExpressionData {
 	}
 
 	public function unaryOperation(
-		type: UnaryOperator<Int>
+		type: SimpleUnaryOperator<Int>
 	): IntLikeExpressionData {
 		return create(Runtime(IntLikeRuntimeExpressionEnum.UnaryOperation(
 			type,
@@ -64,7 +64,7 @@ class IntLikeExpressionData implements ExpressionData {
 	}
 
 	public function binaryOperation(
-		type: BinaryOperator<Int>,
+		type: SimpleBinaryOperator<Int>,
 		otherOperand: IntLikeExpressionData
 	): IntLikeExpressionData {
 		return create(Runtime(IntLikeRuntimeExpressionEnum.BinaryOperation(

@@ -3,11 +3,11 @@ package firedancer.script.expression.subtypes;
 import firedancer.assembly.Opcode;
 
 @:structInit
-class UnaryOperator<T> {
+class GenericUnaryOperator<T, U> {
 	/**
 		Enum that determines how to operate a constant value.
 	**/
-	public final constantOperator: ConstantUnaryOperator<T>;
+	public final constantOperator: ConstantUnaryOperator<T, U>;
 
 	/**
 		Any `Opcode` that operates the volatile value and reassigns the result to the volatile value.
@@ -15,12 +15,12 @@ class UnaryOperator<T> {
 	public final runtimeOperator: Opcode;
 }
 
-enum ConstantUnaryOperator<T> {
+enum ConstantUnaryOperator<T, U> {
 	/**
 		Calculates immediately in compile-time.
 		@param func Any function that takes a raw value and returns another raw value.
 	**/
-	Immediate(func: (v: T) -> T);
+	Immediate(func: (v: T) -> U);
 
 	/**
 		Applies a single instruction.

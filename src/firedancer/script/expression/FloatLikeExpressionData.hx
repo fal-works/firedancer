@@ -6,8 +6,8 @@ import firedancer.assembly.AssemblyStatement;
 import firedancer.assembly.AssemblyCode;
 import firedancer.script.expression.subtypes.FloatLikeConstant;
 import firedancer.script.expression.subtypes.FloatLikeRuntimeExpression;
-import firedancer.script.expression.subtypes.UnaryOperator;
-import firedancer.script.expression.subtypes.BinaryOperator;
+import firedancer.script.expression.subtypes.SimpleUnaryOperator;
+import firedancer.script.expression.subtypes.SimpleBinaryOperator;
 
 /**
 	Expression representing any float value.
@@ -60,7 +60,7 @@ class FloatLikeExpressionData implements ExpressionData {
 		}
 	}
 
-	public function unaryOperation(type: UnaryOperator<FloatLikeConstant>): FloatLikeExpressionData {
+	public function unaryOperation(type: SimpleUnaryOperator<FloatLikeConstant>): FloatLikeExpressionData {
 		return create(Runtime(FloatLikeRuntimeExpressionEnum.UnaryOperation(
 			type,
 			this
@@ -68,7 +68,7 @@ class FloatLikeExpressionData implements ExpressionData {
 	}
 
 	public function binaryOperation(
-		type: BinaryOperator<FloatLikeConstant>,
+		type: SimpleBinaryOperator<FloatLikeConstant>,
 		otherOperand: FloatLikeExpressionData
 	): FloatLikeExpressionData {
 		return create(Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperation(

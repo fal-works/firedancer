@@ -3,13 +3,13 @@ package firedancer.script.expression.subtypes;
 import firedancer.assembly.Opcode;
 
 @:structInit
-class BinaryOperator<T> {
+class GenericBinaryOperator<T, U, V> {
 	/**
 		Any function that takes two constant values and returns another constant value.
 
 		This can only be set if the result can be calculated in compile-time.
 	**/
-	public final operateConstants: Maybe<(a: T, b: T) -> T>;
+	public final operateConstants: Maybe<(a: T, b: U) -> V>;
 
 	/**
 		Any `Opcode` that operates the two below and reassigns the result to the volatile value.
@@ -34,7 +34,7 @@ class BinaryOperator<T> {
 
 	function new(
 		operateVVV: Opcode,
-		?operateConstants: T->T->T,
+		?operateConstants: T->U->V,
 		?operateVCV: Opcode,
 		?operateCVV: Opcode
 	) {
