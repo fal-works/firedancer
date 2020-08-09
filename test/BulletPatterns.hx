@@ -93,9 +93,15 @@ class BulletPatterns {
 	]);
 
 	static final randomIntTest: Ast = loop([
-		shot.velocity.set(5, 180),
-		fire(),
-		wait(random.int.between(1, 4) * 8)
+		shot.velocity.set(
+			5,
+			180 + random.angle.grouping(45)
+		),
+		loop([
+			fire(),
+			wait(random.int.between(1, 5) * 4)
+		]).count(random.int.between(1, 5)),
+		wait(16)
 	]);
 
 	static final sandbox: Ast = loop([
@@ -120,7 +126,7 @@ class BulletPatterns {
 
 	static function test(ast: Ast): Ast {
 		return [
-			position.cartesian.add(-120, 0),
+			// position.cartesian.add(-120, 0),
 			velocity.set(10, 180),
 			speed.set(0).frames(60),
 			ast

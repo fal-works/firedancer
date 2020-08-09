@@ -1,5 +1,7 @@
 package firedancer.script.nodes;
 
+import firedancer.script.expression.IntExpression;
+
 /**
 	Repeats the provided `AstNode`.
 **/
@@ -7,7 +9,7 @@ package firedancer.script.nodes;
 class Loop extends AstNode implements ripper.Data {
 	public final node: AstNode;
 
-	public inline function count(count: UInt): FiniteLoop {
+	public inline function count(count: IntExpression): FiniteLoop {
 		return new FiniteLoop(this.node, count);
 	}
 
@@ -27,7 +29,7 @@ class Loop extends AstNode implements ripper.Data {
 
 @:ripper_verified
 class FiniteLoop extends Loop {
-	public final loopCount: UInt;
+	public final loopCount: IntExpression;
 	public var isInlined: Bool = false;
 
 	public function new(node: AstNode)
@@ -42,8 +44,10 @@ class FiniteLoop extends Loop {
 		final count = this.loopCount;
 		final body = this.node.toAssembly(context);
 
-		final code = if (this.isInlined) {
-			loopUnrolled(0...count, _ -> body);
+		final countValue = count.tryGetConstantOperandValue();
+
+		final code = if (countValue.isSome() && this.isInlined) {
+			loopUnrolled(0...countValue.unwrap(), _ -> body);
 		} else {
 			loop(body, count);
 		}

@@ -102,13 +102,14 @@ class Builder {
 	public static function loop(body: AssemblyCode, count: IntExpression): AssemblyCode {
 		final bodyLength = body.bytecodeLength().int();
 
-		final prepareLoop: AssemblyCode = switch count.toEnum() {
-			case Constant(value):
-				pushIntC(value.toOperandValue());
-			case Runtime(expression):
-				final code = expression.loadToVolatile();
-				code.pushStatement(Opcode.general(PushIntV));
-				code;
+		final countValue = count.tryGetConstantOperandValue();
+
+		final prepareLoop: AssemblyCode = if (countValue.isSome()) {
+			pushIntC(countValue.unwrap());
+		} else {
+			final code = count.loadToVolatile();
+			code.pushStatement(Opcode.general(PushIntV));
+			code;
 		};
 		prepareLoop.push(countDownJump(bodyLength + Jump.getBytecodeLength()));
 
