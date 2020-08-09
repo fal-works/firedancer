@@ -496,25 +496,25 @@ class Vm {
 							case CalcRelativeDistanceCV:
 								setVolFloat(readCodeF64() - getDistance());
 							case CalcRelativeBearingCV:
-								setVolFloat(Geometry.getAngleDistance(
+								setVolFloat(Geometry.getAngleDifference(
 									getBearing(),
 									readCodeF64()
 								));
 							case CalcRelativeSpeedCV:
 								setVolFloat(readCodeF64() - getSpeed());
 							case CalcRelativeDirectionCV:
-								setVolFloat(Geometry.getAngleDistance(
+								setVolFloat(Geometry.getAngleDifference(
 									getDirection(),
 									readCodeF64()
 								));
 							case CalcRelativeDistanceVV:
 								setVolFloat(volFloat - getDistance());
 							case CalcRelativeBearingVV:
-								setVolFloat(Geometry.getAngleDistance(getBearing(), volFloat));
+								setVolFloat(Geometry.getAngleDifference(getBearing(), volFloat));
 							case CalcRelativeSpeedVV:
 								setVolFloat(volFloat - getSpeed());
 							case CalcRelativeDirectionVV:
-								setVolFloat(Geometry.getAngleDistance(
+								setVolFloat(Geometry.getAngleDifference(
 									getDirection(),
 									volFloat
 								));
@@ -536,28 +536,28 @@ class Vm {
 							case CalcRelativeShotDistanceCV:
 								setVolFloat(readCodeF64() - thread.getShotDistance());
 							case CalcRelativeShotBearingCV:
-								setVolFloat(Geometry.getAngleDistance(
+								setVolFloat(Geometry.getAngleDifference(
 									thread.getShotBearing(),
 									readCodeF64()
 								));
 							case CalcRelativeShotSpeedCV:
 								setVolFloat(readCodeF64() - thread.getShotSpeed());
 							case CalcRelativeShotDirectionCV:
-								setVolFloat(Geometry.getAngleDistance(
+								setVolFloat(Geometry.getAngleDifference(
 									thread.getShotDirection(),
 									readCodeF64()
 								));
 							case CalcRelativeShotDistanceVV:
 								setVolFloat(volFloat - thread.getShotDistance());
 							case CalcRelativeShotBearingVV:
-								setVolFloat(Geometry.getAngleDistance(
+								setVolFloat(Geometry.getAngleDifference(
 									thread.getShotBearing(),
 									volFloat
 								));
 							case CalcRelativeShotSpeedVV:
 								setVolFloat(volFloat - thread.getShotSpeed());
 							case CalcRelativeShotDirectionVV:
-								setVolFloat(Geometry.getAngleDistance(
+								setVolFloat(Geometry.getAngleDifference(
 									thread.getShotDirection(),
 									volFloat
 								));

@@ -95,9 +95,10 @@ class Geometry {
 	}
 
 	/**
-		@return Angle distance between `-PI` and `PI`.
+		@return Difference of `angleB` from `angleA` (i.e. `B - A`),
+		normalized in range between `-PI` and `PI`.
 	**/
-	public static extern inline function getAngleDistance(
+	public static extern inline function getAngleDifference(
 		angleA: Float,
 		angleB: Float
 	): Float
