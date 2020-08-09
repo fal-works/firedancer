@@ -21,6 +21,13 @@ abstract Azimuth(Angle) {
 		return new Azimuth(Angle.fromDegrees(degrees));
 	}
 
+	/**
+		Creates an `Azimuth` value from radians.
+	**/
+	@:from public static extern inline function fromRadians(radians: Float): Azimuth {
+		return new Azimuth(Angle.fromRadians(radians));
+	}
+
 	@:op(A + B) @:commutative
 	static extern inline function add(azimuth: Azimuth, displacement: Angle): Azimuth {
 		return new Azimuth(azimuth.toAngle() + displacement);

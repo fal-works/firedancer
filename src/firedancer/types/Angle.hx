@@ -13,6 +13,12 @@ abstract Angle(ArcDegrees) from ArcDegrees from Float {
 	public static extern inline function fromDegrees(degrees: Float): Angle
 		return ArcDegrees.from(degrees);
 
+	/**
+		Converts `Float` (in radians) to `Angle`.
+	**/
+	public static extern inline function fromRadians(radians: Float): Angle
+		return ArcDegrees.fromRadians(radians);
+
 	@:op(-A) function unaryMinus(): Angle;
 
 	@:op(A + B)
