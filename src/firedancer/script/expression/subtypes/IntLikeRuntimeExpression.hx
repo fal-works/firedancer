@@ -3,6 +3,7 @@ package firedancer.script.expression.subtypes;
 import firedancer.assembly.AssemblyCode;
 import firedancer.assembly.AssemblyStatement;
 import firedancer.assembly.Opcode.*;
+import firedancer.assembly.ConstantOperand;
 
 typedef IntLikeRuntimeExpressionEnum = RuntimeExpressionEnum<IntLikeConstant, IntLikeExpressionData>;
 
@@ -13,6 +14,12 @@ typedef IntLikeRuntimeExpressionEnum = RuntimeExpressionEnum<IntLikeConstant, In
 abstract IntLikeRuntimeExpression(
 	IntLikeRuntimeExpressionEnum
 ) from IntLikeRuntimeExpressionEnum to IntLikeRuntimeExpressionEnum {
+	static extern inline final loadOpcode = calc(LoadIntCV);
+	static extern inline final saveOpcode = calc(SaveIntV);
+
+	static function createOperands(value: Int): Array<ConstantOperand>
+		return [Int(value)];
+
 	/**
 		Creates an `AssemblyCode` that assigns `this` value to the current volatile float.
 	**/
@@ -22,30 +29,30 @@ abstract IntLikeRuntimeExpression(
 				new AssemblyStatement(loadV, []);
 
 			case UnaryOperation(type, operand):
-				switch operand.toEnum() {
-					case Constant(value):
-						switch type.constantOperator {
-							case Immediate(func):
+				final operandValue = operand.tryGetConstantOperandValue();
+				if (operandValue.isSome()) {
+					switch type.constantOperator {
+						case Immediate(func):
+							new AssemblyStatement(
+								loadOpcode,
+								[func(operandValue.unwrap()).toOperand()]
+							);
+						case Instruction(opcodeCV):
+							new AssemblyStatement(opcodeCV, createOperands(operandValue.unwrap()));
+						case None:
+							[
 								new AssemblyStatement(
-									calc(LoadIntCV),
-									[func(value).toOperand()]
-								);
-							case Instruction(opcodeCV):
-								new AssemblyStatement(opcodeCV, [value.toOperand()]);
-							case None:
-								[
-									new AssemblyStatement(
-										calc(LoadIntCV),
-										[value.toOperand()]
-									),
-									new AssemblyStatement(type.runtimeOperator, [])
-								];
-						}
-					case Runtime(expression):
-						final code = expression.loadToVolatile();
-						code.push(new AssemblyStatement(type.runtimeOperator, []));
-						code;
-				};
+									loadOpcode,
+									createOperands(operandValue.unwrap())
+								),
+								new AssemblyStatement(type.runtimeOperator, [])
+							];
+					}
+				} else {
+					final code = operand.loadToVolatile();
+					code.push(new AssemblyStatement(type.runtimeOperator, []));
+					code;
+				}
 
 			case BinaryOperation(type, operandA, operandB):
 				final code:AssemblyCode = [];
@@ -53,62 +60,64 @@ abstract IntLikeRuntimeExpression(
 				final operateVCV = type.operateVCV;
 				final operateCVV = type.operateCVV;
 				final operateVVV = type.operateVVV;
-				switch operandA.toEnum() {
-					case Constant(valueA):
-						final operandsA = [valueA.toOperand()];
-						switch operandB.toEnum() {
-							case Constant(valueB):
-								if (operateConstants.isSome()) {
-									final valueAB: IntLikeConstant = operateConstants.unwrap()(
-										valueA,
-										valueB
-									);
-									code.pushStatement(
-										calc(LoadIntCV),
-										[valueAB.toOperand()]
-									);
-								} else {
-									final operandsB = [valueB.toOperand()];
-									code.pushStatement(calc(LoadIntCV), operandsA);
-									if (operateVCV.isSome())
-										code.pushStatement(operateVCV.unwrap(), operandsB);
-									else {
-										code.pushStatement(calc(SaveIntV));
-										code.pushStatement(calc(LoadIntCV), operandsB);
-										code.pushStatement(operateVVV, []);
-									}
-								}
-							case Runtime(expressionB):
-								if (operateCVV.isSome()) {
-									code.pushFromArray(expressionB.loadToVolatile());
-									code.pushStatement(operateCVV.unwrap(), operandsA);
-								} else {
-									code.pushStatement(calc(LoadIntCV), operandsA);
-									code.pushStatement(calc(SaveIntV));
-									code.pushFromArray(expressionB.loadToVolatile());
-									code.pushStatement(operateVVV);
-								}
-						};
-					case Runtime(expressionA):
-						switch operandB.toEnum() {
-							case Constant(valueB):
-								final operandsB = [valueB.toOperand()];
-								if (operateVCV.isSome()) {
-									code.pushFromArray(expressionA.loadToVolatile());
-									code.pushStatement(operateVCV.unwrap(), operandsB);
-								} else {
-									code.pushFromArray(expressionA.loadToVolatile());
-									code.pushStatement(calc(SaveIntV));
-									code.pushStatement(calc(LoadIntCV), operandsB);
-									code.pushStatement(operateVVV);
-								}
-							case Runtime(expressionB):
-								code.pushFromArray(expressionA.loadToVolatile());
-								code.pushStatement(calc(SaveIntV));
-								code.pushFromArray(expressionB.loadToVolatile());
-								code.pushStatement(operateVVV);
-						};
-				};
+
+				final operandValueA = operandA.tryGetConstantOperandValue();
+				final operandValueB = operandB.tryGetConstantOperandValue();
+
+				if (operandValueA.isSome()) {
+					final valA = operandValueA.unwrap();
+					final operandsA = createOperands(valA);
+					if (operandValueB.isSome()) {
+						final valB = operandValueB.unwrap();
+						if (operateConstants.isSome()) {
+							final valueAB: IntLikeConstant = operateConstants.unwrap()(
+								valA,
+								valB
+							);
+							code.pushStatement(loadOpcode, [valueAB.toOperand()]);
+						} else {
+							final operandsB = createOperands(valB);
+							code.pushStatement(loadOpcode, operandsA);
+							if (operateVCV.isSome())
+								code.pushStatement(operateVCV.unwrap(), operandsB);
+							else {
+								code.pushStatement(saveOpcode);
+								code.pushStatement(loadOpcode, operandsB);
+								code.pushStatement(operateVVV, []);
+							}
+						}
+					} else {
+						if (operateCVV.isSome()) {
+							code.pushFromArray(operandB.loadToVolatile());
+							code.pushStatement(operateCVV.unwrap(), operandsA);
+						} else {
+							code.pushStatement(loadOpcode, operandsA);
+							code.pushStatement(saveOpcode);
+							code.pushFromArray(operandB.loadToVolatile());
+							code.pushStatement(operateVVV);
+						}
+					}
+				} else {
+					if (operandValueB.isSome()) {
+						final valB = operandValueB.unwrap();
+						final operandsB = createOperands(valB);
+						if (operateVCV.isSome()) {
+							code.pushFromArray(operandA.loadToVolatile());
+							code.pushStatement(operateVCV.unwrap(), operandsB);
+						} else {
+							code.pushFromArray(operandA.loadToVolatile());
+							code.pushStatement(saveOpcode);
+							code.pushStatement(loadOpcode, operandsB);
+							code.pushStatement(operateVVV);
+						}
+					} else {
+						code.pushFromArray(operandA.loadToVolatile());
+						code.pushStatement(saveOpcode);
+						code.pushFromArray(operandB.loadToVolatile());
+						code.pushStatement(operateVVV);
+					}
+				}
+
 				code;
 		}
 	}

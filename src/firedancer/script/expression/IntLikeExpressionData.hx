@@ -4,6 +4,7 @@ import firedancer.assembly.Opcode;
 import firedancer.assembly.Opcode.*;
 import firedancer.assembly.AssemblyStatement;
 import firedancer.assembly.AssemblyCode;
+import firedancer.assembly.ConstantOperand;
 import firedancer.script.expression.subtypes.IntLikeRuntimeExpression;
 import firedancer.script.expression.subtypes.IntLikeConstant;
 import firedancer.script.expression.subtypes.SimpleUnaryOperator;
@@ -44,14 +45,51 @@ class IntLikeExpressionData implements ExpressionData {
 		receiving `this` value as argument.
 	**/
 	public function use(constantOpcode: Opcode, volatileOpcode: Opcode): AssemblyCode {
-		return switch this.data {
+		final constantOperand = tryGetConstantOperand();
+
+		return if (constantOperand.isSome()) {
+			new AssemblyStatement(constantOpcode, [constantOperand.unwrap()]);
+		} else [
+			loadToVolatile(),
+			[new AssemblyStatement(volatileOpcode, [])]
+		].flatten();
+	}
+
+	public function tryGetConstantOperandValue(): Maybe<Int> {
+		switch this.data {
 			case Constant(value):
-				new AssemblyStatement(constantOpcode, [value.toOperand()]);
+				return Maybe.from(value.toOperandValue());
 			case Runtime(expression):
-				final code = expression.loadToVolatile();
-				code.push(new AssemblyStatement(volatileOpcode, []));
-				code;
+				switch expression.toEnum() {
+					case UnaryOperation(type, operand):
+						final value = operand.tryGetConstantOperandValue();
+						if (value.isSome()) {
+							switch type.constantOperator {
+								case Immediate(func):
+									return Maybe.from(func(value.unwrap()).raw());
+								default:
+							}
+						}
+					case BinaryOperation(type, operandA, operandB):
+						final valueA = operandA.tryGetConstantOperandValue();
+						final valueB = operandB.tryGetConstantOperandValue();
+						if (valueA.isSome() && valueB.isSome() && type.operateConstants.isSome()) {
+							final operate = type.operateConstants.unwrap();
+							return Maybe.from(operate(
+								valueA.unwrap(),
+								valueB.unwrap()
+							).raw());
+						}
+					default:
+				}
 		}
+
+		return Maybe.none();
+	}
+
+	public function tryGetConstantOperand(): Maybe<ConstantOperand> {
+		final value = tryGetConstantOperandValue();
+		return if (value.isSome()) Maybe.from(Int(value.unwrap())) else Maybe.none();
 	}
 
 	public function unaryOperation(

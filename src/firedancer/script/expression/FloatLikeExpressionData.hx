@@ -4,6 +4,7 @@ import firedancer.assembly.Opcode;
 import firedancer.assembly.Opcode.*;
 import firedancer.assembly.AssemblyStatement;
 import firedancer.assembly.AssemblyCode;
+import firedancer.assembly.ConstantOperand;
 import firedancer.script.expression.subtypes.FloatLikeConstant;
 import firedancer.script.expression.subtypes.FloatLikeRuntimeExpression;
 import firedancer.script.expression.subtypes.SimpleUnaryOperator;
@@ -50,17 +51,56 @@ class FloatLikeExpressionData implements ExpressionData {
 		receiving `this` value as argument.
 	**/
 	public function use(constantOpcode: Opcode, volatileOpcode: Opcode): AssemblyCode {
-		return switch this.data {
-			case Constant(value):
-				new AssemblyStatement(constantOpcode, [value.toOperand()]);
-			case Runtime(expression):
-				final code = expression.loadToVolatile();
-				code.push(new AssemblyStatement(volatileOpcode, []));
-				code;
-		}
+		final constantOperand = tryGetConstantOperand();
+
+		return if (constantOperand.isSome()) {
+			new AssemblyStatement(constantOpcode, [constantOperand.unwrap()]);
+		} else [
+			loadToVolatile(),
+			[new AssemblyStatement(volatileOpcode, [])]
+		].flatten();
 	}
 
-	public function unaryOperation(type: SimpleUnaryOperator<FloatLikeConstant>): FloatLikeExpressionData {
+	public function tryGetConstantOperandValue(): Maybe<Float> {
+		switch this.data {
+			case Constant(value):
+				return Maybe.from(value.toOperandValue());
+			case Runtime(expression):
+				switch expression.toEnum() {
+					case UnaryOperation(type, operand):
+						final value = operand.tryGetConstantOperandValue();
+						if (value.isSome()) {
+							switch type.constantOperator {
+								case Immediate(func):
+									return Maybe.from(func(value.unwrap()).raw());
+								default:
+							}
+						}
+					case BinaryOperation(type, operandA, operandB):
+						final valueA = operandA.tryGetConstantOperandValue();
+						final valueB = operandB.tryGetConstantOperandValue();
+						if (valueA.isSome() && valueB.isSome() && type.operateConstants.isSome()) {
+							final operate = type.operateConstants.unwrap();
+							return Maybe.from(operate(
+								valueA.unwrap(),
+								valueB.unwrap()
+							).raw());
+						}
+					default:
+				}
+		}
+
+		return Maybe.none();
+	}
+
+	public function tryGetConstantOperand(): Maybe<ConstantOperand> {
+		final value = tryGetConstantOperandValue();
+		return if (value.isSome()) Maybe.from(Float(value.unwrap())) else Maybe.none();
+	}
+
+	public function unaryOperation(
+		type: SimpleUnaryOperator<FloatLikeConstant>
+	): FloatLikeExpressionData {
 		return create(Runtime(FloatLikeRuntimeExpressionEnum.UnaryOperation(
 			type,
 			this
@@ -116,12 +156,10 @@ class FloatLikeExpressionData implements ExpressionData {
 		switch this.data {
 			case Constant(_):
 			case Runtime(_):
-				switch other.data {
-					case Constant(valueB):
-						// multiply by the reciprocal: rt / c => rt * (1 / c)
-						other = create(Constant(1.0 / valueB));
-
-					case Runtime(_):
+				final otherValue = other.tryGetConstantOperandValue();
+				if (otherValue.isSome()) {
+					// multiply by the reciprocal: rt / c => rt * (1 / c)
+					other = create(Constant(1.0 / otherValue.unwrap()));
 				}
 		}
 
