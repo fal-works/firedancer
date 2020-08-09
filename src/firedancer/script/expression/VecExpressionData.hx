@@ -2,7 +2,7 @@ package firedancer.script.expression;
 
 import sneaker.exception.NotOverriddenException;
 import firedancer.types.Azimuth;
-import firedancer.assembly.AssemblyStatement;
+import firedancer.assembly.AssemblyStatement.create as statement;
 import firedancer.assembly.AssemblyCode;
 import firedancer.assembly.ConstantOperand;
 import firedancer.assembly.Opcode;
@@ -12,8 +12,22 @@ import firedancer.assembly.Opcode.*;
 	Underlying type of `VecExpression`.
 **/
 class VecExpressionData implements ExpressionData {
-	public function tryGetConstantOperand(): Maybe<ConstantOperand>
+	final divisor: Maybe<FloatExpression> = Maybe.none();
+
+	public function new(?divisor: FloatExpression) {
+		this.divisor = Maybe.from(divisor);
+	}
+
+	public function tryGetConstantOperandValue(): Maybe<{x: Float, y: Float }>
 		throw new NotOverriddenException();
+
+	public function tryGetConstantOperand(): Maybe<ConstantOperand> {
+		final value = tryGetConstantOperandValue();
+		return if (value.isSome()) {
+			final val = value.unwrap();
+			Maybe.from(Vec(val.x, val.y));
+		} else Maybe.none();
+	}
 
 	public function divide(divisor: FloatExpression): VecExpressionData
 		throw new NotOverriddenException();
@@ -36,84 +50,236 @@ class VecExpressionData implements ExpressionData {
 	): AssemblyCode {
 		final const = tryGetConstantOperand();
 		return if (const.isSome()) {
-			new AssemblyStatement(processConstantVector, [const.unwrap()]);
+			statement(processConstantVector, [const.unwrap()]);
 		} else {
 			final code = loadToVolatile();
-			code.push(new AssemblyStatement(processVolatileVector, []));
+			code.push(statement(processVolatileVector));
 			code;
 		}
 	}
 }
 
 @:structInit
-class CartesianVecExpressionData extends VecExpressionData implements ripper.Data {
+class CartesianVecExpressionData extends VecExpressionData {
 	public final x: FloatExpression;
 	public final y: FloatExpression;
 
-	override public function tryGetConstantOperand(): Maybe<ConstantOperand> {
-		return switch x.toEnum() {
-			case Constant(valX):
-				switch y.toEnum() {
-					case Constant(valY):
-						return Maybe.from(Vec(
-							valX.toOperandValue(),
-							valY.toOperandValue()
-						));
-					default: Maybe.none();
-				}
-			default: Maybe.none();
+	public function new(
+		x: FloatExpression,
+		y: FloatExpression,
+		?divisor: FloatExpression
+	) {
+		super(divisor);
+		this.x = x;
+		this.y = y;
+	}
+
+	override public function tryGetConstantOperandValue(): Maybe<{x: Float, y: Float }> {
+		final xConstant = x.tryGetConstantOperandValue();
+		if (xConstant.isNone()) return Maybe.none();
+
+		final yConstant = y.tryGetConstantOperandValue();
+		if (yConstant.isNone()) return Maybe.none();
+
+		final xVal = xConstant.unwrap();
+		final yVal = yConstant.unwrap();
+
+		if (divisor.isNone())
+			return Maybe.from({ x: xVal, y: yVal });
+		else {
+			final divisorValue = divisor.unwrap().tryGetConstantOperandValue();
+			if (divisorValue.isNone()) return Maybe.none();
+			final divVal = divisorValue.unwrap();
+			return Maybe.from({ x: xVal / divVal, y: yVal / divVal });
 		}
 	}
 
-	override public function divide(divisor: FloatExpression): CartesianVecExpressionData
-		return { x: x / divisor, y: y / divisor };
+	override public function divide(divisor: FloatExpression): CartesianVecExpressionData {
+		if (this.divisor.isSome()) divisor = this.divisor.unwrap() * divisor;
+		return new CartesianVecExpressionData(x, y, divisor);
+	}
 
 	override public function divideByFloat(divisor: Float): CartesianVecExpressionData
-		return { x: x / divisor, y: y / divisor };
+		return divide(divisor);
 
 	override public function loadToVolatile(): AssemblyCode {
-		final code = [
+		final x = this.x;
+		final y = this.y;
+		final divisor = this.divisor;
+
+		final xConstant = x.tryGetConstantOperandValue();
+		final yConstant = y.tryGetConstantOperandValue();
+
+		if (xConstant.isSome() && yConstant.isSome()) {
+			final xVal = xConstant.unwrap();
+			final yVal = yConstant.unwrap();
+
+			if (divisor.isNone()) {
+				// cVec
+				return statement(calc(LoadVecCV), [Vec(xVal, yVal)]);
+			} else {
+				final divisorConstant = divisor.unwrap().tryGetConstantOperandValue();
+
+				if (divisorConstant.isSome()) {
+					// cVec / cDiv
+					final divVal = divisorConstant.unwrap();
+					return statement(
+						calc(LoadVecCV),
+						[Vec(xVal / divVal, yVal / divVal)]
+					);
+				} else {
+					// cVec / rDiv
+					return [
+						[statement(calc(LoadVecCV), [Vec(xVal, yVal)])],
+						divisor.unwrap().loadToVolatile(),
+						[statement(calc(DivFloatVVV))]
+					].flatten();
+				}
+			}
+		}
+
+		final loadVecWithoutDivisor = [
 			x.loadToVolatile(),
-			[new AssemblyStatement(calc(SaveFloatV), [])],
+			[statement(calc(SaveFloatV))],
 			y.loadToVolatile(),
-			[new AssemblyStatement(calc(CastCartesianVV), [])]
+			[statement(calc(CastCartesianVV))]
 		].flatten();
-		return code;
+
+		if (divisor.isNone()) {
+			// rVec
+			return loadVecWithoutDivisor;
+		} else {
+			final divisorConstant = divisor.unwrap().tryGetConstantOperandValue();
+
+			if (divisorConstant.isSome()) {
+				// rVec / cDiv
+				final divVal = divisorConstant.unwrap();
+				final multiplier = 1.0 / divVal;
+				return [
+					loadVecWithoutDivisor,
+					[statement(calc(MultVecVCV), [Float(multiplier)])]
+				].flatten();
+			} else {
+				// rVec / rDiv
+				return [
+					loadVecWithoutDivisor,
+					divisor.unwrap().loadToVolatile(),
+					[statement(calc(DivVecVVV))]
+				].flatten();
+			}
+		}
 	}
 }
 
 @:structInit
-class PolarVecExpressionData extends VecExpressionData implements ripper.Data {
+class PolarVecExpressionData extends VecExpressionData {
 	public final length: FloatExpression;
 	public final angle: AngleExpression;
 
-	override public function tryGetConstantOperand(): Maybe<ConstantOperand> {
-		return switch length.toEnum() {
-			case Constant(valLen):
-				switch angle.toEnum() {
-					case Constant(valAng):
-						final vec = Azimuth.fromDegrees(valAng.value).toVec2D(valLen.value);
-						return Maybe.from(Vec(vec.x, vec.y));
-					default:
-						Maybe.none();
-				}
-			default:
-				Maybe.none();
+	public function new(
+		length: FloatExpression,
+		angle: AngleExpression,
+		?divisor: FloatExpression
+	) {
+		super(divisor);
+		this.length = length;
+		this.angle = angle;
+	}
+
+	override public function tryGetConstantOperandValue(): Maybe<{x: Float, y: Float }> {
+		final lengthConstant = length.tryGetConstantOperandValue();
+		if (lengthConstant.isNone()) return Maybe.none();
+
+		final angleConstant = angle.tryGetConstantOperandValue();
+		if (angleConstant.isNone()) return Maybe.none();
+
+		final lenVal = lengthConstant.unwrap();
+		final angVal = angleConstant.unwrap();
+		final vec = Azimuth.fromRadians(angVal).toVec2D(lenVal);
+
+		if (divisor.isNone()) {
+			return Maybe.from({ x: vec.x, y: vec.y });
+		} else {
+			final divisorValue = divisor.unwrap().tryGetConstantOperandValue();
+			if (divisorValue.isNone()) return Maybe.none();
+			final divVal = divisorValue.unwrap();
+			return Maybe.from({ x: vec.x / divVal, y: vec.y / divVal });
 		}
 	}
 
-	override public function divide(divisor: FloatExpression): PolarVecExpressionData
-		return { length: length / divisor, angle: angle };
+	override public function divide(divisor: FloatExpression): PolarVecExpressionData {
+		if (this.divisor.isSome()) divisor = this.divisor.unwrap() * divisor;
+		return new PolarVecExpressionData(length, angle, divisor);
+	}
 
 	override public function divideByFloat(divisor: Float): PolarVecExpressionData
-		return { length: length / divisor, angle: angle };
+		return divide(divisor);
 
 	override public function loadToVolatile(): AssemblyCode {
-		return [
+		var length = this.length;
+		final angle = this.angle;
+
+		final lengthConstant = length.tryGetConstantOperandValue();
+		final angleConstant = angle.tryGetConstantOperandValue();
+
+		if (lengthConstant.isSome() && angleConstant.isSome()) {
+			final lenVal = lengthConstant.unwrap();
+			final angVal = angleConstant.unwrap();
+			final vec = Azimuth.fromRadians(angVal).toVec2D(lenVal);
+
+			if (divisor.isNone()) {
+				// cVec
+				return statement(calc(LoadVecCV), [Vec(vec.x, vec.y)]);
+			} else {
+				final divisorConstant = divisor.unwrap().tryGetConstantOperandValue();
+
+				if (divisorConstant.isSome()) {
+					// cVec / cDiv
+					final divVal = divisorConstant.unwrap();
+					return statement(
+						calc(LoadVecCV),
+						[Vec(vec.x / divVal, vec.y / divVal)]
+					);
+				} else {
+					// cVec / rDiv
+					return [
+						[statement(calc(LoadVecCV), [Vec(vec.x, vec.y)])],
+						divisor.unwrap().loadToVolatile(),
+						[statement(calc(DivFloatVVV))]
+					].flatten();
+				}
+			}
+		}
+
+		final loadVecWithoutDivisor = [
 			length.loadToVolatile(),
-			[new AssemblyStatement(calc(SaveFloatV), [])],
+			[statement(calc(SaveFloatV))],
 			angle.loadToVolatile(),
-			[new AssemblyStatement(calc(CastPolarVV), [])]
+			[statement(calc(CastPolarVV))]
 		].flatten();
+
+		if (divisor.isNone()) {
+			// rVec
+			return loadVecWithoutDivisor;
+		} else {
+			final divisorConstant = divisor.unwrap().tryGetConstantOperandValue();
+
+			if (divisorConstant.isSome()) {
+				// rVec / cDiv
+				final divVal = divisorConstant.unwrap();
+				final multiplier = 1.0 / divVal;
+				return [
+					loadVecWithoutDivisor,
+					[statement(calc(MultVecVCV), [Float(multiplier)])]
+				].flatten();
+			} else {
+				// rVec / rDiv
+				return [
+					loadVecWithoutDivisor,
+					divisor.unwrap().loadToVolatile(),
+					[statement(calc(DivVecVVV))]
+				].flatten();
+			}
+		}
 	}
 }

@@ -445,9 +445,11 @@ class Vm {
 								setVolFloat(volFloatSaved % volFloat);
 							case MultVecVCV:
 								final multiplier = readCodeF64();
-								setVolVec(multiplier * volX, multiplier * volY);
+								setVolVec(volX * multiplier, volY * multiplier);
 							case MultVecVVV:
-								setVolVec(volFloat * volX, volFloat * volY);
+								setVolVec(volX * volFloat, volY * volFloat);
+							case DivVecVVV:
+								setVolVec(volX / volFloat, volY / volFloat);
 							case SaveIntV:
 								saveInt(volInt);
 							case SaveFloatV:

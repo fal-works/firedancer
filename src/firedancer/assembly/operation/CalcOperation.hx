@@ -50,6 +50,7 @@ enum abstract CalcOperation(Int) to Int {
 			case CalcOperation.MinusVecV: MinusVecV;
 			case CalcOperation.MultVecVCV: MultVecVCV;
 			case CalcOperation.MultVecVVV: MultVecVVV;
+			case CalcOperation.DivVecVVV: DivVecVVV;
 
 			case CalcOperation.SaveIntV: SaveIntV;
 			case CalcOperation.SaveFloatV: SaveFloatV;
@@ -234,6 +235,11 @@ enum abstract CalcOperation(Int) to Int {
 	final MultVecVVV;
 
 	/**
+		Divides the current volatile vector by the current volatile float.
+	**/
+	final DivVecVVV;
+
+	/**
 		Saves the current volatile integer.
 	**/
 	final SaveIntV;
@@ -330,6 +336,7 @@ class CalcOperationExtension {
 			case MinusVecV: "minus_vec_v";
 			case MultVecVCV: "mult_vec_vcv";
 			case MultVecVVV: "mult_vec_vvv";
+			case DivVecVVV: "div_vec_vvv";
 
 			case SaveIntV: "save_int_v";
 			case SaveFloatV: "save_float_v";
@@ -385,6 +392,7 @@ class CalcOperationExtension {
 			case MinusVecV: [];
 			case MultVecVCV: [Float]; // multiplier value
 			case MultVecVVV: [];
+			case DivVecVVV: [];
 
 			case SaveIntV: [];
 			case SaveFloatV: [];
