@@ -1,5 +1,6 @@
 package firedancer.script.api_components;
 
+import firedancer.script.expression.IntExpression;
 import firedancer.script.expression.FloatExpression;
 import firedancer.assembly.Opcode.*;
 
@@ -8,6 +9,11 @@ import firedancer.assembly.Opcode.*;
 **/
 class Random {
 	public function new() {}
+
+	/**
+		Provides functions for generating pseudorandom integer values.
+	**/
+	public final int = new RandomInt();
 
 	/**
 		Provides functions for generating pseudorandom angle values.
@@ -77,4 +83,31 @@ class RandomAngle {
 	**/
 	public inline function grouping(centralAngle: AngleExpression): AngleExpression
 		return signed(centralAngle / 2);
+}
+
+class RandomInt {
+	public function new() {}
+
+	/**
+		Gets a random angle between `min` and `max`.
+	**/
+	public inline function between(
+		min: IntExpression,
+		max: IntExpression
+	): IntExpression {
+		return min + IntExpression.fromEnum(Runtime(UnaryOperation({
+			constantOperator: Instruction(calc(RandomIntCV)),
+			runtimeOperator: calc(RandomIntVV)
+		}, max - min)));
+	}
+
+	/**
+		Gets a random angle between `-max` and `max`.
+	**/
+	public inline function signed(max: IntExpression): IntExpression {
+		return max.unaryOperation({
+			constantOperator: Instruction(calc(RandomIntSignedCV)),
+			runtimeOperator: calc(RandomIntSignedVV)
+		});
+	}
 }

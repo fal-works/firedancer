@@ -92,6 +92,12 @@ class BulletPatterns {
 		wait(2)
 	]);
 
+	static final randomIntTest: Ast = loop([
+		shot.velocity.set(5, 180),
+		fire(),
+		wait(random.int.between(1, 4) * 8)
+	]);
+
 	static final sandbox: Ast = loop([
 		wait(30),
 		shot.velocity.set(5, 180),
@@ -107,14 +113,14 @@ class BulletPatterns {
 		velocity.set(5, 210)
 	]).count(2);
 
-	static final testAst = test(randomTest); // Change this for testing
+	static final testAst = test(randomIntTest); // Change this for testing
 
 	public static final context = compile(["test" => testAst]);
 	public static final testPattern = context.getBytecodeByName("test");
 
 	static function test(ast: Ast): Ast {
 		return [
-			// position.cartesian.add(-160, 0),
+			position.cartesian.add(-120, 0),
 			velocity.set(10, 180),
 			speed.set(0).frames(60),
 			ast

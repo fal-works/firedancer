@@ -1,5 +1,7 @@
 package firedancer.script.expression;
 
+import firedancer.script.expression.IntLikeExpressionData;
+
 /**
 	Abstract over `IntLikeExpressionData` that can be implicitly cast from `UInt`.
 **/
@@ -9,6 +11,12 @@ abstract IntExpression(
 ) from IntLikeExpressionData to IntLikeExpressionData {
 	@:from public static extern inline function fromInt(value: Int): IntExpression
 		return IntLikeExpressionData.create(IntLikeExpressionEnum.Constant(value));
+
+	@:from public static extern inline function fromEnum(
+		data: IntLikeExpressionEnum
+	): IntExpression {
+		return IntLikeExpressionData.create(data);
+	}
 
 	@:op(-A)
 	extern inline function unaryMinus(): IntExpression

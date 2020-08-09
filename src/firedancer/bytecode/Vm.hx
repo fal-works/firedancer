@@ -469,6 +469,14 @@ class Vm {
 								setVolFloat(Random.signed(readCodeF64()));
 							case RandomFloatSignedVV:
 								setVolFloat(Random.signed(volFloat));
+							case RandomIntCV:
+								setVolInt(Random.int(readCodeI32()));
+							case RandomIntVV:
+								setVolInt(Random.int(volInt));
+							case RandomIntSignedCV:
+								setVolInt(Random.signedInt(readCodeI32()));
+							case RandomIntSignedVV:
+								setVolInt(Random.signedInt(volInt));
 						}
 
 					case Read:

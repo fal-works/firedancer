@@ -62,6 +62,10 @@ enum abstract CalcOperation(Int) to Int {
 			case CalcOperation.RandomFloatVV: RandomFloatVV;
 			case CalcOperation.RandomFloatSignedCV: RandomFloatSignedCV;
 			case CalcOperation.RandomFloatSignedVV: RandomFloatSignedVV;
+			case CalcOperation.RandomIntCV: RandomIntCV;
+			case CalcOperation.RandomIntVV: RandomIntVV;
+			case CalcOperation.RandomIntSignedCV: RandomIntSignedCV;
+			case CalcOperation.RandomIntSignedVV: RandomIntSignedVV;
 
 			default: throw error(value);
 		}
@@ -267,28 +271,56 @@ enum abstract CalcOperation(Int) to Int {
 	final RandomRatioV;
 
 	/**
-		Multiplies the given constant float by a random value in range `[0, 1)`
+		Generates a random float from `0` up to (but not including) the given constant float
 		and assigns it to the volatile float.
 	**/
 	final RandomFloatCV;
 
 	/**
-		Multiplies the current volatile float by a random value in range `[0, 1)`
-		and reassigns it to the volatile float.
+		Generates a random float from `0` up to (but not including) the current volatile float
+		and assigns it to the volatile float.
 	**/
 	final RandomFloatVV;
 
 	/**
-		Multiplies the given constant float by a random value in range `[-1, 1)`
-		and assigns it to the volatile float.
+		Generates a random float, positive or negative, of which the absolute value varies
+		from `0` up to (but not including) the given constant float.
+		Then assigns it to the volatile float.
 	**/
 	final RandomFloatSignedCV;
 
 	/**
-		Multiplies the current volatile float by a random value in range `[-1, 1)`
-		and reassigns it to the volatile float.
+		Generates a random float, positive or negative, of which the absolute value varies
+		from `0` up to (but not including) the current volatile float.
+		Then assigns it to the volatile float.
 	**/
 	final RandomFloatSignedVV;
+
+	/**
+		Generates a random integer from `0` up to (but not including) the given constant integer
+		and assigns it to the volatile integer.
+	**/
+	final RandomIntCV;
+
+	/**
+		Generates a random integer from `0` up to (but not including) the current volatile integer
+		and assigns it to the volatile integer.
+	**/
+	final RandomIntVV;
+
+	/**
+		Generates a random integer, positive or negative, of which the absolute value varies
+		from `0` up to (but not including) the given constant integer.
+		Then assigns it to the volatile integer.
+	**/
+	final RandomIntSignedCV;
+
+	/**
+		Generates a random integer, positive or negative, of which the absolute value varies
+		from `0` up to (but not including) the current volatile integer.
+		Then assigns it to the volatile integer.
+	**/
+	final RandomIntSignedVV;
 
 	public extern inline function int(): Int
 		return this;
@@ -348,6 +380,10 @@ class CalcOperationExtension {
 			case RandomFloatVV: "random_float_vv";
 			case RandomFloatSignedCV: "random_float_signed_cv";
 			case RandomFloatSignedVV: "random_float_signed_vv";
+			case RandomIntCV: "random_int_cv";
+			case RandomIntVV: "random_int_vv";
+			case RandomIntSignedCV: "random_int_signed_cv";
+			case RandomIntSignedVV: "random_int_signed_vv";
 		}
 	}
 
@@ -403,6 +439,10 @@ class CalcOperationExtension {
 			case RandomFloatVV: [];
 			case RandomFloatSignedCV: [Float];
 			case RandomFloatSignedVV: [];
+			case RandomIntCV: [Int];
+			case RandomIntVV: [];
+			case RandomIntSignedCV: [Int];
+			case RandomIntSignedVV: [];
 		}
 	}
 
