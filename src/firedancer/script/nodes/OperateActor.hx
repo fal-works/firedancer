@@ -317,7 +317,7 @@ class ActorAttributeOperationExtension {
 			default: throw "Unsupported operation.";
 		}
 
-		final prepare: AssemblyCode = calcRelative.concat([multChange, statement(general(PushFloatV))]);
+		final prepare: AssemblyCode = calcRelative.concat([multChange, pushChange]);
 		final body: AssemblyCode = [
 			breakFrame(),
 			peekChange,
