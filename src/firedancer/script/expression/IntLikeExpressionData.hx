@@ -5,10 +5,12 @@ import firedancer.assembly.Opcode.*;
 import firedancer.assembly.AssemblyStatement;
 import firedancer.assembly.AssemblyCode;
 import firedancer.assembly.ConstantOperand;
+import firedancer.script.expression.FloatLikeExpressionData;
 import firedancer.script.expression.subtypes.IntLikeRuntimeExpression;
 import firedancer.script.expression.subtypes.IntLikeConstant;
 import firedancer.script.expression.subtypes.SimpleUnaryOperator;
 import firedancer.script.expression.subtypes.SimpleBinaryOperator;
+import firedancer.script.expression.subtypes.FloatLikeRuntimeExpression;
 
 enum IntLikeExpressionEnum {
 	Constant(value: IntLikeConstant);
@@ -27,6 +29,12 @@ class IntLikeExpressionData implements ExpressionData {
 	}
 
 	public final data: IntLikeExpressionEnum;
+
+	public function toFloatExpression(): FloatExpression
+		return this.toFloatLikeExpressionData(FloatExpression.constantFactor);
+
+	public function toAngleExpression(): AngleExpression
+		return this.toFloatLikeExpressionData(AngleExpression.constantFactor);
 
 	/**
 		Creates an `AssemblyCode` that assigns `this` value to the current volatile float.
@@ -166,4 +174,27 @@ class IntLikeExpressionData implements ExpressionData {
 
 	public extern inline function toEnum()
 		return this.data;
+
+	function toFloatLikeExpressionData(constantFactor: Float): FloatLikeExpressionData {
+		final constant = this.tryGetConstantOperandValue();
+
+		final loadAsFloat: AssemblyCode = if (constant.isSome()) {
+			new AssemblyStatement(
+				calc(LoadFloatCV),
+				[Float(constantFactor * constant.unwrap())]
+			);
+		} else {
+			[
+				this.loadToVolatile(),
+				[new AssemblyStatement(calc(CastIntToFloatVV), [])],
+				if (constantFactor == 1.0) [] else [
+					new AssemblyStatement(calc(MultFloatVCV), [Float(constantFactor)])
+				]
+			].flatten();
+		}
+
+		final data = FloatLikeExpressionEnum.Runtime(FloatLikeRuntimeExpressionEnum.Custom(loadAsFloat));
+
+		return FloatLikeExpressionData.create(data);
+	}
 }

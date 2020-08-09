@@ -1,5 +1,6 @@
 package firedancer.script.expression.subtypes;
 
+import firedancer.assembly.AssemblyCode;
 import firedancer.assembly.Opcode;
 
 /**
@@ -30,4 +31,6 @@ enum RuntimeExpressionEnum<C, E> {
 		operandA: E,
 		operandB: E
 	);
+
+	Custom(loadToVolatile: AssemblyCode);
 }

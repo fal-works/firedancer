@@ -54,6 +54,7 @@ enum abstract CalcOperation(Int) to Int {
 
 			case CalcOperation.SaveIntV: SaveIntV;
 			case CalcOperation.SaveFloatV: SaveFloatV;
+			case CalcOperation.CastIntToFloatVV: CastIntToFloatVV;
 			case CalcOperation.CastCartesianVV: CastCartesianVV;
 			case CalcOperation.CastPolarVV: CastPolarVV;
 
@@ -254,6 +255,11 @@ enum abstract CalcOperation(Int) to Int {
 	final SaveFloatV;
 
 	/**
+		Casts the current volatile integer to a float and assigns it to the volatile float.
+	**/
+	final CastIntToFloatVV;
+
+	/**
 		Interprets the last saved volatile float as `x` and the current volatile float as `y`,
 		and assigns them to the volatile vector.
 	**/
@@ -372,6 +378,7 @@ class CalcOperationExtension {
 
 			case SaveIntV: "save_int_v";
 			case SaveFloatV: "save_float_v";
+			case CastIntToFloatVV: "cast_int_to_float_vv";
 			case CastCartesianVV: "cast_cartesian_vv";
 			case CastPolarVV: "cast_polar_vv";
 
@@ -432,7 +439,7 @@ class CalcOperationExtension {
 
 			case SaveIntV: [];
 			case SaveFloatV: [];
-			case CastCartesianVV | CastPolarVV: [];
+			case CastIntToFloatVV | CastCartesianVV | CastPolarVV: [];
 
 			case RandomRatioV: [];
 			case RandomFloatCV: [Float];

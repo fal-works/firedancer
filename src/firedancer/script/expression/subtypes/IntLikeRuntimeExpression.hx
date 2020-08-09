@@ -119,6 +119,9 @@ abstract IntLikeRuntimeExpression(
 				}
 
 				code;
+
+			case Custom(loadToVolatile):
+				loadToVolatile;
 		}
 	}
 

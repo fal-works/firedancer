@@ -18,6 +18,12 @@ abstract IntExpression(
 		return IntLikeExpressionData.create(data);
 	}
 
+	@:to extern inline function toFloatExpression(): FloatExpression
+		return this.toFloatExpression();
+
+	@:to extern inline function toAngleExpression(): AngleExpression
+		return this.toAngleExpression();
+
 	@:op(-A)
 	extern inline function unaryMinus(): IntExpression
 		return this.unaryMinus();

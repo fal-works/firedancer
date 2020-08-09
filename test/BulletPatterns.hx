@@ -95,7 +95,7 @@ class BulletPatterns {
 	static final randomIntTest: Ast = loop([
 		shot.velocity.set(
 			5,
-			180 + random.angle.grouping(45)
+			180 + random.int.signed(4) * 30
 		),
 		loop([
 			fire(),

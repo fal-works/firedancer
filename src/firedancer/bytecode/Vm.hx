@@ -454,6 +454,8 @@ class Vm {
 								saveInt(volInt);
 							case SaveFloatV:
 								saveFloat(volFloat);
+							case CastIntToFloatVV:
+								setVolFloat(volInt);
 							case CastCartesianVV:
 								setVolVec(volFloatSaved, volFloat);
 							case CastPolarVV:

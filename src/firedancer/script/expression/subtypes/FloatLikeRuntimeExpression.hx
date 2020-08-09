@@ -119,6 +119,9 @@ abstract FloatLikeRuntimeExpression(
 				}
 
 				code;
+
+			case Custom(loadToVolatile):
+				loadToVolatile;
 		}
 	}
 
