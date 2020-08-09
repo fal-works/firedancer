@@ -142,7 +142,7 @@ class Thread {
 		@return The angle of current shot position vector.
 	**/
 	public extern inline function getShotBearing(): Float
-		return Geometry.getAngle(this.shotY, this.shotX);
+		return Geometry.getAngle(this.shotX, this.shotY);
 
 	/**
 		@return The length of current shot velocity vector.
@@ -154,7 +154,7 @@ class Thread {
 		@return The angle of current shot velocity vector.
 	**/
 	public extern inline function getShotDirection(): Float
-		return Geometry.getAngle(this.shotVy, this.shotVx);
+		return Geometry.getAngle(this.shotVx, this.shotVy);
 
 	public extern inline function setShotPosition(x: Float, y: Float): Void {
 		this.shotX = x;
