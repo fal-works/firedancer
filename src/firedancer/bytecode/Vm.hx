@@ -40,7 +40,7 @@ class Vm {
 		emitter: Emitter,
 		thisPositionRef: PositionRef,
 		parentPositionRef: PositionRef,
-		targetPosition: PositionRef
+		targetPositionRef: PositionRef
 	): Int {
 		var code: BytecodeData;
 		var codeLength: UInt;
@@ -488,15 +488,15 @@ class Vm {
 					case Read:
 						switch opcode.op {
 							case LoadTargetPositionV:
-								setVolVec(targetPosition.x, targetPosition.y);
+								setVolVec(targetPositionRef.x, targetPositionRef.y);
 							case LoadTargetXV:
-								setVolFloat(targetPosition.x);
+								setVolFloat(targetPositionRef.x);
 							case LoadTargetYV:
-								setVolFloat(targetPosition.y);
+								setVolFloat(targetPositionRef.y);
 							case LoadBearingToTargetV:
 								setVolFloat(Geometry.getAngle(
-									targetPosition.x - getX(),
-									targetPosition.y - getY()
+									targetPositionRef.x - getX(),
+									targetPositionRef.y - getY()
 								));
 
 							case CalcRelativePositionCV:
@@ -739,7 +739,7 @@ class Vm {
 		final vyVec = Vec.fromArrayCopy([0.0]);
 		final vecIndex = UInt.zero;
 		final emitter = new NullEmitter();
-		final targetPosition = PositionRef.createZero();
+		final targetPositionRef = PositionRef.createZero();
 
 		var frame = UInt.zero;
 
@@ -758,7 +758,7 @@ class Vm {
 				emitter,
 				PositionRef.createZero(),
 				PositionRef.createZero(),
-				targetPosition
+				targetPositionRef
 			);
 			++frame;
 		}
