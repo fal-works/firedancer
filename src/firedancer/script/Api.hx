@@ -81,9 +81,9 @@ class Api {
 	}
 
 	/**
-		Runs `ast` each frame within the current node list.
+		Runs `ast` every frame within the current node list.
 	**/
-	public static inline function eachFrame(ast: Ast): EachFrame {
+	public static inline function everyFrame(ast: Ast): EachFrame {
 		return new EachFrame(ast);
 	}
 

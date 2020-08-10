@@ -48,9 +48,9 @@ class BulletPatterns {
 		end(VANISH) // Here the origin of children is set to (0, 0)
 	];
 
-	static final eachFrameTest: Ast = [
+	static final everyFrameTest: Ast = [
 		shot.velocity.set(5, 180),
-		eachFrame(shot.direction.add(4)),
+		everyFrame(shot.direction.add(4)),
 		loop([
 			fire(),
 			wait(8)
