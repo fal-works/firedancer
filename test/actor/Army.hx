@@ -1,8 +1,6 @@
 package actor;
 
 class Army implements ripper.Data {
-	static final zeroPosition = PositionRef.createZero();
-
 	public final agents: ActorAosoa;
 	public final bullets: ActorAosoa;
 	public final targetPositionRef: PositionRef;
@@ -24,7 +22,7 @@ class Army implements ripper.Data {
 		vy: Float,
 		fdCode: Maybe<Bytecode>
 	): Void {
-		this.agents.use(x, y, vx, vy, fdCode, zeroPosition);
+		this.agents.use(x, y, vx, vy, fdCode, Maybe.none());
 	}
 
 	public inline function newBullet(
@@ -34,6 +32,6 @@ class Army implements ripper.Data {
 		vy: Float,
 		fdCode: Maybe<Bytecode>
 	): Void {
-		this.bullets.use(x, y, vx, vy, fdCode, zeroPosition);
+		this.bullets.use(x, y, vx, vy, fdCode, Maybe.none());
 	}
 }

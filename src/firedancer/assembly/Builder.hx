@@ -1,5 +1,6 @@
 package firedancer.assembly;
 
+import firedancer.bytecode.types.FireArgument;
 import firedancer.script.expression.IntExpression;
 import firedancer.assembly.Opcode.*;
 import firedancer.assembly.operation.GeneralOperation;
@@ -135,19 +136,31 @@ class Builder {
 	}
 
 	/**
-		Creates a `Fire` or `FireWithType` statement.
+		Creates a statement with firing opcode.
 	**/
 	public static inline function fire(
-		bytecodeId: Int,
+		fireArgument: Maybe<FireArgument>,
 		fireType: Int = 0
 	): AssemblyStatement {
-		return if (fireType == 0) {
-			new AssemblyStatement(general(Fire), [Int(bytecodeId)]);
+		return if (fireArgument.isNone()) {
+			if (fireType == 0) {
+				new AssemblyStatement(general(FireSimple), []);
+			} else {
+				new AssemblyStatement(
+					general(FireSimpleWithType),
+					[Int(fireType)]
+				);
+			}
 		} else {
-			new AssemblyStatement(
-				general(FireWithType),
-				[Int(bytecodeId), Int(fireType)]
-			);
+			final arg = fireArgument.unwrap();
+			if (fireType == 0) {
+				new AssemblyStatement(general(FireComplex), [arg]);
+			} else {
+				new AssemblyStatement(
+					general(FireComplexWithType),
+					[arg, Int(fireType)]
+				);
+			}
 		}
 	}
 

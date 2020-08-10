@@ -13,6 +13,7 @@ import firedancer.assembly.operation.CalcOperation;
 import firedancer.assembly.operation.ReadOperation;
 import firedancer.assembly.operation.WriteOperation;
 import firedancer.bytecode.internal.Constants.*;
+import firedancer.bytecode.types.FireArgument;
 import firedancer.common.Geometry;
 
 #if firedancer_verbose
@@ -27,7 +28,7 @@ class Vm {
 
 	/**
 		Runs firedancer bytecode for a specific actor.
-		@return `true` if the actor is to be
+		@return The end code. `0` at default, or any value specified in `End` instruction.
 	**/
 	public static function run(
 		bytecodeTable: RVec<Bytecode>,
@@ -36,10 +37,10 @@ class Vm {
 		yVec: Vec<Float>,
 		vxVec: Vec<Float>,
 		vyVec: Vec<Float>,
+		originPositionRefVec: Vec<Maybe<PositionRef>>,
 		vecIndex: UInt,
 		emitter: Emitter,
 		thisPositionRef: PositionRef,
-		parentPositionRef: PositionRef,
 		targetPositionRef: PositionRef
 	): Int {
 		var code: BytecodeData;
@@ -55,6 +56,36 @@ class Vm {
 		var volFloat: Float;
 		var volX: Float;
 		var volY: Float;
+
+		var originX: Float;
+		var originY: Float;
+		var positionX: Float;
+		var positionY: Float;
+
+		var originPositionRef = originPositionRefVec[vecIndex];
+		if (originPositionRef.isNone()) {
+			originX = originY = 0.0;
+			positionX = xVec[vecIndex];
+			positionY = yVec[vecIndex];
+		} else {
+			final origin = originPositionRef.unwrap();
+			if (origin.isValid()) {
+				originX = origin.x;
+				originY = origin.y;
+				positionX = xVec[vecIndex] - originX;
+				positionY = yVec[vecIndex] - originY;
+			} else {
+				originPositionRefVec[vecIndex] = Maybe.none();
+				originX = originY = 0.0;
+				positionX = xVec[vecIndex];
+				positionY = yVec[vecIndex];
+			}
+		}
+
+		inline function updatePosition(): Void {
+			xVec[vecIndex] = originX + positionX;
+			yVec[vecIndex] = originY + positionY;
+		}
 
 		inline function setVolInt(v: Int): Void
 			volInt = v;
@@ -148,10 +179,10 @@ class Vm {
 			stack.decrement32(stackSize);
 
 		inline function getX(): Float
-			return xVec[vecIndex];
+			return positionX;
 
 		inline function getY(): Float
-			return yVec[vecIndex];
+			return positionY;
 
 		inline function getVx(): Float
 			return vxVec[vecIndex];
@@ -160,10 +191,10 @@ class Vm {
 			return vyVec[vecIndex];
 
 		inline function setX(x: Float): Void
-			xVec[vecIndex] = x;
+			positionX = x;
 
 		inline function setY(y: Float): Void
-			yVec[vecIndex] = y;
+			positionY = y;
 
 		inline function setVx(vx: Float): Void
 			vxVec[vecIndex] = vx;
@@ -172,10 +203,10 @@ class Vm {
 			vyVec[vecIndex] = vy;
 
 		inline function addX(x: Float): Void
-			xVec[vecIndex] += x;
+			positionX += x;
 
 		inline function addY(y: Float): Void
-			yVec[vecIndex] += y;
+			positionY += y;
 
 		inline function addVx(vx: Float): Void
 			vxVec[vecIndex] += vx;
@@ -349,34 +380,54 @@ class Vm {
 							case End:
 								final endCode = readCodeI32();
 								threads.deactivateAll();
+								updatePosition();
 								return endCode;
 
-							case Fire:
-								final bytecodeId = readCodeI32();
-								final bytecode = if (bytecodeId < 0) Maybe.none() else
-									Maybe.from(bytecodeTable[bytecodeId]);
+							case FireSimple:
 								emitter.emit(
-									xVec[vecIndex] + thread.shotX,
-									yVec[vecIndex] + thread.shotY,
+									getX() + thread.shotX,
+									getY() + thread.shotY,
 									thread.shotVx,
 									thread.shotVy,
 									0,
-									bytecode,
-									thisPositionRef
+									Maybe.none(),
+									Maybe.none()
 								);
-							case FireWithType:
-								final bytecodeId = readCodeI32();
-								final bytecode = if (bytecodeId < 0) Maybe.none() else
-									Maybe.from(bytecodeTable[bytecodeId]);
+							case FireComplex:
+								final arg: FireArgument = readCodeI32();
+								final bytecode = Maybe.from(bytecodeTable[arg.bytecodeId]);
+								emitter.emit(
+									getX() + thread.shotX,
+									getY() + thread.shotY,
+									thread.shotVx,
+									thread.shotVy,
+									0, // default fire type
+									bytecode,
+									if (arg.bindPosition) Maybe.from(thisPositionRef) else Maybe.none()
+								);
+							case FireSimpleWithType:
 								final fireType = readCodeI32();
 								emitter.emit(
-									xVec[vecIndex] + thread.shotX,
-									yVec[vecIndex] + thread.shotY,
+									getX() + thread.shotX,
+									getY() + thread.shotY,
+									thread.shotVx,
+									thread.shotVy,
+									fireType,
+									Maybe.none(),
+									Maybe.none()
+								);
+							case FireComplexWithType:
+								final arg: FireArgument = readCodeI32();
+								final fireType = readCodeI32();
+								final bytecode = Maybe.from(bytecodeTable[arg.bytecodeId]);
+								emitter.emit(
+									getX() + thread.shotX,
+									getY() + thread.shotY,
 									thread.shotVx,
 									thread.shotVy,
 									fireType,
 									bytecode,
-									thisPositionRef
+									if (arg.bindPosition) Maybe.from(thisPositionRef) else Maybe.none()
 								);
 
 							#if debug
@@ -723,6 +774,8 @@ class Vm {
 			thread.update(codePos, stackSize);
 		}
 
+		updatePosition();
+
 		return 0;
 	}
 
@@ -737,6 +790,7 @@ class Vm {
 		final yVec = Vec.fromArrayCopy([0.0]);
 		final vxVec = Vec.fromArrayCopy([0.0]);
 		final vyVec = Vec.fromArrayCopy([0.0]);
+		final originPositionRefVec: Vec<Maybe<PositionRef>> = new Vec(UInt.one);
 		final vecIndex = UInt.zero;
 		final emitter = new NullEmitter();
 		final targetPositionRef = PositionRef.createZero();
@@ -754,9 +808,9 @@ class Vm {
 				yVec,
 				vxVec,
 				vyVec,
+				originPositionRefVec,
 				vecIndex,
 				emitter,
-				PositionRef.createZero(),
 				PositionRef.createZero(),
 				targetPositionRef
 			);

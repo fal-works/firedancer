@@ -34,7 +34,7 @@ class World {
 
 		// armies.setFilter(new h2d.filter.Glow(0xFFFFFF, 1.0, 50, 0.5, 0.5, true));
 
-		final targetPositionRef = PositionRef.create(0, 0.75 * worldHeight);
+		final targetPositionRef = PositionRef.createImmutable(0, 0.75 * worldHeight);
 
 		army = WorldBuilder.createArmy(
 			armies,

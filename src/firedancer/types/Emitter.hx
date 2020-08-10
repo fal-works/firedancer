@@ -19,9 +19,9 @@ class Emitter {
 		@param fireType Any integer value to branch the emission process
 		(e.g. switch graphics of the actor to be emitted).
 		@param code The bytecode to run.
-		@param parentPositionRef The reference to the position of the parent actor
-		(to which the new actor' position should be bound), or a zero-position reference
-		if the position does not need to be bound.
+		@param originPositionRef The reference to the origin point position.
+		This is used for binding the position of the actor being fired to that of the actor that fired it.
+		`Maybe.none()` if the position does not need to be bound.
 	**/
 	public function emit(
 		x: Float,
@@ -30,7 +30,7 @@ class Emitter {
 		vy: Float,
 		fireType: Int,
 		code: Maybe<Bytecode>,
-		parentPositionRef: PositionRef
+		originPositionRef: Maybe<PositionRef>
 	): Void {
 		throw new NotOverriddenException();
 	}
@@ -49,6 +49,6 @@ class NullEmitter extends Emitter {
 		vy: Float,
 		fireType: Int,
 		code: Maybe<Bytecode>,
-		parentPositionRef: PositionRef
+		originPositionRef: Maybe<PositionRef>
 	): Void {}
 }

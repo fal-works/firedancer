@@ -32,6 +32,22 @@ class BulletPatterns {
 		])
 	];
 
+	static final fireBound: Ast = [
+		shot.position.set(5, 180),
+		loop([
+			loop([
+				fire(loop([
+					distance.add(4),
+					bearing.add(1),
+					wait(1)
+				])).bind(),
+				shot.bearing.add(30),
+			]).count(12),
+			wait(30)
+		]).count(4),
+		end(VANISH) // Here the origin of children is set to (0, 0)
+	];
+
 	static final eachFrameTest: Ast = [
 		shot.velocity.set(5, 180),
 		eachFrame(shot.direction.add(4)),
@@ -104,7 +120,7 @@ class BulletPatterns {
 		wait(16)
 	]);
 
-	static final testAst = test(spiral); // Change this for testing
+	static final testAst = test(fireBound); // Change this for testing
 
 	public static final context = compile(["test" => testAst]);
 	public static final testPattern = context.getBytecodeByName("test");

@@ -22,6 +22,7 @@ enum abstract GeneralOperation(Int) to Int {
 			case GeneralOperation.UseThreadS: UseThreadS;
 			case GeneralOperation.AwaitThread: AwaitThread;
 			case GeneralOperation.End: End;
+
 			case GeneralOperation.PushIntC: PushIntC;
 			case GeneralOperation.PushIntV: PushIntV;
 			case GeneralOperation.PushFloatC: PushFloatC;
@@ -31,8 +32,12 @@ enum abstract GeneralOperation(Int) to Int {
 			case GeneralOperation.DropFloat: DropFloat;
 			case GeneralOperation.PeekVec: PeekVec;
 			case GeneralOperation.DropVec: DropVec;
-			case GeneralOperation.Fire: Fire;
-			case GeneralOperation.FireWithType: FireWithType;
+
+			case GeneralOperation.FireSimple: FireSimple;
+			case GeneralOperation.FireComplex: FireComplex;
+			case GeneralOperation.FireSimpleWithType: FireSimpleWithType;
+			case GeneralOperation.FireComplexWithType: FireComplexWithType;
+
 			default: throw error(value);
 		}
 	}
@@ -139,24 +144,39 @@ enum abstract GeneralOperation(Int) to Int {
 	**/
 	final DropVec;
 
-	// ---- other operations ----------------------------------------------------
+	// ---- fire ----------------------------------------------------
+
+	/**
+		Emits a new actor with a default type, without bytecode and
+		without binding the position.
+	**/
+	final FireSimple;
 
 	/**
 		Emits a new actor with a default type.
 
 		Argument:
-		- (int) Bytecode ID, or any negative value to emit without bytecode
+		- (int) `FireArgument` value
 	**/
-	final Fire;
+	final FireComplex;
+
+	/**
+		Emits a new actor with a specified type, without bytecode and
+		without binding the position.
+
+		Argument:
+		- (int) Fire type
+	**/
+	final FireSimpleWithType;
 
 	/**
 		Emits a new actor with a specified type.
 
 		Arguments:
-		1. (int) Bytecode ID, or any negative value to emit without bytecode
+		1. (int) `FireArgument` value
 		2. (int) Fire type
 	**/
-	final FireWithType;
+	final FireComplexWithType;
 
 	public extern inline function int(): Int
 		return this;
@@ -176,6 +196,7 @@ class GeneralOperationExtension {
 			case UseThreadS: "use_thread_s";
 			case AwaitThread: "await_thread";
 			case End: "end";
+
 			case PushIntC: "push_int_c";
 			case PushIntV: "push_int_v";
 			case PushFloatC: "push_float_c";
@@ -185,8 +206,11 @@ class GeneralOperationExtension {
 			case DropFloat: "drop_float";
 			case PeekVec: "peek_vec";
 			case DropVec: "drop_vec";
-			case Fire: "fire";
-			case FireWithType: "fire_with_type";
+
+			case FireSimple: "fire_simple";
+			case FireComplex: "fire_complex";
+			case FireSimpleWithType: "fire_simple_with_type";
+			case FireComplexWithType: "fire_complex_with_type";
 		}
 	}
 
@@ -202,6 +226,7 @@ class GeneralOperationExtension {
 			case UseThread | UseThreadS: [Int]; // bytecode ID
 			case AwaitThread: [];
 			case End: [Int]; // end code
+
 			case PushIntC: [Int]; // integer to push
 			case PushIntV: [];
 			case PushFloatC: [Float]; // float to push
@@ -209,8 +234,11 @@ class GeneralOperationExtension {
 			case PushVecV: [];
 			case PeekFloat | PeekVec: [Int]; // bytes to be skipped from the stack top
 			case DropFloat | DropVec: [];
-			case Fire: [Int]; // bytecode ID or negative for null
-			case FireWithType: [Int, Int]; // 1. bytecode ID or negative for null, 2. Fire type
+
+			case FireSimple: [];
+			case FireComplex: [Int]; // FireArgument value
+			case FireSimpleWithType: [Int]; // fire type
+			case FireComplexWithType: [Int, Int]; // 1. FireArgument value, 2. fire type
 		}
 	}
 
