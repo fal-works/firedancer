@@ -16,3 +16,4 @@
 
 --debug
 -D broker_catch_disable
+-D firedancer_positionref_type=broker_BatchSprite

@@ -4,8 +4,8 @@ import banker.binary.ByteStackData;
 import haxe.Int32;
 import banker.vector.Vector as RVec;
 import banker.vector.WritableVector as Vec;
-import broker.geometry.Point;
 import reckoner.Random;
+import firedancer.types.PositionRef;
 import firedancer.types.Emitter;
 import firedancer.assembly.Opcode;
 import firedancer.assembly.operation.GeneralOperation;
@@ -38,7 +38,9 @@ class Vm {
 		vyVec: Vec<Float>,
 		vecIndex: UInt,
 		emitter: Emitter,
-		targetPosition: Point
+		thisPositionRef: PositionRef,
+		parentPositionRef: PositionRef,
+		targetPosition: PositionRef
 	): Int {
 		var code: BytecodeData;
 		var codeLength: UInt;
@@ -359,7 +361,8 @@ class Vm {
 									thread.shotVx,
 									thread.shotVy,
 									0,
-									bytecode
+									bytecode,
+									thisPositionRef
 								);
 							case FireWithType:
 								final bytecodeId = readCodeI32();
@@ -372,7 +375,8 @@ class Vm {
 									thread.shotVx,
 									thread.shotVy,
 									fireType,
-									bytecode
+									bytecode,
+									thisPositionRef
 								);
 
 							#if debug
@@ -484,15 +488,15 @@ class Vm {
 					case Read:
 						switch opcode.op {
 							case LoadTargetPositionV:
-								setVolVec(targetPosition.x(), targetPosition.y());
+								setVolVec(targetPosition.x, targetPosition.y);
 							case LoadTargetXV:
-								setVolFloat(targetPosition.x());
+								setVolFloat(targetPosition.x);
 							case LoadTargetYV:
-								setVolFloat(targetPosition.y());
+								setVolFloat(targetPosition.y);
 							case LoadBearingToTargetV:
 								setVolFloat(Geometry.getAngle(
-									targetPosition.x() - getX(),
-									targetPosition.y() - getY()
+									targetPosition.x - getX(),
+									targetPosition.y - getY()
 								));
 
 							case CalcRelativePositionCV:
@@ -735,7 +739,7 @@ class Vm {
 		final vyVec = Vec.fromArrayCopy([0.0]);
 		final vecIndex = UInt.zero;
 		final emitter = new NullEmitter();
-		final targetPosition = new Point(0, 0);
+		final targetPosition = PositionRef.createZero();
 
 		var frame = UInt.zero;
 
@@ -752,6 +756,8 @@ class Vm {
 				vyVec,
 				vecIndex,
 				emitter,
+				PositionRef.createZero(),
+				PositionRef.createZero(),
 				targetPosition
 			);
 			++frame;

@@ -1,5 +1,7 @@
 package actor;
 
+import firedancer.types.PositionRef;
+
 /**
 	Object for emitting new bullet.
 **/
@@ -13,8 +15,9 @@ class Emitter extends firedancer.types.Emitter implements ripper.Data {
 		vx: Float,
 		vy: Float,
 		fireType: Int,
-		code: Maybe<Bytecode>
+		code: Maybe<Bytecode>,
+		parentPosition: PositionRef
 	): Void {
-		aosoa.use(x, y, vx, vy, code);
+		aosoa.use(x, y, vx, vy, code, parentPosition);
 	}
 }

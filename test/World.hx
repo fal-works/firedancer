@@ -3,9 +3,9 @@ import broker.image.Tile;
 import broker.draw.DrawArea;
 import broker.draw.TileDraw;
 import broker.draw.BatchDraw;
-import broker.geometry.Point;
 import reckoner.TmpVec2D;
 import firedancer.types.Azimuth;
+import firedancer.types.PositionRef;
 import actor.*;
 
 class World {
@@ -34,9 +34,11 @@ class World {
 
 		// armies.setFilter(new h2d.filter.Glow(0xFFFFFF, 1.0, 50, 0.5, 0.5, true));
 
+		final targetPositionRef = PositionRef.create(0, 0.75 * worldHeight);
+
 		army = WorldBuilder.createArmy(
 			armies,
-			Global.playerPosition,
+			targetPositionRef,
 			worldWidth,
 			worldHeight
 		);
@@ -68,7 +70,7 @@ class World {
 private class WorldBuilder {
 	public static function createArmy(
 		parent: Object,
-		targetPosition: Point,
+		targetPositionRef: PositionRef,
 		areaWidth: UInt,
 		areaHeight: UInt
 	) {
@@ -101,7 +103,7 @@ private class WorldBuilder {
 			bullets
 		);
 
-		return new Army(agents, bullets, targetPosition);
+		return new Army(agents, bullets, targetPositionRef);
 	}
 }
 

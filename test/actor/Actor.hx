@@ -28,6 +28,11 @@ class Actor extends broker.entity.BasicBatchEntity {
 	var threads: ThreadList;
 
 	/**
+		Reference to the parent actor position (or `(0, 0)` if no parent).
+	**/
+	var parentPositionRef: PositionRef = PositionRef.createZero();
+
+	/**
 		Elapsed frame count of each entity.
 	**/
 	var frameCount: UInt = UInt.zero;
@@ -46,6 +51,7 @@ class Actor extends broker.entity.BasicBatchEntity {
 		vx: WVec<Float>,
 		vy: WVec<Float>,
 		threads: ThreadList,
+		parentPositionRef: WVec<PositionRef>,
 		frameCount: WVec<UInt>,
 		dead: WVec<Bool>,
 		i: Int,
@@ -55,7 +61,8 @@ class Actor extends broker.entity.BasicBatchEntity {
 		initialY: Float,
 		initialVx: Float,
 		initialVy: Float,
-		code: Maybe<Bytecode>
+		code: Maybe<Bytecode>,
+		parentPosition: PositionRef
 	): Void {
 		x[i] = initialX;
 		y[i] = initialY;
@@ -64,6 +71,8 @@ class Actor extends broker.entity.BasicBatchEntity {
 
 		if (code.isSome()) threads.set(code.unwrap());
 		else threads.reset();
+
+		parentPositionRef[i] = parentPosition;
 
 		frameCount[i] = UInt.zero;
 		dead[i] = false;
@@ -79,6 +88,7 @@ class Actor extends broker.entity.BasicBatchEntity {
 		vx: WVec<Float>,
 		vy: WVec<Float>,
 		threads: ThreadList,
+		parentPositionRef: WVec<PositionRef>,
 		frameCount: WVec<UInt>,
 		dead: WVec<Bool>,
 		i: Int,
@@ -88,7 +98,8 @@ class Actor extends broker.entity.BasicBatchEntity {
 		initialY: Float,
 		speed: Float,
 		direction: Float,
-		code: Maybe<Bytecode>
+		code: Maybe<Bytecode>,
+		parentPosition: PositionRef
 	): Void {
 		x[i] = initialX;
 		y[i] = initialY;
@@ -98,6 +109,8 @@ class Actor extends broker.entity.BasicBatchEntity {
 
 		if (code.isSome()) threads.set(code.unwrap());
 		else threads.reset();
+
+		parentPositionRef[i] = parentPosition;
 
 		frameCount[i] = UInt.zero;
 		dead[i] = false;
@@ -130,6 +143,7 @@ class Actor extends broker.entity.BasicBatchEntity {
 		vx: WVec<Float>,
 		vy: WVec<Float>,
 		threads: ThreadList,
+		parentPositionRef: PositionRef,
 		frameCount: WVec<UInt>,
 		i: Int,
 		disuse: Bool,
@@ -138,16 +152,30 @@ class Actor extends broker.entity.BasicBatchEntity {
 		dead: WVec<Bool>,
 		rotationVelocity: Float,
 		emitter: Emitter,
-		targetPosition: Point
+		targetPositionRef: PositionRef
 	): Void {
 		if (dead[i] || !HabitableZone.containsPoint(x[i], y[i])) {
 			disuse = true;
 			disusedSprites[disusedCount] = sprite;
 			++disusedCount;
 		} else {
-			final endCode = Vm.run(bytecodeTable, threads, x, y, vx, vy, i, emitter, targetPosition);
+			final endCode = Vm.run(
+				bytecodeTable,
+				threads,
+				x,
+				y,
+				vx,
+				vy,
+				i,
+				emitter,
+				sprite,
+				parentPositionRef,
+				targetPositionRef
+			);
+
 			x[i] += vx[i];
 			y[i] += vy[i];
+
 			switch endCode {
 				case VANISH: dead[i] = true;
 				default:

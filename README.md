@@ -12,9 +12,10 @@ Inspired by [BulletML](http://www.asahi-net.or.jp/~cs8k-cyu/bulletml/index_e.htm
 
 ## Compilation flags
 
-|library|flag|description|
-|---|---|---|
-|firedancer|firedancer_verbose|Emits verbose log.|
+|flag|description|
+|---|---|
+|firedancer_verbose|Emits verbose log.|
+|firedancer_positionref_type|Specifies the underlying type of `firedancer.types.PositionRef`. Example: `-D firedancer_positionref_type=broker_BatchSprite` (Valid values: "broker_BatchSprite" for `broker.draw.BatchSprite`, "heaps_BatchElement" for `h2d.SpriteBatch.BatchElement`, otherwise an anonymous structure `{ x: Float, y: Float }`)|
 
 
 ## Dependencies
