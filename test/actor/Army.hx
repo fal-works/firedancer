@@ -18,19 +18,20 @@ class Army implements ripper.Data {
 	public inline function newAgent(
 		x: Float,
 		y: Float,
-		speed: Float,
-		direction: Float,
-		fdCode: Bytecode
+		vx: Float,
+		vy: Float,
+		fdCode: Maybe<Bytecode>
 	): Void {
-		this.agents.emit(x, y, speed, direction, fdCode);
+		this.agents.use(x, y, vx, vy, fdCode);
 	}
 
 	public inline function newBullet(
 		x: Float,
 		y: Float,
-		speed: Float,
-		direction: Float
+		vx: Float,
+		vy: Float,
+		fdCode: Maybe<Bytecode>
 	): Void {
-		this.bullets.emit(x, y, speed, direction, Maybe.none());
+		this.bullets.use(x, y, vx, vy, fdCode);
 	}
 }

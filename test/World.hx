@@ -1,10 +1,11 @@
-import broker.App;
 import broker.object.Object;
 import broker.image.Tile;
 import broker.draw.DrawArea;
 import broker.draw.TileDraw;
 import broker.draw.BatchDraw;
 import broker.geometry.Point;
+import reckoner.TmpVec2D;
+import firedancer.types.Azimuth;
 import actor.*;
 
 class World {
@@ -41,7 +42,15 @@ class World {
 		);
 
 		// first agent
-		army.newAgent(0, -32, 3, Math.PI, BulletPatterns.testPattern);
+		final position = new TmpVec2D(0, -32);
+		final velocity = Azimuth.fromDegrees(180).toVec2D(3);
+		army.newAgent(
+			position.x,
+			position.y,
+			velocity.x,
+			velocity.y,
+			BulletPatterns.testPattern
+		);
 	}
 
 	public function update(): Void {
