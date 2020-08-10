@@ -28,20 +28,20 @@ class World {
 		area.add(background);
 
 		final armies = new Object();
+		armies.setPosition(worldWidth / 2, 0);
 		area.add(armies);
 
 		// armies.setFilter(new h2d.filter.Glow(0xFFFFFF, 1.0, 50, 0.5, 0.5, true));
 
-		army = WorldBuilder.createArmy(armies, Global.playerPosition);
+		army = WorldBuilder.createArmy(
+			armies,
+			Global.playerPosition,
+			worldWidth,
+			worldHeight
+		);
 
 		// first agent
-		army.newAgent(
-			0.5 * worldWidth,
-			-32,
-			3,
-			Math.PI,
-			BulletPatterns.testPattern
-		);
+		army.newAgent(0, -32, 3, Math.PI, BulletPatterns.testPattern);
 	}
 
 	public function update(): Void {
@@ -49,8 +49,7 @@ class World {
 		army.synchronize();
 	}
 
-	public function dispose(): Void {
-	}
+	public function dispose(): Void {}
 }
 
 /**
@@ -58,13 +57,26 @@ class World {
 **/
 @:access(World)
 private class WorldBuilder {
-	public static function createArmy(parent: Object, targetPosition: Point) {
+	public static function createArmy(
+		parent: Object,
+		targetPosition: Point,
+		areaWidth: UInt,
+		areaHeight: UInt
+	) {
 		final agentTile = Tile.fromRgb(0xf0f0f0, 48, 48).toCentered();
-		final agentBatch = new BatchDraw(agentTile.getTexture(), App.width, App.height);
+		final agentBatch = new BatchDraw(
+			agentTile.getTexture(),
+			areaWidth,
+			areaHeight
+		);
 		parent.addChild(agentBatch);
 
 		final bulletTile = Tile.fromRgb(0xf0f0f0, 16, 16).toCentered();
-		final bulletBatch = new BatchDraw(bulletTile.getTexture(), App.width, App.height);
+		final bulletBatch = new BatchDraw(
+			bulletTile.getTexture(),
+			areaWidth,
+			areaHeight
+		);
 		parent.addChild(bulletBatch);
 
 		final bullets = ArmyBuilder.createActors(
@@ -84,11 +96,15 @@ private class WorldBuilder {
 	}
 }
 
+/**
+	Bounds of the habitable zone of actors.
+	Horizontally centered.
+**/
 class HabitableZone {
 	static extern inline final margin: Float = 64;
-	public static extern inline final leftX: Float = 0 - margin;
+	public static extern inline final leftX: Float = -World.worldWidth / 2 - margin;
 	public static extern inline final topY: Float = 0 - margin;
-	public static extern inline final rightX: Float = World.worldWidth + margin;
+	public static extern inline final rightX: Float = World.worldWidth / 2 + margin;
 	public static extern inline final bottomY: Float = World.worldHeight + margin;
 
 	public static extern inline function containsPoint(x: Float, y: Float): Bool

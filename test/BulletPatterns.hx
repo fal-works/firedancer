@@ -104,22 +104,7 @@ class BulletPatterns {
 		wait(16)
 	]);
 
-	static final sandbox: Ast = loop([
-		wait(30),
-		shot.velocity.set(5, 180),
-		loop([fire(), wait(4)]).count(10),
-		shot.direction.set(15).frames(10),
-		loop([fire(), wait(4)]).count(30),
-		velocity.set(0, 0),
-		position.cartesian.set(100, 100).frames(30),
-		position.cartesian.set(200, 200).frames(30),
-		wait(30),
-		velocity.set(5, 150),
-		wait(30),
-		velocity.set(5, 210)
-	]).count(2);
-
-	static final testAst = test(randomIntTest); // Change this for testing
+	static final testAst = test(spiral); // Change this for testing
 
 	public static final context = compile(["test" => testAst]);
 	public static final testPattern = context.getBytecodeByName("test");
