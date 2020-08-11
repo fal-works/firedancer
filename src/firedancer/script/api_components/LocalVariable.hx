@@ -2,6 +2,8 @@ package firedancer.script.api_components;
 
 import firedancer.script.expression.LocalVariableExpression;
 import firedancer.script.nodes.DeclareLocalVariable;
+import firedancer.script.nodes.OperateLocalVariable;
+
 
 class LocalVariable {
 	final name: String;
@@ -18,6 +20,12 @@ class IntLocalVariable extends LocalVariable {
 
 	public function get(): IntExpression
 		return LocalVariableExpression.fromName(this.name);
+
+	public function set(value: IntExpression): OperateLocalVariable
+		return { name: this.name, value: value, operation: Set };
+
+	public function add(value: IntExpression): OperateLocalVariable
+		return { name: this.name, value: value, operation: Add };
 }
 
 class FloatLocalVariable extends LocalVariable {
@@ -27,6 +35,12 @@ class FloatLocalVariable extends LocalVariable {
 
 	public function get(): FloatExpression
 		return LocalVariableExpression.fromName(this.name);
+
+	public function set(value: FloatExpression): OperateLocalVariable
+		return { name: this.name, value: value, operation: Set };
+
+	public function add(value: FloatExpression): OperateLocalVariable
+		return { name: this.name, value: value, operation: Add };
 }
 
 class AngleLocalVariable extends LocalVariable {
@@ -36,4 +50,10 @@ class AngleLocalVariable extends LocalVariable {
 
 	public function get(): AngleExpression
 		return LocalVariableExpression.fromName(this.name);
+
+	public function set(value: AngleExpression): OperateLocalVariable
+		return { name: this.name, value: value, operation: Set };
+
+	public function add(value: AngleExpression): OperateLocalVariable
+		return { name: this.name, value: value, operation: Add };
 }

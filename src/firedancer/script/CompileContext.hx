@@ -1,11 +1,14 @@
 package firedancer.script;
 
 import banker.vector.Vector;
-import firedancer.assembly.Opcode;
 import firedancer.assembly.AssemblyStatement;
 import firedancer.assembly.AssemblyCode;
 import firedancer.assembly.ValueType;
+import firedancer.assembly.Opcode.*;
+import firedancer.assembly.operation.CalcOperation;
+import firedancer.assembly.operation.GeneralOperation;
 import firedancer.bytecode.RuntimeContext;
+import firedancer.script.expression.GenericExpression;
 
 /**
 	Context for compiling bullet patterns.
@@ -14,7 +17,7 @@ class CompileContext {
 	/**
 		Manages available local variables.
 	**/
-	public final localVariables = new LocalVariableTable();
+	public final localVariables: LocalVariableTable;
 
 	/**
 		List of `AssemblyCode` that should be able to retrieved by an `UInt` ID.
@@ -32,7 +35,9 @@ class CompileContext {
 	**/
 	final injectionStack: Array<AssemblyCode> = [];
 
-	public function new() {}
+	public function new() {
+		this.localVariables = new LocalVariableTable(this);
+	}
 
 	/**
 		Registers `code` in `this` context (if absent)
@@ -118,10 +123,13 @@ class LocalVariableTable {
 	**/
 	var address: UInt;
 
-	public function new() {
+	final context: CompileContext;
+
+	public function new(context: CompileContext) {
 		this.addressStack = [];
 		this.variableCountStack = [];
 		this.address = UInt.zero;
+		this.context = context;
 	}
 
 	/**
@@ -153,7 +161,8 @@ class LocalVariableTable {
 		this.addressStack.push({
 			name: name,
 			type: type,
-			address: address
+			address: address,
+			context: this.context
 		});
 
 		this.address = address + type.size;
@@ -183,9 +192,10 @@ class LocalVariableTable {
 	public final name: String;
 	public final type: ValueType;
 	public final address: UInt;
+	final context: CompileContext;
 
 	public function loadToVolatile(): AssemblyCode {
-		final opcode: Opcode = Opcode.general(switch this.type {
+		final opcode = general(switch this.type {
 			case Int: LoadIntLV;
 			case Float: LoadFloatLV;
 			case Vec: throw "Local variable of vector type is not supported.";
@@ -195,5 +205,54 @@ class LocalVariableTable {
 			opcode,
 			[Int(this.address.int())]
 		);
+	}
+
+	public function setValue(value: GenericExpression): AssemblyCode {
+		var storeCL: GeneralOperation;
+		var storeVL: GeneralOperation;
+
+		switch this.type {
+			case Int:
+				storeCL = StoreIntCL;
+				storeVL = StoreIntVL;
+			case Float:
+				storeCL = StoreFloatCL;
+				storeVL = StoreFloatVL;
+			case Vec:
+				throw "Local variable of vector type is not supported.";
+		}
+
+		return value.use(this.context, general(storeCL), general(storeVL));
+	}
+
+	public function addValue(valueToAdd: GenericExpression): AssemblyCode {
+		var storeVL: GeneralOperation;
+		var save: GeneralOperation;
+		var add: CalcOperation;
+
+		switch this.type {
+			case Int:
+				storeVL = StoreIntVL;
+				save = SaveIntV;
+				add = AddIntVVV;
+			case Float:
+				storeVL = StoreFloatVL;
+				save = SaveFloatV;
+				add = AddFloatVVV;
+			case Vec:
+				throw "Local variable of vector type is not supported.";
+		};
+
+		final localVar = context.localVariables.get(this.name);
+
+		return [
+			localVar.loadToVolatile(),
+			[new AssemblyStatement(general(save), [])],
+			valueToAdd.loadToVolatile(context),
+			[
+				new AssemblyStatement(calc(add), []),
+				new AssemblyStatement(general(storeVL), [Int(localVar.address.int())])
+			]
+		].flatten();
 	}
 }

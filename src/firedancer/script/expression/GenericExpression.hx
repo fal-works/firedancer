@@ -1,19 +1,24 @@
 package firedancer.script.expression;
 
+import firedancer.assembly.Opcode;
 import firedancer.assembly.ConstantOperand;
 import firedancer.assembly.AssemblyCode;
 
 abstract GenericExpression(Data) from Data {
-	@:from static extern inline function fromIntExpr(expr: IntExpression): GenericExpression
+	@:from
+	static extern inline function fromIntExpr(expr: IntExpression): GenericExpression
 		return IntExpr(expr);
 
-	@:from static extern inline function fromFloatExpr(expr: FloatExpression): GenericExpression
+	@:from
+	static extern inline function fromFloatExpr(expr: FloatExpression): GenericExpression
 		return FloatExpr(expr);
 
-	@:from static extern inline function fromAngleExpr(expr: AngleExpression): GenericExpression
+	@:from
+	static extern inline function fromAngleExpr(expr: AngleExpression): GenericExpression
 		return AngleExpr(expr);
 
-	@:from static extern inline function fromVecExpr(expr: VecExpression): GenericExpression
+	@:from
+	static extern inline function fromVecExpr(expr: VecExpression): GenericExpression
 		return VecExpr(expr);
 
 	@:to function toIntExpr(): IntExpression {
@@ -61,6 +66,23 @@ abstract GenericExpression(Data) from Data {
 			case FloatExpr(expr): expr.loadToVolatile(context);
 			case AngleExpr(expr): expr.loadToVolatile(context);
 			case VecExpr(expr): expr.loadToVolatile(context);
+		}
+	}
+
+	/**
+		Creates an `AssemblyCode` that runs either `constantOpcode` or `volatileOpcode`
+		receiving `this` value as argument.
+	**/
+	public function use(
+		context: CompileContext,
+		constantOpcode: Opcode,
+		volatileOpcode: Opcode
+	): AssemblyCode {
+		return switch this {
+			case IntExpr(expr): expr.use(context, constantOpcode, volatileOpcode);
+			case FloatExpr(expr): expr.use(context, constantOpcode, volatileOpcode);
+			case AngleExpr(expr): expr.use(context, constantOpcode, volatileOpcode);
+			case VecExpr(expr): expr.use(context, constantOpcode, volatileOpcode);
 		}
 	}
 

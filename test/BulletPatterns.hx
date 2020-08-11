@@ -122,11 +122,12 @@ class BulletPatterns {
 
 	static final localVarTest: Ast = [
 		shot.velocity.set(5, 180),
+		intVar("myInt").let(),
 		loop([
+			shot.direction.set(intVar("myInt").get()),
 			fire(),
-			intVar("myInt").let(random.int.between(1, 5)),
-			shot.direction.add(intVar("myInt").get() * 16),
-			wait((5 - intVar("myInt").get()) * 8)
+			wait(4),
+			intVar("myInt").add(10)
 		])
 	];
 
