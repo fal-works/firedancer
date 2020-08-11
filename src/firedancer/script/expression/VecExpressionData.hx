@@ -116,7 +116,7 @@ class CartesianVecExpressionData extends VecExpressionData {
 
 			if (divisor.isNone()) {
 				// cVec
-				return statement(calc(LoadVecCV), [Vec(xVal, yVal)]);
+				return statement(general(LoadVecCV), [Vec(xVal, yVal)]);
 			} else {
 				final divisorConstant = divisor.unwrap().tryGetConstantOperandValue();
 
@@ -124,13 +124,13 @@ class CartesianVecExpressionData extends VecExpressionData {
 					// cVec / cDiv
 					final divVal = divisorConstant.unwrap();
 					return statement(
-						calc(LoadVecCV),
+						general(LoadVecCV),
 						[Vec(xVal / divVal, yVal / divVal)]
 					);
 				} else {
 					// cVec / rDiv
 					return [
-						[statement(calc(LoadVecCV), [Vec(xVal, yVal)])],
+						[statement(general(LoadVecCV), [Vec(xVal, yVal)])],
 						divisor.unwrap().loadToVolatile(),
 						[statement(calc(DivFloatVVV))]
 					].flatten();
@@ -140,7 +140,7 @@ class CartesianVecExpressionData extends VecExpressionData {
 
 		final loadVecWithoutDivisor = [
 			x.loadToVolatile(),
-			[statement(calc(SaveFloatV))],
+			[statement(general(SaveFloatV))],
 			y.loadToVolatile(),
 			[statement(calc(CastCartesianVV))]
 		].flatten();
@@ -229,7 +229,7 @@ class PolarVecExpressionData extends VecExpressionData {
 
 			if (divisor.isNone()) {
 				// cVec
-				return statement(calc(LoadVecCV), [Vec(vec.x, vec.y)]);
+				return statement(general(LoadVecCV), [Vec(vec.x, vec.y)]);
 			} else {
 				final divisorConstant = divisor.unwrap().tryGetConstantOperandValue();
 
@@ -237,13 +237,13 @@ class PolarVecExpressionData extends VecExpressionData {
 					// cVec / cDiv
 					final divVal = divisorConstant.unwrap();
 					return statement(
-						calc(LoadVecCV),
+						general(LoadVecCV),
 						[Vec(vec.x / divVal, vec.y / divVal)]
 					);
 				} else {
 					// cVec / rDiv
 					return [
-						[statement(calc(LoadVecCV), [Vec(vec.x, vec.y)])],
+						[statement(general(LoadVecCV), [Vec(vec.x, vec.y)])],
 						divisor.unwrap().loadToVolatile(),
 						[statement(calc(DivFloatVVV))]
 					].flatten();
@@ -253,7 +253,7 @@ class PolarVecExpressionData extends VecExpressionData {
 
 		final loadVecWithoutDivisor = [
 			length.loadToVolatile(),
-			[statement(calc(SaveFloatV))],
+			[statement(general(SaveFloatV))],
 			angle.loadToVolatile(),
 			[statement(calc(CastPolarVV))]
 		].flatten();

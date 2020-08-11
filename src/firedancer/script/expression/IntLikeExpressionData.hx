@@ -42,7 +42,7 @@ class IntLikeExpressionData implements ExpressionData {
 	public function loadToVolatile(): AssemblyCode {
 		return switch this.data {
 			case Constant(value):
-				new AssemblyStatement(calc(LoadIntCV), [value.toOperand()]);
+				new AssemblyStatement(general(LoadIntCV), [value.toOperand()]);
 			case Runtime(expression):
 				expression.loadToVolatile();
 		}
@@ -180,7 +180,7 @@ class IntLikeExpressionData implements ExpressionData {
 
 		final loadAsFloat: AssemblyCode = if (constant.isSome()) {
 			new AssemblyStatement(
-				calc(LoadFloatCV),
+				general(LoadFloatCV),
 				[Float(constantFactor * constant.unwrap())]
 			);
 		} else {

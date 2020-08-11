@@ -319,6 +319,15 @@ class Vm {
 				switch opcode.category {
 					case General:
 						switch opcode.op {
+							case LoadFloatCV:
+								setVolFloat(readCodeF64());
+							case LoadVecCV:
+								setVolVec(readCodeF64(), readCodeF64());
+							case SaveIntV:
+								saveInt(volInt);
+							case SaveFloatV:
+								saveFloat(volFloat);
+
 							case PushIntC:
 								pushInt(readCodeI32());
 							case PushIntV:
@@ -438,11 +447,6 @@ class Vm {
 
 					case Calc:
 						switch opcode.op {
-							case LoadFloatCV:
-								setVolFloat(readCodeF64());
-							case LoadVecCV:
-								setVolVec(readCodeF64(), readCodeF64());
-
 							case AddIntVCV:
 								setVolInt(volInt + readCodeI32());
 							case AddIntVVV:
@@ -505,10 +509,6 @@ class Vm {
 								setVolVec(volX * volFloat, volY * volFloat);
 							case DivVecVVV:
 								setVolVec(volX / volFloat, volY / volFloat);
-							case SaveIntV:
-								saveInt(volInt);
-							case SaveFloatV:
-								saveFloat(volFloat);
 							case CastIntToFloatVV:
 								setVolFloat(volInt);
 							case CastCartesianVV:

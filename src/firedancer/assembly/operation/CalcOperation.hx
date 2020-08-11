@@ -14,10 +14,6 @@ enum abstract CalcOperation(Int) to Int {
 	**/
 	public static inline function from(value: Int): CalcOperation {
 		return switch value {
-			case CalcOperation.LoadIntCV: LoadIntCV;
-			case CalcOperation.LoadFloatCV: LoadFloatCV;
-			case CalcOperation.LoadVecCV: LoadVecCV;
-
 			case CalcOperation.AddIntVCV: AddIntVCV;
 			case CalcOperation.AddIntVVV: AddIntVVV;
 			case CalcOperation.SubIntVCV: SubIntVCV;
@@ -52,8 +48,6 @@ enum abstract CalcOperation(Int) to Int {
 			case CalcOperation.MultVecVVV: MultVecVVV;
 			case CalcOperation.DivVecVVV: DivVecVVV;
 
-			case CalcOperation.SaveIntV: SaveIntV;
-			case CalcOperation.SaveFloatV: SaveFloatV;
 			case CalcOperation.CastIntToFloatVV: CastIntToFloatVV;
 			case CalcOperation.CastCartesianVV: CastCartesianVV;
 			case CalcOperation.CastPolarVV: CastPolarVV;
@@ -73,21 +67,6 @@ enum abstract CalcOperation(Int) to Int {
 	}
 
 	// ---- calc values ----------------------------------------------
-
-	/**
-		Assigns a given constant integer to the current volatile integer.
-	**/
-	final LoadIntCV;
-
-	/**
-		Assigns a given constant float to the current volatile float.
-	**/
-	final LoadFloatCV;
-
-	/**
-		Assigns given constant float values to the current volatile vector.
-	**/
-	final LoadVecCV;
 
 	/**
 		Adds a given constant integer to the current volatile integer.
@@ -245,16 +224,6 @@ enum abstract CalcOperation(Int) to Int {
 	final DivVecVVV;
 
 	/**
-		Saves the current volatile integer.
-	**/
-	final SaveIntV;
-
-	/**
-		Saves the current volatile float.
-	**/
-	final SaveFloatV;
-
-	/**
 		Casts the current volatile integer to a float and assigns it to the volatile float.
 	**/
 	final CastIntToFloatVV;
@@ -338,10 +307,6 @@ class CalcOperationExtension {
 	**/
 	public static inline function toString(code: CalcOperation): String {
 		return switch code {
-			case LoadFloatCV: "load_float_cv";
-			case LoadIntCV: "load_int_cv";
-			case LoadVecCV: "load_vec_cv";
-
 			case AddIntVCV: "add_int_vcv";
 			case AddIntVVV: "add_int_vvv";
 			case SubIntVCV: "sub_int_vcv";
@@ -376,8 +341,6 @@ class CalcOperationExtension {
 			case MultVecVVV: "mult_vec_vvv";
 			case DivVecVVV: "div_vec_vvv";
 
-			case SaveIntV: "save_int_v";
-			case SaveFloatV: "save_float_v";
 			case CastIntToFloatVV: "cast_int_to_float_vv";
 			case CastCartesianVV: "cast_cartesian_vv";
 			case CastPolarVV: "cast_polar_vv";
@@ -399,10 +362,6 @@ class CalcOperationExtension {
 	**/
 	public static inline function toStatementType(op: CalcOperation): StatementType {
 		return switch op {
-			case LoadIntCV: [Int];
-			case LoadFloatCV: [Float];
-			case LoadVecCV: [Vec];
-
 			case AddIntVCV: [Int]; // value to add
 			case AddIntVVV: [];
 			case SubIntVCV: [Int]; // value to subtract
@@ -437,8 +396,6 @@ class CalcOperationExtension {
 			case MultVecVVV: [];
 			case DivVecVVV: [];
 
-			case SaveIntV: [];
-			case SaveFloatV: [];
 			case CastIntToFloatVV | CastCartesianVV | CastPolarVV: [];
 
 			case RandomRatioV: [];

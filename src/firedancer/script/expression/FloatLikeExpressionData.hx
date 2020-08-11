@@ -40,7 +40,7 @@ class FloatLikeExpressionData implements ExpressionData {
 	public function loadToVolatile(): AssemblyCode {
 		return switch this.data {
 			case Constant(value):
-				new AssemblyStatement(calc(LoadFloatCV), [value.toOperand()]);
+				new AssemblyStatement(general(LoadFloatCV), [value.toOperand()]);
 			case Runtime(expression):
 				expression.loadToVolatile();
 		}

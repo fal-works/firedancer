@@ -23,6 +23,12 @@ enum abstract GeneralOperation(Int) to Int {
 			case GeneralOperation.AwaitThread: AwaitThread;
 			case GeneralOperation.End: End;
 
+			case GeneralOperation.LoadIntCV: LoadIntCV;
+			case GeneralOperation.LoadFloatCV: LoadFloatCV;
+			case GeneralOperation.LoadVecCV: LoadVecCV;
+			case GeneralOperation.SaveIntV: SaveIntV;
+			case GeneralOperation.SaveFloatV: SaveFloatV;
+
 			case GeneralOperation.PushIntC: PushIntC;
 			case GeneralOperation.PushIntV: PushIntV;
 			case GeneralOperation.PushFloatC: PushFloatC;
@@ -94,6 +100,33 @@ enum abstract GeneralOperation(Int) to Int {
 		Ends running bytecode and returns an end code specified by a given constant integer.
 	**/
 	final End;
+
+	// ---- load values -------------------------------------------------
+
+	/**
+		Assigns a given constant integer to the current volatile integer.
+	**/
+	final LoadIntCV;
+
+	/**
+		Assigns a given constant float to the current volatile float.
+	**/
+	final LoadFloatCV;
+
+	/**
+		Assigns given constant float values to the current volatile vector.
+	**/
+	final LoadVecCV;
+
+	/**
+		Saves the current volatile integer.
+	**/
+	final SaveIntV;
+
+	/**
+		Saves the current volatile float.
+	**/
+	final SaveFloatV;
 
 	// ---- read/write stack ----------------------------------------------
 
@@ -197,6 +230,12 @@ class GeneralOperationExtension {
 			case AwaitThread: "await_thread";
 			case End: "end";
 
+			case LoadFloatCV: "load_float_cv";
+			case LoadIntCV: "load_int_cv";
+			case LoadVecCV: "load_vec_cv";
+			case SaveIntV: "save_int_v";
+			case SaveFloatV: "save_float_v";
+
 			case PushIntC: "push_int_c";
 			case PushIntV: "push_int_v";
 			case PushFloatC: "push_float_c";
@@ -226,6 +265,12 @@ class GeneralOperationExtension {
 			case UseThread | UseThreadS: [Int]; // bytecode ID
 			case AwaitThread: [];
 			case End: [Int]; // end code
+
+			case LoadIntCV: [Int];
+			case LoadFloatCV: [Float];
+			case LoadVecCV: [Vec];
+			case SaveIntV: [];
+			case SaveFloatV: [];
 
 			case PushIntC: [Int]; // integer to push
 			case PushIntV: [];

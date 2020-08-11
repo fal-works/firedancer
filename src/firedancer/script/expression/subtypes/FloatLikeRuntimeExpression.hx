@@ -14,8 +14,8 @@ typedef FloatLikeRuntimeExpressionEnum = RuntimeExpressionEnum<FloatLikeConstant
 abstract FloatLikeRuntimeExpression(
 	FloatLikeRuntimeExpressionEnum
 ) from FloatLikeRuntimeExpressionEnum to FloatLikeRuntimeExpressionEnum {
-	static extern inline final loadOpcode = calc(LoadFloatCV);
-	static extern inline final saveOpcode = calc(SaveFloatV);
+	static extern inline final loadOpcode = general(LoadFloatCV);
+	static extern inline final saveOpcode = general(SaveFloatV);
 
 	static function createOperands(value: Float): Array<ConstantOperand>
 		return [Float(value)];

@@ -12,6 +12,8 @@ enum RuntimeExpressionEnum<C, E> {
 	**/
 	Variable(loadV: Opcode);
 
+	// LocalVariable()
+
 	/**
 		@param type Type that determines which `Opcode` to use.
 		@param operand An expression to be operated.

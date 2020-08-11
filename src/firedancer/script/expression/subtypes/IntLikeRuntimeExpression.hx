@@ -14,8 +14,8 @@ typedef IntLikeRuntimeExpressionEnum = RuntimeExpressionEnum<IntLikeConstant, In
 abstract IntLikeRuntimeExpression(
 	IntLikeRuntimeExpressionEnum
 ) from IntLikeRuntimeExpressionEnum to IntLikeRuntimeExpressionEnum {
-	static extern inline final loadOpcode = calc(LoadIntCV);
-	static extern inline final saveOpcode = calc(SaveIntV);
+	static extern inline final loadOpcode = general(LoadIntCV);
+	static extern inline final saveOpcode = general(SaveIntV);
 
 	static function createOperands(value: Int): Array<ConstantOperand>
 		return [Int(value)];
