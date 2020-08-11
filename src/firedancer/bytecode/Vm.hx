@@ -319,34 +319,8 @@ class Vm {
 				switch opcode.category {
 					case General:
 						switch opcode.op {
-							case LoadFloatCV:
-								setVolFloat(readCodeF64());
-							case LoadVecCV:
-								setVolVec(readCodeF64(), readCodeF64());
-							case SaveIntV:
-								saveInt(volInt);
-							case SaveFloatV:
-								saveFloat(volFloat);
-
-							case PushIntC:
-								pushInt(readCodeI32());
-							case PushIntV:
-								pushInt(volInt);
-							case PushFloatC:
-								pushFloat(readCodeF64());
-							case PushFloatV:
-								pushFloat(volFloat);
-							case PushVecV:
-								pushVec(volX, volY);
-							case PeekFloat:
-								setVolFloat(peekFloatSkipped(readCodeI32()));
-							case DropFloat:
-								dropFloat();
-							case PeekVec:
-								final vec = peekVecSkipped(readCodeI32());
-								setVolVec(vec.x, vec.y);
-							case DropVec:
-								dropVec();
+							case Break:
+								break;
 							case CountDownBreak:
 								if (0 < peekInt()) {
 									decrement();
@@ -355,8 +329,6 @@ class Vm {
 								} else {
 									dropInt();
 								}
-							case Break:
-								break;
 							case Jump:
 								final jumpLength = readCodeI32();
 								codePos += jumpLength;
@@ -391,6 +363,37 @@ class Vm {
 								threads.deactivateAll();
 								updatePosition();
 								return endCode;
+
+							case LoadIntCV:
+								setVolInt(readCodeI32());
+							case LoadFloatCV:
+								setVolFloat(readCodeF64());
+							case LoadVecCV:
+								setVolVec(readCodeF64(), readCodeF64());
+							case SaveIntV:
+								saveInt(volInt);
+							case SaveFloatV:
+								saveFloat(volFloat);
+
+							case PushIntC:
+								pushInt(readCodeI32());
+							case PushIntV:
+								pushInt(volInt);
+							case PushFloatC:
+								pushFloat(readCodeF64());
+							case PushFloatV:
+								pushFloat(volFloat);
+							case PushVecV:
+								pushVec(volX, volY);
+							case PeekFloat:
+								setVolFloat(peekFloatSkipped(readCodeI32()));
+							case DropFloat:
+								dropFloat();
+							case PeekVec:
+								final vec = peekVecSkipped(readCodeI32());
+								setVolVec(vec.x, vec.y);
+							case DropVec:
+								dropVec();
 
 							case FireSimple:
 								emitter.emit(
@@ -502,6 +505,9 @@ class Vm {
 								setVolFloat(readCodeF64() % volFloat);
 							case ModFloatVVV:
 								setVolFloat(volFloatSaved % volFloat);
+
+							case MinusVecV:
+								setVolVec(-volX, -volY);
 							case MultVecVCV:
 								final multiplier = readCodeF64();
 								setVolVec(volX * multiplier, volY * multiplier);
@@ -516,6 +522,7 @@ class Vm {
 							case CastPolarVV:
 								final vec = Geometry.toVec(volFloatSaved, volFloat);
 								setVolVec(vec.x, vec.y);
+
 							case RandomRatioV:
 								setVolFloat(Random.random());
 							case RandomFloatCV:
