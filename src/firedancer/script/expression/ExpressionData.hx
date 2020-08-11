@@ -7,11 +7,11 @@ interface ExpressionData {
 	/**
 		Creates an `AssemblyCode` that assigns `this` value to the current volatile float.
 	**/
-	public function loadToVolatile(): AssemblyCode;
+	public function loadToVolatile(context: CompileContext): AssemblyCode;
 
 	/**
 		Creates an `AssemblyCode` that runs either `constantOpcode` or `volatileOpcode`
 		receiving `this` value as argument.
 	**/
-	public function use(constantOpcode: Opcode, volatileOpcode: Opcode): AssemblyCode;
+	public function use(context: CompileContext, constantOpcode: Opcode, volatileOpcode: Opcode): AssemblyCode;
 }

@@ -120,7 +120,17 @@ class BulletPatterns {
 		wait(16)
 	]);
 
-	static final testAst = test(fireBound); // Change this for testing
+	static final localVarTest: Ast = [
+		shot.velocity.set(5, 180),
+		loop([
+			fire(),
+			intVar("myInt").let(random.int.between(1, 5)),
+			shot.direction.add(intVar("myInt").get() * 16),
+			wait((5 - intVar("myInt").get()) * 8)
+		])
+	];
+
+	static final testAst = test(localVarTest); // Change this for testing
 
 	public static final context = compile(["test" => testAst]);
 	public static final testPattern = context.getBytecodeByName("test");

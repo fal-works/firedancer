@@ -33,6 +33,7 @@ class Vm {
 	public static function run(
 		bytecodeTable: RVec<Bytecode>,
 		threads: ThreadList,
+		stackCapacity: UInt,
 		xVec: Vec<Float>,
 		yVec: Vec<Float>,
 		vxVec: Vec<Float>,
@@ -374,6 +375,24 @@ class Vm {
 								saveInt(volInt);
 							case SaveFloatV:
 								saveFloat(volFloat);
+							case LoadIntLV:
+								final address = readCodeI32();
+								setVolInt(stack.bytesData.getI32(stackCapacity - address - LEN32));
+							case LoadFloatLV:
+								final address = readCodeI32();
+								setVolFloat(stack.bytesData.getF64(stackCapacity - address - LEN64));
+							case StoreIntCL:
+								final address = readCodeI32();
+								stack.bytesData.setI32(stackCapacity - address - LEN32, readCodeI32());
+							case StoreFloatCL:
+								final address = readCodeI32();
+								stack.bytesData.setF64(stackCapacity - address - LEN64, readCodeF64());
+							case StoreIntVL:
+								final address = readCodeI32();
+								stack.bytesData.setI32(stackCapacity - address - LEN32, volInt);
+							case StoreFloatVL:
+								final address = readCodeI32();
+								stack.bytesData.setF64(stackCapacity - address - LEN64, volFloat);
 
 							case PushIntC:
 								pushInt(readCodeI32());
@@ -811,6 +830,7 @@ class Vm {
 			Vm.run(
 				context.bytecodeTable,
 				threads,
+				stackCapacity,
 				xVec,
 				yVec,
 				vxVec,

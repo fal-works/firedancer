@@ -19,69 +19,73 @@ class OperateActor extends AstNode implements ripper.Data {
 		Creates an `AssemblyCode` instance from `attribute` and `operation`.
 	**/
 	public static function createAssembly(
+		c: CompileContext,
 		attribute: ActorAttribute,
 		operation: ActorAttributeOperation
 	): AssemblyCode {
 		return switch attribute {
 			case Position:
 				switch operation {
-					case SetVector(e): writeVec(e, SetPositionC, SetPositionV);
-					case AddVector(e): writeVec(e, AddPositionC, AddPositionV);
-					case SetLength(e): writeF(e, SetDistanceC, SetDistanceV);
-					case AddLength(e): writeF(e, AddDistanceC, AddDistanceV);
-					case SetAngle(e): writeA(e, SetBearingC, SetBearingV);
-					case AddAngle(e): writeA(e, AddBearingC, AddBearingV);
+					case SetVector(e): writeVec(c, e, SetPositionC, SetPositionV);
+					case AddVector(e): writeVec(c, e, AddPositionC, AddPositionV);
+					case SetLength(e): writeF(c, e, SetDistanceC, SetDistanceV);
+					case AddLength(e): writeF(c, e, AddDistanceC, AddDistanceV);
+					case SetAngle(e): writeA(c, e, SetBearingC, SetBearingV);
+					case AddAngle(e): writeA(c, e, AddBearingC, AddBearingV);
 				}
 			case Velocity:
 				switch operation {
-					case SetVector(e): writeVec(e, SetVelocityC, SetVelocityV);
-					case AddVector(e): writeVec(e, AddVelocityC, AddVelocityV);
-					case SetLength(e): writeF(e, SetSpeedC, SetSpeedV);
-					case AddLength(e): writeF(e, AddSpeedC, AddSpeedV);
-					case SetAngle(e): writeA(e, SetDirectionC, SetDirectionV);
-					case AddAngle(e): writeA(e, AddDirectionC, AddDirectionV);
+					case SetVector(e): writeVec(c, e, SetVelocityC, SetVelocityV);
+					case AddVector(e): writeVec(c, e, AddVelocityC, AddVelocityV);
+					case SetLength(e): writeF(c, e, SetSpeedC, SetSpeedV);
+					case AddLength(e): writeF(c, e, AddSpeedC, AddSpeedV);
+					case SetAngle(e): writeA(c, e, SetDirectionC, SetDirectionV);
+					case AddAngle(e): writeA(c, e, AddDirectionC, AddDirectionV);
 				}
 			case ShotPosition:
 				switch operation {
-					case SetVector(e): writeVec(e, SetShotPositionC, SetShotPositionV);
-					case AddVector(e): writeVec(e, AddShotPositionC, AddShotPositionV);
-					case SetLength(e): writeF(e, SetShotDistanceC, SetShotDistanceV);
-					case AddLength(e): writeF(e, AddShotDistanceC, AddShotDistanceV);
-					case SetAngle(e): writeA(e, SetShotBearingC, SetShotBearingV);
-					case AddAngle(e): writeA(e, AddShotBearingC, AddShotBearingV);
+					case SetVector(e): writeVec(c, e, SetShotPositionC, SetShotPositionV);
+					case AddVector(e): writeVec(c, e, AddShotPositionC, AddShotPositionV);
+					case SetLength(e): writeF(c, e, SetShotDistanceC, SetShotDistanceV);
+					case AddLength(e): writeF(c, e, AddShotDistanceC, AddShotDistanceV);
+					case SetAngle(e): writeA(c, e, SetShotBearingC, SetShotBearingV);
+					case AddAngle(e): writeA(c, e, AddShotBearingC, AddShotBearingV);
 				}
 			case ShotVelocity:
 				switch operation {
-					case SetVector(e): writeVec(e, SetShotVelocityC, SetShotVelocityV);
-					case AddVector(e): writeVec(e, AddShotVelocityC, AddShotVelocityV);
-					case SetLength(e): writeF(e, SetShotSpeedC, SetShotSpeedV);
-					case AddLength(e): writeF(e, AddShotSpeedC, AddShotSpeedV);
-					case SetAngle(e): writeA(e, SetShotDirectionC, SetShotDirectionV);
-					case AddAngle(e): writeA(e, AddShotDirectionC, AddShotDirectionV);
+					case SetVector(e): writeVec(c, e, SetShotVelocityC, SetShotVelocityV);
+					case AddVector(e): writeVec(c, e, AddShotVelocityC, AddShotVelocityV);
+					case SetLength(e): writeF(c, e, SetShotSpeedC, SetShotSpeedV);
+					case AddLength(e): writeF(c, e, AddShotSpeedC, AddShotSpeedV);
+					case SetAngle(e): writeA(c, e, SetShotDirectionC, SetShotDirectionV);
+					case AddAngle(e): writeA(c, e, AddShotDirectionC, AddShotDirectionV);
 				}
 		}
 	}
 
 	static extern inline function writeVec(
+		context: CompileContext,
 		expr: VecExpression,
 		opC: WriteOperation,
 		opV: WriteOperation
 	): AssemblyCode
-		return expr.use(write(opC), write(opV));
+		return expr.use(context, write(opC), write(opV));
 
 	static extern inline function writeF(
+		context: CompileContext,
 		expr: FloatExpression,
 		opC: WriteOperation,
 		opV: WriteOperation
 	): AssemblyCode
-		return expr.use(write(opC), write(opV));
+		return expr.use(context, write(opC), write(opV));
 
 	static extern inline function writeA(
+		context: CompileContext,
 		expr: AngleExpression,
 		opC: WriteOperation,
 		opV: WriteOperation
 	): AssemblyCode
-		return expr.use(write(opC), write(opV));
+		return expr.use(context, write(opC), write(opV));
 
 	final attribute: ActorAttribute;
 	final operation: ActorAttributeOperation;
@@ -96,7 +100,7 @@ class OperateActor extends AstNode implements ripper.Data {
 		return false;
 
 	override public function toAssembly(context: CompileContext): AssemblyCode
-		return createAssembly(attribute, operation);
+		return createAssembly(context, attribute, operation);
 }
 
 @:ripper_verified
@@ -128,11 +132,11 @@ class OperateActorLinear extends AstNode implements ripper.Data {
 				prepare = [];
 				body = [
 					[breakFrame()],
-					OperateActor.createAssembly(attribute, operation.divide(frames))
+					OperateActor.createAssembly(context, attribute, operation.divide(frames))
 				].flatten();
 				complete = [];
 			default:
-				final ret = operation.relativeChange(attribute, frames);
+				final ret = operation.relativeChange(context, attribute, frames);
 				prepare = ret.prepare;
 				body = ret.body;
 				complete = ret.complete;
@@ -140,7 +144,7 @@ class OperateActorLinear extends AstNode implements ripper.Data {
 
 		final loopedBody = if (this.loopUnrolling) {
 			loopUnrolled(0...frames, _ -> body);
-		} else loop(body, frames);
+		} else loop(context, body, frames);
 
 		return [
 			prepare,
@@ -200,6 +204,7 @@ class ActorAttributeOperationExtension {
 	**/
 	public static function relativeChange(
 		setOperation: ActorAttributeOperation,
+		context: CompileContext,
 		attribute: ActorAttribute,
 		frames: NInt
 	) {
@@ -241,7 +246,7 @@ class ActorAttributeOperationExtension {
 						case ShotVelocity: CalcRelativeShotVelocityVV;
 					};
 					calcRelative = [
-						vec.loadToVolatile(),
+						vec.loadToVolatile(context),
 						[statement(read(calcRelativeVV))]
 					].flatten();
 				}
@@ -276,7 +281,7 @@ class ActorAttributeOperationExtension {
 							case ShotPosition: CalcRelativeShotDistanceVV;
 							case ShotVelocity: CalcRelativeShotDirectionVV;
 						}
-						calcRelative = expression.loadToVolatile();
+						calcRelative = expression.loadToVolatile(context);
 						calcRelative.push(statement(read(calcRelativeVV)));
 				}
 
@@ -310,7 +315,7 @@ class ActorAttributeOperationExtension {
 							case ShotPosition: CalcRelativeShotBearingVV;
 							case ShotVelocity: CalcRelativeShotDirectionVV;
 						}
-						calcRelative = expression.loadToVolatile();
+						calcRelative = expression.loadToVolatile(context);
 						calcRelative.push(statement(read(calcRelativeVV)));
 				}
 

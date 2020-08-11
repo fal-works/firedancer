@@ -35,7 +35,7 @@ class VecExpressionData implements ExpressionData {
 	public function divideByFloat(divisor: Float): VecExpressionData
 		throw new NotOverriddenException();
 
-	public function loadToVolatile(): AssemblyCode
+	public function loadToVolatile(context: CompileContext): AssemblyCode
 		throw new NotOverriddenException();
 
 	/**
@@ -45,6 +45,7 @@ class VecExpressionData implements ExpressionData {
 		@param processVolatileVector Any `Opcode` that uses the volatile vector.
 	**/
 	public function use(
+		context: CompileContext,
 		processConstantVector: Opcode,
 		processVolatileVector: Opcode
 	): AssemblyCode {
@@ -52,7 +53,7 @@ class VecExpressionData implements ExpressionData {
 		return if (const.isSome()) {
 			statement(processConstantVector, [const.unwrap()]);
 		} else {
-			final code = loadToVolatile();
+			final code = loadToVolatile(context);
 			code.push(statement(processVolatileVector));
 			code;
 		}
@@ -102,7 +103,7 @@ class CartesianVecExpressionData extends VecExpressionData {
 	override public function divideByFloat(divisor: Float): CartesianVecExpressionData
 		return divide(divisor);
 
-	override public function loadToVolatile(): AssemblyCode {
+	override public function loadToVolatile(context: CompileContext): AssemblyCode {
 		final x = this.x;
 		final y = this.y;
 		final divisor = this.divisor;
@@ -131,7 +132,7 @@ class CartesianVecExpressionData extends VecExpressionData {
 					// cVec / rDiv
 					return [
 						[statement(general(LoadVecCV), [Vec(xVal, yVal)])],
-						divisor.unwrap().loadToVolatile(),
+						divisor.unwrap().loadToVolatile(context),
 						[statement(calc(DivFloatVVV))]
 					].flatten();
 				}
@@ -139,9 +140,9 @@ class CartesianVecExpressionData extends VecExpressionData {
 		}
 
 		final loadVecWithoutDivisor = [
-			x.loadToVolatile(),
+			x.loadToVolatile(context),
 			[statement(general(SaveFloatV))],
-			y.loadToVolatile(),
+			y.loadToVolatile(context),
 			[statement(calc(CastCartesianVV))]
 		].flatten();
 
@@ -163,7 +164,7 @@ class CartesianVecExpressionData extends VecExpressionData {
 				// rVec / rDiv
 				return [
 					loadVecWithoutDivisor,
-					divisor.unwrap().loadToVolatile(),
+					divisor.unwrap().loadToVolatile(context),
 					[statement(calc(DivVecVVV))]
 				].flatten();
 			}
@@ -215,7 +216,7 @@ class PolarVecExpressionData extends VecExpressionData {
 	override public function divideByFloat(divisor: Float): PolarVecExpressionData
 		return divide(divisor);
 
-	override public function loadToVolatile(): AssemblyCode {
+	override public function loadToVolatile(context: CompileContext): AssemblyCode {
 		var length = this.length;
 		final angle = this.angle;
 
@@ -244,7 +245,7 @@ class PolarVecExpressionData extends VecExpressionData {
 					// cVec / rDiv
 					return [
 						[statement(general(LoadVecCV), [Vec(vec.x, vec.y)])],
-						divisor.unwrap().loadToVolatile(),
+						divisor.unwrap().loadToVolatile(context),
 						[statement(calc(DivFloatVVV))]
 					].flatten();
 				}
@@ -252,9 +253,9 @@ class PolarVecExpressionData extends VecExpressionData {
 		}
 
 		final loadVecWithoutDivisor = [
-			length.loadToVolatile(),
+			length.loadToVolatile(context),
 			[statement(general(SaveFloatV))],
-			angle.loadToVolatile(),
+			angle.loadToVolatile(context),
 			[statement(calc(CastPolarVV))]
 		].flatten();
 
@@ -276,7 +277,7 @@ class PolarVecExpressionData extends VecExpressionData {
 				// rVec / rDiv
 				return [
 					loadVecWithoutDivisor,
-					divisor.unwrap().loadToVolatile(),
+					divisor.unwrap().loadToVolatile(context),
 					[statement(calc(DivVecVVV))]
 				].flatten();
 			}

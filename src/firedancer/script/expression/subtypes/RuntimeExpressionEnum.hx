@@ -12,8 +12,6 @@ enum RuntimeExpressionEnum<C, E> {
 	**/
 	Variable(loadV: Opcode);
 
-	// LocalVariable()
-
 	/**
 		@param type Type that determines which `Opcode` to use.
 		@param operand An expression to be operated.
@@ -34,5 +32,5 @@ enum RuntimeExpressionEnum<C, E> {
 		operandB: E
 	);
 
-	Custom(loadToVolatile: AssemblyCode);
+	Custom(loadToVolatile: (context: CompileContext) -> AssemblyCode);
 }

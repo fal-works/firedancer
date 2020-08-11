@@ -28,6 +28,12 @@ enum abstract GeneralOperation(Int) to Int {
 			case GeneralOperation.LoadVecCV: LoadVecCV;
 			case GeneralOperation.SaveIntV: SaveIntV;
 			case GeneralOperation.SaveFloatV: SaveFloatV;
+			case GeneralOperation.LoadIntLV: LoadIntLV;
+			case GeneralOperation.LoadFloatLV: LoadFloatLV;
+			case GeneralOperation.StoreIntCL: StoreIntCL;
+			case GeneralOperation.StoreFloatCL: StoreFloatCL;
+			case GeneralOperation.StoreIntVL: StoreIntVL;
+			case GeneralOperation.StoreFloatVL: StoreFloatVL;
 
 			case GeneralOperation.PushIntC: PushIntC;
 			case GeneralOperation.PushIntV: PushIntV;
@@ -127,6 +133,42 @@ enum abstract GeneralOperation(Int) to Int {
 		Saves the current volatile float.
 	**/
 	final SaveFloatV;
+
+	/**
+		Assigns the local variable value (of which the address is specified
+		by a given constant integer) to the volatile integer.
+	**/
+	final LoadIntLV;
+
+	/**
+		Assigns the local variable value (of which the address is specified
+		by a given constant integer) to the volatile float.
+	**/
+	final LoadFloatLV;
+
+	/**
+		Assigns the second constant integer to the local variable
+		(of which the address is specified by the first constant integer).
+	**/
+	final StoreIntCL;
+
+	/**
+		Assigns a given constant float to the local variable
+		(of which the address is specified by a given constant integer).
+	**/
+	final StoreFloatCL;
+
+	/**
+		Assigns the current volatile integer to the local variable
+		(of which the address is specified by a given constant integer).
+	**/
+	final StoreIntVL;
+
+	/**
+		Assigns the current volatile float to the local variable
+		(of which the address is specified by a given constant integer).
+	**/
+	final StoreFloatVL;
 
 	// ---- read/write stack ----------------------------------------------
 
@@ -230,11 +272,17 @@ class GeneralOperationExtension {
 			case AwaitThread: "await_thread";
 			case End: "end";
 
-			case LoadFloatCV: "load_float_cv";
 			case LoadIntCV: "load_int_cv";
+			case LoadFloatCV: "load_float_cv";
 			case LoadVecCV: "load_vec_cv";
 			case SaveIntV: "save_int_v";
 			case SaveFloatV: "save_float_v";
+			case LoadIntLV: "load_int_lv";
+			case LoadFloatLV: "load_float_lv";
+			case StoreIntCL: "store_int_cl";
+			case StoreFloatCL: "store_float_cl";
+			case StoreIntVL: "store_int_vl";
+			case StoreFloatVL: "store_float_vl";
 
 			case PushIntC: "push_int_c";
 			case PushIntV: "push_int_v";
@@ -271,6 +319,12 @@ class GeneralOperationExtension {
 			case LoadVecCV: [Vec];
 			case SaveIntV: [];
 			case SaveFloatV: [];
+			case LoadIntLV: [Int]; // address
+			case LoadFloatLV: [Int]; // address
+			case StoreIntCL: [Int, Int]; // address, value
+			case StoreFloatCL: [Int, Float]; // address, value
+			case StoreIntVL: [Int]; // address
+			case StoreFloatVL: [Int]; // address
 
 			case PushIntC: [Int]; // integer to push
 			case PushIntV: [];

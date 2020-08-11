@@ -18,9 +18,12 @@ class List extends AstNode implements ripper.Data {
 	}
 
 	override public function toAssembly(context: CompileContext): AssemblyCode {
+
 		final codeList: Array<AssemblyCode> = [];
 		final nodes = this.nodes;
 		var everyFrameNodeCount = UInt.zero;
+
+		context.localVariables.startBlock();
 
 		for (i in 0...nodes.length) {
 			final node = nodes[i];
@@ -34,6 +37,8 @@ class List extends AstNode implements ripper.Data {
 
 			codeList.push(node.toAssembly(context));
 		}
+
+		context.localVariables.endBlock();
 
 		for (_ in 0...everyFrameNodeCount) context.popInjectionCode();
 

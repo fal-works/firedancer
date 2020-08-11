@@ -49,7 +49,7 @@ class FiniteLoop extends Loop {
 		final code = if (countValue.isSome() && this.isInlined) {
 			loopUnrolled(0...countValue.unwrap(), _ -> body);
 		} else {
-			loop(body, count);
+			loop(context, body, count);
 		}
 
 		return code;

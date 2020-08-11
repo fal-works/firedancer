@@ -1,6 +1,7 @@
 package firedancer.assembly;
 
 import firedancer.bytecode.types.FireArgument;
+import firedancer.script.CompileContext;
 import firedancer.script.expression.IntExpression;
 import firedancer.assembly.Opcode.*;
 import firedancer.assembly.operation.GeneralOperation;
@@ -14,6 +15,13 @@ class Builder {
 	**/
 	public static inline function pushIntC(v: Int): AssemblyStatement {
 		return new AssemblyStatement(general(PushIntC), [Int(v)]);
+	}
+
+	/**
+		Creates a `PushIntV` statement.
+	**/
+	public static inline function pushIntV(): AssemblyStatement {
+		return new AssemblyStatement(general(PushIntV), []);
 	}
 
 	/**
@@ -100,7 +108,7 @@ class Builder {
 	/**
 		Creates a code instance that repeats `body` in runtime.
 	**/
-	public static function loop(body: AssemblyCode, count: IntExpression): AssemblyCode {
+	public static function loop(context: CompileContext, body: AssemblyCode, count: IntExpression): AssemblyCode {
 		final bodyLength = body.bytecodeLength().int();
 
 		final countValue = count.tryGetConstantOperandValue();
@@ -108,7 +116,7 @@ class Builder {
 		final prepareLoop: AssemblyCode = if (countValue.isSome()) {
 			pushIntC(countValue.unwrap());
 		} else {
-			final code = count.loadToVolatile();
+			final code = count.loadToVolatile(context);
 			code.pushStatement(Opcode.general(PushIntV));
 			code;
 		};

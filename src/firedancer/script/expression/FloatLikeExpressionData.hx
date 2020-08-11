@@ -37,12 +37,12 @@ class FloatLikeExpressionData implements ExpressionData {
 	/**
 		Creates an `AssemblyCode` that assigns `this` value to the current volatile float.
 	**/
-	public function loadToVolatile(): AssemblyCode {
+	public function loadToVolatile(context: CompileContext): AssemblyCode {
 		return switch this.data {
 			case Constant(value):
 				new AssemblyStatement(general(LoadFloatCV), [value.toOperand()]);
 			case Runtime(expression):
-				expression.loadToVolatile();
+				expression.loadToVolatile(context);
 		}
 	}
 
@@ -50,13 +50,13 @@ class FloatLikeExpressionData implements ExpressionData {
 		Creates an `AssemblyCode` that runs either `constantOpcode` or `volatileOpcode`
 		receiving `this` value as argument.
 	**/
-	public function use(constantOpcode: Opcode, volatileOpcode: Opcode): AssemblyCode {
+	public function use(context: CompileContext, constantOpcode: Opcode, volatileOpcode: Opcode): AssemblyCode {
 		final constantOperand = tryGetConstantOperand();
 
 		return if (constantOperand.isSome()) {
 			new AssemblyStatement(constantOpcode, [constantOperand.unwrap()]);
 		} else [
-			loadToVolatile(),
+			loadToVolatile(context),
 			[new AssemblyStatement(volatileOpcode, [])]
 		].flatten();
 	}

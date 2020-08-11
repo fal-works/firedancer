@@ -36,8 +36,14 @@ class Wait extends AstNode implements ripper.Data {
 					return [pushIntC(framesValue), countDownbreak()];
 
 			default:
+				if (injectionCode.length == 0) {
+					return [
+						frames.loadToVolatile(context),
+						[pushIntV(), countDownbreak()]
+					].flatten();
+				}
 		}
 
-		return loop(loopBody, frames);
+		return loop(context, loopBody, frames);
 	}
 }

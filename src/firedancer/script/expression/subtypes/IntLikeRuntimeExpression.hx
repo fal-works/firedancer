@@ -23,7 +23,7 @@ abstract IntLikeRuntimeExpression(
 	/**
 		Creates an `AssemblyCode` that assigns `this` value to the current volatile float.
 	**/
-	public function loadToVolatile(): AssemblyCode {
+	public function loadToVolatile(context: CompileContext): AssemblyCode {
 		return switch this {
 			case Variable(loadV):
 				new AssemblyStatement(loadV, []);
@@ -49,7 +49,7 @@ abstract IntLikeRuntimeExpression(
 							];
 					}
 				} else {
-					final code = operand.loadToVolatile();
+					final code = operand.loadToVolatile(context);
 					code.push(new AssemblyStatement(type.runtimeOperator, []));
 					code;
 				}
@@ -88,12 +88,12 @@ abstract IntLikeRuntimeExpression(
 						}
 					} else {
 						if (operateCVV.isSome()) {
-							code.pushFromArray(operandB.loadToVolatile());
+							code.pushFromArray(operandB.loadToVolatile(context));
 							code.pushStatement(operateCVV.unwrap(), operandsA);
 						} else {
 							code.pushStatement(loadOpcode, operandsA);
 							code.pushStatement(saveOpcode);
-							code.pushFromArray(operandB.loadToVolatile());
+							code.pushFromArray(operandB.loadToVolatile(context));
 							code.pushStatement(operateVVV);
 						}
 					}
@@ -102,18 +102,18 @@ abstract IntLikeRuntimeExpression(
 						final valB = operandValueB.unwrap();
 						final operandsB = createOperands(valB);
 						if (operateVCV.isSome()) {
-							code.pushFromArray(operandA.loadToVolatile());
+							code.pushFromArray(operandA.loadToVolatile(context));
 							code.pushStatement(operateVCV.unwrap(), operandsB);
 						} else {
-							code.pushFromArray(operandA.loadToVolatile());
+							code.pushFromArray(operandA.loadToVolatile(context));
 							code.pushStatement(saveOpcode);
 							code.pushStatement(loadOpcode, operandsB);
 							code.pushStatement(operateVVV);
 						}
 					} else {
-						code.pushFromArray(operandA.loadToVolatile());
+						code.pushFromArray(operandA.loadToVolatile(context));
 						code.pushStatement(saveOpcode);
-						code.pushFromArray(operandB.loadToVolatile());
+						code.pushFromArray(operandB.loadToVolatile(context));
 						code.pushStatement(operateVVV);
 					}
 				}
@@ -121,7 +121,7 @@ abstract IntLikeRuntimeExpression(
 				code;
 
 			case Custom(loadToVolatile):
-				loadToVolatile;
+				loadToVolatile(context);
 		}
 	}
 

@@ -1,11 +1,13 @@
 package firedancer.script;
 
+import firedancer.script.expression.LocalVariableExpression;
 import firedancer.bytecode.RuntimeContext;
 import firedancer.script.nodes.*;
 import firedancer.script.api_components.Position;
 import firedancer.script.api_components.Velocity;
 import firedancer.script.api_components.Shot;
 import firedancer.script.api_components.Random;
+import firedancer.script.api_components.LocalVariable;
 import firedancer.script.expression.IntExpression;
 
 #if debug
@@ -118,6 +120,24 @@ class Api {
 	public static inline function end(endCode: Int): End {
 		return new End(endCode);
 	}
+
+	/**
+		Refers to a local variable with `name` and interprets it as an integer.
+	**/
+	public static inline function intVar(name: String): IntLocalVariable
+		return new IntLocalVariable(name);
+
+	/**
+		Refers to a local variable with `name` and interprets it as a float.
+	**/
+	public static inline function floatVar(name: String): FloatLocalVariable
+		return new FloatLocalVariable(name);
+
+	/**
+		Refers to a local variable with `name` and interprets it as an angle.
+	**/
+	public static inline function angleVar(name: String): AngleLocalVariable
+		return new AngleLocalVariable(name);
 
 	/**
 		@return New `RuntimeContext` instance that contains all `Bytecode` compiled.
