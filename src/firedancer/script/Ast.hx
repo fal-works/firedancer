@@ -16,6 +16,6 @@ abstract Ast(AstNode) from AstNode to AstNode {
 	/**
 		Converts `nodes` to `Ast`.
 	**/
-	@:from static inline function fromStdArray(nodes: std.Array<AstNode>): Ast
-		return fromArray(nodes);
+	@:from static extern inline function fromStdArray<T: AstNode>(nodes: std.Array<T>): Ast
+		return fromArray(cast nodes);
 }

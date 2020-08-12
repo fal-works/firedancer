@@ -3,7 +3,7 @@ import firedancer.script.Ast;
 import FdEndCode.*;
 
 class BulletPatterns {
-	static final aimPlayer: Ast = [
+	static final aimPlayer = [
 		aim().shotSpeed(5),
 		loop([
 			fire(),
@@ -11,7 +11,7 @@ class BulletPatterns {
 		])
 	];
 
-	static final spiral: Ast = [
+	static final spiral = [
 		shot.velocity.set(5, 180),
 		loop([
 			fire(),
@@ -20,7 +20,7 @@ class BulletPatterns {
 		])
 	];
 
-	static final fireWithPattern: Ast = [
+	static final fireWithPattern = [
 		shot.velocity.set(5, 180),
 		loop([
 			fire([
@@ -32,7 +32,7 @@ class BulletPatterns {
 		])
 	];
 
-	static final fireBound: Ast = [
+	static final fireBound = [
 		shot.position.set(5, 180),
 		loop([
 			loop([
@@ -48,7 +48,7 @@ class BulletPatterns {
 		end(VANISH) // Here the origin of children is set to (0, 0)
 	];
 
-	static final everyFrameTest: Ast = [
+	static final everyFrameTest = [
 		shot.velocity.set(5, 180),
 		everyFrame(shot.direction.add(4)),
 		loop([
@@ -57,7 +57,7 @@ class BulletPatterns {
 		])
 	];
 
-	static final asyncTest: Ast = [
+	static final asyncTest = [
 		shot.velocity.set(5, 180),
 		async(
 			loop([
@@ -72,7 +72,7 @@ class BulletPatterns {
 		])
 	];
 
-	static final parallelTest: Ast = [
+	static final parallelTest = [
 		shot.velocity.set(5, 180),
 		parallel([
 			loop([
@@ -87,7 +87,7 @@ class BulletPatterns {
 		])
 	];
 
-	static final vanishTest: Ast = [
+	static final vanishTest = [
 		shot.velocity.set(5, 180),
 		loop([
 			fire([
@@ -99,7 +99,7 @@ class BulletPatterns {
 		])
 	];
 
-	static final randomTest: Ast = loop([
+	static final randomTest = loop([
 		shot.velocity.set(
 			random.between(1, 4),
 			180 + (random.angle.signed(45) * 1)
@@ -108,7 +108,7 @@ class BulletPatterns {
 		wait(2)
 	]);
 
-	static final randomIntTest: Ast = loop([
+	static final randomIntTest = loop([
 		shot.velocity.set(
 			5,
 			180 + random.int.signed(4) * 30
@@ -122,7 +122,7 @@ class BulletPatterns {
 
 	static final cnt = intVar("cnt");
 
-	static final localVarTest: Ast = [
+	static final localVarTest = [
 		shot.velocity.set(5, 180),
 		cnt.let(),
 		loop([
