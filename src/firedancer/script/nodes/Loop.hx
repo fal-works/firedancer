@@ -30,13 +30,17 @@ class Loop extends AstNode implements ripper.Data {
 @:ripper_verified
 class FiniteLoop extends Loop {
 	public final loopCount: IntExpression;
-	public var isInlined: Bool = false;
+	public var unrolling: Bool = false;
 
 	public function new(node: AstNode)
 		super(node);
 
-	public inline function inlined(): FiniteLoop {
-		this.isInlined = true;
+	/**
+		Unrolls `this` loop if the loop count is a constant.
+		@return `this`
+	**/
+	public inline function unroll(): FiniteLoop {
+		this.unrolling = true;
 		return this;
 	}
 
@@ -46,7 +50,7 @@ class FiniteLoop extends Loop {
 
 		final countValue = count.tryGetConstantOperandValue();
 
-		final code = if (countValue.isSome() && this.isInlined) {
+		final code = if (countValue.isSome() && this.unrolling) {
 			loopUnrolled(0...countValue.unwrap(), _ -> body);
 		} else {
 			loop(context, body, count);
