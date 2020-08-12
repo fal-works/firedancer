@@ -6,9 +6,9 @@ import banker.map.ArrayMap;
 using banker.type_extension.MapExtension;
 
 /**
-	Context for running a `Bytecode`.
+	Collection of `Bytecode` instances that can be retrieved by ID or name.
 **/
-class RuntimeContext {
+class ProgramPackage {
 	/**
 		Table for retrieving `Bytecode` by ID number.
 	**/

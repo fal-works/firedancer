@@ -838,11 +838,12 @@ class Vm {
 	}
 
 	public static function dryRun(
-		context: RuntimeContext,
-		bytecode: Bytecode,
+		pkg: ProgramPackage,
+		entryBytecodeName: String,
 		stackCapacity: UInt = 256
 	): Void {
 		final threads = new ThreadList(1, stackCapacity);
+		final bytecode = pkg.getBytecodeByName(entryBytecodeName);
 		threads.set(bytecode);
 		final xVec = Vec.fromArrayCopy([0.0]);
 		final yVec = Vec.fromArrayCopy([0.0]);
@@ -860,7 +861,7 @@ class Vm {
 				throw 'Exceeded $infiniteLoopCheckThreshold frames.';
 
 			Vm.run(
-				context.bytecodeTable,
+				pkg.bytecodeTable,
 				threads,
 				stackCapacity,
 				xVec,

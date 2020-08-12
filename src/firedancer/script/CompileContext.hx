@@ -7,7 +7,7 @@ import firedancer.assembly.ValueType;
 import firedancer.assembly.Opcode.*;
 import firedancer.assembly.operation.CalcOperation;
 import firedancer.assembly.operation.GeneralOperation;
-import firedancer.bytecode.RuntimeContext;
+import firedancer.bytecode.ProgramPackage;
 import firedancer.script.expression.GenericExpression;
 
 /**
@@ -98,12 +98,12 @@ class CompileContext {
 		this.injectionStack.pop();
 
 	/**
-		Creates a `RuntimeContext` instance.
+		Creates a `ProgramPackage` instance.
 	**/
-	public function createRuntimeContext() {
+	public function createPackage(): ProgramPackage {
 		final bytecodeList = Vector.fromArrayCopy(this.codeList.map(code -> code.compile()));
 
-		return new RuntimeContext(bytecodeList, this.nameIndexMap);
+		return new ProgramPackage(bytecodeList, this.nameIndexMap);
 	}
 }
 

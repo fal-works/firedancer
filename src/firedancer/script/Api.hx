@@ -1,6 +1,6 @@
 package firedancer.script;
 
-import firedancer.bytecode.RuntimeContext;
+import firedancer.bytecode.ProgramPackage;
 import firedancer.script.nodes.*;
 import firedancer.script.api_components.Position;
 import firedancer.script.api_components.Velocity;
@@ -141,9 +141,9 @@ class Api {
 		return new AngleLocalVariableExpression(name);
 
 	/**
-		@return New `RuntimeContext` instance that contains all `Bytecode` compiled.
+		@return New `ProgramPackage` instance that contains all `Bytecode` compiled.
 	**/
-	public static inline function compile(namedAstMap: Map<String, Ast>): RuntimeContext {
+	public static inline function compile(namedAstMap: Map<String, Ast>): ProgramPackage {
 		final compileContext = new CompileContext();
 
 		for (name => ast in namedAstMap) {
@@ -154,6 +154,6 @@ class Api {
 			#end
 		}
 
-		return compileContext.createRuntimeContext();
+		return compileContext.createPackage();
 	}
 }

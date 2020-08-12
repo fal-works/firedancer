@@ -135,8 +135,8 @@ class BulletPatterns {
 
 	static final testAst = test(localVarTest); // Change this for testing
 
-	public static final context = compile(["test" => testAst]);
-	public static final testPattern = context.getBytecodeByName("test");
+	public static final programPackage = compile(["test" => testAst]);
+	public static final testPattern = programPackage.getBytecodeByName("test");
 
 	static function test(ast: Ast): Ast {
 		return [
