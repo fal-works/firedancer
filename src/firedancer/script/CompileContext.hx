@@ -194,6 +194,10 @@ class LocalVariableTable {
 	public final address: UInt;
 	final context: CompileContext;
 
+	/**
+		Creates an `AssemblyCode` that assigns the value of `this` local variable
+		to the current volatile int/float.
+	**/
 	public function loadToVolatile(): AssemblyCode {
 		final opcode = general(switch this.type {
 			case Int: LoadIntLV;
@@ -207,6 +211,11 @@ class LocalVariableTable {
 		);
 	}
 
+	/**
+		Creates an `AssemblyCode` that assigns `value` to the local variable specified by `this`.
+
+		This does not check the type of `value` and it should be checked/determined before being passed.
+	**/
 	public function setValue(value: GenericExpression): AssemblyCode {
 		var storeCL: GeneralOperation;
 		var storeVL: GeneralOperation;
@@ -225,6 +234,11 @@ class LocalVariableTable {
 		return value.use(this.context, general(storeCL), general(storeVL));
 	}
 
+	/**
+		Creates an `AssemblyCode` that adds `value` to the local variable specified by `this`.
+
+		This does not check the type of `value` and it should be checked/determined before being passed.
+	**/
 	public function addValue(valueToAdd: GenericExpression): AssemblyCode {
 		var storeVL: GeneralOperation;
 		var save: GeneralOperation;
