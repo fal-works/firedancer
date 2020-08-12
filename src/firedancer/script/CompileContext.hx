@@ -114,7 +114,7 @@ class LocalVariableTable {
 	final addressStack: Array<LocalVariable>;
 
 	/**
-		Stack for storing the size of `addressStack` at the beginning of each lifetime block.
+		Stack for storing the size of `addressStack` at the beginning of each scope.
 	**/
 	final variableCountStack: Array<UInt>;
 
@@ -133,18 +133,18 @@ class LocalVariableTable {
 	}
 
 	/**
-		Starts a new lifetime block.
+		Starts a new scope.
 	**/
-	public function startBlock(): Void
+	public function startScope(): Void
 		this.variableCountStack.push(this.addressStack.length);
 
 	/**
-		Ends the current lifetime block.
-		Pops all variables that were pushed after the last call of `startBlock()`.
+		Ends the current scope.
+		Pops all variables that were pushed after the last call of `startScope()`.
 	**/
-	public function endBlock(): Void {
+	public function endScope(): Void {
 		final maybeTargetSize = variableCountStack.pop();
-		if (maybeTargetSize.isNone()) throw "Called endBlock() before startBlock().";
+		if (maybeTargetSize.isNone()) throw "Called endScope() before startScope().";
 		final targetSize = maybeTargetSize.unwrap();
 
 		final addressStack = this.addressStack;
@@ -152,7 +152,7 @@ class LocalVariableTable {
 	}
 
 	/**
-		Registers a local variable that is valid in the current lifetime block.
+		Registers a local variable that is valid in the current scope.
 		@return The address that can be used for the registered local variable.
 	**/
 	public function push(name: String, type: ValueType): UInt {

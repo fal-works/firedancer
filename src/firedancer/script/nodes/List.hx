@@ -23,7 +23,7 @@ class List extends AstNode implements ripper.Data {
 		final nodes = this.nodes;
 		var everyFrameNodeCount = UInt.zero;
 
-		context.localVariables.startBlock();
+		context.localVariables.startScope();
 
 		for (i in 0...nodes.length) {
 			final node = nodes[i];
@@ -38,7 +38,7 @@ class List extends AstNode implements ripper.Data {
 			codeList.push(node.toAssembly(context));
 		}
 
-		context.localVariables.endBlock();
+		context.localVariables.endScope();
 
 		for (_ in 0...everyFrameNodeCount) context.popInjectionCode();
 
