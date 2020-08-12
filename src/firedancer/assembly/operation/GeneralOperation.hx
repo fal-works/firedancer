@@ -31,8 +31,8 @@ enum abstract GeneralOperation(Int) to Int {
 			case GeneralOperation.LoadIntLV: LoadIntLV;
 			case GeneralOperation.LoadFloatLV: LoadFloatLV;
 			case GeneralOperation.StoreIntCL: StoreIntCL;
-			case GeneralOperation.StoreFloatCL: StoreFloatCL;
 			case GeneralOperation.StoreIntVL: StoreIntVL;
+			case GeneralOperation.StoreFloatCL: StoreFloatCL;
 			case GeneralOperation.StoreFloatVL: StoreFloatVL;
 
 			case GeneralOperation.PushIntC: PushIntC;
@@ -153,16 +153,16 @@ enum abstract GeneralOperation(Int) to Int {
 	final StoreIntCL;
 
 	/**
-		Assigns a given constant float to the local variable
-		(of which the address is specified by a given constant integer).
-	**/
-	final StoreFloatCL;
-
-	/**
 		Assigns the current volatile integer to the local variable
 		(of which the address is specified by a given constant integer).
 	**/
 	final StoreIntVL;
+
+	/**
+		Assigns a given constant float to the local variable
+		(of which the address is specified by a given constant integer).
+	**/
+	final StoreFloatCL;
 
 	/**
 		Assigns the current volatile float to the local variable
@@ -280,8 +280,8 @@ class GeneralOperationExtension {
 			case LoadIntLV: "load_int_lv";
 			case LoadFloatLV: "load_float_lv";
 			case StoreIntCL: "store_int_cl";
-			case StoreFloatCL: "store_float_cl";
 			case StoreIntVL: "store_int_vl";
+			case StoreFloatCL: "store_float_cl";
 			case StoreFloatVL: "store_float_vl";
 
 			case PushIntC: "push_int_c";
@@ -322,8 +322,8 @@ class GeneralOperationExtension {
 			case LoadIntLV: [Int]; // address
 			case LoadFloatLV: [Int]; // address
 			case StoreIntCL: [Int, Int]; // address, value
-			case StoreFloatCL: [Int, Float]; // address, value
 			case StoreIntVL: [Int]; // address
+			case StoreFloatCL: [Int, Float]; // address, value
 			case StoreFloatVL: [Int]; // address
 
 			case PushIntC: [Int]; // integer to push

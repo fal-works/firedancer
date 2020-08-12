@@ -287,6 +287,30 @@ class Vm {
 			setVelocity(newVelocity.x, newVelocity.y);
 		}
 
+		inline function getLocalInt(address: Int): Int
+			return stack.bytesData.getI32(stackCapacity - address - LEN32);
+
+		inline function getLocalFloat(address: Int): Float
+			return stack.bytesData.getF64(stackCapacity - address - LEN64);
+
+		inline function setLocalInt(address: Int, value: Int): Void {
+			stack.bytesData.setI32(stackCapacity - address - LEN32, value);
+		}
+
+		inline function setLocalFloat(address: Int, value: Float): Void {
+			stack.bytesData.setF64(stackCapacity - address - LEN64, value);
+		}
+
+		inline function addLocalInt(address: Int, value: Int): Void {
+			final pos = stackCapacity - address - LEN32;
+			stack.bytesData.setI32(pos, stack.bytesData.getI32(pos) + value);
+		}
+
+		inline function addLocalFloat(address: Int, value: Float): Void {
+			final pos = stackCapacity - address - LEN64;
+			stack.bytesData.setF64(pos, stack.bytesData.getF64(pos) + value);
+		}
+
 		for (i in 0...threads.length) {
 			final thread = threads[i];
 			if (!thread.active) continue;
@@ -376,23 +400,17 @@ class Vm {
 							case SaveFloatV:
 								saveFloat(volFloat);
 							case LoadIntLV:
-								final address = readCodeI32();
-								setVolInt(stack.bytesData.getI32(stackCapacity - address - LEN32));
+								setVolInt(getLocalInt(readCodeI32()));
 							case LoadFloatLV:
-								final address = readCodeI32();
-								setVolFloat(stack.bytesData.getF64(stackCapacity - address - LEN64));
+								setVolFloat(getLocalFloat(readCodeI32()));
 							case StoreIntCL:
-								final address = readCodeI32();
-								stack.bytesData.setI32(stackCapacity - address - LEN32, readCodeI32());
-							case StoreFloatCL:
-								final address = readCodeI32();
-								stack.bytesData.setF64(stackCapacity - address - LEN64, readCodeF64());
+								setLocalInt(readCodeI32(), readCodeI32());
 							case StoreIntVL:
-								final address = readCodeI32();
-								stack.bytesData.setI32(stackCapacity - address - LEN32, volInt);
+								setLocalInt(readCodeI32(), volInt);
+							case StoreFloatCL:
+								setLocalFloat(readCodeI32(), readCodeF64());
 							case StoreFloatVL:
-								final address = readCodeI32();
-								stack.bytesData.setF64(stackCapacity - address - LEN64, volFloat);
+								setLocalFloat(readCodeI32(), volFloat);
 
 							case PushIntC:
 								pushInt(readCodeI32());
@@ -463,7 +481,7 @@ class Vm {
 
 							#if debug
 							case other:
-								throw 'Unknown opcode: $other';
+								throw 'Unknown general opcode: $other';
 							#end
 						}
 
@@ -560,6 +578,20 @@ class Vm {
 								setVolInt(Random.signedInt(readCodeI32()));
 							case RandomIntSignedVV:
 								setVolInt(Random.signedInt(volInt));
+
+							case AddIntLCL:
+								addLocalInt(readCodeI32(), readCodeI32());
+							case AddIntLVL:
+								addLocalInt(readCodeI32(), volInt);
+							case AddFloatLCL:
+								addLocalFloat(readCodeI32(), readCodeF64());
+							case AddFloatLVL:
+								addLocalFloat(readCodeI32(), volFloat);
+
+							#if debug
+							case other:
+								throw 'Unknown calc opcode: $other';
+							#end
 						}
 
 					case Read:
@@ -655,7 +687,7 @@ class Vm {
 
 							#if debug
 							case other:
-								throw 'Unknown opcode: $other';
+								throw 'Unknown read opcode: $other';
 							#end
 						}
 
@@ -787,7 +819,7 @@ class Vm {
 								thread.addShotDirection(peekFloat());
 
 							#if debug
-							case other: throw 'Unknown opcode: $other';
+							case other: throw 'Unknown write opcode: $other';
 							#end
 						}
 				}

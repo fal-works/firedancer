@@ -61,6 +61,10 @@ enum abstract CalcOperation(Int) to Int {
 			case CalcOperation.RandomIntVV: RandomIntVV;
 			case CalcOperation.RandomIntSignedCV: RandomIntSignedCV;
 			case CalcOperation.RandomIntSignedVV: RandomIntSignedVV;
+			case CalcOperation.AddIntLCL: AddIntLCL;
+			case CalcOperation.AddIntLVL: AddIntLVL;
+			case CalcOperation.AddFloatLCL: AddFloatLCL;
+			case CalcOperation.AddFloatLVL: AddFloatLVL;
 
 			default: throw error(value);
 		}
@@ -297,6 +301,30 @@ enum abstract CalcOperation(Int) to Int {
 	**/
 	final RandomIntSignedVV;
 
+	/**
+		Adds the second constant integer to the local variable
+		(of which the address is specified by the first constant integer).
+	**/
+	final AddIntLCL;
+
+	/**
+		Adds the current volatile integer to the local variable
+		(of which the address is specified by a given constant integer).
+	**/
+	final AddIntLVL;
+
+	/**
+		Adds a given constant float to the local variable
+		(of which the address is specified by a given constant integer).
+	**/
+	final AddFloatLCL;
+
+	/**
+		Adds the current volatile float to the local variable
+		(of which the address is specified by a given constant integer).
+	**/
+	final AddFloatLVL;
+
 	public extern inline function int(): Int
 		return this;
 }
@@ -354,6 +382,11 @@ class CalcOperationExtension {
 			case RandomIntVV: "random_int_vv";
 			case RandomIntSignedCV: "random_int_signed_cv";
 			case RandomIntSignedVV: "random_int_signed_vv";
+
+			case AddIntLCL: "add_int_lcl";
+			case AddIntLVL: "add_int_lvl";
+			case AddFloatLCL: "add_float_lcl";
+			case AddFloatLVL: "add_float_lvl";
 		}
 	}
 
@@ -407,6 +440,11 @@ class CalcOperationExtension {
 			case RandomIntVV: [];
 			case RandomIntSignedCV: [Int];
 			case RandomIntSignedVV: [];
+
+			case AddIntLCL: [Int, Int]; // address, value to add
+			case AddIntLVL: [Int]; // address
+			case AddFloatLCL: [Int, Float]; // address, value to add
+			case AddFloatLVL: [Int]; // address
 		}
 	}
 

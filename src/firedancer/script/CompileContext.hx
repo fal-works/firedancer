@@ -192,6 +192,7 @@ class LocalVariableTable {
 	public final name: String;
 	public final type: ValueType;
 	public final address: UInt;
+
 	final context: CompileContext;
 
 	/**
@@ -205,10 +206,7 @@ class LocalVariableTable {
 			case Vec: throw "Local variable of vector type is not supported.";
 		});
 
-		return new AssemblyStatement(
-			opcode,
-			[Int(this.address.int())]
-		);
+		return new AssemblyStatement(opcode, [Int(this.address.int())]);
 	}
 
 	/**
@@ -231,42 +229,43 @@ class LocalVariableTable {
 				throw "Local variable of vector type is not supported.";
 		}
 
-		return value.use(this.context, general(storeCL), general(storeVL));
+		final constValue = value.tryGetConstantOperand();
+		final address = this.address.int();
+
+		return if (constValue.isSome()) {
+			new AssemblyStatement(general(storeCL), [Int(address), constValue.unwrap()]);
+		} else [
+			value.loadToVolatile(context),
+			[new AssemblyStatement(general(storeVL), [Int(address)])]
+		].flatten();
 	}
 
 	/**
 		Creates an `AssemblyCode` that adds `value` to the local variable specified by `this`.
-
-		This does not check the type of `value` and it should be checked/determined before being passed.
 	**/
-	public function addValue(valueToAdd: GenericExpression): AssemblyCode {
-		var storeVL: GeneralOperation;
-		var save: GeneralOperation;
-		var add: CalcOperation;
+	public function addValue(value: GenericExpression): AssemblyCode {
+		var addLCL: CalcOperation;
+		var addLVL: CalcOperation;
 
 		switch this.type {
 			case Int:
-				storeVL = StoreIntVL;
-				save = SaveIntV;
-				add = AddIntVVV;
+				addLCL = AddIntLCL;
+				addLVL = AddIntLVL;
 			case Float:
-				storeVL = StoreFloatVL;
-				save = SaveFloatV;
-				add = AddFloatVVV;
+				addLCL = AddFloatLCL;
+				addLVL = AddFloatLVL;
 			case Vec:
 				throw "Local variable of vector type is not supported.";
-		};
+		}
 
-		final localVar = context.localVariables.get(this.name);
+		final constValue = value.tryGetConstantOperand();
+		final address = this.address.int();
 
-		return [
-			localVar.loadToVolatile(),
-			[new AssemblyStatement(general(save), [])],
-			valueToAdd.loadToVolatile(context),
-			[
-				new AssemblyStatement(calc(add), []),
-				new AssemblyStatement(general(storeVL), [Int(localVar.address.int())])
-			]
+		return if (constValue.isSome()) {
+			new AssemblyStatement(calc(addLCL), [Int(address), constValue.unwrap()]);
+		} else [
+			value.loadToVolatile(context),
+			[new AssemblyStatement(calc(addLVL), [Int(address)])]
 		].flatten();
 	}
 }
