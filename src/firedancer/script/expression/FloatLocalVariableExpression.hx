@@ -90,13 +90,22 @@ abstract FloatLocalVariableExpression(String) {
 		return a.modulo(b);
 	}
 
+	/**
+		Declares `this` local variable so that it can be used in the current scope.
+	**/
 	public function let(?initialValue: FloatExpression): DeclareLocalVariable {
 		return DeclareLocalVariable.fromFloat(this, initialValue);
 	}
 
+	/**
+		Assigns `value` to `this` local variable.
+	**/
 	public function set(value: FloatExpression): OperateLocalVariable
 		return { name: this, value: value, operation: Set };
 
+	/**
+		Adds `value` to `this` local variable.
+	**/
 	public function add(value: FloatExpression): OperateLocalVariable
 		return { name: this, value: value, operation: Add };
 

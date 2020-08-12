@@ -95,13 +95,22 @@ abstract IntLocalVariableExpression(String) {
 		return a.modulo(b);
 	}
 
+	/**
+		Declares `this` local variable so that it can be used in the current scope.
+	**/
 	public function let(?initialValue: IntExpression): DeclareLocalVariable {
 		return DeclareLocalVariable.fromInt(this, initialValue);
 	}
 
+	/**
+		Assigns `value` to `this` local variable.
+	**/
 	public function set(value: IntExpression): OperateLocalVariable
 		return { name: this, value: value, operation: Set };
 
+	/**
+		Adds `value` to `this` local variable.
+	**/
 	public function add(value: IntExpression): OperateLocalVariable
 		return { name: this, value: value, operation: Add };
 

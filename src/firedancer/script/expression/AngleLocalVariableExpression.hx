@@ -87,13 +87,22 @@ abstract AngleLocalVariableExpression(String) {
 		return a.modulo(b);
 	}
 
+	/**
+		Declares `this` local variable so that it can be used in the current scope.
+	**/
 	public function let(?initialValue: AngleExpression): DeclareLocalVariable {
 		return DeclareLocalVariable.fromAngle(this, initialValue);
 	}
 
+	/**
+		Assigns `value` to `this` local variable.
+	**/
 	public function set(value: AngleExpression): OperateLocalVariable
 		return { name: this, value: value, operation: Set };
 
+	/**
+		Adds `value` to `this` local variable.
+	**/
 	public function add(value: AngleExpression): OperateLocalVariable
 		return { name: this, value: value, operation: Add };
 
