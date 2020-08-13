@@ -25,7 +25,7 @@ using firedancer.assembly.OpcodeExtension;
 	Virtual machine for executing bytecode.
 **/
 class Vm {
-	static extern inline final infiniteLoopCheckThreshold = 4096;
+	static extern inline final infiniteLoopCheckThreshold: UInt = 4096;
 
 	/**
 		Runs firedancer bytecode for a specific actor.
@@ -47,23 +47,14 @@ class Vm {
 		targetPositionRef: PositionRef
 	): Int {
 		var code: BytecodeData;
-		var codeLength: UInt;
-
-		var codePos: UInt;
 		var stack: ByteStackData;
-		var stackSize: UInt;
-
-		var volIntSaved: Int;
-		var volInt: Int;
-		var volFloatSaved: Float;
-		var volFloat: Float;
-		var volX: Float;
-		var volY: Float;
 
 		var originX: Float;
 		var originY: Float;
 		var positionX: Float;
 		var positionY: Float;
+
+		final reg = new RegisterFile();
 
 		var originPositionRef = originPositionRefVec[vecIndex];
 		if (originPositionRef.isNone()) {
@@ -90,96 +81,73 @@ class Vm {
 			yVec[vecIndex] = originY + positionY;
 		}
 
-		inline function setVolInt(v: Int): Void
-			volInt = v;
-
-		inline function saveInt(v: Int): Void
-			volIntSaved = v;
-
-		inline function setVolFloat(v: Float): Void
-			volFloat = v;
-
-		inline function saveFloat(v: Float): Void
-			volFloatSaved = v;
-
-		inline function setVolX(x: Float): Void
-			volX = x;
-
-		inline function setVolY(y: Float): Void
-			volY = y;
-
-		inline function setVolVec(x: Float, y: Float): Void {
-			setVolX(x);
-			setVolY(y);
-		}
-
 		inline function readOp(): Opcode {
-			final opcode: Opcode = cast code.getUI8(codePos);
+			final opcode: Opcode = cast code.getUI8(reg.pc);
 			#if firedancer_verbose
-			println('${opcode.toString()} (pos: $codePos)');
+			println('${opcode.toString()} (pos: $reg.pc)');
 			#end
-			codePos += Opcode.size;
+			reg.pc += Opcode.size;
 			return opcode;
 		}
 
 		inline function readCodeI32(): Int32 {
-			final v = code.getI32(codePos);
-			codePos += LEN32;
+			final v = code.getI32(reg.pc);
+			reg.pc += LEN32;
 			return v;
 		}
 
 		inline function readCodeF64(): Float {
-			final v = code.getF64(codePos);
-			codePos += LEN64;
+			final v = code.getF64(reg.pc);
+			reg.pc += LEN64;
 			return v;
 		}
 
 		inline function pushInt(v: Int32): Void
-			stackSize = stack.pushI32(stackSize, v);
+			reg.sp = stack.pushI32(reg.sp, v);
 
 		inline function pushFloat(v: Float): Void
-			stackSize = stack.pushF64(stackSize, v);
+			reg.sp = stack.pushF64(reg.sp, v);
 
 		inline function pushVec(x: Float, y: Float): Void {
-			stackSize = stack.pushF64(stackSize, x);
-			stackSize = stack.pushF64(stackSize, y);
+			reg.sp = stack.pushF64(reg.sp, x);
+			reg.sp = stack.pushF64(reg.sp, y);
 		}
 
 		inline function popInt(): Int32 {
-			final ret = stack.popI32(stackSize);
-			stackSize = ret.size;
+			final ret = stack.popI32(reg.sp);
+			reg.sp = ret.size;
 			return ret.value;
 		}
 
 		inline function popFloat(): Float {
-			final ret = stack.popF64(stackSize);
-			stackSize = ret.size;
+			final ret = stack.popF64(reg.sp);
+			reg.sp = ret.size;
 			return ret.value;
 		}
 
 		inline function peekInt(): Int32
-			return stack.peekI32(stackSize);
+			return stack.peekI32(reg.sp);
 
 		inline function peekFloat(): Float
-			return stack.peekF64(stackSize);
+			return stack.peekF64(reg.sp);
 
 		inline function peekFloatSkipped(bytesToSkip: Int): Float
-			return stack.peekF64(stackSize - bytesToSkip);
+			return stack.peekF64(reg.sp - bytesToSkip);
 
 		inline function peekVecSkipped(bytesToSkip: Int)
-			return stack.peekVec2D64(stackSize - bytesToSkip);
+			return stack.peekVec2D64(reg.sp - bytesToSkip);
 
 		inline function dropInt(): Void
-			stackSize = stack.drop(stackSize, Bit32);
+			reg.sp = stack.drop(reg.sp, Bit32);
 
 		inline function dropFloat(): Void
-			stackSize = stack.drop(stackSize, Bit64);
+			reg.sp = stack.drop(reg.sp, Bit64);
 
 		inline function dropVec(): Void
-			stackSize = stack.drop2D(stackSize, Bit64);
+			reg.sp = stack.drop2D(reg.sp, Bit64);
 
 		inline function decrement(): Void
-			stack.decrement32(stackSize);
+			stack.decrement32(reg.sp);
 
 		inline function getX(): Float
 			return positionX;
@@ -318,25 +286,11 @@ class Vm {
 			if (!thread.active) continue;
 
 			code = thread.code.unwrap();
-			codeLength = thread.codeLength;
-
-			codePos = thread.codePos;
 			stack = thread.stack;
-			stackSize = thread.stackSize;
-
-			volIntSaved = 0;
-			volInt = 0;
-			volFloatSaved = 0.0;
-			volFloat = 0.0;
-			volX = 0.0;
-			volY = 0.0;
-
-			#if debug
-			var cnt = 0;
-			#end
+			reg.reset(thread);
 
 			do {
-				if (codeLength <= codePos) {
+				if (reg.pcMax <= reg.pc) {
 					thread.deactivate();
 					break;
 				}
@@ -351,22 +305,22 @@ class Vm {
 							case CountDownBreak:
 								if (0 < peekInt()) {
 									decrement();
-									codePos -= Opcode.size;
+									reg.pc -= Opcode.size;
 									break;
 								} else {
 									dropInt();
 								}
 							case Jump:
 								final jumpLength = readCodeI32();
-								codePos += jumpLength;
+								reg.pc += jumpLength;
 							case CountDownJump:
 								if (0 < peekInt()) {
 									decrement();
-									codePos += LEN32; // skip the operand
+									reg.pc += LEN32; // skip the operand
 								} else {
 									dropInt();
 									final jumpLength = readCodeI32();
-									codePos += jumpLength;
+									reg.pc += jumpLength;
 								}
 							case UseThread:
 								final bytecodeId = readCodeI32();
@@ -380,7 +334,7 @@ class Vm {
 								pushInt(threadId.int());
 							case AwaitThread:
 								if (threads[peekInt()].active) {
-									codePos -= Opcode.size;
+									reg.pc -= Opcode.size;
 									break;
 								} else {
 									dropInt();
@@ -392,45 +346,45 @@ class Vm {
 								return endCode;
 
 							case LoadIntCV:
-								setVolInt(readCodeI32());
+								reg.int = readCodeI32();
 							case LoadFloatCV:
-								setVolFloat(readCodeF64());
+								reg.float = readCodeF64();
 							case LoadVecCV:
-								setVolVec(readCodeF64(), readCodeF64());
+								reg.setVec(readCodeF64(), readCodeF64());
 							case SaveIntV:
-								saveInt(volInt);
+								reg.saveInt();
 							case SaveFloatV:
-								saveFloat(volFloat);
+								reg.saveFloat();
 							case LoadIntLV:
-								setVolInt(getLocalInt(readCodeI32()));
+								reg.int = getLocalInt(readCodeI32());
 							case LoadFloatLV:
-								setVolFloat(getLocalFloat(readCodeI32()));
+								reg.float = getLocalFloat(readCodeI32());
 							case StoreIntCL:
 								setLocalInt(readCodeI32(), readCodeI32());
 							case StoreIntVL:
-								setLocalInt(readCodeI32(), volInt);
+								setLocalInt(readCodeI32(), reg.int);
 							case StoreFloatCL:
 								setLocalFloat(readCodeI32(), readCodeF64());
 							case StoreFloatVL:
-								setLocalFloat(readCodeI32(), volFloat);
+								setLocalFloat(readCodeI32(), reg.float);
 
 							case PushIntC:
 								pushInt(readCodeI32());
 							case PushIntV:
-								pushInt(volInt);
+								pushInt(reg.int);
 							case PushFloatC:
 								pushFloat(readCodeF64());
 							case PushFloatV:
-								pushFloat(volFloat);
+								pushFloat(reg.float);
 							case PushVecV:
-								pushVec(volX, volY);
+								pushVec(reg.vecX, reg.vecY);
 							case PeekFloat:
-								setVolFloat(peekFloatSkipped(readCodeI32()));
+								reg.float = peekFloatSkipped(readCodeI32());
 							case DropFloat:
 								dropFloat();
 							case PeekVec:
 								final vec = peekVecSkipped(readCodeI32());
-								setVolVec(vec.x, vec.y);
+								reg.setVec(vec.x, vec.y);
 							case DropVec:
 								dropVec();
 
@@ -482,10 +436,10 @@ class Vm {
 								);
 
 							case GlobalEvent:
-								eventHandler.onGlobalEvent(volInt);
+								eventHandler.onGlobalEvent(reg.int);
 							case LocalEvent:
 								eventHandler.onLocalEvent(
-									volInt,
+									reg.int,
 									getX(),
 									getY(),
 									thread,
@@ -502,101 +456,101 @@ class Vm {
 					case Calc:
 						switch opcode.op {
 							case AddIntVCV:
-								setVolInt(volInt + readCodeI32());
+								reg.int = reg.int + readCodeI32();
 							case AddIntVVV:
-								setVolInt(volIntSaved + volInt);
+								reg.int = reg.intBuf + reg.int;
 							case SubIntVCV:
-								setVolInt(volInt - readCodeI32());
+								reg.int = reg.int - readCodeI32();
 							case SubIntCVV:
-								setVolInt(readCodeI32() - volInt);
+								reg.int = readCodeI32() - reg.int;
 							case SubIntVVV:
-								setVolInt(volIntSaved - volInt);
+								reg.int = reg.intBuf - reg.int;
 							case MinusIntV:
-								setVolInt(-volInt);
+								reg.int = -reg.int;
 							case MultIntVCV:
-								setVolInt(volInt * readCodeI32());
+								reg.int = reg.int * readCodeI32();
 							case MultIntVVV:
-								setVolInt(volIntSaved * volInt);
+								reg.int = reg.intBuf * reg.int;
 							case DivIntVCV:
-								setVolInt(Ints.divide(volInt, readCodeI32()));
+								reg.int = Ints.divide(reg.int, readCodeI32());
 							case DivIntCVV:
-								setVolInt(Ints.divide(readCodeI32(), volInt));
+								reg.int = Ints.divide(readCodeI32(), reg.int);
 							case DivIntVVV:
-								setVolInt(Ints.divide(volIntSaved, volInt));
+								reg.int = Ints.divide(reg.intBuf, reg.int);
 							case ModIntVCV:
-								setVolInt(volInt % readCodeI32());
+								reg.int = reg.int % readCodeI32();
 							case ModIntCVV:
-								setVolInt(readCodeI32() % volInt);
+								reg.int = readCodeI32() % reg.int;
 							case ModIntVVV:
-								setVolInt(volIntSaved % volInt);
+								reg.int = reg.intBuf % reg.int;
 
 							case AddFloatVCV:
-								setVolFloat(volFloat + readCodeF64());
+								reg.float = reg.float + readCodeF64();
 							case AddFloatVVV:
-								setVolFloat(volFloatSaved + volFloat);
+								reg.float = reg.floatBuf + reg.float;
 							case SubFloatVCV:
-								setVolFloat(volFloat - readCodeF64());
+								reg.float = reg.float - readCodeF64();
 							case SubFloatCVV:
-								setVolFloat(readCodeF64() - volFloat);
+								reg.float = readCodeF64() - reg.float;
 							case SubFloatVVV:
-								setVolFloat(volFloatSaved - volFloat);
+								reg.float = reg.floatBuf - reg.float;
 							case MinusFloatV:
-								setVolFloat(-volFloat);
+								reg.float = -reg.float;
 							case MultFloatVCV:
-								setVolFloat(volFloat * readCodeF64());
+								reg.float = reg.float * readCodeF64();
 							case MultFloatVVV:
-								setVolFloat(volFloatSaved * volFloat);
+								reg.float = reg.floatBuf * reg.float;
 							case DivFloatCVV:
-								setVolFloat(readCodeF64() / volFloat);
+								reg.float = readCodeF64() / reg.float;
 							case DivFloatVVV:
-								setVolFloat(volFloatSaved / volFloat);
+								reg.float = reg.floatBuf / reg.float;
 							case ModFloatVCV:
-								setVolFloat(volFloat % readCodeF64());
+								reg.float = reg.float % readCodeF64();
 							case ModFloatCVV:
-								setVolFloat(readCodeF64() % volFloat);
+								reg.float = readCodeF64() % reg.float;
 							case ModFloatVVV:
-								setVolFloat(volFloatSaved % volFloat);
+								reg.float = reg.floatBuf % reg.float;
 
 							case MinusVecV:
-								setVolVec(-volX, -volY);
+								reg.setVec(-reg.vecX, -reg.vecY);
 							case MultVecVCV:
 								final multiplier = readCodeF64();
-								setVolVec(volX * multiplier, volY * multiplier);
+								reg.setVec(reg.vecX * multiplier, reg.vecY * multiplier);
 							case MultVecVVV:
-								setVolVec(volX * volFloat, volY * volFloat);
+								reg.setVec(reg.vecX * reg.float, reg.vecY * reg.float);
 							case DivVecVVV:
-								setVolVec(volX / volFloat, volY / volFloat);
+								reg.setVec(reg.vecX / reg.float, reg.vecY / reg.float);
 							case CastIntToFloatVV:
-								setVolFloat(volInt);
+								reg.float = reg.int;
 							case CastCartesianVV:
-								setVolVec(volFloatSaved, volFloat);
+								reg.setVec(reg.floatBuf, reg.float);
 							case CastPolarVV:
-								final vec = Geometry.toVec(volFloatSaved, volFloat);
-								setVolVec(vec.x, vec.y);
+								final vec = Geometry.toVec(reg.floatBuf, reg.float);
+								reg.setVec(vec.x, vec.y);
 
 							case RandomRatioV:
-								setVolFloat(Random.random());
+								reg.float = Random.random();
 							case RandomFloatCV:
-								setVolFloat(Random.float(readCodeF64()));
+								reg.float = Random.float(readCodeF64());
 							case RandomFloatVV:
-								setVolFloat(Random.float(volFloat));
+								reg.float = Random.float(reg.float);
 							case RandomFloatSignedCV:
-								setVolFloat(Random.signed(readCodeF64()));
+								reg.float = Random.signed(readCodeF64());
 							case RandomFloatSignedVV:
-								setVolFloat(Random.signed(volFloat));
+								reg.float = Random.signed(reg.float);
 							case RandomIntCV:
-								setVolInt(Random.int(readCodeI32()));
+								reg.int = Random.int(readCodeI32());
 							case RandomIntVV:
-								setVolInt(Random.int(volInt));
+								reg.int = Random.int(reg.int);
 							case RandomIntSignedCV:
-								setVolInt(Random.signedInt(readCodeI32()));
+								reg.int = Random.signedInt(readCodeI32());
 							case RandomIntSignedVV:
-								setVolInt(Random.signedInt(volInt));
+								reg.int = Random.signedInt(reg.int);
 
 							case AddIntLCL:
 								addLocalInt(readCodeI32(), readCodeI32());
 							case AddIntLVL:
-								addLocalInt(readCodeI32(), volInt);
+								addLocalInt(readCodeI32(), reg.int);
 							case IncrementL:
 								addLocalInt(readCodeI32(), 1);
 							case DecrementL:
@@ -604,7 +558,7 @@ class Vm {
 							case AddFloatLCL:
 								addLocalFloat(readCodeI32(), readCodeF64());
 							case AddFloatLVL:
-								addLocalFloat(readCodeI32(), volFloat);
+								addLocalFloat(readCodeI32(), reg.float);
 
 							#if debug
 							case other:
@@ -615,93 +569,93 @@ class Vm {
 					case Read:
 						switch opcode.op {
 							case LoadTargetPositionV:
-								setVolVec(targetPositionRef.x, targetPositionRef.y);
+								reg.setVec(targetPositionRef.x, targetPositionRef.y);
 							case LoadTargetXV:
-								setVolFloat(targetPositionRef.x);
+								reg.float = targetPositionRef.x;
 							case LoadTargetYV:
-								setVolFloat(targetPositionRef.y);
+								reg.float = targetPositionRef.y;
 							case LoadBearingToTargetV:
-								setVolFloat(Geometry.getAngle(
+								reg.float = Geometry.getAngle(
 									targetPositionRef.x - getX(),
 									targetPositionRef.y - getY()
-								));
+								);
 
 							case CalcRelativePositionCV:
-								setVolVec(readCodeF64() - getX(), readCodeF64() - getY());
+								reg.setVec(readCodeF64() - getX(), readCodeF64() - getY());
 							case CalcRelativeVelocityCV:
-								setVolVec(readCodeF64() - getVx(), readCodeF64() - getVy());
+								reg.setVec(readCodeF64() - getVx(), readCodeF64() - getVy());
 							case CalcRelativePositionVV:
-								setVolVec(volX - getX(), volY - getY());
+								reg.setVec(reg.vecX - getX(), reg.vecY - getY());
 							case CalcRelativeVelocityVV:
-								setVolVec(volX - getVx(), volY - getVy());
+								reg.setVec(reg.vecX - getVx(), reg.vecY - getVy());
 							case CalcRelativeDistanceCV:
-								setVolFloat(readCodeF64() - getDistance());
+								reg.float = readCodeF64() - getDistance();
 							case CalcRelativeBearingCV:
-								setVolFloat(Geometry.getAngleDifference(
+								reg.float = Geometry.getAngleDifference(
 									getBearing(),
 									readCodeF64()
-								));
+								);
 							case CalcRelativeSpeedCV:
-								setVolFloat(readCodeF64() - getSpeed());
+								reg.float = readCodeF64() - getSpeed();
 							case CalcRelativeDirectionCV:
-								setVolFloat(Geometry.getAngleDifference(
+								reg.float = Geometry.getAngleDifference(
 									getDirection(),
 									readCodeF64()
-								));
+								);
 							case CalcRelativeDistanceVV:
-								setVolFloat(volFloat - getDistance());
+								reg.float = reg.float - getDistance();
 							case CalcRelativeBearingVV:
-								setVolFloat(Geometry.getAngleDifference(getBearing(), volFloat));
+								reg.float = Geometry.getAngleDifference(getBearing(), reg.float);
 							case CalcRelativeSpeedVV:
-								setVolFloat(volFloat - getSpeed());
+								reg.float = reg.float - getSpeed();
 							case CalcRelativeDirectionVV:
-								setVolFloat(Geometry.getAngleDifference(
+								reg.float = Geometry.getAngleDifference(
 									getDirection(),
-									volFloat
-								));
+									reg.float
+								);
 
 							case CalcRelativeShotPositionCV:
-								setVolVec(
+								reg.setVec(
 									readCodeF64() - thread.shotX,
 									readCodeF64() - thread.shotY
 								);
 							case CalcRelativeShotVelocityCV:
-								setVolVec(
+								reg.setVec(
 									readCodeF64() - thread.shotVx,
 									readCodeF64() - thread.shotVy
 								);
 							case CalcRelativeShotPositionVV:
-								setVolVec(volX - thread.shotX, volY - thread.shotY);
+								reg.setVec(reg.vecX - thread.shotX, reg.vecY - thread.shotY);
 							case CalcRelativeShotVelocityVV:
-								setVolVec(volX - thread.shotVx, volY - thread.shotVy);
+								reg.setVec(reg.vecX - thread.shotVx, reg.vecY - thread.shotVy);
 							case CalcRelativeShotDistanceCV:
-								setVolFloat(readCodeF64() - thread.getShotDistance());
+								reg.float = readCodeF64() - thread.getShotDistance();
 							case CalcRelativeShotBearingCV:
-								setVolFloat(Geometry.getAngleDifference(
+								reg.float = Geometry.getAngleDifference(
 									thread.getShotBearing(),
 									readCodeF64()
-								));
+								);
 							case CalcRelativeShotSpeedCV:
-								setVolFloat(readCodeF64() - thread.getShotSpeed());
+								reg.float = readCodeF64() - thread.getShotSpeed();
 							case CalcRelativeShotDirectionCV:
-								setVolFloat(Geometry.getAngleDifference(
+								reg.float = Geometry.getAngleDifference(
 									thread.getShotDirection(),
 									readCodeF64()
-								));
+								);
 							case CalcRelativeShotDistanceVV:
-								setVolFloat(volFloat - thread.getShotDistance());
+								reg.float = reg.float - thread.getShotDistance();
 							case CalcRelativeShotBearingVV:
-								setVolFloat(Geometry.getAngleDifference(
+								reg.float = Geometry.getAngleDifference(
 									thread.getShotBearing(),
-									volFloat
-								));
+									reg.float
+								);
 							case CalcRelativeShotSpeedVV:
-								setVolFloat(volFloat - thread.getShotSpeed());
+								reg.float = reg.float - thread.getShotSpeed();
 							case CalcRelativeShotDirectionVV:
-								setVolFloat(Geometry.getAngleDifference(
+								reg.float = Geometry.getAngleDifference(
 									thread.getShotDirection(),
-									volFloat
-								));
+									reg.float
+								);
 
 							#if debug
 							case other:
@@ -720,13 +674,13 @@ class Vm {
 							case AddVelocityC:
 								addVelocity(readCodeF64(), readCodeF64());
 							case SetPositionV:
-								setPosition(volX, volY);
+								setPosition(reg.vecX, reg.vecY);
 							case AddPositionV:
-								addPosition(volX, volY);
+								addPosition(reg.vecX, reg.vecY);
 							case SetVelocityV:
-								setVelocity(volX, volY);
+								setVelocity(reg.vecX, reg.vecY);
 							case AddVelocityV:
-								addVelocity(volX, volY);
+								addVelocity(reg.vecX, reg.vecY);
 							case AddPositionS:
 								final vec = peekVecSkipped(0);
 								addPosition(vec.x, vec.y);
@@ -738,9 +692,9 @@ class Vm {
 							case AddDistanceC:
 								addDistance(readCodeF64());
 							case SetDistanceV:
-								setDistance(volFloat);
+								setDistance(reg.float);
 							case AddDistanceV:
-								addDistance(volFloat);
+								addDistance(reg.float);
 							case AddDistanceS:
 								addDistance(peekFloat());
 							case SetBearingC:
@@ -748,9 +702,9 @@ class Vm {
 							case AddBearingC:
 								addBearing(readCodeF64());
 							case SetBearingV:
-								setBearing(volFloat);
+								setBearing(reg.float);
 							case AddBearingV:
-								addBearing(volFloat);
+								addBearing(reg.float);
 							case AddBearingS:
 								addBearing(peekFloat());
 							case SetSpeedC:
@@ -758,9 +712,9 @@ class Vm {
 							case AddSpeedC:
 								addSpeed(readCodeF64());
 							case SetSpeedV:
-								setSpeed(volFloat);
+								setSpeed(reg.float);
 							case AddSpeedV:
-								addSpeed(volFloat);
+								addSpeed(reg.float);
 							case AddSpeedS:
 								addSpeed(peekFloat());
 							case SetDirectionC:
@@ -768,9 +722,9 @@ class Vm {
 							case AddDirectionC:
 								addDirection(readCodeF64());
 							case SetDirectionV:
-								setDirection(volFloat);
+								setDirection(reg.float);
 							case AddDirectionV:
-								addDirection(volFloat);
+								addDirection(reg.float);
 							case AddDirectionS:
 								addDirection(peekFloat());
 							case SetShotPositionC:
@@ -782,13 +736,13 @@ class Vm {
 							case AddShotVelocityC:
 								thread.addShotVelocity(readCodeF64(), readCodeF64());
 							case SetShotPositionV:
-								thread.setShotPosition(volX, volY);
+								thread.setShotPosition(reg.vecX, reg.vecY);
 							case AddShotPositionV:
-								thread.addShotPosition(volX, volY);
+								thread.addShotPosition(reg.vecX, reg.vecY);
 							case SetShotVelocityV:
-								thread.setShotVelocity(volX, volY);
+								thread.setShotVelocity(reg.vecX, reg.vecY);
 							case AddShotVelocityV:
-								thread.addShotVelocity(volX, volY);
+								thread.addShotVelocity(reg.vecX, reg.vecY);
 							case AddShotPositionS:
 								final vec = peekVecSkipped(0);
 								thread.addShotPosition(vec.x, vec.y);
@@ -800,9 +754,9 @@ class Vm {
 							case AddShotDistanceC:
 								thread.addShotDistance(readCodeF64());
 							case SetShotDistanceV:
-								thread.setShotDistance(volFloat);
+								thread.setShotDistance(reg.float);
 							case AddShotDistanceV:
-								thread.addShotDistance(volFloat);
+								thread.addShotDistance(reg.float);
 							case AddShotDistanceS:
 								thread.addShotDistance(peekFloat());
 							case SetShotBearingC:
@@ -810,9 +764,9 @@ class Vm {
 							case AddShotBearingC:
 								thread.addShotBearing(readCodeF64());
 							case SetShotBearingV:
-								thread.setShotBearing(volFloat);
+								thread.setShotBearing(reg.float);
 							case AddShotBearingV:
-								thread.addShotBearing(volFloat);
+								thread.addShotBearing(reg.float);
 							case AddShotBearingS:
 								thread.addShotBearing(peekFloat());
 							case SetShotSpeedC:
@@ -820,9 +774,9 @@ class Vm {
 							case AddShotSpeedC:
 								thread.addShotSpeed(readCodeF64());
 							case SetShotSpeedV:
-								thread.setShotSpeed(volFloat);
+								thread.setShotSpeed(reg.float);
 							case AddShotSpeedV:
-								thread.addShotSpeed(volFloat);
+								thread.addShotSpeed(reg.float);
 							case AddShotSpeedS:
 								thread.addShotSpeed(peekFloat());
 							case SetShotDirectionC:
@@ -830,9 +784,9 @@ class Vm {
 							case AddShotDirectionC:
 								thread.addShotDirection(readCodeF64());
 							case SetShotDirectionV:
-								thread.setShotDirection(volFloat);
+								thread.setShotDirection(reg.float);
 							case AddShotDirectionV:
-								thread.addShotDirection(volFloat);
+								thread.addShotDirection(reg.float);
 							case AddShotDirectionS:
 								thread.addShotDirection(peekFloat());
 
@@ -843,11 +797,12 @@ class Vm {
 				}
 
 				#if debug
-				if (infiniteLoopCheckThreshold < ++cnt) throw "Detected infinite loop.";
+				reg.cnt += 1;
+				if (infiniteLoopCheckThreshold < reg.cnt) throw "Detected infinite loop.";
 				#end
 			} while (true);
 
-			thread.update(codePos, stackSize);
+			thread.update(reg.pc, reg.sp);
 		}
 
 		updatePosition();

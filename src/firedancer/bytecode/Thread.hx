@@ -25,7 +25,7 @@ class Thread {
 	/**
 		Current position in `code`.
 	**/
-	public var codePos: UInt;
+	public var programCounter: UInt;
 
 	/**
 		The stack for `this` this.
@@ -35,7 +35,7 @@ class Thread {
 	/**
 		The size of data in bytes currently stored in `stack`.
 	**/
-	public var stackSize: UInt;
+	public var stackPointer: UInt;
 
 	/**
 		X-component of the current shot position.
@@ -64,9 +64,9 @@ class Thread {
 		this.active = false;
 		this.code = Maybe.none();
 		this.codeLength = UInt.zero;
-		this.codePos = UInt.zero;
+		this.programCounter = UInt.zero;
 		this.stack = ByteStackData.alloc(stackCapacity);
-		this.stackSize = UInt.zero;
+		this.stackPointer = UInt.zero;
 		this.shotX = 0.0;
 		this.shotY = 0.0;
 		this.shotVx = 0.0;
@@ -86,8 +86,8 @@ class Thread {
 		this.active = true;
 		this.code = Maybe.from(code.data);
 		this.codeLength = code.length;
-		this.codePos = UInt.zero;
-		this.stackSize = UInt.zero;
+		this.programCounter = UInt.zero;
+		this.stackPointer = UInt.zero;
 		this.shotX = shotX;
 		this.shotY = shotY;
 		this.shotVx = shotVx;
@@ -98,9 +98,9 @@ class Thread {
 		Updates values of `this` this.
 		Called in `Vm.run()`.
 	**/
-	public extern inline function update(codePos: UInt, stackSize: UInt): Void {
-		this.codePos = codePos;
-		this.stackSize = stackSize;
+	public extern inline function update(programCounter: UInt, stackPointer: UInt): Void {
+		this.programCounter = programCounter;
+		this.stackPointer = stackPointer;
 	}
 
 	/**
@@ -127,8 +127,8 @@ class Thread {
 	public extern inline function reset(): Void {
 		this.deactivate();
 		this.codeLength = UInt.zero;
-		this.codePos = UInt.zero;
-		this.stackSize = UInt.zero;
+		this.programCounter = UInt.zero;
+		this.stackPointer = UInt.zero;
 		this.resetShot();
 	}
 
