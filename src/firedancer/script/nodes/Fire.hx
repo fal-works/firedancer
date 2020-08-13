@@ -9,7 +9,7 @@ import firedancer.bytecode.types.FireArgument;
 class Fire extends AstNode implements ripper.Data {
 	final pattern: Maybe<Ast>;
 	var bindPosition = false;
-	var fireType(default, null): Int = 0;
+	var fireCode(default, null): Int = 0;
 
 	/**
 		Binds the position of the actor being fired to the position of the actor that fires it.
@@ -20,13 +20,14 @@ class Fire extends AstNode implements ripper.Data {
 	}
 
 	/**
-		Specifies the fire type value.
+		Specifies the fire code value (which is `0` at default) to any user-defined value.
+
 		This does not affect the FiredancerVM directly, but you can use the value
 		to branch the process in your own `Emitter` class
 		(e.g. switch graphics of the actor to be emitted).
 	**/
-	public inline function type(fireType: Int): Fire {
-		this.fireType = fireType;
+	public inline function code(fireCode: Int): Fire {
+		this.fireCode = fireCode;
 		return this;
 	}
 
@@ -41,6 +42,6 @@ class Fire extends AstNode implements ripper.Data {
 			Maybe.from(FireArgument.from(bytecodeId, this.bindPosition));
 		};
 
-		return [fire(fireArgument, this.fireType)];
+		return [fire(fireArgument, this.fireCode)];
 	}
 }

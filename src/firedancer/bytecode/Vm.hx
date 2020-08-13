@@ -452,31 +452,31 @@ class Vm {
 									getY() + thread.shotY,
 									thread.shotVx,
 									thread.shotVy,
-									0, // default fire type
+									0, // default fire code
 									bytecode,
 									if (arg.bindPosition) Maybe.from(thisPositionRef) else Maybe.none()
 								);
-							case FireSimpleWithType:
-								final fireType = readCodeI32();
+							case FireSimpleWithCode:
+								final fireCode = readCodeI32();
 								emitter.emit(
 									getX() + thread.shotX,
 									getY() + thread.shotY,
 									thread.shotVx,
 									thread.shotVy,
-									fireType,
+									fireCode,
 									Maybe.none(),
 									Maybe.none()
 								);
-							case FireComplexWithType:
+							case FireComplexWithCode:
 								final arg: FireArgument = readCodeI32();
-								final fireType = readCodeI32();
+								final fireCode = readCodeI32();
 								final bytecode = Maybe.from(bytecodeTable[arg.bytecodeId]);
 								emitter.emit(
 									getX() + thread.shotX,
 									getY() + thread.shotY,
 									thread.shotVx,
 									thread.shotVy,
-									fireType,
+									fireCode,
 									bytecode,
 									if (arg.bindPosition) Maybe.from(thisPositionRef) else Maybe.none()
 								);

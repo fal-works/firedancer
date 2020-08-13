@@ -14,7 +14,7 @@ class Emitter extends firedancer.types.Emitter implements ripper.Data {
 		y: Float,
 		vx: Float,
 		vy: Float,
-		fireType: Int,
+		fireCode: Int,
 		code: Maybe<Bytecode>,
 		originPositionRef: Maybe<PositionRef>
 	): Void {

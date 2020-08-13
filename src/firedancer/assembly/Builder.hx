@@ -148,25 +148,25 @@ class Builder {
 	**/
 	public static inline function fire(
 		fireArgument: Maybe<FireArgument>,
-		fireType: Int = 0
+		fireCode: Int = 0
 	): AssemblyStatement {
 		return if (fireArgument.isNone()) {
-			if (fireType == 0) {
+			if (fireCode == 0) {
 				new AssemblyStatement(general(FireSimple), []);
 			} else {
 				new AssemblyStatement(
-					general(FireSimpleWithType),
-					[Int(fireType)]
+					general(FireSimpleWithCode),
+					[Int(fireCode)]
 				);
 			}
 		} else {
 			final arg = fireArgument.unwrap();
-			if (fireType == 0) {
+			if (fireCode == 0) {
 				new AssemblyStatement(general(FireComplex), [arg]);
 			} else {
 				new AssemblyStatement(
-					general(FireComplexWithType),
-					[arg, Int(fireType)]
+					general(FireComplexWithCode),
+					[arg, Int(fireCode)]
 				);
 			}
 		}

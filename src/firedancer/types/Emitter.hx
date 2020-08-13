@@ -16,7 +16,7 @@ class Emitter {
 		@param y Y-component of the initial position.
 		@param vx X-component of initial velocity.
 		@param vy Y-component of initial velocity.
-		@param fireType Any integer value to branch the emission process
+		@param fireCode Any integer value to branch the emission process
 		(e.g. switch graphics of the actor to be emitted).
 		@param code The bytecode to run.
 		@param originPositionRef The reference to the origin point position.
@@ -28,7 +28,7 @@ class Emitter {
 		y: Float,
 		vx: Float,
 		vy: Float,
-		fireType: Int,
+		fireCode: Int,
 		code: Maybe<Bytecode>,
 		originPositionRef: Maybe<PositionRef>
 	): Void {
@@ -47,7 +47,7 @@ class NullEmitter extends Emitter {
 		y: Float,
 		vx: Float,
 		vy: Float,
-		fireType: Int,
+		fireCode: Int,
 		code: Maybe<Bytecode>,
 		originPositionRef: Maybe<PositionRef>
 	): Void {}

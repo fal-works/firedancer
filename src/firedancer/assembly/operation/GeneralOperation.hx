@@ -47,8 +47,8 @@ enum abstract GeneralOperation(Int) to Int {
 
 			case GeneralOperation.FireSimple: FireSimple;
 			case GeneralOperation.FireComplex: FireComplex;
-			case GeneralOperation.FireSimpleWithType: FireSimpleWithType;
-			case GeneralOperation.FireComplexWithType: FireComplexWithType;
+			case GeneralOperation.FireSimpleWithCode: FireSimpleWithCode;
+			case GeneralOperation.FireComplexWithCode: FireComplexWithCode;
 
 			case GeneralOperation.GlobalEvent: GlobalEvent;
 			case GeneralOperation.LocalEvent: LocalEvent;
@@ -243,18 +243,18 @@ enum abstract GeneralOperation(Int) to Int {
 		without binding the position.
 
 		Argument:
-		- (int) Fire type
+		- (int) Fire code
 	**/
-	final FireSimpleWithType;
+	final FireSimpleWithCode;
 
 	/**
 		Emits a new actor with a specified type.
 
 		Arguments:
 		1. (int) `FireArgument` value
-		2. (int) Fire type
+		2. (int) Fire code
 	**/
-	final FireComplexWithType;
+	final FireComplexWithCode;
 
 	// ---- other ----------------------------------------------------
 
@@ -313,8 +313,8 @@ class GeneralOperationExtension {
 
 			case FireSimple: "fire_simple";
 			case FireComplex: "fire_complex";
-			case FireSimpleWithType: "fire_simple_with_type";
-			case FireComplexWithType: "fire_complex_with_type";
+			case FireSimpleWithCode: "fire_simple_with_type";
+			case FireComplexWithCode: "fire_complex_with_type";
 
 			case GlobalEvent: "global_event";
 			case LocalEvent: "local_event";
@@ -356,8 +356,8 @@ class GeneralOperationExtension {
 
 			case FireSimple: [];
 			case FireComplex: [Int]; // FireArgument value
-			case FireSimpleWithType: [Int]; // fire type
-			case FireComplexWithType: [Int, Int]; // 1. FireArgument value, 2. fire type
+			case FireSimpleWithCode: [Int]; // fire code
+			case FireComplexWithCode: [Int, Int]; // 1. FireArgument value, 2. fire code
 
 			case GlobalEvent: [];
 			case LocalEvent: [];
