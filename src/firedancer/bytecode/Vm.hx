@@ -46,40 +46,26 @@ class Vm {
 		thisPositionRef: PositionRef,
 		targetPositionRef: PositionRef
 	): Int {
+		final originPositionRef = originPositionRefVec[vecIndex];
+		final position = new TmpPosition(
+			xVec[vecIndex],
+			yVec[vecIndex],
+			originPositionRef,
+			originPositionRefVec,
+			vecIndex
+		);
+		final velocity = new TmpVelocity(vxVec[vecIndex], vyVec[vecIndex]);
+
+		inline function updatePositionAndVelocity(): Void {
+			xVec[vecIndex] = position.getAbsoluteX();
+			yVec[vecIndex] = position.getAbsoluteY();
+			vxVec[vecIndex] = velocity.x;
+			vyVec[vecIndex] = velocity.y;
+		}
+
 		var code: BytecodeData;
 		var stack: ByteStackData;
-
-		var originX: Float;
-		var originY: Float;
-		var positionX: Float;
-		var positionY: Float;
-
 		final reg = new RegisterFile();
-
-		var originPositionRef = originPositionRefVec[vecIndex];
-		if (originPositionRef.isNone()) {
-			originX = originY = 0.0;
-			positionX = xVec[vecIndex];
-			positionY = yVec[vecIndex];
-		} else {
-			final origin = originPositionRef.unwrap();
-			if (origin.isValid()) {
-				originX = origin.x;
-				originY = origin.y;
-				positionX = xVec[vecIndex] - originX;
-				positionY = yVec[vecIndex] - originY;
-			} else {
-				originPositionRefVec[vecIndex] = Maybe.none();
-				originX = originY = 0.0;
-				positionX = xVec[vecIndex];
-				positionY = yVec[vecIndex];
-			}
-		}
-
-		inline function updatePosition(): Void {
-			xVec[vecIndex] = originX + positionX;
-			yVec[vecIndex] = originY + positionY;
-		}
 
 		inline function readOp(): Opcode {
 			final opcode: Opcode = cast code.getUI8(reg.pc);
@@ -148,114 +134,6 @@ class Vm {
 
 		inline function decrement(): Void
 			stack.decrement32(reg.sp);
-
-		inline function getX(): Float
-			return positionX;
-
-		inline function getY(): Float
-			return positionY;
-
-		inline function getVx(): Float
-			return vxVec[vecIndex];
-
-		inline function getVy(): Float
-			return vyVec[vecIndex];
-
-		inline function setX(x: Float): Void
-			positionX = x;
-
-		inline function setY(y: Float): Void
-			positionY = y;
-
-		inline function setVx(vx: Float): Void
-			vxVec[vecIndex] = vx;
-
-		inline function setVy(vy: Float): Void
-			vyVec[vecIndex] = vy;
-
-		inline function addX(x: Float): Void
-			positionX += x;
-
-		inline function addY(y: Float): Void
-			positionY += y;
-
-		inline function addVx(vx: Float): Void
-			vxVec[vecIndex] += vx;
-
-		inline function addVy(vy: Float): Void
-			vyVec[vecIndex] += vy;
-
-		inline function setPosition(x: Float, y: Float): Void {
-			setX(x);
-			setY(y);
-		}
-
-		inline function addPosition(x: Float, y: Float): Void {
-			addX(x);
-			addY(y);
-		}
-
-		inline function setVelocity(vx: Float, vy: Float): Void {
-			setVx(vx);
-			setVy(vy);
-		}
-
-		inline function addVelocity(vx: Float, vy: Float): Void {
-			addVx(vx);
-			addVy(vy);
-		}
-
-		inline function getDistance(): Float
-			return Geometry.getLength(getX(), getY());
-
-		inline function getBearing(): Float
-			return Geometry.getAngle(getX(), getY());
-
-		inline function getSpeed(): Float
-			return Geometry.getLength(getVx(), getVy());
-
-		inline function getDirection(): Float
-			return Geometry.getAngle(getVx(), getVy());
-
-		inline function setDistance(value: Float): Void {
-			final newPosition = Geometry.setLength(getX(), getY(), value);
-			setPosition(newPosition.x, newPosition.y);
-		}
-
-		inline function addDistance(value: Float): Void {
-			final newPosition = Geometry.addLength(getX(), getY(), value);
-			setPosition(newPosition.x, newPosition.y);
-		}
-
-		inline function setBearing(value: Float): Void {
-			final newPosition = Geometry.setAngle(getX(), getY(), value);
-			setPosition(newPosition.x, newPosition.y);
-		}
-
-		inline function addBearing(value: Float): Void {
-			final newPosition = Geometry.addAngle(getX(), getY(), value);
-			setPosition(newPosition.x, newPosition.y);
-		}
-
-		inline function setSpeed(value: Float): Void {
-			final newVelocity = Geometry.setLength(getVx(), getVy(), value);
-			setVelocity(newVelocity.x, newVelocity.y);
-		}
-
-		inline function addSpeed(value: Float): Void {
-			final newVelocity = Geometry.addLength(getVx(), getVy(), value);
-			setVelocity(newVelocity.x, newVelocity.y);
-		}
-
-		inline function setDirection(value: Float): Void {
-			final newVelocity = Geometry.setAngle(getVx(), getVy(), value);
-			setVelocity(newVelocity.x, newVelocity.y);
-		}
-
-		inline function addDirection(value: Float): Void {
-			final newVelocity = Geometry.addAngle(getVx(), getVy(), value);
-			setVelocity(newVelocity.x, newVelocity.y);
-		}
 
 		inline function getLocalInt(address: Int): Int
 			return stack.bytesData.getI32(stackCapacity - address - LEN32);
@@ -342,7 +220,7 @@ class Vm {
 							case End:
 								final endCode = readCodeI32();
 								threads.deactivateAll();
-								updatePosition();
+								updatePositionAndVelocity();
 								return endCode;
 
 							case LoadIntCV:
@@ -390,8 +268,8 @@ class Vm {
 
 							case FireSimple:
 								emitter.emit(
-									getX() + thread.shotX,
-									getY() + thread.shotY,
+									position.x + thread.shotX,
+									position.y + thread.shotY,
 									thread.shotVx,
 									thread.shotVy,
 									0,
@@ -402,8 +280,8 @@ class Vm {
 								final arg: FireArgument = readCodeI32();
 								final bytecode = Maybe.from(bytecodeTable[arg.bytecodeId]);
 								emitter.emit(
-									getX() + thread.shotX,
-									getY() + thread.shotY,
+									position.x + thread.shotX,
+									position.y + thread.shotY,
 									thread.shotVx,
 									thread.shotVy,
 									0, // default fire code
@@ -413,8 +291,8 @@ class Vm {
 							case FireSimpleWithCode:
 								final fireCode = readCodeI32();
 								emitter.emit(
-									getX() + thread.shotX,
-									getY() + thread.shotY,
+									position.x + thread.shotX,
+									position.y + thread.shotY,
 									thread.shotVx,
 									thread.shotVy,
 									fireCode,
@@ -426,8 +304,8 @@ class Vm {
 								final fireCode = readCodeI32();
 								final bytecode = Maybe.from(bytecodeTable[arg.bytecodeId]);
 								emitter.emit(
-									getX() + thread.shotX,
-									getY() + thread.shotY,
+									position.x + thread.shotX,
+									position.y + thread.shotY,
 									thread.shotVx,
 									thread.shotVy,
 									fireCode,
@@ -440,8 +318,8 @@ class Vm {
 							case LocalEvent:
 								eventHandler.onLocalEvent(
 									reg.int,
-									getX(),
-									getY(),
+									position.x,
+									position.y,
 									thread,
 									originPositionRef,
 									targetPositionRef
@@ -576,41 +454,41 @@ class Vm {
 								reg.float = targetPositionRef.y;
 							case LoadBearingToTargetV:
 								reg.float = Geometry.getAngle(
-									targetPositionRef.x - getX(),
-									targetPositionRef.y - getY()
+									targetPositionRef.x - position.x,
+									targetPositionRef.y - position.y
 								);
 
 							case CalcRelativePositionCV:
-								reg.setVec(readCodeF64() - getX(), readCodeF64() - getY());
+								reg.setVec(readCodeF64() - position.x, readCodeF64() - position.y);
 							case CalcRelativeVelocityCV:
-								reg.setVec(readCodeF64() - getVx(), readCodeF64() - getVy());
+								reg.setVec(readCodeF64() - velocity.x, readCodeF64() - velocity.y);
 							case CalcRelativePositionVV:
-								reg.setVec(reg.vecX - getX(), reg.vecY - getY());
+								reg.setVec(reg.vecX - position.x, reg.vecY - position.y);
 							case CalcRelativeVelocityVV:
-								reg.setVec(reg.vecX - getVx(), reg.vecY - getVy());
+								reg.setVec(reg.vecX - velocity.x, reg.vecY - velocity.y);
 							case CalcRelativeDistanceCV:
-								reg.float = readCodeF64() - getDistance();
+								reg.float = readCodeF64() - position.getDistance();
 							case CalcRelativeBearingCV:
 								reg.float = Geometry.getAngleDifference(
-									getBearing(),
+									position.getBearing(),
 									readCodeF64()
 								);
 							case CalcRelativeSpeedCV:
-								reg.float = readCodeF64() - getSpeed();
+								reg.float = readCodeF64() - velocity.getSpeed();
 							case CalcRelativeDirectionCV:
 								reg.float = Geometry.getAngleDifference(
-									getDirection(),
+									velocity.getDirection(),
 									readCodeF64()
 								);
 							case CalcRelativeDistanceVV:
-								reg.float = reg.float - getDistance();
+								reg.float = reg.float - position.getDistance();
 							case CalcRelativeBearingVV:
-								reg.float = Geometry.getAngleDifference(getBearing(), reg.float);
+								reg.float = Geometry.getAngleDifference(position.getBearing(), reg.float);
 							case CalcRelativeSpeedVV:
-								reg.float = reg.float - getSpeed();
+								reg.float = reg.float - velocity.getSpeed();
 							case CalcRelativeDirectionVV:
 								reg.float = Geometry.getAngleDifference(
-									getDirection(),
+									velocity.getDirection(),
 									reg.float
 								);
 
@@ -666,67 +544,67 @@ class Vm {
 					case Write:
 						switch opcode.op {
 							case SetPositionC:
-								setPosition(readCodeF64(), readCodeF64());
+								position.set(readCodeF64(), readCodeF64());
 							case AddPositionC:
-								addPosition(readCodeF64(), readCodeF64());
+								position.add(readCodeF64(), readCodeF64());
 							case SetVelocityC:
-								setVelocity(readCodeF64(), readCodeF64());
+								velocity.set(readCodeF64(), readCodeF64());
 							case AddVelocityC:
-								addVelocity(readCodeF64(), readCodeF64());
+								velocity.add(readCodeF64(), readCodeF64());
 							case SetPositionV:
-								setPosition(reg.vecX, reg.vecY);
+								position.set(reg.vecX, reg.vecY);
 							case AddPositionV:
-								addPosition(reg.vecX, reg.vecY);
+								position.add(reg.vecX, reg.vecY);
 							case SetVelocityV:
-								setVelocity(reg.vecX, reg.vecY);
+								velocity.set(reg.vecX, reg.vecY);
 							case AddVelocityV:
-								addVelocity(reg.vecX, reg.vecY);
+								velocity.add(reg.vecX, reg.vecY);
 							case AddPositionS:
 								final vec = peekVecSkipped(0);
-								addPosition(vec.x, vec.y);
+								position.add(vec.x, vec.y);
 							case AddVelocityS:
 								final vec = peekVecSkipped(0);
-								addPosition(vec.x, vec.y);
+								position.add(vec.x, vec.y);
 							case SetDistanceC:
-								setDistance(readCodeF64());
+								position.setDistance(readCodeF64());
 							case AddDistanceC:
-								addDistance(readCodeF64());
+								position.addDistance(readCodeF64());
 							case SetDistanceV:
-								setDistance(reg.float);
+								position.setDistance(reg.float);
 							case AddDistanceV:
-								addDistance(reg.float);
+								position.addDistance(reg.float);
 							case AddDistanceS:
-								addDistance(peekFloat());
+								position.addDistance(peekFloat());
 							case SetBearingC:
-								setBearing(readCodeF64());
+								position.setBearing(readCodeF64());
 							case AddBearingC:
-								addBearing(readCodeF64());
+								position.addBearing(readCodeF64());
 							case SetBearingV:
-								setBearing(reg.float);
+								position.setBearing(reg.float);
 							case AddBearingV:
-								addBearing(reg.float);
+								position.addBearing(reg.float);
 							case AddBearingS:
-								addBearing(peekFloat());
+								position.addBearing(peekFloat());
 							case SetSpeedC:
-								setSpeed(readCodeF64());
+								velocity.setSpeed(readCodeF64());
 							case AddSpeedC:
-								addSpeed(readCodeF64());
+								velocity.addSpeed(readCodeF64());
 							case SetSpeedV:
-								setSpeed(reg.float);
+								velocity.setSpeed(reg.float);
 							case AddSpeedV:
-								addSpeed(reg.float);
+								velocity.addSpeed(reg.float);
 							case AddSpeedS:
-								addSpeed(peekFloat());
+								velocity.addSpeed(peekFloat());
 							case SetDirectionC:
-								setDirection(readCodeF64());
+								velocity.setDirection(readCodeF64());
 							case AddDirectionC:
-								addDirection(readCodeF64());
+								velocity.addDirection(readCodeF64());
 							case SetDirectionV:
-								setDirection(reg.float);
+								velocity.setDirection(reg.float);
 							case AddDirectionV:
-								addDirection(reg.float);
+								velocity.addDirection(reg.float);
 							case AddDirectionS:
-								addDirection(peekFloat());
+								velocity.addDirection(peekFloat());
 							case SetShotPositionC:
 								thread.setShotPosition(readCodeF64(), readCodeF64());
 							case AddShotPositionC:
@@ -805,7 +683,7 @@ class Vm {
 			thread.update(reg.pc, reg.sp);
 		}
 
-		updatePosition();
+		updatePositionAndVelocity();
 
 		return 0;
 	}
