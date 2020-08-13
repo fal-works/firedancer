@@ -271,8 +271,8 @@ class Vm {
 
 							case FireSimple:
 								emitter.emit(
-									position.x + thread.shotX,
-									position.y + thread.shotY,
+									position.getAbsoluteX() + thread.shotX,
+									position.getAbsoluteY() + thread.shotY,
 									thread.shotVx,
 									thread.shotVy,
 									0,
@@ -283,8 +283,8 @@ class Vm {
 								final arg: FireArgument = readCodeI32();
 								final bytecode = Maybe.from(bytecodeTable[arg.bytecodeId]);
 								emitter.emit(
-									position.x + thread.shotX,
-									position.y + thread.shotY,
+									position.getAbsoluteX() + thread.shotX,
+									position.getAbsoluteY() + thread.shotY,
 									thread.shotVx,
 									thread.shotVy,
 									0, // default fire code
@@ -294,8 +294,8 @@ class Vm {
 							case FireSimpleWithCode:
 								final fireCode = readCodeI32();
 								emitter.emit(
-									position.x + thread.shotX,
-									position.y + thread.shotY,
+									position.getAbsoluteX() + thread.shotX,
+									position.getAbsoluteY() + thread.shotY,
 									thread.shotVx,
 									thread.shotVy,
 									fireCode,
@@ -307,8 +307,8 @@ class Vm {
 								final fireCode = readCodeI32();
 								final bytecode = Maybe.from(bytecodeTable[arg.bytecodeId]);
 								emitter.emit(
-									position.x + thread.shotX,
-									position.y + thread.shotY,
+									position.getAbsoluteX() + thread.shotX,
+									position.getAbsoluteY() + thread.shotY,
 									thread.shotVx,
 									thread.shotVy,
 									fireCode,

@@ -12,8 +12,8 @@ class Emitter {
 
 		This method must be overridden by an user-defined sub-class.
 
-		@param x X-component of the initial position.
-		@param y Y-component of the initial position.
+		@param x X-component of the initial position (absolute).
+		@param y Y-component of the initial position (absolute).
 		@param vx X-component of initial velocity.
 		@param vy Y-component of initial velocity.
 		@param fireCode Any integer value to branch the emission process
