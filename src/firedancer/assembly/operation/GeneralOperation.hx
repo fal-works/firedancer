@@ -50,6 +50,9 @@ enum abstract GeneralOperation(Int) to Int {
 			case GeneralOperation.FireSimpleWithType: FireSimpleWithType;
 			case GeneralOperation.FireComplexWithType: FireComplexWithType;
 
+			case GeneralOperation.GlobalEvent: GlobalEvent;
+			case GeneralOperation.LocalEvent: LocalEvent;
+
 			default: throw error(value);
 		}
 	}
@@ -253,6 +256,20 @@ enum abstract GeneralOperation(Int) to Int {
 	**/
 	final FireComplexWithType;
 
+	// ---- other ----------------------------------------------------
+
+	/**
+		Invokes a global event with an user-defined code
+		specified by the current volatile integer.
+	**/
+	final GlobalEvent;
+
+	/**
+		Invokes a global event with an user-defined code
+		specified by the current volatile integer.
+	**/
+	final LocalEvent;
+
 	public extern inline function int(): Int
 		return this;
 }
@@ -298,6 +315,9 @@ class GeneralOperationExtension {
 			case FireComplex: "fire_complex";
 			case FireSimpleWithType: "fire_simple_with_type";
 			case FireComplexWithType: "fire_complex_with_type";
+
+			case GlobalEvent: "global_event";
+			case LocalEvent: "local_event";
 		}
 	}
 
@@ -338,6 +358,9 @@ class GeneralOperationExtension {
 			case FireComplex: [Int]; // FireArgument value
 			case FireSimpleWithType: [Int]; // fire type
 			case FireComplexWithType: [Int, Int]; // 1. FireArgument value, 2. fire type
+
+			case GlobalEvent: [];
+			case LocalEvent: [];
 		}
 	}
 

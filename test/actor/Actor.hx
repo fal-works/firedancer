@@ -9,6 +9,12 @@ class Actor extends broker.entity.BasicBatchEntity {
 	var bytecodeTable: Vector<Bytecode>;
 
 	/**
+		Object for handling events.
+	**/
+	@:banker_chunkLevelFinal
+	var eventHandler: EventHandler;
+
+	/**
 		Object for emitting new bullet.
 	**/
 	@:banker_chunkLevelFinal
@@ -151,6 +157,7 @@ class Actor extends broker.entity.BasicBatchEntity {
 		disusedCount: Int,
 		dead: WVec<Bool>,
 		rotationVelocity: Float,
+		eventHandler: EventHandler,
 		emitter: Emitter,
 		targetPositionRef: PositionRef
 	): Void {
@@ -162,6 +169,7 @@ class Actor extends broker.entity.BasicBatchEntity {
 		} else {
 			final endCode = Vm.run(
 				bytecodeTable,
+				eventHandler,
 				threads,
 				STACK_CAPACITY,
 				x,

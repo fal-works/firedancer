@@ -1,3 +1,4 @@
+import firedancer.types.EventHandler;
 import firedancer.script.Api.*;
 import firedancer.script.Ast;
 import FdEndCode.*;
@@ -133,7 +134,12 @@ class BulletPatterns {
 		])
 	];
 
-	static final testAst = test(localVarTest); // Change this for testing
+	static final eventTest = loop([
+		event(random.int.between(0, 10)),
+		wait(60)
+	]);
+
+	static final testAst = test(eventTest); // Change this for testing
 
 	public static final programPackage = compile(["test" => testAst]);
 	public static final testPattern = programPackage.getBytecodeByName("test");

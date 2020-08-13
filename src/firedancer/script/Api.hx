@@ -141,6 +141,20 @@ class Api {
 		return new AngleLocalVariableExpression(name);
 
 	/**
+		Invokes a global event.
+		@see `firedancer.types.EventHandler`
+	**/
+	public static inline function event(globalEventCode: IntExpression): Event
+		return new Event(Global, globalEventCode);
+
+	/**
+		Invokes a local event.
+		@see `firedancer.types.EventHandler`
+	**/
+	public static inline function localEvent(localEventCode: IntExpression): Event
+		return new Event(Global, localEventCode);
+
+	/**
 		@return New `ProgramPackage` instance that contains all `Bytecode` compiled.
 	**/
 	public static inline function compile(namedAstMap: Map<String, Ast>): ProgramPackage {

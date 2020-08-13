@@ -7,6 +7,7 @@ import banker.vector.WritableVector as Vec;
 import reckoner.Random;
 import firedancer.types.PositionRef;
 import firedancer.types.Emitter;
+import firedancer.types.EventHandler;
 import firedancer.assembly.Opcode;
 import firedancer.assembly.operation.GeneralOperation;
 import firedancer.assembly.operation.CalcOperation;
@@ -32,6 +33,7 @@ class Vm {
 	**/
 	public static function run(
 		bytecodeTable: RVec<Bytecode>,
+		eventHandler: EventHandler,
 		threads: ThreadList,
 		stackCapacity: UInt,
 		xVec: Vec<Float>,
@@ -479,6 +481,18 @@ class Vm {
 									if (arg.bindPosition) Maybe.from(thisPositionRef) else Maybe.none()
 								);
 
+							case GlobalEvent:
+								eventHandler.onGlobalEvent(volInt);
+							case LocalEvent:
+								eventHandler.onLocalEvent(
+									volInt,
+									getX(),
+									getY(),
+									thread,
+									originPositionRef,
+									targetPositionRef
+								);
+
 							#if debug
 							case other:
 								throw 'Unknown general opcode: $other';
@@ -842,6 +856,7 @@ class Vm {
 		entryBytecodeName: String,
 		stackCapacity: UInt = 256
 	): Void {
+		final eventHandler = new NullEventHandler();
 		final threads = new ThreadList(1, stackCapacity);
 		final bytecode = pkg.getBytecodeByName(entryBytecodeName);
 		threads.set(bytecode);
@@ -862,6 +877,7 @@ class Vm {
 
 			Vm.run(
 				pkg.bytecodeTable,
+				eventHandler,
 				threads,
 				stackCapacity,
 				xVec,
