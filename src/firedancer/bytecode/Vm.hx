@@ -1,6 +1,5 @@
 package firedancer.bytecode;
 
-import banker.binary.ByteStackData;
 import haxe.Int32;
 import banker.vector.Vector as RVec;
 import banker.vector.WritableVector as Vec;
@@ -67,8 +66,8 @@ class Vm {
 		}
 
 		var code: BytecodeData;
-		var stack: ByteStackData;
 		final reg = new RegisterFile();
+		final mem = new Memory(stackCapacity);
 
 		inline function readOp(): Opcode {
 			final opcode: Opcode = cast code.getUI8(reg.pc);
@@ -91,84 +90,13 @@ class Vm {
 			return v;
 		}
 
-		inline function pushInt(v: Int32): Void
-			reg.sp = stack.pushI32(reg.sp, v);
-
-		inline function pushFloat(v: Float): Void
-			reg.sp = stack.pushF64(reg.sp, v);
-
-		inline function pushVec(x: Float, y: Float): Void {
-			reg.sp = stack.pushF64(reg.sp, x);
-			reg.sp = stack.pushF64(reg.sp, y);
-		}
-
-		inline function popInt(): Int32 {
-			final ret = stack.popI32(reg.sp);
-			reg.sp = ret.size;
-			return ret.value;
-		}
-
-		inline function popFloat(): Float {
-			final ret = stack.popF64(reg.sp);
-			reg.sp = ret.size;
-			return ret.value;
-		}
-
-		inline function peekInt(): Int32
-			return stack.peekI32(reg.sp);
-
-		inline function peekFloat(): Float
-			return stack.peekF64(reg.sp);
-
-		inline function peekFloatSkipped(bytesToSkip: Int): Float
-			return stack.peekF64(reg.sp - bytesToSkip);
-
-		inline function peekVecSkipped(bytesToSkip: Int)
-			return stack.peekVec2D64(reg.sp - bytesToSkip);
-
-		inline function dropInt(): Void
-			reg.sp = stack.drop(reg.sp, Bit32);
-
-		inline function dropFloat(): Void
-			reg.sp = stack.drop(reg.sp, Bit64);
-
-		inline function dropVec(): Void
-			reg.sp = stack.drop2D(reg.sp, Bit64);
-
-		inline function decrement(): Void
-			stack.decrement32(reg.sp);
-
-		inline function getLocalInt(address: Int): Int
-			return stack.bytesData.getI32(stackCapacity - address - LEN32);
-
-		inline function getLocalFloat(address: Int): Float
-			return stack.bytesData.getF64(stackCapacity - address - LEN64);
-
-		inline function setLocalInt(address: Int, value: Int): Void {
-			stack.bytesData.setI32(stackCapacity - address - LEN32, value);
-		}
-
-		inline function setLocalFloat(address: Int, value: Float): Void {
-			stack.bytesData.setF64(stackCapacity - address - LEN64, value);
-		}
-
-		inline function addLocalInt(address: Int, value: Int): Void {
-			final pos = stackCapacity - address - LEN32;
-			stack.bytesData.setI32(pos, stack.bytesData.getI32(pos) + value);
-		}
-
-		inline function addLocalFloat(address: Int, value: Float): Void {
-			final pos = stackCapacity - address - LEN64;
-			stack.bytesData.setF64(pos, stack.bytesData.getF64(pos) + value);
-		}
-
 		for (i in 0...threads.length) {
 			final thread = threads[i];
 			if (!thread.active) continue;
 
 			code = thread.code.unwrap();
-			stack = thread.stack;
 			reg.reset(thread);
+			mem.reset(thread);
 
 			do {
 				if (reg.pcMax <= reg.pc) {
@@ -184,22 +112,22 @@ class Vm {
 							case Break:
 								break;
 							case CountDownBreak:
-								if (0 < peekInt()) {
-									decrement();
+								if (0 < mem.peekInt()) {
+									mem.decrement();
 									reg.pc -= Opcode.size;
 									break;
 								} else {
-									dropInt();
+									mem.dropInt();
 								}
 							case Jump:
 								final jumpLength = readI32();
 								reg.pc += jumpLength;
 							case CountDownJump:
-								if (0 < peekInt()) {
-									decrement();
+								if (0 < mem.peekInt()) {
+									mem.decrement();
 									reg.pc += LEN32; // skip the operand
 								} else {
-									dropInt();
+									mem.dropInt();
 									final jumpLength = readI32();
 									reg.pc += jumpLength;
 								}
@@ -212,13 +140,13 @@ class Vm {
 									bytecodeTable[bytecodeId],
 									thread
 								);
-								pushInt(threadId.int());
+								mem.pushInt(threadId.int());
 							case AwaitThread:
-								if (threads[peekInt()].active) {
+								if (threads[mem.peekInt()].active) {
 									reg.pc -= Opcode.size;
 									break;
 								} else {
-									dropInt();
+									mem.dropInt();
 								}
 							case End:
 								final endCode = readI32();
@@ -237,37 +165,37 @@ class Vm {
 							case SaveFloatV:
 								reg.saveFloat();
 							case LoadIntLV:
-								reg.int = getLocalInt(readI32());
+								reg.int = mem.getLocalInt(readI32());
 							case LoadFloatLV:
-								reg.float = getLocalFloat(readI32());
+								reg.float = mem.getLocalFloat(readI32());
 							case StoreIntCL:
-								setLocalInt(readI32(), readI32());
+								mem.setLocalInt(readI32(), readI32());
 							case StoreIntVL:
-								setLocalInt(readI32(), reg.int);
+								mem.setLocalInt(readI32(), reg.int);
 							case StoreFloatCL:
-								setLocalFloat(readI32(), readF64());
+								mem.setLocalFloat(readI32(), readF64());
 							case StoreFloatVL:
-								setLocalFloat(readI32(), reg.float);
+								mem.setLocalFloat(readI32(), reg.float);
 
 							case PushIntC:
-								pushInt(readI32());
+								mem.pushInt(readI32());
 							case PushIntV:
-								pushInt(reg.int);
+								mem.pushInt(reg.int);
 							case PushFloatC:
-								pushFloat(readF64());
+								mem.pushFloat(readF64());
 							case PushFloatV:
-								pushFloat(reg.float);
+								mem.pushFloat(reg.float);
 							case PushVecV:
-								pushVec(reg.vecX, reg.vecY);
+								mem.pushVec(reg.vecX, reg.vecY);
 							case PeekFloat:
-								reg.float = peekFloatSkipped(readI32());
+								reg.float = mem.peekFloatSkipped(readI32());
 							case DropFloat:
-								dropFloat();
+								mem.dropFloat();
 							case PeekVec:
-								final vec = peekVecSkipped(readI32());
+								final vec = mem.peekVecSkipped(readI32());
 								reg.setVec(vec.x, vec.y);
 							case DropVec:
-								dropVec();
+								mem.dropVec();
 
 							case FireSimple:
 								emitter.emit(
@@ -429,17 +357,17 @@ class Vm {
 								reg.int = Random.signedInt(reg.int);
 
 							case AddIntLCL:
-								addLocalInt(readI32(), readI32());
+								mem.addLocalInt(readI32(), readI32());
 							case AddIntLVL:
-								addLocalInt(readI32(), reg.int);
+								mem.addLocalInt(readI32(), reg.int);
 							case IncrementL:
-								addLocalInt(readI32(), 1);
+								mem.addLocalInt(readI32(), 1);
 							case DecrementL:
-								addLocalInt(readI32(), -1);
+								mem.addLocalInt(readI32(), -1);
 							case AddFloatLCL:
-								addLocalFloat(readI32(), readF64());
+								mem.addLocalFloat(readI32(), readF64());
 							case AddFloatLVL:
-								addLocalFloat(readI32(), reg.float);
+								mem.addLocalFloat(readI32(), reg.float);
 
 							#if debug
 							case other:
@@ -563,10 +491,10 @@ class Vm {
 							case AddVelocityV:
 								velocity.add(reg.vecX, reg.vecY);
 							case AddPositionS:
-								final vec = peekVecSkipped(0);
+								final vec = mem.peekVecSkipped(0);
 								position.add(vec.x, vec.y);
 							case AddVelocityS:
-								final vec = peekVecSkipped(0);
+								final vec = mem.peekVecSkipped(0);
 								position.add(vec.x, vec.y);
 							case SetDistanceC:
 								position.setDistance(readF64());
@@ -577,7 +505,7 @@ class Vm {
 							case AddDistanceV:
 								position.addDistance(reg.float);
 							case AddDistanceS:
-								position.addDistance(peekFloat());
+								position.addDistance(mem.peekFloat());
 							case SetBearingC:
 								position.setBearing(readF64());
 							case AddBearingC:
@@ -587,7 +515,7 @@ class Vm {
 							case AddBearingV:
 								position.addBearing(reg.float);
 							case AddBearingS:
-								position.addBearing(peekFloat());
+								position.addBearing(mem.peekFloat());
 							case SetSpeedC:
 								velocity.setSpeed(readF64());
 							case AddSpeedC:
@@ -597,7 +525,7 @@ class Vm {
 							case AddSpeedV:
 								velocity.addSpeed(reg.float);
 							case AddSpeedS:
-								velocity.addSpeed(peekFloat());
+								velocity.addSpeed(mem.peekFloat());
 							case SetDirectionC:
 								velocity.setDirection(readF64());
 							case AddDirectionC:
@@ -607,7 +535,7 @@ class Vm {
 							case AddDirectionV:
 								velocity.addDirection(reg.float);
 							case AddDirectionS:
-								velocity.addDirection(peekFloat());
+								velocity.addDirection(mem.peekFloat());
 							case SetShotPositionC:
 								thread.setShotPosition(readF64(), readF64());
 							case AddShotPositionC:
@@ -625,10 +553,10 @@ class Vm {
 							case AddShotVelocityV:
 								thread.addShotVelocity(reg.vecX, reg.vecY);
 							case AddShotPositionS:
-								final vec = peekVecSkipped(0);
+								final vec = mem.peekVecSkipped(0);
 								thread.addShotPosition(vec.x, vec.y);
 							case AddShotVelocityS:
-								final vec = peekVecSkipped(0);
+								final vec = mem.peekVecSkipped(0);
 								thread.addShotVelocity(vec.x, vec.y);
 							case SetShotDistanceC:
 								thread.setShotDistance(readF64());
@@ -639,7 +567,7 @@ class Vm {
 							case AddShotDistanceV:
 								thread.addShotDistance(reg.float);
 							case AddShotDistanceS:
-								thread.addShotDistance(peekFloat());
+								thread.addShotDistance(mem.peekFloat());
 							case SetShotBearingC:
 								thread.setShotBearing(readF64());
 							case AddShotBearingC:
@@ -649,7 +577,7 @@ class Vm {
 							case AddShotBearingV:
 								thread.addShotBearing(reg.float);
 							case AddShotBearingS:
-								thread.addShotBearing(peekFloat());
+								thread.addShotBearing(mem.peekFloat());
 							case SetShotSpeedC:
 								thread.setShotSpeed(readF64());
 							case AddShotSpeedC:
@@ -659,7 +587,7 @@ class Vm {
 							case AddShotSpeedV:
 								thread.addShotSpeed(reg.float);
 							case AddShotSpeedS:
-								thread.addShotSpeed(peekFloat());
+								thread.addShotSpeed(mem.peekFloat());
 							case SetShotDirectionC:
 								thread.setShotDirection(readF64());
 							case AddShotDirectionC:
@@ -669,7 +597,7 @@ class Vm {
 							case AddShotDirectionV:
 								thread.addShotDirection(reg.float);
 							case AddShotDirectionS:
-								thread.addShotDirection(peekFloat());
+								thread.addShotDirection(mem.peekFloat());
 
 							#if debug
 							case other: throw 'Unknown write opcode: $other';
@@ -683,7 +611,7 @@ class Vm {
 				#end
 			} while (true);
 
-			thread.update(reg.pc, reg.sp);
+			thread.update(reg.pc, mem.sp);
 		}
 
 		updatePositionAndVelocity();

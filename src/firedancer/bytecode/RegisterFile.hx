@@ -17,12 +17,6 @@ class RegisterFile {
 	public var pcMax(default, null): UInt;
 
 	/**
-		The stack pointer.
-		Indicates the current position in the stack.
-	**/
-	public var sp: UInt;
-
-	/**
 		The main integer data register.
 	**/
 	public var int: Int;
@@ -69,7 +63,6 @@ class RegisterFile {
 	public extern inline function reset(thread: Thread): Void {
 		this.pc = thread.programCounter;
 		this.pcMax = thread.codeLength;
-		this.sp = thread.stackPointer;
 
 		this.int = 0;
 		this.intBuf = 0;
