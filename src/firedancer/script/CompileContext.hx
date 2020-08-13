@@ -233,7 +233,10 @@ class LocalVariableTable {
 		final address = this.address.int();
 
 		return if (constValue.isSome()) {
-			new AssemblyStatement(general(storeCL), [Int(address), constValue.unwrap()]);
+			new AssemblyStatement(
+				general(storeCL),
+				[Int(address), constValue.unwrap()]
+			);
 		} else [
 			value.loadToVolatile(context),
 			[new AssemblyStatement(general(storeVL), [Int(address)])]
@@ -267,5 +270,33 @@ class LocalVariableTable {
 			value.loadToVolatile(context),
 			[new AssemblyStatement(calc(addLVL), [Int(address)])]
 		].flatten();
+	}
+
+	/**
+		Creates an `AssemblyCode` that increments the local variable specified by `this`.
+
+		Available only if `this.type` is `Int`.
+	**/
+	public function increment(): AssemblyCode {
+		switch this.type {
+			case Int:
+			default: throw "Cannot increment local variable that is not an integer.";
+		}
+
+		return new AssemblyStatement(calc(IncrementL), [Int(this.address.int())]);
+	}
+
+	/**
+		Creates an `AssemblyCode` that decrements the local variable specified by `this`.
+
+		Available only if `this.type` is `Int`.
+	**/
+	public function decrement(): AssemblyCode {
+		switch this.type {
+			case Int:
+			default: throw "Cannot decrement local variable that is not an integer.";
+		}
+
+		return new AssemblyStatement(calc(DecrementL), [Int(this.address.int())]);
 	}
 }

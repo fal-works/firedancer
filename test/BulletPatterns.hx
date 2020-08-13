@@ -130,7 +130,7 @@ class BulletPatterns {
 			shot.direction.set(cnt * 20),
 			fire(),
 			wait(4),
-			cnt.add(1)
+			cnt.increment()
 		])
 	];
 
@@ -139,7 +139,7 @@ class BulletPatterns {
 		wait(60)
 	]);
 
-	static final testAst = test(eventTest); // Change this for testing
+	static final testAst = test(localVarTest); // Change this for testing
 
 	public static final programPackage = compile(["test" => testAst]);
 	public static final testPattern = programPackage.getBytecodeByName("test");

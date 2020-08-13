@@ -106,13 +106,30 @@ abstract IntLocalVariableExpression(String) {
 		Assigns `value` to `this` local variable.
 	**/
 	public function set(value: IntExpression): OperateLocalVariable
-		return { name: this, value: value, operation: Set };
+		return { name: this, operation: Set, value: value };
 
 	/**
 		Adds `value` to `this` local variable.
 	**/
-	public function add(value: IntExpression): OperateLocalVariable
-		return { name: this, value: value, operation: Add };
+	public function add(value: IntExpression): OperateLocalVariable {
+		final constValue = value.tryGetConstantOperandValue();
+
+		if (constValue.isSome()) {
+			switch constValue.unwrap() {
+				case 1: return increment();
+				case -1: return decrement();
+				default:
+			}
+		}
+
+		return { name: this, operation: Add, value: value };
+	}
+
+	public function increment(): OperateLocalVariable
+		return { name: this, operation: Increment };
+
+	public function decrement(): OperateLocalVariable
+		return { name: this, operation: Decrement };
 
 	function get()
 		return toIntExpression();

@@ -597,6 +597,10 @@ class Vm {
 								addLocalInt(readCodeI32(), readCodeI32());
 							case AddIntLVL:
 								addLocalInt(readCodeI32(), volInt);
+							case IncrementL:
+								addLocalInt(readCodeI32(), 1);
+							case DecrementL:
+								addLocalInt(readCodeI32(), -1);
 							case AddFloatLCL:
 								addLocalFloat(readCodeI32(), readCodeF64());
 							case AddFloatLVL:

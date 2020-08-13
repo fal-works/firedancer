@@ -63,6 +63,8 @@ enum abstract CalcOperation(Int) to Int {
 			case CalcOperation.RandomIntSignedVV: RandomIntSignedVV;
 			case CalcOperation.AddIntLCL: AddIntLCL;
 			case CalcOperation.AddIntLVL: AddIntLVL;
+			case CalcOperation.IncrementL: IncrementL;
+			case CalcOperation.DecrementL: DecrementL;
 			case CalcOperation.AddFloatLCL: AddFloatLCL;
 			case CalcOperation.AddFloatLVL: AddFloatLVL;
 
@@ -314,6 +316,16 @@ enum abstract CalcOperation(Int) to Int {
 	final AddIntLVL;
 
 	/**
+		Increments the local variable of which the address is specified by the first constant integer.
+	**/
+	final IncrementL;
+
+	/**
+		Decrements the local variable of which the address is specified by the first constant integer.
+	**/
+	final DecrementL;
+
+	/**
 		Adds a given constant float to the local variable
 		(of which the address is specified by a given constant integer).
 	**/
@@ -385,6 +397,8 @@ class CalcOperationExtension {
 
 			case AddIntLCL: "add_int_lcl";
 			case AddIntLVL: "add_int_lvl";
+			case IncrementL: "increment_l";
+			case DecrementL: "decrement_l";
 			case AddFloatLCL: "add_float_lcl";
 			case AddFloatLVL: "add_float_lvl";
 		}
@@ -443,6 +457,8 @@ class CalcOperationExtension {
 
 			case AddIntLCL: [Int, Int]; // address, value to add
 			case AddIntLVL: [Int]; // address
+			case IncrementL: [Int]; // address
+			case DecrementL: [Int]; // address
 			case AddFloatLCL: [Int, Float]; // address, value to add
 			case AddFloatLVL: [Int]; // address
 		}
