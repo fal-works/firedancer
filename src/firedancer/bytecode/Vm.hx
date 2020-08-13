@@ -57,6 +57,9 @@ class Vm {
 		final velocity = new TmpVelocity(vxVec[vecIndex], vyVec[vecIndex]);
 
 		inline function updatePositionAndVelocity(): Void {
+			position.x += velocity.x;
+			position.y += velocity.y;
+
 			xVec[vecIndex] = position.getAbsoluteX();
 			yVec[vecIndex] = position.getAbsoluteY();
 			vxVec[vecIndex] = velocity.x;

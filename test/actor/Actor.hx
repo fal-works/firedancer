@@ -183,9 +183,6 @@ class Actor extends broker.entity.BasicBatchEntity {
 				targetPositionRef
 			);
 
-			x[i] += vx[i];
-			y[i] += vy[i];
-
 			switch endCode {
 				case VANISH: dead[i] = true;
 				default:
