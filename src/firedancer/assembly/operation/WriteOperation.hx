@@ -299,7 +299,7 @@ class WriteOperationExtension {
 	}
 
 	/**
-		Creates a `InstructionType` instance that corresponds to `op`.
+		Creates an `InstructionType` instance that corresponds to `op`.
 	**/
 	public static inline function toInstructionType(op: WriteOperation): InstructionType {
 		return switch op {

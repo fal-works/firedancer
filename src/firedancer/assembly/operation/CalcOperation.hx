@@ -405,7 +405,7 @@ class CalcOperationExtension {
 	}
 
 	/**
-		Creates a `InstructionType` instance that corresponds to `op`.
+		Creates an `InstructionType` instance that corresponds to `op`.
 	**/
 	public static inline function toInstructionType(op: CalcOperation): InstructionType {
 		return switch op {

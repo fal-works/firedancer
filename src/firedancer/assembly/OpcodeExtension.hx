@@ -8,7 +8,7 @@ import firedancer.assembly.operation.*;
 **/
 class OpcodeExtension {
 	/**
-		Creates a `InstructionType` instance that corresponds to `opcode`.
+		Creates an `InstructionType` instance that corresponds to `opcode`.
 	**/
 	public static inline function toInstructionType(opcode: Opcode): InstructionType {
 		return switch opcode.category {
