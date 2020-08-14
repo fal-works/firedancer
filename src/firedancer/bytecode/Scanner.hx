@@ -1,7 +1,6 @@
 package firedancer.bytecode;
 
 import haxe.Int32;
-import sneaker.string_buffer.StringBuffer;
 import firedancer.assembly.Opcode;
 import firedancer.bytecode.internal.Constants.*;
 

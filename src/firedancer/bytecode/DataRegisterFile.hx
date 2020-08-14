@@ -1,7 +1,5 @@
 package firedancer.bytecode;
 
-import sneaker.string_buffer.StringBuffer;
-
 /**
 	Set of virtual data registers used in the `Vm`.
 **/
