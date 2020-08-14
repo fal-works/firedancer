@@ -139,7 +139,19 @@ class BulletPatterns {
 		wait(60)
 	]);
 
-	static final testAst = test(localVarTest); // Change this for testing
+	static final dumpTest = [
+		shot.velocity.set(5, 180),
+		cnt.let(),
+		loop([
+			shot.direction.set(cnt * 20),
+			fire(),
+			debug(Dump),
+			wait(4),
+			cnt.increment()
+		]).count(2)
+	];
+
+	static final testAst = test(dumpTest); // Change this for testing
 
 	public static final programPackage = compile(["test" => testAst]);
 	public static final testPattern = programPackage.getProgramByName("test");

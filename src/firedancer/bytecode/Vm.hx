@@ -6,6 +6,7 @@ import reckoner.Random;
 import firedancer.types.PositionRef;
 import firedancer.types.Emitter;
 import firedancer.types.EventHandler;
+import firedancer.types.DebugCode;
 import firedancer.assembly.Opcode;
 import firedancer.assembly.operation.GeneralOperation;
 import firedancer.assembly.operation.CalcOperation;
@@ -229,6 +230,13 @@ class Vm {
 									originPositionRef,
 									targetPositionRef
 								);
+
+							case Debug:
+								final debugCode = scan.int();
+								switch debugCode {
+									case DebugCode.Dump:
+										Debugger.dump(scan, mem, reg);
+								}
 
 							#if debug
 							case other:

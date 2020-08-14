@@ -1,5 +1,6 @@
 package firedancer.script;
 
+import firedancer.types.DebugCode;
 import firedancer.bytecode.ProgramPackage;
 import firedancer.script.nodes.*;
 import firedancer.script.api_components.Position;
@@ -153,6 +154,12 @@ class Api {
 	**/
 	public static inline function localEvent(localEventCode: IntExpression): Event
 		return new Event(Global, localEventCode);
+
+	/**
+		Runs debug process specified by `debugCode`.
+	**/
+	public static function debug(debugCode: DebugCode): Debug
+		return new Debug(debugCode);
 
 	/**
 		@return New `ProgramPackage` instance that contains all `Program` compiled.

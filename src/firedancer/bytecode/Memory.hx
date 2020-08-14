@@ -1,6 +1,7 @@
 package firedancer.bytecode;
 
 import haxe.Int32;
+import sneaker.string_buffer.StringBuffer;
 import banker.binary.ByteStackData;
 import firedancer.bytecode.internal.Constants.*;
 
@@ -19,7 +20,7 @@ class Memory {
 	/**
 		The end address of `this` memory, i.e. the capacity of `stack` (which should be always the same).
 	**/
-	final end: UInt;
+	final capacity: UInt;
 
 	/**
 		The stack data. Also used for storing local variables.
@@ -27,7 +28,7 @@ class Memory {
 	var stack: ByteStackData;
 
 	public extern inline function new(stackCapacity: UInt) {
-		this.end = stackCapacity;
+		this.capacity = stackCapacity;
 	}
 
 	public extern inline function reset(thread: Thread): Void {
@@ -83,26 +84,26 @@ class Memory {
 		stack.decrement32(sp);
 
 	public extern inline function getLocalInt(address: Int): Int
-		return stack.bytesData.getI32(end - address - LEN32);
+		return stack.bytesData.getI32(capacity - address - LEN32);
 
 	public extern inline function getLocalFloat(address: Int): Float
-		return stack.bytesData.getF64(end - address - LEN64);
+		return stack.bytesData.getF64(capacity - address - LEN64);
 
 	public extern inline function setLocalInt(address: Int, value: Int): Void {
-		stack.bytesData.setI32(end - address - LEN32, value);
+		stack.bytesData.setI32(capacity - address - LEN32, value);
 	}
 
 	public extern inline function setLocalFloat(address: Int, value: Float): Void {
-		stack.bytesData.setF64(end - address - LEN64, value);
+		stack.bytesData.setF64(capacity - address - LEN64, value);
 	}
 
 	public extern inline function addLocalInt(address: Int, value: Int): Void {
-		final pos = end - address - LEN32;
+		final pos = capacity - address - LEN32;
 		stack.bytesData.setI32(pos, stack.bytesData.getI32(pos) + value);
 	}
 
 	public extern inline function addLocalFloat(address: Int, value: Float): Void {
-		final pos = end - address - LEN64;
+		final pos = capacity - address - LEN64;
 		stack.bytesData.setF64(pos, stack.bytesData.getF64(pos) + value);
 	}
 }

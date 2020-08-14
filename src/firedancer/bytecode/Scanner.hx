@@ -1,6 +1,7 @@
 package firedancer.bytecode;
 
 import haxe.Int32;
+import sneaker.string_buffer.StringBuffer;
 import firedancer.assembly.Opcode;
 import firedancer.bytecode.internal.Constants.*;
 
@@ -25,14 +26,14 @@ class Scanner {
 	public var pc: UInt;
 
 	/**
+		The upper bound of the value of `pc` i.e. the length of the bytecode.
+	**/
+	var codeLength(default, null): UInt;
+
+	/**
 		The bytecode data to scan.
 	**/
 	var code: Bytecode;
-
-	/**
-		The upper bound of the value of `pc` i.e. the length of the bytecode.
-	**/
-	var pcMax(default, null): UInt;
 
 	#if debug
 	/**
@@ -48,9 +49,9 @@ class Scanner {
 		Resets `this` scanner according to the current status of `thread`.
 	**/
 	public extern inline function reset(thread: Thread): Void {
-		this.code = thread.code.unwrap();
 		this.pc = thread.programCounter;
-		this.pcMax = thread.codeLength;
+		this.codeLength = thread.codeLength;
+		this.code = thread.code.unwrap();
 
 		#if debug
 		this.scanCount = UInt.zero;
@@ -98,7 +99,7 @@ class Scanner {
 		@return `true` if the program counter has reached (or exceeded) the end of code.
 	**/
 	public extern inline function reachedEnd(): Bool
-		return pcMax <= pc;
+		return codeLength <= pc;
 
 	/**
 		Throws error if `opcode()` is called more times than `threshold`.

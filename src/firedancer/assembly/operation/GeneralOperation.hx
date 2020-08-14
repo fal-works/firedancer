@@ -53,6 +53,8 @@ enum abstract GeneralOperation(Int) to Int {
 			case GeneralOperation.GlobalEvent: GlobalEvent;
 			case GeneralOperation.LocalEvent: LocalEvent;
 
+			case GeneralOperation.Debug: Debug;
+
 			default: throw error(value);
 		}
 	}
@@ -270,6 +272,11 @@ enum abstract GeneralOperation(Int) to Int {
 	**/
 	final LocalEvent;
 
+	/**
+		Runs debug process specified by a given constant integer.
+	**/
+	final Debug;
+
 	public extern inline function int(): Int
 		return this;
 }
@@ -318,6 +325,8 @@ class GeneralOperationExtension {
 
 			case GlobalEvent: "global_event";
 			case LocalEvent: "local_event";
+
+			case Debug: "debug";
 		}
 	}
 
@@ -361,6 +370,8 @@ class GeneralOperationExtension {
 
 			case GlobalEvent: [];
 			case LocalEvent: [];
+
+			case Debug: [Int]; // type
 		}
 	}
 
