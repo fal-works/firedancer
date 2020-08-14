@@ -29,7 +29,7 @@ class Actor extends broker.entity.BasicBatchEntity {
 	/**
 		`firedancer` threads.
 	**/
-	@:banker_factory(() -> new ThreadList(THREAD_COUNT, STACK_CAPACITY))
+	@:banker_factory(() -> new ThreadList(THREAD_COUNT, MEMORY_CAPACITY))
 	@:banker_swap
 	var threads: ThreadList;
 
@@ -171,7 +171,7 @@ class Actor extends broker.entity.BasicBatchEntity {
 				programTable,
 				eventHandler,
 				threads,
-				STACK_CAPACITY,
+				MEMORY_CAPACITY,
 				x,
 				y,
 				vx,

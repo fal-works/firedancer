@@ -30,7 +30,7 @@ class Vm {
 		programTable: RVec<Program>,
 		eventHandler: EventHandler,
 		threads: ThreadList,
-		stackCapacity: UInt,
+		memoryCapacity: UInt,
 		xVec: Vec<Float>,
 		yVec: Vec<Float>,
 		vxVec: Vec<Float>,
@@ -63,7 +63,7 @@ class Vm {
 
 		final scan = new Scanner();
 		final reg = new DataRegisterFile();
-		final mem = new Memory(stackCapacity);
+		final mem = new Memory(memoryCapacity);
 
 		for (i in 0...threads.length) {
 			final thread = threads[i];
@@ -601,10 +601,10 @@ class Vm {
 	public static function dryRun(
 		pkg: ProgramPackage,
 		entryBytecodeName: String,
-		stackCapacity: UInt = 256
+		memoryCapacity: UInt = 256
 	): Void {
 		final eventHandler = new NullEventHandler();
-		final threads = new ThreadList(1, stackCapacity);
+		final threads = new ThreadList(1, memoryCapacity);
 		final bytecode = pkg.getProgramByName(entryBytecodeName);
 		threads.set(bytecode);
 		final xVec = Vec.fromArrayCopy([0.0]);
@@ -626,7 +626,7 @@ class Vm {
 				pkg.programTable,
 				eventHandler,
 				threads,
-				stackCapacity,
+				memoryCapacity,
 				xVec,
 				yVec,
 				vxVec,

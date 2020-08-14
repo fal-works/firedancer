@@ -47,17 +47,18 @@ class Debugger {
 		buf.addLf(mem.capacity);
 
 		buf.addLf("memory dump:");
-		var stackDump = mem.stack.toHex(mem.capacity, true);
-		final stackDumpLength = stackDump.length;
+		final memData = mem.data;
+		var dump = memData.toHex(mem.capacity, true);
+		final dumpLength = dump.length;
 		if (!mem.sp.isZero()) {
-			final stackDumpChars = stackDump.split("");
-			stackDumpChars[mem.sp * 3 - 1] = "|";
-			stackDump = stackDumpChars.join("");
+			final dumpChars = dump.split("");
+			dumpChars[mem.sp * 3 - 1] = "|";
+			dump = dumpChars.join("");
 		}
 		var pos = UInt.zero;
 		final lineLength = 16 * 3; // 16 bytes with spaces
-		while (pos < stackDumpLength) {
-			buf.addLf(stackDump.substr(pos, lineLength - 1));
+		while (pos < dumpLength) {
+			buf.addLf(dump.substr(pos, lineLength - 1));
 			pos += lineLength;
 		}
 	}

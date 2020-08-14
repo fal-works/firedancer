@@ -19,12 +19,12 @@ abstract ThreadList(Vector<Thread>) {
 
 	/**
 		@param poolCapacity The number of `Thread` instances including the main thread.
-		@param stackCapacity The stack capacity in bytes for each thread.
+		@param memoryCapacity The memory capacity in bytes for each thread.
 	**/
-	public extern inline function new(poolCapacity: NInt, stackCapacity: UInt)
+	public extern inline function new(poolCapacity: NInt, memoryCapacity: UInt)
 		this = Vector.createPopulated(
 			poolCapacity,
-			() -> new Thread(stackCapacity)
+			() -> new Thread(memoryCapacity)
 		);
 
 	@:op([]) public extern inline function get(index: UInt): Thread

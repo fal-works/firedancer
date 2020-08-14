@@ -1,6 +1,5 @@
 package firedancer.bytecode;
 
-import banker.binary.ByteStackData;
 import firedancer.common.Geometry;
 
 /**
@@ -13,7 +12,7 @@ class Thread {
 	public var active: Bool;
 
 	/**
-		Bytecode to be run.
+		Bytecode to run in `this` thread.
 	**/
 	public var code: Maybe<Bytecode>;
 
@@ -28,12 +27,12 @@ class Thread {
 	public var programCounter: UInt;
 
 	/**
-		The stack for `this` this.
+		The memory data for `this` thread.
 	**/
-	public var stack: ByteStackData;
+	public var memoryData: MemoryData;
 
 	/**
-		The size of data in bytes currently stored in `stack`.
+		The size of stack data in bytes currently stored in `memoryData`.
 	**/
 	public var stackPointer: UInt;
 
@@ -58,14 +57,14 @@ class Thread {
 	public var shotVy: Float;
 
 	/**
-		@param stackCapacity The capacity of the stack in bytes.
+		@param memoryCapacity The capacity of the memory in bytes.
 	**/
-	public function new(stackCapacity: UInt) {
+	public function new(memoryCapacity: UInt) {
 		this.active = false;
 		this.code = Maybe.none();
 		this.codeLength = UInt.zero;
 		this.programCounter = UInt.zero;
-		this.stack = ByteStackData.alloc(stackCapacity);
+		this.memoryData = MemoryData.alloc(memoryCapacity);
 		this.stackPointer = UInt.zero;
 		this.shotX = 0.0;
 		this.shotY = 0.0;
@@ -74,7 +73,7 @@ class Thread {
 	}
 
 	/**
-		Sets program and initial shot position/velocity.
+		Sets program and initializes other properties
 	**/
 	public extern inline function set(
 		code: Program,
@@ -95,8 +94,8 @@ class Thread {
 	}
 
 	/**
-		Updates values of `this` this.
-		Called in `Vm.run()`.
+		Updates values of `this` thread.
+		Called in the `Vm`.
 	**/
 	public extern inline function update(programCounter: UInt, stackPointer: UInt): Void {
 		this.programCounter = programCounter;
