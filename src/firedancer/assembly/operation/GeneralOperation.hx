@@ -322,9 +322,9 @@ class GeneralOperationExtension {
 	}
 
 	/**
-		Creates a `StatementType` instance that corresponds to `op`.
+		Creates a `InstructionType` instance that corresponds to `op`.
 	**/
-	public static inline function toStatementType(op: GeneralOperation): StatementType {
+	public static inline function toInstructionType(op: GeneralOperation): InstructionType {
 		return switch op {
 			case Break: [];
 			case CountDownBreak: [];
@@ -365,8 +365,8 @@ class GeneralOperationExtension {
 	}
 
 	/**
-		@return The bytecode length in bytes required for a statement with `op`.
+		@return The bytecode length in bytes required for an instruction with `op`.
 	**/
 	public static inline function getBytecodeLength(op: GeneralOperation): UInt
-		return toStatementType(op).bytecodeLength();
+		return toInstructionType(op).bytecodeLength();
 }

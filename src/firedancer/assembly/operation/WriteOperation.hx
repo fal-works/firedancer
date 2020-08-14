@@ -299,9 +299,9 @@ class WriteOperationExtension {
 	}
 
 	/**
-		Creates a `StatementType` instance that corresponds to `op`.
+		Creates a `InstructionType` instance that corresponds to `op`.
 	**/
-	public static inline function toStatementType(op: WriteOperation): StatementType {
+	public static inline function toInstructionType(op: WriteOperation): InstructionType {
 		return switch op {
 			case SetPositionC | AddPositionC | SetVelocityC | AddVelocityC: [Vec];
 			case SetPositionV | AddPositionV | SetVelocityV | AddVelocityV: [];
@@ -326,8 +326,8 @@ class WriteOperationExtension {
 	}
 
 	/**
-		@return The bytecode length in bytes required for a statement with `op`.
+		@return The bytecode length in bytes required for an instruction with `op`.
 	**/
 	public static inline function getBytecodeLength(op: WriteOperation): UInt
-		return toStatementType(op).bytecodeLength();
+		return toInstructionType(op).bytecodeLength();
 }

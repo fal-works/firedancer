@@ -405,9 +405,9 @@ class CalcOperationExtension {
 	}
 
 	/**
-		Creates a `StatementType` instance that corresponds to `op`.
+		Creates a `InstructionType` instance that corresponds to `op`.
 	**/
-	public static inline function toStatementType(op: CalcOperation): StatementType {
+	public static inline function toInstructionType(op: CalcOperation): InstructionType {
 		return switch op {
 			case AddIntVCV: [Int]; // value to add
 			case AddIntVVV: [];
@@ -465,8 +465,8 @@ class CalcOperationExtension {
 	}
 
 	/**
-		@return The bytecode length in bytes required for a statement with `op`.
+		@return The bytecode length in bytes required for an instruction with `op`.
 	**/
 	public static inline function getBytecodeLength(op: CalcOperation): UInt
-		return toStatementType(op).bytecodeLength();
+		return toInstructionType(op).bytecodeLength();
 }

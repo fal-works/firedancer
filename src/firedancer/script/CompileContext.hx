@@ -1,7 +1,7 @@
 package firedancer.script;
 
 import banker.vector.Vector;
-import firedancer.assembly.AssemblyStatement;
+import firedancer.assembly.Instruction;
 import firedancer.assembly.AssemblyCode;
 import firedancer.assembly.ValueType;
 import firedancer.assembly.Opcode.*;
@@ -206,7 +206,7 @@ class LocalVariableTable {
 			case Vec: throw "Local variable of vector type is not supported.";
 		});
 
-		return new AssemblyStatement(opcode, [Int(this.address.int())]);
+		return new Instruction(opcode, [Int(this.address.int())]);
 	}
 
 	/**
@@ -233,13 +233,13 @@ class LocalVariableTable {
 		final address = this.address.int();
 
 		return if (constValue.isSome()) {
-			new AssemblyStatement(
+			new Instruction(
 				general(storeCL),
 				[Int(address), constValue.unwrap()]
 			);
 		} else [
 			value.loadToVolatile(context),
-			[new AssemblyStatement(general(storeVL), [Int(address)])]
+			[new Instruction(general(storeVL), [Int(address)])]
 		].flatten();
 	}
 
@@ -265,10 +265,10 @@ class LocalVariableTable {
 		final address = this.address.int();
 
 		return if (constValue.isSome()) {
-			new AssemblyStatement(calc(addLCL), [Int(address), constValue.unwrap()]);
+			new Instruction(calc(addLCL), [Int(address), constValue.unwrap()]);
 		} else [
 			value.loadToVolatile(context),
-			[new AssemblyStatement(calc(addLVL), [Int(address)])]
+			[new Instruction(calc(addLVL), [Int(address)])]
 		].flatten();
 	}
 
@@ -283,7 +283,7 @@ class LocalVariableTable {
 			default: throw "Cannot increment local variable that is not an integer.";
 		}
 
-		return new AssemblyStatement(calc(IncrementL), [Int(this.address.int())]);
+		return new Instruction(calc(IncrementL), [Int(this.address.int())]);
 	}
 
 	/**
@@ -297,6 +297,6 @@ class LocalVariableTable {
 			default: throw "Cannot decrement local variable that is not an integer.";
 		}
 
-		return new AssemblyStatement(calc(DecrementL), [Int(this.address.int())]);
+		return new Instruction(calc(DecrementL), [Int(this.address.int())]);
 	}
 }

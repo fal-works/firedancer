@@ -3,7 +3,7 @@ package firedancer.script.nodes;
 import firedancer.script.expression.AngleExpression;
 import firedancer.script.expression.FloatExpression;
 import firedancer.script.expression.IntExpression;
-import firedancer.assembly.AssemblyStatement.create as statement;
+import firedancer.assembly.Instruction.create as instruction;
 import firedancer.assembly.ValueType;
 import firedancer.assembly.operation.GeneralOperation;
 import firedancer.script.expression.GenericExpression;
@@ -67,12 +67,12 @@ class DeclareLocalVariable extends AstNode {
 
 		return if (constValue.isSome()) {
 			final store = Opcode.general(storeCL);
-			statement(store, [Int(address), constValue.unwrap()]);
+			instruction(store, [Int(address), constValue.unwrap()]);
 		} else {
 			final store = Opcode.general(storeVL);
 			[
 				initialValue.loadToVolatile(context),
-				[statement(store, [Int(address)])]
+				[instruction(store, [Int(address)])]
 			].flatten();
 		}
 	}

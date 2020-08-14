@@ -5,7 +5,7 @@ import firedancer.assembly.Opcode.*;
 import firedancer.assembly.operation.ReadOperation;
 import firedancer.assembly.operation.WriteOperation;
 import firedancer.assembly.ConstantOperand;
-import firedancer.assembly.AssemblyStatement;
+import firedancer.assembly.Instruction;
 import firedancer.assembly.AssemblyCode;
 import firedancer.bytecode.internal.Constants.LEN32;
 import firedancer.script.expression.*;
@@ -209,16 +209,16 @@ class ActorAttributeOperationExtension {
 		frames: NInt
 	) {
 		var calcRelative: AssemblyCode; // Calculate total change (before the loop)
-		var multChange: AssemblyStatement; // Get change rate (before the loop)
-		var pushChange: AssemblyStatement; // Push change rate (before the loop)
-		var peekChange: AssemblyStatement; // Peek change rate (in the loop)
+		var multChange: Instruction; // Get change rate (before the loop)
+		var pushChange: Instruction; // Push change rate (before the loop)
+		var peekChange: Instruction; // Peek change rate (in the loop)
 		var addFromVolatile: Opcode; // Apply change rate (in the loop)
-		var dropChange: AssemblyStatement; // Drop change rate (after the loop)
+		var dropChange: Instruction; // Drop change rate (after the loop)
 
 		switch setOperation {
 			case SetVector(vec):
-				multChange = statement(calc(MultVecVCV), [Float(1.0 / frames)]);
-				pushChange = statement(general(PushVecV));
+				multChange = instruction(calc(MultVecVCV), [Float(1.0 / frames)]);
+				pushChange = instruction(general(PushVecV));
 				peekChange = peekVec(LEN32); // skip the loop counter
 				dropChange = dropVec();
 
@@ -237,7 +237,7 @@ class ActorAttributeOperationExtension {
 						case ShotPosition: CalcRelativeShotPositionCV;
 						case ShotVelocity: CalcRelativeShotVelocityCV;
 					};
-					calcRelative = statement(read(calcRelativeCV), [const.unwrap()]);
+					calcRelative = instruction(read(calcRelativeCV), [const.unwrap()]);
 				} else {
 					final calcRelativeVV: ReadOperation = switch attribute {
 						case Position: CalcRelativePositionVV;
@@ -247,13 +247,13 @@ class ActorAttributeOperationExtension {
 					};
 					calcRelative = [
 						vec.loadToVolatile(context),
-						[statement(read(calcRelativeVV))]
+						[instruction(read(calcRelativeVV))]
 					].flatten();
 				}
 
 			case SetLength(length):
-				multChange = statement(calc(MultFloatVCV), [Float(1.0 / frames)]);
-				pushChange = statement(general(PushFloatV));
+				multChange = instruction(calc(MultFloatVCV), [Float(1.0 / frames)]);
+				pushChange = instruction(general(PushFloatV));
 				peekChange = peekFloat(LEN32); // skip the loop counter
 				dropChange = dropFloat();
 
@@ -273,7 +273,7 @@ class ActorAttributeOperationExtension {
 							case ShotVelocity: CalcRelativeShotSpeedCV;
 						};
 						final operands:Array<ConstantOperand> = [value.toOperand()];
-						calcRelative = statement(read(operation), operands);
+						calcRelative = instruction(read(operation), operands);
 					case Runtime(expression):
 						final calcRelativeVV:ReadOperation = switch attribute {
 							case Position: CalcRelativeDistanceVV;
@@ -282,12 +282,12 @@ class ActorAttributeOperationExtension {
 							case ShotVelocity: CalcRelativeShotDirectionVV;
 						}
 						calcRelative = expression.loadToVolatile(context);
-						calcRelative.push(statement(read(calcRelativeVV)));
+						calcRelative.push(instruction(read(calcRelativeVV)));
 				}
 
 			case SetAngle(angle):
-				multChange = statement(calc(MultFloatVCV), [Float(1.0 / frames)]);
-				pushChange = statement(general(PushFloatV));
+				multChange = instruction(calc(MultFloatVCV), [Float(1.0 / frames)]);
+				pushChange = instruction(general(PushFloatV));
 				peekChange = peekFloat(LEN32); // skip the loop counter
 				dropChange = dropFloat();
 
@@ -307,7 +307,7 @@ class ActorAttributeOperationExtension {
 							case ShotVelocity: CalcRelativeShotDirectionCV;
 						};
 						final operands:Array<ConstantOperand> = [value.toOperand()];
-						calcRelative = statement(read(operation), operands);
+						calcRelative = instruction(read(operation), operands);
 					case Runtime(expression):
 						final calcRelativeVV:ReadOperation = switch attribute {
 							case Position: CalcRelativeBearingVV;
@@ -316,7 +316,7 @@ class ActorAttributeOperationExtension {
 							case ShotVelocity: CalcRelativeShotDirectionVV;
 						}
 						calcRelative = expression.loadToVolatile(context);
-						calcRelative.push(statement(read(calcRelativeVV)));
+						calcRelative.push(instruction(read(calcRelativeVV)));
 				}
 
 			default: throw "Unsupported operation.";
@@ -326,7 +326,7 @@ class ActorAttributeOperationExtension {
 		final body: AssemblyCode = [
 			breakFrame(),
 			peekChange,
-			statement(addFromVolatile)
+			instruction(addFromVolatile)
 		];
 		final complete: AssemblyCode = [dropChange];
 

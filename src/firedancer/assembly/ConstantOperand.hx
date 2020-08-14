@@ -1,7 +1,7 @@
 package firedancer.assembly;
 
 /**
-	Constant operand value to be passed to an `Opcode` in `AssemblyStatement`.
+	Constant operand value to be passed to an `Opcode` in `Instruction`.
 **/
 enum ConstantOperand {
 	/**

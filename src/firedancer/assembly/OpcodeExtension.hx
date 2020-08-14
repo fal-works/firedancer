@@ -8,19 +8,19 @@ import firedancer.assembly.operation.*;
 **/
 class OpcodeExtension {
 	/**
-		Creates a `StatementType` instance that corresponds to `opcode`.
+		Creates a `InstructionType` instance that corresponds to `opcode`.
 	**/
-	public static inline function toStatementType(opcode: Opcode): StatementType {
+	public static inline function toInstructionType(opcode: Opcode): InstructionType {
 		return switch opcode.category {
-			case General: GeneralOperation.from(opcode.op).toStatementType();
-			case Calc: CalcOperation.from(opcode.op).toStatementType();
-			case Read: ReadOperation.from(opcode.op).toStatementType();
-			case Write: WriteOperation.from(opcode.op).toStatementType();
+			case General: GeneralOperation.from(opcode.op).toInstructionType();
+			case Calc: CalcOperation.from(opcode.op).toInstructionType();
+			case Read: ReadOperation.from(opcode.op).toInstructionType();
+			case Write: WriteOperation.from(opcode.op).toInstructionType();
 		}
 	}
 
 	/**
-		@return The bytecode length in bytes required for a statement with `opcode`.
+		@return The bytecode length in bytes required for an instruction with `opcode`.
 	**/
 	public static inline function getBytecodeLength(opcode: Opcode): UInt {
 		return switch opcode.category {

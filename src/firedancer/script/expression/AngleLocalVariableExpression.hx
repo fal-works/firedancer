@@ -15,8 +15,8 @@ abstract AngleLocalVariableExpression(String) {
 			final code = variable.loadToVolatile();
 			switch variable.type {
 				case Int:
-					code.pushStatement(calc(CastIntToFloatVV));
-					code.pushStatement(
+					code.pushInstruction(calc(CastIntToFloatVV));
+					code.pushInstruction(
 						calc(MultFloatVCV),
 						[Float(AngleExpression.constantFactor)]
 					);

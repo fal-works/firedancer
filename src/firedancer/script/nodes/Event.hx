@@ -1,7 +1,7 @@
 package firedancer.script.nodes;
 
 import firedancer.script.expression.IntExpression;
-import firedancer.assembly.AssemblyStatement;
+import firedancer.assembly.Instruction;
 
 /**
 	Invokes any global/local event.
@@ -21,7 +21,7 @@ class Event extends AstNode implements ripper.Data {
 		});
 
 		final code = eventCode.loadToVolatile(context);
-		code.pushStatement(eventOpcode);
+		code.pushInstruction(eventOpcode);
 		return code;
 	}
 }

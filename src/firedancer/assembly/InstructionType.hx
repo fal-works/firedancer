@@ -1,11 +1,9 @@
 package firedancer.assembly;
 
-import banker.binary.internal.Constants.*;
-
 /**
-	Object for specifying operand types of any `AssemblyStatement`.
+	Object for specifying operand types of any `Instruction`.
 **/
-abstract StatementType(Array<ValueType>) from Array<ValueType> {
+abstract InstructionType(Array<ValueType>) from Array<ValueType> {
 	/**
 		Casts `this` to the underlying type (an array of `ValueType`).
 	**/
@@ -13,7 +11,7 @@ abstract StatementType(Array<ValueType>) from Array<ValueType> {
 		return this;
 
 	/**
-		Calculates the bytecode length in bytes that is required for a single `AssemblyStatement`.
+		Calculates the bytecode length in bytes that is required for a single `Instruction`.
 	**/
 	public function bytecodeLength(): UInt {
 		var len = Opcode.size;

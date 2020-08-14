@@ -1,7 +1,7 @@
 package firedancer.script.expression.subtypes;
 
 import firedancer.assembly.AssemblyCode;
-import firedancer.assembly.AssemblyStatement;
+import firedancer.assembly.Instruction;
 import firedancer.assembly.Opcode.*;
 import firedancer.assembly.ConstantOperand;
 
@@ -26,31 +26,31 @@ abstract IntLikeRuntimeExpression(
 	public function loadToVolatile(context: CompileContext): AssemblyCode {
 		return switch this {
 			case Variable(loadV):
-				new AssemblyStatement(loadV, []);
+				new Instruction(loadV, []);
 
 			case UnaryOperation(type, operand):
 				final operandValue = operand.tryGetConstantOperandValue();
 				if (operandValue.isSome()) {
 					switch type.constantOperator {
 						case Immediate(func):
-							new AssemblyStatement(
+							new Instruction(
 								loadOpcode,
 								[func(operandValue.unwrap()).toOperand()]
 							);
 						case Instruction(opcodeCV):
-							new AssemblyStatement(opcodeCV, createOperands(operandValue.unwrap()));
+							new Instruction(opcodeCV, createOperands(operandValue.unwrap()));
 						case None:
 							[
-								new AssemblyStatement(
+								new Instruction(
 									loadOpcode,
 									createOperands(operandValue.unwrap())
 								),
-								new AssemblyStatement(type.runtimeOperator, [])
+								new Instruction(type.runtimeOperator, [])
 							];
 					}
 				} else {
 					final code = operand.loadToVolatile(context);
-					code.push(new AssemblyStatement(type.runtimeOperator, []));
+					code.push(new Instruction(type.runtimeOperator, []));
 					code;
 				}
 
@@ -74,27 +74,27 @@ abstract IntLikeRuntimeExpression(
 								valA,
 								valB
 							);
-							code.pushStatement(loadOpcode, [valueAB.toOperand()]);
+							code.pushInstruction(loadOpcode, [valueAB.toOperand()]);
 						} else {
 							final operandsB = createOperands(valB);
-							code.pushStatement(loadOpcode, operandsA);
+							code.pushInstruction(loadOpcode, operandsA);
 							if (operateVCV.isSome())
-								code.pushStatement(operateVCV.unwrap(), operandsB);
+								code.pushInstruction(operateVCV.unwrap(), operandsB);
 							else {
-								code.pushStatement(saveOpcode);
-								code.pushStatement(loadOpcode, operandsB);
-								code.pushStatement(operateVVV, []);
+								code.pushInstruction(saveOpcode);
+								code.pushInstruction(loadOpcode, operandsB);
+								code.pushInstruction(operateVVV, []);
 							}
 						}
 					} else {
 						if (operateCVV.isSome()) {
 							code.pushFromArray(operandB.loadToVolatile(context));
-							code.pushStatement(operateCVV.unwrap(), operandsA);
+							code.pushInstruction(operateCVV.unwrap(), operandsA);
 						} else {
-							code.pushStatement(loadOpcode, operandsA);
-							code.pushStatement(saveOpcode);
+							code.pushInstruction(loadOpcode, operandsA);
+							code.pushInstruction(saveOpcode);
 							code.pushFromArray(operandB.loadToVolatile(context));
-							code.pushStatement(operateVVV);
+							code.pushInstruction(operateVVV);
 						}
 					}
 				} else {
@@ -103,18 +103,18 @@ abstract IntLikeRuntimeExpression(
 						final operandsB = createOperands(valB);
 						if (operateVCV.isSome()) {
 							code.pushFromArray(operandA.loadToVolatile(context));
-							code.pushStatement(operateVCV.unwrap(), operandsB);
+							code.pushInstruction(operateVCV.unwrap(), operandsB);
 						} else {
 							code.pushFromArray(operandA.loadToVolatile(context));
-							code.pushStatement(saveOpcode);
-							code.pushStatement(loadOpcode, operandsB);
-							code.pushStatement(operateVVV);
+							code.pushInstruction(saveOpcode);
+							code.pushInstruction(loadOpcode, operandsB);
+							code.pushInstruction(operateVVV);
 						}
 					} else {
 						code.pushFromArray(operandA.loadToVolatile(context));
-						code.pushStatement(saveOpcode);
+						code.pushInstruction(saveOpcode);
 						code.pushFromArray(operandB.loadToVolatile(context));
-						code.pushStatement(operateVVV);
+						code.pushInstruction(operateVVV);
 					}
 				}
 

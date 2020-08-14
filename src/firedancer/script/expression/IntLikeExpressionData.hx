@@ -2,7 +2,7 @@ package firedancer.script.expression;
 
 import firedancer.assembly.Opcode;
 import firedancer.assembly.Opcode.*;
-import firedancer.assembly.AssemblyStatement;
+import firedancer.assembly.Instruction;
 import firedancer.assembly.AssemblyCode;
 import firedancer.assembly.ConstantOperand;
 import firedancer.script.expression.FloatLikeExpressionData;
@@ -42,7 +42,7 @@ class IntLikeExpressionData implements ExpressionData {
 	public function loadToVolatile(context: CompileContext): AssemblyCode {
 		return switch this.data {
 			case Constant(value):
-				new AssemblyStatement(general(LoadIntCV), [value.toOperand()]);
+				new Instruction(general(LoadIntCV), [value.toOperand()]);
 			case Runtime(expression):
 				expression.loadToVolatile(context);
 		}
@@ -56,10 +56,10 @@ class IntLikeExpressionData implements ExpressionData {
 		final constantOperand = tryGetConstantOperand();
 
 		return if (constantOperand.isSome()) {
-			new AssemblyStatement(constantOpcode, [constantOperand.unwrap()]);
+			new Instruction(constantOpcode, [constantOperand.unwrap()]);
 		} else [
 			loadToVolatile(context),
-			[new AssemblyStatement(volatileOpcode, [])]
+			[new Instruction(volatileOpcode, [])]
 		].flatten();
 	}
 
@@ -179,16 +179,16 @@ class IntLikeExpressionData implements ExpressionData {
 		final constant = this.tryGetConstantOperandValue();
 
 		final loadAsFloat: (context:CompileContext) -> AssemblyCode = if (constant.isSome()) {
-			context -> new AssemblyStatement(
+			context -> new Instruction(
 				general(LoadFloatCV),
 				[Float(constantFactor * constant.unwrap())]
 			);
 		} else {
 			context -> [
 				this.loadToVolatile(context),
-				[new AssemblyStatement(calc(CastIntToFloatVV), [])],
+				[new Instruction(calc(CastIntToFloatVV), [])],
 				if (constantFactor == 1.0) [] else [
-					new AssemblyStatement(calc(MultFloatVCV), [Float(constantFactor)])
+					new Instruction(calc(MultFloatVCV), [Float(constantFactor)])
 				]
 			].flatten();
 		}

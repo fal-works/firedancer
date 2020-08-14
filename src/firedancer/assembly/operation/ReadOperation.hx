@@ -175,9 +175,9 @@ class ReadOperationExtension {
 	}
 
 	/**
-		Creates a `StatementType` instance that corresponds to `op`.
+		Creates a `InstructionType` instance that corresponds to `op`.
 	**/
-	public static inline function toStatementType(op: ReadOperation): StatementType {
+	public static inline function toInstructionType(op: ReadOperation): InstructionType {
 		return switch op {
 			case LoadTargetPositionV | LoadTargetXV | LoadTargetYV: [];
 			case LoadBearingToTargetV: [];
@@ -197,8 +197,8 @@ class ReadOperationExtension {
 	}
 
 	/**
-		@return The bytecode length in bytes required for a statement with `op`.
+		@return The bytecode length in bytes required for an instruction with `op`.
 	**/
 	public static inline function getBytecodeLength(op: ReadOperation): UInt
-		return toStatementType(op).bytecodeLength();
+		return toInstructionType(op).bytecodeLength();
 }

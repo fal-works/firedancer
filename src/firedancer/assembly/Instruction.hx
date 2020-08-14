@@ -7,31 +7,31 @@ import firedancer.bytecode.internal.Constants.*;
 using firedancer.assembly.OpcodeExtension;
 
 /**
-	A single statement in bullet pattern code written in a virtual assembly language.
+	A single instruction in bullet pattern code written in a virtual assembly language.
 **/
 @:notNull @:forward
-abstract AssemblyStatement(Data) from Data {
+abstract Instruction(Data) from Data {
 	/**
-		Creates a new `AssemblyStatement` instance.
+		Creates a new `Instruction` instance.
 	**/
 	public static extern inline function create(
 		opcode: Opcode,
 		?operands: Array<ConstantOperand>
-	): AssemblyStatement {
-		return new AssemblyStatement(opcode, operands.orNew());
+	): Instruction {
+		return new Instruction(opcode, operands.orNew());
 	}
 
 	/**
-		Implicitly converts `opcode` to `AssemblyStatement`.
+		Implicitly converts `opcode` to `Instruction`.
 	**/
-	@:from static extern inline function fromOpcode(opcode: Opcode): AssemblyStatement {
-		return new AssemblyStatement(opcode, []);
+	@:from static extern inline function fromOpcode(opcode: Opcode): Instruction {
+		return new Instruction(opcode, []);
 	}
 
 	public extern inline function new(opcode: Opcode, operands: Array<ConstantOperand>) {
 		#if debug
 		// validate operands
-		final operandTypes = opcode.toStatementType().operandTypes();
+		final operandTypes = opcode.toInstructionType().operandTypes();
 		if (operands.length != operandTypes.length)
 			throw 'Invalid number of operands.\nHave: ${operands.length}\nWant: ${operandTypes.length}';
 		for (i in 0...operands.length) {

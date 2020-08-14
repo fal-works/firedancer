@@ -2,7 +2,7 @@ package firedancer.script.expression;
 
 import firedancer.assembly.Opcode;
 import firedancer.assembly.Opcode.*;
-import firedancer.assembly.AssemblyStatement;
+import firedancer.assembly.Instruction;
 import firedancer.assembly.AssemblyCode;
 import firedancer.assembly.ConstantOperand;
 import firedancer.script.expression.subtypes.FloatLikeConstant;
@@ -40,7 +40,7 @@ class FloatLikeExpressionData implements ExpressionData {
 	public function loadToVolatile(context: CompileContext): AssemblyCode {
 		return switch this.data {
 			case Constant(value):
-				new AssemblyStatement(general(LoadFloatCV), [value.toOperand()]);
+				new Instruction(general(LoadFloatCV), [value.toOperand()]);
 			case Runtime(expression):
 				expression.loadToVolatile(context);
 		}
@@ -54,10 +54,10 @@ class FloatLikeExpressionData implements ExpressionData {
 		final constantOperand = tryGetConstantOperand();
 
 		return if (constantOperand.isSome()) {
-			new AssemblyStatement(constantOpcode, [constantOperand.unwrap()]);
+			new Instruction(constantOpcode, [constantOperand.unwrap()]);
 		} else [
 			loadToVolatile(context),
-			[new AssemblyStatement(volatileOpcode, [])]
+			[new Instruction(volatileOpcode, [])]
 		].flatten();
 	}
 
