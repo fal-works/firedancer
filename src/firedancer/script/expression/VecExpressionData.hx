@@ -4,7 +4,7 @@ import sneaker.exception.NotOverriddenException;
 import firedancer.types.Azimuth;
 import firedancer.assembly.Instruction.create as instruction;
 import firedancer.assembly.AssemblyCode;
-import firedancer.assembly.ConstantOperand;
+import firedancer.assembly.Immediate;
 import firedancer.assembly.Opcode;
 import firedancer.assembly.Opcode.*;
 
@@ -18,13 +18,13 @@ class VecExpressionData implements ExpressionData {
 		this.divisor = Maybe.from(divisor);
 	}
 
-	public function tryGetConstantOperandValue(): Maybe<{x: Float, y: Float }>
+	public function tryGetConstant(): Maybe<{x: Float, y: Float }>
 		throw new NotOverriddenException();
 
-	public function tryGetConstantOperand(): Maybe<ConstantOperand> {
-		final value = tryGetConstantOperandValue();
-		return if (value.isSome()) {
-			final val = value.unwrap();
+	public function tryMakeImmediate(): Maybe<Immediate> {
+		final constant = tryGetConstant();
+		return if (constant.isSome()) {
+			final val = constant.unwrap();
 			Maybe.from(Vec(val.x, val.y));
 		} else Maybe.none();
 	}
@@ -49,9 +49,9 @@ class VecExpressionData implements ExpressionData {
 		processConstantVector: Opcode,
 		processVolatileVector: Opcode
 	): AssemblyCode {
-		final const = tryGetConstantOperand();
-		return if (const.isSome()) {
-			instruction(processConstantVector, [const.unwrap()]);
+		final immediate = tryMakeImmediate();
+		return if (immediate.isSome()) {
+			instruction(processConstantVector, [immediate.unwrap()]);
 		} else {
 			final code = loadToVolatile(context);
 			code.push(instruction(processVolatileVector));
@@ -75,11 +75,11 @@ class CartesianVecExpressionData extends VecExpressionData {
 		this.y = y;
 	}
 
-	override public function tryGetConstantOperandValue(): Maybe<{x: Float, y: Float }> {
-		final xConstant = x.tryGetConstantOperandValue();
+	override public function tryGetConstant(): Maybe<{x: Float, y: Float }> {
+		final xConstant = x.tryGetConstant();
 		if (xConstant.isNone()) return Maybe.none();
 
-		final yConstant = y.tryGetConstantOperandValue();
+		final yConstant = y.tryGetConstant();
 		if (yConstant.isNone()) return Maybe.none();
 
 		final xVal = xConstant.unwrap();
@@ -88,9 +88,9 @@ class CartesianVecExpressionData extends VecExpressionData {
 		if (divisor.isNone())
 			return Maybe.from({ x: xVal, y: yVal });
 		else {
-			final divisorValue = divisor.unwrap().tryGetConstantOperandValue();
-			if (divisorValue.isNone()) return Maybe.none();
-			final divVal = divisorValue.unwrap();
+			final divisorConstant = divisor.unwrap().tryGetConstant();
+			if (divisorConstant.isNone()) return Maybe.none();
+			final divVal = divisorConstant.unwrap();
 			return Maybe.from({ x: xVal / divVal, y: yVal / divVal });
 		}
 	}
@@ -108,8 +108,8 @@ class CartesianVecExpressionData extends VecExpressionData {
 		final y = this.y;
 		final divisor = this.divisor;
 
-		final xConstant = x.tryGetConstantOperandValue();
-		final yConstant = y.tryGetConstantOperandValue();
+		final xConstant = x.tryGetConstant();
+		final yConstant = y.tryGetConstant();
 
 		if (xConstant.isSome() && yConstant.isSome()) {
 			final xVal = xConstant.unwrap();
@@ -119,7 +119,7 @@ class CartesianVecExpressionData extends VecExpressionData {
 				// cVec
 				return instruction(general(LoadVecCV), [Vec(xVal, yVal)]);
 			} else {
-				final divisorConstant = divisor.unwrap().tryGetConstantOperandValue();
+				final divisorConstant = divisor.unwrap().tryGetConstant();
 
 				if (divisorConstant.isSome()) {
 					// cVec / cDiv
@@ -150,7 +150,7 @@ class CartesianVecExpressionData extends VecExpressionData {
 			// rVec
 			return loadVecWithoutDivisor;
 		} else {
-			final divisorConstant = divisor.unwrap().tryGetConstantOperandValue();
+			final divisorConstant = divisor.unwrap().tryGetConstant();
 
 			if (divisorConstant.isSome()) {
 				// rVec / cDiv
@@ -187,11 +187,11 @@ class PolarVecExpressionData extends VecExpressionData {
 		this.angle = angle;
 	}
 
-	override public function tryGetConstantOperandValue(): Maybe<{x: Float, y: Float }> {
-		final lengthConstant = length.tryGetConstantOperandValue();
+	override public function tryGetConstant(): Maybe<{x: Float, y: Float }> {
+		final lengthConstant = length.tryGetConstant();
 		if (lengthConstant.isNone()) return Maybe.none();
 
-		final angleConstant = angle.tryGetConstantOperandValue();
+		final angleConstant = angle.tryGetConstant();
 		if (angleConstant.isNone()) return Maybe.none();
 
 		final lenVal = lengthConstant.unwrap();
@@ -201,7 +201,7 @@ class PolarVecExpressionData extends VecExpressionData {
 		if (divisor.isNone()) {
 			return Maybe.from({ x: vec.x, y: vec.y });
 		} else {
-			final divisorValue = divisor.unwrap().tryGetConstantOperandValue();
+			final divisorValue = divisor.unwrap().tryGetConstant();
 			if (divisorValue.isNone()) return Maybe.none();
 			final divVal = divisorValue.unwrap();
 			return Maybe.from({ x: vec.x / divVal, y: vec.y / divVal });
@@ -220,8 +220,8 @@ class PolarVecExpressionData extends VecExpressionData {
 		var length = this.length;
 		final angle = this.angle;
 
-		final lengthConstant = length.tryGetConstantOperandValue();
-		final angleConstant = angle.tryGetConstantOperandValue();
+		final lengthConstant = length.tryGetConstant();
+		final angleConstant = angle.tryGetConstant();
 
 		if (lengthConstant.isSome() && angleConstant.isSome()) {
 			final lenVal = lengthConstant.unwrap();
@@ -232,7 +232,7 @@ class PolarVecExpressionData extends VecExpressionData {
 				// cVec
 				return instruction(general(LoadVecCV), [Vec(vec.x, vec.y)]);
 			} else {
-				final divisorConstant = divisor.unwrap().tryGetConstantOperandValue();
+				final divisorConstant = divisor.unwrap().tryGetConstant();
 
 				if (divisorConstant.isSome()) {
 					// cVec / cDiv
@@ -263,7 +263,7 @@ class PolarVecExpressionData extends VecExpressionData {
 			// rVec
 			return loadVecWithoutDivisor;
 		} else {
-			final divisorConstant = divisor.unwrap().tryGetConstantOperandValue();
+			final divisorConstant = divisor.unwrap().tryGetConstant();
 
 			if (divisorConstant.isSome()) {
 				// rVec / cDiv

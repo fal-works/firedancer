@@ -1,7 +1,7 @@
 package firedancer.bytecode.types;
 
 import haxe.Int32;
-import firedancer.assembly.ConstantOperand;
+import firedancer.assembly.Immediate;
 
 /**
 	Argument value for firing opcodes.
@@ -38,7 +38,7 @@ abstract FireArgument(Int32) from Int32 {
 	**/
 	public var bytecodeId(get, never): UInt;
 
-	@:to extern inline function toConstantOperand(): ConstantOperand
+	@:to extern inline function toImmediate(): Immediate
 		return Int(this);
 
 	extern inline function get_bindPosition(): Bool {

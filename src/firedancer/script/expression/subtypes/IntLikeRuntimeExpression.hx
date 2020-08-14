@@ -3,7 +3,7 @@ package firedancer.script.expression.subtypes;
 import firedancer.assembly.AssemblyCode;
 import firedancer.assembly.Instruction;
 import firedancer.assembly.Opcode.*;
-import firedancer.assembly.ConstantOperand;
+import firedancer.assembly.Immediate;
 
 typedef IntLikeRuntimeExpressionEnum = RuntimeExpressionEnum<IntLikeConstant, IntLikeExpressionData>;
 
@@ -17,7 +17,7 @@ abstract IntLikeRuntimeExpression(
 	static extern inline final loadOpcode = general(LoadIntCV);
 	static extern inline final saveOpcode = general(SaveIntV);
 
-	static function createOperands(value: Int): Array<ConstantOperand>
+	static function createImmediates(value: Int): Array<Immediate>
 		return [Int(value)];
 
 	/**
@@ -28,55 +28,55 @@ abstract IntLikeRuntimeExpression(
 			case Variable(loadV):
 				new Instruction(loadV, []);
 
-			case UnaryOperation(type, operand):
-				final operandValue = operand.tryGetConstantOperandValue();
-				if (operandValue.isSome()) {
+			case UnaryOperation(type, operandExpr):
+				final constant = operandExpr.tryGetConstant();
+				if (constant.isSome()) {
 					switch type.constantOperator {
 						case Immediate(func):
 							new Instruction(
 								loadOpcode,
-								[func(operandValue.unwrap()).toOperand()]
+								[func(constant.unwrap()).toImmediate()]
 							);
 						case Instruction(opcodeCV):
-							new Instruction(opcodeCV, createOperands(operandValue.unwrap()));
+							new Instruction(opcodeCV, createImmediates(constant.unwrap()));
 						case None:
 							[
 								new Instruction(
 									loadOpcode,
-									createOperands(operandValue.unwrap())
+									createImmediates(constant.unwrap())
 								),
 								new Instruction(type.runtimeOperator, [])
 							];
 					}
 				} else {
-					final code = operand.loadToVolatile(context);
+					final code = operandExpr.loadToVolatile(context);
 					code.push(new Instruction(type.runtimeOperator, []));
 					code;
 				}
 
-			case BinaryOperation(type, operandA, operandB):
+			case BinaryOperation(type, operandExprA, operandExprB):
 				final code:AssemblyCode = [];
 				final operateConstants = type.operateConstants;
 				final operateVCV = type.operateVCV;
 				final operateCVV = type.operateCVV;
 				final operateVVV = type.operateVVV;
 
-				final operandValueA = operandA.tryGetConstantOperandValue();
-				final operandValueB = operandB.tryGetConstantOperandValue();
+				final constantA = operandExprA.tryGetConstant();
+				final constantB = operandExprB.tryGetConstant();
 
-				if (operandValueA.isSome()) {
-					final valA = operandValueA.unwrap();
-					final operandsA = createOperands(valA);
-					if (operandValueB.isSome()) {
-						final valB = operandValueB.unwrap();
+				if (constantA.isSome()) {
+					final valA = constantA.unwrap();
+					final operandsA = createImmediates(valA);
+					if (constantB.isSome()) {
+						final valB = constantB.unwrap();
 						if (operateConstants.isSome()) {
 							final valueAB: IntLikeConstant = operateConstants.unwrap()(
 								valA,
 								valB
 							);
-							code.pushInstruction(loadOpcode, [valueAB.toOperand()]);
+							code.pushInstruction(loadOpcode, [valueAB.toImmediate()]);
 						} else {
-							final operandsB = createOperands(valB);
+							final operandsB = createImmediates(valB);
 							code.pushInstruction(loadOpcode, operandsA);
 							if (operateVCV.isSome())
 								code.pushInstruction(operateVCV.unwrap(), operandsB);
@@ -88,32 +88,32 @@ abstract IntLikeRuntimeExpression(
 						}
 					} else {
 						if (operateCVV.isSome()) {
-							code.pushFromArray(operandB.loadToVolatile(context));
+							code.pushFromArray(operandExprB.loadToVolatile(context));
 							code.pushInstruction(operateCVV.unwrap(), operandsA);
 						} else {
 							code.pushInstruction(loadOpcode, operandsA);
 							code.pushInstruction(saveOpcode);
-							code.pushFromArray(operandB.loadToVolatile(context));
+							code.pushFromArray(operandExprB.loadToVolatile(context));
 							code.pushInstruction(operateVVV);
 						}
 					}
 				} else {
-					if (operandValueB.isSome()) {
-						final valB = operandValueB.unwrap();
-						final operandsB = createOperands(valB);
+					if (constantB.isSome()) {
+						final valB = constantB.unwrap();
+						final operandsB = createImmediates(valB);
 						if (operateVCV.isSome()) {
-							code.pushFromArray(operandA.loadToVolatile(context));
+							code.pushFromArray(operandExprA.loadToVolatile(context));
 							code.pushInstruction(operateVCV.unwrap(), operandsB);
 						} else {
-							code.pushFromArray(operandA.loadToVolatile(context));
+							code.pushFromArray(operandExprA.loadToVolatile(context));
 							code.pushInstruction(saveOpcode);
 							code.pushInstruction(loadOpcode, operandsB);
 							code.pushInstruction(operateVVV);
 						}
 					} else {
-						code.pushFromArray(operandA.loadToVolatile(context));
+						code.pushFromArray(operandExprA.loadToVolatile(context));
 						code.pushInstruction(saveOpcode);
-						code.pushFromArray(operandB.loadToVolatile(context));
+						code.pushFromArray(operandExprB.loadToVolatile(context));
 						code.pushInstruction(operateVVV);
 					}
 				}

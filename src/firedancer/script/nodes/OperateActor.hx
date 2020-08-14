@@ -4,7 +4,6 @@ import firedancer.types.NInt;
 import firedancer.assembly.Opcode.*;
 import firedancer.assembly.operation.ReadOperation;
 import firedancer.assembly.operation.WriteOperation;
-import firedancer.assembly.ConstantOperand;
 import firedancer.assembly.Instruction;
 import firedancer.assembly.AssemblyCode;
 import firedancer.bytecode.internal.Constants.LEN32;
@@ -229,15 +228,15 @@ class ActorAttributeOperationExtension {
 					case ShotVelocity: write(AddShotVelocityV);
 				};
 
-				final const = vec.tryGetConstantOperand();
-				if (const.isSome()) {
+				final immediate = vec.tryMakeImmediate();
+				if (immediate.isSome()) {
 					final calcRelativeCV: ReadOperation = switch attribute {
 						case Position: CalcRelativePositionCV;
 						case Velocity: CalcRelativeVelocityCV;
 						case ShotPosition: CalcRelativeShotPositionCV;
 						case ShotVelocity: CalcRelativeShotVelocityCV;
 					};
-					calcRelative = instruction(read(calcRelativeCV), [const.unwrap()]);
+					calcRelative = instruction(read(calcRelativeCV), [immediate.unwrap()]);
 				} else {
 					final calcRelativeVV: ReadOperation = switch attribute {
 						case Position: CalcRelativePositionVV;
@@ -272,8 +271,7 @@ class ActorAttributeOperationExtension {
 							case ShotPosition: CalcRelativeShotDistanceCV;
 							case ShotVelocity: CalcRelativeShotSpeedCV;
 						};
-						final operands:Array<ConstantOperand> = [value.toOperand()];
-						calcRelative = instruction(read(operation), operands);
+						calcRelative = instruction(read(operation), [value.toImmediate()]);
 					case Runtime(expression):
 						final calcRelativeVV:ReadOperation = switch attribute {
 							case Position: CalcRelativeDistanceVV;
@@ -306,8 +304,7 @@ class ActorAttributeOperationExtension {
 							case ShotPosition: CalcRelativeShotBearingCV;
 							case ShotVelocity: CalcRelativeShotDirectionCV;
 						};
-						final operands:Array<ConstantOperand> = [value.toOperand()];
-						calcRelative = instruction(read(operation), operands);
+						calcRelative = instruction(read(operation), [value.toImmediate()]);
 					case Runtime(expression):
 						final calcRelativeVV:ReadOperation = switch attribute {
 							case Position: CalcRelativeBearingVV;

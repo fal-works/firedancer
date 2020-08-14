@@ -1,6 +1,6 @@
 package firedancer.script.expression.subtypes;
 
-import firedancer.assembly.ConstantOperand;
+import firedancer.assembly.Immediate;
 
 /**
 	Value that represents an int-like constant.
@@ -35,12 +35,12 @@ abstract IntLikeConstant(haxe.Int32) from Int from haxe.Int32{
 	/**
 		Converts `this` to `Int` for writing into `AssemblyCode`.
 	**/
-	public extern inline function toOperandValue(): Int
+	public extern inline function toImmediateValue(): Int
 		return this;
 
 	/**
-		Converts `this` to `ConstantOperand`.
+		Converts `this` to `Immediate`.
 	**/
-	public extern inline function toOperand(): ConstantOperand
+	public extern inline function toImmediate(): Immediate
 		return Int(this);
 }

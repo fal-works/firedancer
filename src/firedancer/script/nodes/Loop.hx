@@ -48,10 +48,10 @@ class FiniteLoop extends Loop {
 		final count = this.loopCount;
 		final body = this.node.toAssembly(context);
 
-		final countValue = count.tryGetConstantOperandValue();
+		final constant = count.tryGetConstant();
 
-		final code = if (countValue.isSome() && this.unrolling) {
-			loopUnrolled(0...countValue.unwrap(), _ -> body);
+		final code = if (constant.isSome() && this.unrolling) {
+			loopUnrolled(0...constant.unwrap(), _ -> body);
 		} else {
 			loop(context, body, count);
 		}

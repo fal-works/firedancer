@@ -16,7 +16,7 @@ abstract Instruction(Data) from Data {
 	**/
 	public static extern inline function create(
 		opcode: Opcode,
-		?operands: Array<ConstantOperand>
+		?operands: Array<Immediate>
 	): Instruction {
 		return new Instruction(opcode, operands.orNew());
 	}
@@ -28,7 +28,7 @@ abstract Instruction(Data) from Data {
 		return new Instruction(opcode, []);
 	}
 
-	public extern inline function new(opcode: Opcode, operands: Array<ConstantOperand>) {
+	public extern inline function new(opcode: Opcode, operands: Array<Immediate>) {
 		#if debug
 		// validate operands
 		final operandTypes = opcode.toInstructionType().operandTypes();
@@ -52,7 +52,7 @@ abstract Instruction(Data) from Data {
 @:ripper_verified
 private class Data implements ripper.Data {
 	public final opcode: Opcode;
-	public final operands: Array<ConstantOperand>;
+	public final operands: Array<Immediate>;
 
 	public function bytecodeLength(): UInt {
 		var len = Opcode.size;

@@ -1,7 +1,7 @@
 package firedancer.script.expression;
 
 import firedancer.assembly.Opcode;
-import firedancer.assembly.ConstantOperand;
+import firedancer.assembly.Immediate;
 import firedancer.assembly.AssemblyCode;
 
 abstract GenericExpression(Data) from Data {
@@ -86,12 +86,12 @@ abstract GenericExpression(Data) from Data {
 		}
 	}
 
-	public function tryGetConstantOperand(): Maybe<ConstantOperand> {
+	public function tryMakeImmediate(): Maybe<Immediate> {
 		return switch this {
-			case IntExpr(expr): expr.tryGetConstantOperand();
-			case FloatExpr(expr): expr.tryGetConstantOperand();
-			case AngleExpr(expr): expr.tryGetConstantOperand();
-			case VecExpr(expr): expr.tryGetConstantOperand();
+			case IntExpr(expr): expr.tryMakeImmediate();
+			case FloatExpr(expr): expr.tryMakeImmediate();
+			case AngleExpr(expr): expr.tryMakeImmediate();
+			case VecExpr(expr): expr.tryMakeImmediate();
 		}
 	}
 

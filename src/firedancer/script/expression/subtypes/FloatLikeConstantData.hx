@@ -2,7 +2,7 @@ package firedancer.script.expression.subtypes;
 
 import reckoner.Geometry.DEGREES_TO_RADIANS;
 import firedancer.types.Angle;
-import firedancer.assembly.ConstantOperand;
+import firedancer.assembly.Immediate;
 
 /**
 	The underlying type of `FloatLikeConstant`.
@@ -83,12 +83,12 @@ class FloatLikeConstantData {
 	/**
 		Converts `this` to `Float` for writing into `AssemblyCode`.
 	**/
-	public function toOperandValue(): Float
+	public function toImmediateValue(): Float
 		return factor * value;
 
 	/**
-		Converts `this` to `ConstantOperand`.
+		Converts `this` to `Immediate`.
 	**/
-	public function toOperand(): ConstantOperand
-		return Float(toOperandValue());
+	public function toImmediate(): Immediate
+		return Float(toImmediateValue());
 }

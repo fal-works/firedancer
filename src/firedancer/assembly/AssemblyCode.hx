@@ -18,7 +18,7 @@ abstract AssemblyCode(Data) from Data to Data {
 	/**
 		Pushes a new `Instruction` created from `opcode` and `operands`.
 	**/
-	public function pushInstruction(opcode: Opcode, ?operands: Array<ConstantOperand>): Void
+	public function pushInstruction(opcode: Opcode, ?operands: Array<Immediate>): Void
 		this.push(Instruction.create(opcode, operands));
 
 	/**

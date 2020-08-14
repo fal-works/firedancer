@@ -4,7 +4,7 @@ import firedancer.assembly.Opcode;
 import firedancer.assembly.Opcode.*;
 import firedancer.assembly.Instruction;
 import firedancer.assembly.AssemblyCode;
-import firedancer.assembly.ConstantOperand;
+import firedancer.assembly.Immediate;
 import firedancer.script.expression.subtypes.FloatLikeConstant;
 import firedancer.script.expression.subtypes.FloatLikeRuntimeExpression;
 import firedancer.script.expression.subtypes.SimpleUnaryOperator;
@@ -40,7 +40,7 @@ class FloatLikeExpressionData implements ExpressionData {
 	public function loadToVolatile(context: CompileContext): AssemblyCode {
 		return switch this.data {
 			case Constant(value):
-				new Instruction(general(LoadFloatCV), [value.toOperand()]);
+				new Instruction(general(LoadFloatCV), [value.toImmediate()]);
 			case Runtime(expression):
 				expression.loadToVolatile(context);
 		}
@@ -51,39 +51,39 @@ class FloatLikeExpressionData implements ExpressionData {
 		receiving `this` value as argument.
 	**/
 	public function use(context: CompileContext, constantOpcode: Opcode, volatileOpcode: Opcode): AssemblyCode {
-		final constantOperand = tryGetConstantOperand();
+		final immediate = tryMakeImmediate();
 
-		return if (constantOperand.isSome()) {
-			new Instruction(constantOpcode, [constantOperand.unwrap()]);
+		return if (immediate.isSome()) {
+			new Instruction(constantOpcode, [immediate.unwrap()]);
 		} else [
 			loadToVolatile(context),
 			[new Instruction(volatileOpcode, [])]
 		].flatten();
 	}
 
-	public function tryGetConstantOperandValue(): Maybe<Float> {
+	public function tryGetConstant(): Maybe<Float> {
 		switch this.data {
 			case Constant(value):
-				return Maybe.from(value.toOperandValue());
+				return Maybe.from(value.toImmediateValue());
 			case Runtime(expression):
 				switch expression.toEnum() {
-					case UnaryOperation(type, operand):
-						final value = operand.tryGetConstantOperandValue();
-						if (value.isSome()) {
+					case UnaryOperation(type, operandExpr):
+						final constant = operandExpr.tryGetConstant();
+						if (constant.isSome()) {
 							switch type.constantOperator {
 								case Immediate(func):
-									return Maybe.from(func(value.unwrap()).raw());
+									return Maybe.from(func(constant.unwrap()).raw());
 								default:
 							}
 						}
-					case BinaryOperation(type, operandA, operandB):
-						final valueA = operandA.tryGetConstantOperandValue();
-						final valueB = operandB.tryGetConstantOperandValue();
-						if (valueA.isSome() && valueB.isSome() && type.operateConstants.isSome()) {
+					case BinaryOperation(type, operandExprA, operandExprB):
+						final constantA = operandExprA.tryGetConstant();
+						final constantB = operandExprB.tryGetConstant();
+						if (constantA.isSome() && constantB.isSome() && type.operateConstants.isSome()) {
 							final operate = type.operateConstants.unwrap();
 							return Maybe.from(operate(
-								valueA.unwrap(),
-								valueB.unwrap()
+								constantA.unwrap(),
+								constantB.unwrap()
 							).raw());
 						}
 					default:
@@ -93,9 +93,9 @@ class FloatLikeExpressionData implements ExpressionData {
 		return Maybe.none();
 	}
 
-	public function tryGetConstantOperand(): Maybe<ConstantOperand> {
-		final value = tryGetConstantOperandValue();
-		return if (value.isSome()) Maybe.from(Float(value.unwrap())) else Maybe.none();
+	public function tryMakeImmediate(): Maybe<Immediate> {
+		final constant = tryGetConstant();
+		return if (constant.isSome()) Maybe.from(Float(constant.unwrap())) else Maybe.none();
 	}
 
 	public function unaryOperation(
@@ -109,12 +109,12 @@ class FloatLikeExpressionData implements ExpressionData {
 
 	public function binaryOperation(
 		type: SimpleBinaryOperator<FloatLikeConstant>,
-		otherOperand: FloatLikeExpressionData
+		other: FloatLikeExpressionData
 	): FloatLikeExpressionData {
 		return create(Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperation(
 			type,
 			this,
-			otherOperand
+			other
 		)));
 	}
 
@@ -156,10 +156,10 @@ class FloatLikeExpressionData implements ExpressionData {
 		switch this.data {
 			case Constant(_):
 			case Runtime(_):
-				final otherValue = other.tryGetConstantOperandValue();
-				if (otherValue.isSome()) {
+				final otherConstant = other.tryGetConstant();
+				if (otherConstant.isSome()) {
 					// multiply by the reciprocal: rt / c => rt * (1 / c)
-					other = create(Constant(1.0 / otherValue.unwrap()));
+					other = create(Constant(1.0 / otherConstant.unwrap()));
 				}
 		}
 

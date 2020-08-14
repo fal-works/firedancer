@@ -4,7 +4,7 @@ import firedancer.assembly.Opcode;
 import firedancer.assembly.Opcode.*;
 import firedancer.assembly.Instruction;
 import firedancer.assembly.AssemblyCode;
-import firedancer.assembly.ConstantOperand;
+import firedancer.assembly.Immediate;
 import firedancer.script.expression.FloatLikeExpressionData;
 import firedancer.script.expression.subtypes.IntLikeRuntimeExpression;
 import firedancer.script.expression.subtypes.IntLikeConstant;
@@ -42,7 +42,7 @@ class IntLikeExpressionData implements ExpressionData {
 	public function loadToVolatile(context: CompileContext): AssemblyCode {
 		return switch this.data {
 			case Constant(value):
-				new Instruction(general(LoadIntCV), [value.toOperand()]);
+				new Instruction(general(LoadIntCV), [value.toImmediate()]);
 			case Runtime(expression):
 				expression.loadToVolatile(context);
 		}
@@ -53,39 +53,39 @@ class IntLikeExpressionData implements ExpressionData {
 		receiving `this` value as argument.
 	**/
 	public function use(context: CompileContext, constantOpcode: Opcode, volatileOpcode: Opcode): AssemblyCode {
-		final constantOperand = tryGetConstantOperand();
+		final immediate = tryMakeImmediate();
 
-		return if (constantOperand.isSome()) {
-			new Instruction(constantOpcode, [constantOperand.unwrap()]);
+		return if (immediate.isSome()) {
+			new Instruction(constantOpcode, [immediate.unwrap()]);
 		} else [
 			loadToVolatile(context),
 			[new Instruction(volatileOpcode, [])]
 		].flatten();
 	}
 
-	public function tryGetConstantOperandValue(): Maybe<Int> {
+	public function tryGetConstant(): Maybe<Int> {
 		switch this.data {
 			case Constant(value):
-				return Maybe.from(value.toOperandValue());
+				return Maybe.from(value.toImmediateValue());
 			case Runtime(expression):
 				switch expression.toEnum() {
-					case UnaryOperation(type, operand):
-						final value = operand.tryGetConstantOperandValue();
-						if (value.isSome()) {
+					case UnaryOperation(type, operandExpr):
+						final constant = operandExpr.tryGetConstant();
+						if (constant.isSome()) {
 							switch type.constantOperator {
 								case Immediate(func):
-									return Maybe.from(func(value.unwrap()).raw());
+									return Maybe.from(func(constant.unwrap()).raw());
 								default:
 							}
 						}
-					case BinaryOperation(type, operandA, operandB):
-						final valueA = operandA.tryGetConstantOperandValue();
-						final valueB = operandB.tryGetConstantOperandValue();
-						if (valueA.isSome() && valueB.isSome() && type.operateConstants.isSome()) {
+					case BinaryOperation(type, operandExprA, operandExprB):
+						final constantA = operandExprA.tryGetConstant();
+						final constantB = operandExprB.tryGetConstant();
+						if (constantA.isSome() && constantB.isSome() && type.operateConstants.isSome()) {
 							final operate = type.operateConstants.unwrap();
 							return Maybe.from(operate(
-								valueA.unwrap(),
-								valueB.unwrap()
+								constantA.unwrap(),
+								constantB.unwrap()
 							).raw());
 						}
 					default:
@@ -95,9 +95,9 @@ class IntLikeExpressionData implements ExpressionData {
 		return Maybe.none();
 	}
 
-	public function tryGetConstantOperand(): Maybe<ConstantOperand> {
-		final value = tryGetConstantOperandValue();
-		return if (value.isSome()) Maybe.from(Int(value.unwrap())) else Maybe.none();
+	public function tryMakeImmediate(): Maybe<Immediate> {
+		final constant = tryGetConstant();
+		return if (constant.isSome()) Maybe.from(Int(constant.unwrap())) else Maybe.none();
 	}
 
 	public function unaryOperation(
@@ -111,12 +111,12 @@ class IntLikeExpressionData implements ExpressionData {
 
 	public function binaryOperation(
 		type: SimpleBinaryOperator<Int>,
-		otherOperand: IntLikeExpressionData
+		other: IntLikeExpressionData
 	): IntLikeExpressionData {
 		return create(Runtime(IntLikeRuntimeExpressionEnum.BinaryOperation(
 			type,
 			this,
-			otherOperand
+			other
 		)));
 	}
 
@@ -176,7 +176,7 @@ class IntLikeExpressionData implements ExpressionData {
 		return this.data;
 
 	function toFloatLikeExpressionData(constantFactor: Float): FloatLikeExpressionData {
-		final constant = this.tryGetConstantOperandValue();
+		final constant = this.tryGetConstant();
 
 		final loadAsFloat: (context:CompileContext) -> AssemblyCode = if (constant.isSome()) {
 			context -> new Instruction(

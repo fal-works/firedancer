@@ -1,9 +1,9 @@
 package firedancer.assembly;
 
 /**
-	Constant operand value to be passed to an `Opcode` in `Instruction`.
+	Immediate value embedded in an `Instruction`.
 **/
-enum ConstantOperand {
+enum Immediate {
 	/**
 		A 32-bit integer value.
 	**/

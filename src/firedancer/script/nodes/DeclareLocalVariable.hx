@@ -63,11 +63,11 @@ class DeclareLocalVariable extends AstNode {
 		}
 
 		final address: Int = context.localVariables.push(this.name, valueType);
-		final constValue = initialValue.tryGetConstantOperand();
+		final immediate = initialValue.tryMakeImmediate();
 
-		return if (constValue.isSome()) {
+		return if (immediate.isSome()) {
 			final store = Opcode.general(storeCL);
-			instruction(store, [Int(address), constValue.unwrap()]);
+			instruction(store, [Int(address), immediate.unwrap()]);
 		} else {
 			final store = Opcode.general(storeVL);
 			[

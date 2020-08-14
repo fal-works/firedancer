@@ -229,13 +229,13 @@ class LocalVariableTable {
 				throw "Local variable of vector type is not supported.";
 		}
 
-		final constValue = value.tryGetConstantOperand();
+		final immediate = value.tryMakeImmediate();
 		final address = this.address.int();
 
-		return if (constValue.isSome()) {
+		return if (immediate.isSome()) {
 			new Instruction(
 				general(storeCL),
-				[Int(address), constValue.unwrap()]
+				[Int(address), immediate.unwrap()]
 			);
 		} else [
 			value.loadToVolatile(context),
@@ -261,11 +261,11 @@ class LocalVariableTable {
 				throw "Local variable of vector type is not supported.";
 		}
 
-		final constValue = value.tryGetConstantOperand();
+		final immediate = value.tryMakeImmediate();
 		final address = this.address.int();
 
-		return if (constValue.isSome()) {
-			new Instruction(calc(addLCL), [Int(address), constValue.unwrap()]);
+		return if (immediate.isSome()) {
+			new Instruction(calc(addLCL), [Int(address), immediate.unwrap()]);
 		} else [
 			value.loadToVolatile(context),
 			[new Instruction(calc(addLVL), [Int(address)])]

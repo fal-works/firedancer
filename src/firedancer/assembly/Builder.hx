@@ -111,7 +111,7 @@ class Builder {
 	public static function loop(context: CompileContext, body: AssemblyCode, count: IntExpression): AssemblyCode {
 		final bodyLength = body.bytecodeLength().int();
 
-		final countValue = count.tryGetConstantOperandValue();
+		final countValue = count.tryGetConstant();
 
 		final prepareLoop: AssemblyCode = if (countValue.isSome()) {
 			pushIntC(countValue.unwrap());

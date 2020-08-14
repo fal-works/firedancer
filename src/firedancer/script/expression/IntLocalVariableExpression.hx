@@ -112,10 +112,10 @@ abstract IntLocalVariableExpression(String) {
 		Adds `value` to `this` local variable.
 	**/
 	public function add(value: IntExpression): OperateLocalVariable {
-		final constValue = value.tryGetConstantOperandValue();
+		final constant = value.tryGetConstant();
 
-		if (constValue.isSome()) {
-			switch constValue.unwrap() {
+		if (constant.isSome()) {
+			switch constant.unwrap() {
 				case 1: return increment();
 				case -1: return decrement();
 				default:
