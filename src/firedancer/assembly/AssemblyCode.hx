@@ -22,7 +22,7 @@ abstract AssemblyCode(Data) from Data to Data {
 		this.push(Instruction.create(opcode, operands));
 
 	/**
-		@return The bytecode length in bytes after compiled.
+		@return The bytecode length in bytes after assembled.
 	**/
 	public function bytecodeLength(): UInt {
 		var len = UInt.zero;
@@ -31,9 +31,9 @@ abstract AssemblyCode(Data) from Data to Data {
 	}
 
 	/**
-		Compiles `this` code into `Bytecode`.
+		Assembles `this` code into `Bytecode`.
 	**/
-	public function compile(): Bytecode {
+	public function assemble(): Bytecode {
 		final words: WordArray = this.map(instruction -> instruction.toWordArray()).flatten();
 		return words.toBytecode();
 	}

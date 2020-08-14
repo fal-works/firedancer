@@ -101,7 +101,7 @@ class CompileContext {
 		Creates a `ProgramPackage` instance.
 	**/
 	public function createPackage(): ProgramPackage {
-		final bytecodeList = Vector.fromArrayCopy(this.codeList.map(code -> code.compile()));
+		final bytecodeList = Vector.fromArrayCopy(this.codeList.map(code -> code.assemble()));
 
 		return new ProgramPackage(bytecodeList, this.nameIndexMap);
 	}
