@@ -5,11 +5,11 @@ import banker.binary.internal.Constants.*;
 /**
 	Object for specifying operand types of any `AssemblyStatement`.
 **/
-abstract StatementType(Array<ConstantOperandType>) from Array<ConstantOperandType> {
+abstract StatementType(Array<ValueType>) from Array<ValueType> {
 	/**
-		Casts `this` to the underlying type (an array of `ConstantOperandType`).
+		Casts `this` to the underlying type (an array of `ValueType`).
 	**/
-	@:to public extern inline function operandTypes(): Array<ConstantOperandType>
+	@:to public extern inline function operandTypes(): Array<ValueType>
 		return this;
 
 	/**
@@ -18,11 +18,7 @@ abstract StatementType(Array<ConstantOperandType>) from Array<ConstantOperandTyp
 	public function bytecodeLength(): UInt {
 		var len = Opcode.size;
 
-		for (i in 0...this.length) len += switch this[i] {
-			case Int: LEN32;
-			case Float: LEN64;
-			case Vec: LEN64 + LEN64;
-		}
+		for (i in 0...this.length) len += this[i].size;
 
 		return len;
 	}
