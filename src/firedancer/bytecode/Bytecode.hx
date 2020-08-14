@@ -1,30 +1,11 @@
 package firedancer.bytecode;
 
-import banker.binary.Bytes;
+import banker.binary.BytesData;
 
 /**
-	Bytecode that represents a bullet pattern.
-	You can also use `BytecodeData` directly if you store the entire `length` externally.
+	Bytecode that can be executed by `firedancer.bytecode.Vm`.
+
+	This does not have the `length` property (use `Program` if you need it).
 **/
-@:notNull @:forward(length, toHex)
-abstract Bytecode(Bytes) from Bytes to Bytes {
-	/**
-		@return Null object for `Bytecode`.
-	**/
-	public static function createEmpty()
-		return Bytes.alloc(UInt.zero);
-
-	/**
-		Provides access to the bytecode.
-	**/
-	public var data(get, never): BytecodeData;
-
-	/**
-		@return Hexadecimal representation of `this` with each byte separated.
-	**/
-	public inline function toString(): String
-		return this.toHex();
-
-	extern inline function get_data()
-		return this.data;
-}
+@:notNull @:forward
+abstract Bytecode(BytesData) from BytesData to BytesData {}

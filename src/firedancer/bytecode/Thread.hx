@@ -4,7 +4,7 @@ import banker.binary.ByteStackData;
 import firedancer.common.Geometry;
 
 /**
-	Virtual thread for running `firedancer` bytecode.
+	Virtual thread for running firedancer program.
 **/
 class Thread {
 	/**
@@ -15,7 +15,7 @@ class Thread {
 	/**
 		Bytecode to be run.
 	**/
-	public var code: Maybe<BytecodeData>;
+	public var code: Maybe<Bytecode>;
 
 	/**
 		Thre length of `code` in bytes.
@@ -74,10 +74,10 @@ class Thread {
 	}
 
 	/**
-		Sets bytecode and initial shot position/velocity.
+		Sets program and initial shot position/velocity.
 	**/
 	public extern inline function set(
-		code: Bytecode,
+		code: Program,
 		shotX: Float,
 		shotY: Float,
 		shotVx: Float,
@@ -104,7 +104,7 @@ class Thread {
 	}
 
 	/**
-		Deactivates `this` thread and removes the bytecode attached.
+		Deactivates `this` thread and removes the program attached.
 	**/
 	public extern inline function deactivate(): Void {
 		this.active = false;

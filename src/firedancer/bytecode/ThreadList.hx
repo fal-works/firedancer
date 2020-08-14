@@ -31,21 +31,21 @@ abstract ThreadList(Vector<Thread>) {
 		return this[index];
 
 	/**
-		Sets bytecode for the main thread and resets all sub-threads.
+		Sets program for the main thread and resets all sub-threads.
 	**/
-	public extern inline function set(code: Bytecode): Void {
-		main.set(code, 0.0, 0.0, 0.0, 0.0);
+	public extern inline function set(program: Program): Void {
+		main.set(program, 0.0, 0.0, 0.0, 0.0);
 		resetSubThreads();
 	}
 
 	/**
-		Finds the first available sub-thread and activates it with given bytecode.
+		Finds the first available sub-thread and activates it with given program.
 
 		Throws error if no available sub-thread is found.
 		@param currentThread The `Thread` from which the shot position/velocity should be copied.
 		@return The ID of the `Thread` that has been activated.
 	**/
-	public function useSubThread(code: Bytecode, currentThread: Thread): UInt {
+	public function useSubThread(program: Program, currentThread: Thread): UInt {
 		var index = MaybeUInt.none;
 		var i = UInt.one;
 		final len = this.length;
@@ -53,7 +53,7 @@ abstract ThreadList(Vector<Thread>) {
 			final thread = this[i];
 			if (!thread.active) {
 				thread.set(
-					code,
+					program,
 					currentThread.shotX,
 					currentThread.shotY,
 					currentThread.shotVx,

@@ -27,7 +27,7 @@ class Scanner {
 	/**
 		The bytecode data to scan.
 	**/
-	var code: BytecodeData;
+	var code: Bytecode;
 
 	/**
 		The upper bound of the value of `pc` i.e. the length of the bytecode.

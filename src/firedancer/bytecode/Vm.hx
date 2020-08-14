@@ -26,7 +26,7 @@ class Vm {
 		@return The end code. `0` at default, or any value specified in `End` instruction.
 	**/
 	public static function run(
-		bytecodeTable: RVec<Bytecode>,
+		programTable: RVec<Program>,
 		eventHandler: EventHandler,
 		threads: ThreadList,
 		stackCapacity: UInt,
@@ -106,12 +106,12 @@ class Vm {
 									scan.pc += jumpLength;
 								}
 							case UseThread:
-								final bytecodeId = scan.int();
-								threads.useSubThread(bytecodeTable[bytecodeId], thread);
+								final programId = scan.int();
+								threads.useSubThread(programTable[programId], thread);
 							case UseThreadS:
-								final bytecodeId = scan.int();
+								final programId = scan.int();
 								final threadId = threads.useSubThread(
-									bytecodeTable[bytecodeId],
+									programTable[programId],
 									thread
 								);
 								mem.pushInt(threadId.int());
@@ -183,7 +183,7 @@ class Vm {
 								);
 							case FireComplex:
 								final arg: FireArgument = scan.int();
-								final bytecode = Maybe.from(bytecodeTable[arg.bytecodeId]);
+								final bytecode = Maybe.from(programTable[arg.programId]);
 								emitter.emit(
 									position.getAbsoluteX() + thread.shotX,
 									position.getAbsoluteY() + thread.shotY,
@@ -207,7 +207,7 @@ class Vm {
 							case FireComplexWithCode:
 								final arg: FireArgument = scan.int();
 								final fireCode = scan.int();
-								final bytecode = Maybe.from(bytecodeTable[arg.bytecodeId]);
+								final bytecode = Maybe.from(programTable[arg.programId]);
 								emitter.emit(
 									position.getAbsoluteX() + thread.shotX,
 									position.getAbsoluteY() + thread.shotY,
@@ -597,7 +597,7 @@ class Vm {
 	): Void {
 		final eventHandler = new NullEventHandler();
 		final threads = new ThreadList(1, stackCapacity);
-		final bytecode = pkg.getBytecodeByName(entryBytecodeName);
+		final bytecode = pkg.getProgramByName(entryBytecodeName);
 		threads.set(bytecode);
 		final xVec = Vec.fromArrayCopy([0.0]);
 		final yVec = Vec.fromArrayCopy([0.0]);
@@ -615,7 +615,7 @@ class Vm {
 				throw 'Exceeded $infiniteLoopCheckThreshold frames.';
 
 			Vm.run(
-				pkg.bytecodeTable,
+				pkg.programTable,
 				eventHandler,
 				threads,
 				stackCapacity,

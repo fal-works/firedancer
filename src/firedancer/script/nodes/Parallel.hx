@@ -17,8 +17,8 @@ class Parallel extends AstNode implements ripper.Data {
 
 		final main = mainNode.unwrap().toAssembly(context);
 		final invokeSub: AssemblyCode = array.map(node -> {
-			final bytecodeId = context.setCode(node.toAssembly(context));
-			return useThread(bytecodeId);
+			final programId = context.setCode(node.toAssembly(context));
+			return useThread(programId);
 		});
 		final awaitSub: AssemblyCode = array.map(_ -> awaitThread());
 

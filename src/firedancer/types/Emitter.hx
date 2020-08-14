@@ -1,7 +1,7 @@
 package firedancer.types;
 
 import sneaker.exception.NotOverriddenException;
-import firedancer.bytecode.Bytecode;
+import firedancer.bytecode.Program;
 
 /**
 	Any object that can emit a new actor.
@@ -18,7 +18,7 @@ class Emitter {
 		@param vy Y-component of initial velocity.
 		@param fireCode Any integer value to branch the emission process
 		(e.g. switch graphics of the actor to be emitted).
-		@param code The bytecode to run.
+		@param program The program to run.
 		@param originPositionRef The reference to the origin point position.
 		This is used for binding the position of the actor being fired to that of the actor that fired it.
 		`Maybe.none()` if the position does not need to be bound.
@@ -29,7 +29,7 @@ class Emitter {
 		vx: Float,
 		vy: Float,
 		fireCode: Int,
-		code: Maybe<Bytecode>,
+		program: Maybe<Program>,
 		originPositionRef: Maybe<PositionRef>
 	): Void {
 		throw new NotOverriddenException();
@@ -48,7 +48,7 @@ class NullEmitter extends Emitter {
 		vx: Float,
 		vy: Float,
 		fireCode: Int,
-		code: Maybe<Bytecode>,
+		program: Maybe<Program>,
 		originPositionRef: Maybe<PositionRef>
 	): Void {}
 }

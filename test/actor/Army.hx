@@ -20,9 +20,9 @@ class Army implements ripper.Data {
 		y: Float,
 		vx: Float,
 		vy: Float,
-		fdCode: Maybe<Bytecode>
+		fdProgram: Maybe<Program>
 	): Void {
-		this.agents.use(x, y, vx, vy, fdCode, Maybe.none());
+		this.agents.use(x, y, vx, vy, fdProgram, Maybe.none());
 	}
 
 	public inline function newBullet(
@@ -30,8 +30,8 @@ class Army implements ripper.Data {
 		y: Float,
 		vx: Float,
 		vy: Float,
-		fdCode: Maybe<Bytecode>
+		fdProgram: Maybe<Program>
 	): Void {
-		this.bullets.use(x, y, vx, vy, fdCode, Maybe.none());
+		this.bullets.use(x, y, vx, vy, fdProgram, Maybe.none());
 	}
 }

@@ -174,8 +174,8 @@ class Builder {
 	/**
 		Creates a `UseThread` instruction.
 	**/
-	public static inline function useThread(bytecodeId: Int): Instruction {
-		return new Instruction(UseThread, [Int(bytecodeId)]);
+	public static inline function useThread(programId: Int): Instruction {
+		return new Instruction(UseThread, [Int(programId)]);
 	}
 
 	/**

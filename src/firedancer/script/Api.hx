@@ -155,7 +155,7 @@ class Api {
 		return new Event(Global, localEventCode);
 
 	/**
-		@return New `ProgramPackage` instance that contains all `Bytecode` compiled.
+		@return New `ProgramPackage` instance that contains all `Program` compiled.
 	**/
 	public static inline function compile(namedAstMap: Map<String, Ast>): ProgramPackage {
 		final compileContext = new CompileContext();

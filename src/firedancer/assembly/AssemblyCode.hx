@@ -1,7 +1,7 @@
 package firedancer.assembly;
 
 import firedancer.bytecode.WordArray;
-import firedancer.bytecode.Bytecode;
+import firedancer.bytecode.Program;
 
 private typedef Data = Array<Instruction>;
 
@@ -31,11 +31,11 @@ abstract AssemblyCode(Data) from Data to Data {
 	}
 
 	/**
-		Assembles `this` code into `Bytecode`.
+		Assembles `this` code into `Program`.
 	**/
-	public function assemble(): Bytecode {
+	public function assemble(): Program {
 		final words: WordArray = this.map(instruction -> instruction.toWordArray()).flatten();
-		return words.toBytecode();
+		return words.toProgram();
 	}
 
 	/**

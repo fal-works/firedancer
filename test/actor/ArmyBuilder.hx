@@ -19,7 +19,7 @@ class ArmyBuilder {
 
 		final spriteFactory = () -> new BatchSprite(tile);
 
-		final bytecodeTable = BulletPatterns.programPackage.bytecodeTable;
+		final programTable = BulletPatterns.programPackage.programTable;
 		final eventHandler = new TestEventHandler();
 		final emitter = new Emitter(Nulls.coalesce(bullets, aosoa));
 
@@ -28,7 +28,7 @@ class ArmyBuilder {
 			chunkCount,
 			batch,
 			spriteFactory,
-			bytecodeTable,
+			programTable,
 			eventHandler,
 			emitter
 		);

@@ -6,24 +6,24 @@ import banker.map.ArrayMap;
 using banker.type_extension.MapExtension;
 
 /**
-	Collection of `Bytecode` instances that can be retrieved by ID or name.
+	Collection of `Program` instances that can be retrieved by ID or name.
 **/
 class ProgramPackage {
 	/**
-		Table for retrieving `Bytecode` by ID number.
+		Table for retrieving `Program` by ID number.
 	**/
-	public final bytecodeTable: Vector<Bytecode>;
+	public final programTable: Vector<Program>;
 
 	/**
-		Mapping from names to ID numbers of `Bytecode` instances.
+		Mapping from names to ID numbers of `Program` instances.
 	**/
 	final nameIdMap: ArrayMap<String, UInt>;
 
 	public function new(
-		bytecodeList: Vector<Bytecode>,
+		programList: Vector<Program>,
 		nameIdMapping: Map<String, UInt>
 	) {
-		this.bytecodeTable = bytecodeList;
+		this.programTable = programList;
 
 		final nameIdMap = new ArrayMap<String, UInt>(nameIdMapping.countKeys());
 		for (name => id in nameIdMapping) nameIdMap.set(name, id);
@@ -31,14 +31,14 @@ class ProgramPackage {
 	}
 
 	/**
-		@return `Bytecode` registered with `name`.
+		@return `Program` registered with `name`.
 	**/
-	public function getBytecodeByName(name: String): Bytecode {
+	public function getProgramByName(name: String): Program {
 		#if debug
-		if (!this.nameIdMap.hasKey(name)) throw 'Bytecode not found: $name';
+		if (!this.nameIdMap.hasKey(name)) throw 'Program not found: $name';
 		#end
 
 		final id = this.nameIdMap.get(name);
-		return this.bytecodeTable[id];
+		return this.programTable[id];
 	}
 }

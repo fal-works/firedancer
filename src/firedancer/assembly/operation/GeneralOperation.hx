@@ -73,7 +73,7 @@ enum abstract GeneralOperation(Int) to Int {
 	final CountDownBreak;
 
 	/**
-		Adds a given constant value to the current bytecode position.
+		Adds a given constant value to the current program counter.
 	**/
 	final Jump;
 
@@ -81,17 +81,17 @@ enum abstract GeneralOperation(Int) to Int {
 		Peeks the top integer (which should be the remaining loop count) from the stack and checks the value.
 		- If `1` or more, decrements the loop counter at the stack top and goes to next.
 		- If `0` or less, drops the loop counter from the stack and
-			adds a given constant value to the current bytecode position.
+			adds a given constant value to the current program counter.
 	**/
 	final CountDownJump;
 
 	/**
-		Activates a new thread with bytecode ID specified by a given constant integer.
+		Activates a new thread with program ID specified by a given constant integer.
 	**/
 	final UseThread;
 
 	/**
-		Activates a new thread with bytecode ID specified by a given constant integer,
+		Activates a new thread with program ID specified by a given constant integer,
 		then pushes the thread ID to the stack.
 	**/
 	final UseThreadS;
@@ -106,7 +106,7 @@ enum abstract GeneralOperation(Int) to Int {
 	final AwaitThread;
 
 	/**
-		Ends running bytecode and returns an end code specified by a given constant integer.
+		Ends running program and returns an end code specified by a given constant integer.
 	**/
 	final End;
 
@@ -225,7 +225,7 @@ enum abstract GeneralOperation(Int) to Int {
 	// ---- fire ----------------------------------------------------
 
 	/**
-		Emits a new actor with a default type, without bytecode and
+		Emits a new actor with a default type, without program and
 		without binding the position.
 	**/
 	final FireSimple;
@@ -239,7 +239,7 @@ enum abstract GeneralOperation(Int) to Int {
 	final FireComplex;
 
 	/**
-		Emits a new actor with a specified type, without bytecode and
+		Emits a new actor with a specified type, without program and
 		without binding the position.
 
 		Argument:
@@ -328,9 +328,9 @@ class GeneralOperationExtension {
 		return switch op {
 			case Break: [];
 			case CountDownBreak: [];
-			case Jump: [Int]; // bytecode length to jump
+			case Jump: [Int]; // program length to jump
 			case CountDownJump: [Int]; // bytecode length to jump
-			case UseThread | UseThreadS: [Int]; // bytecode ID
+			case UseThread | UseThreadS: [Int]; // program ID
 			case AwaitThread: [];
 			case End: [Int]; // end code
 

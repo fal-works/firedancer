@@ -6,7 +6,7 @@ class Actor extends broker.entity.BasicBatchEntity {
 		Object for emitting new bullet.
 	**/
 	@:banker_chunkLevelFinal
-	var bytecodeTable: Vector<Bytecode>;
+	var programTable: Vector<Program>;
 
 	/**
 		Object for handling events.
@@ -68,7 +68,7 @@ class Actor extends broker.entity.BasicBatchEntity {
 		initialY: Float,
 		initialVx: Float,
 		initialVy: Float,
-		code: Maybe<Bytecode>,
+		program: Maybe<Program>,
 		originPosition: Maybe<PositionRef>
 	): Void {
 		x[i] = initialX;
@@ -76,7 +76,7 @@ class Actor extends broker.entity.BasicBatchEntity {
 		vx[i] = initialVx;
 		vy[i] = initialVy;
 
-		if (code.isSome()) threads.set(code.unwrap());
+		if (program.isSome()) threads.set(program.unwrap());
 		else threads.reset();
 
 		originPositionRef[i] = originPosition;
@@ -105,7 +105,7 @@ class Actor extends broker.entity.BasicBatchEntity {
 		initialY: Float,
 		speed: Float,
 		direction: Float,
-		code: Maybe<Bytecode>,
+		program: Maybe<Program>,
 		originPosition: Maybe<PositionRef>
 	): Void {
 		x[i] = initialX;
@@ -114,7 +114,7 @@ class Actor extends broker.entity.BasicBatchEntity {
 		vx[i] = velocity.x;
 		vy[i] = velocity.y;
 
-		if (code.isSome()) threads.set(code.unwrap());
+		if (program.isSome()) threads.set(program.unwrap());
 		else threads.reset();
 
 		originPositionRef[i] = originPosition;
@@ -142,7 +142,7 @@ class Actor extends broker.entity.BasicBatchEntity {
 	}
 
 	static function update(
-		bytecodeTable: Vector<Bytecode>,
+		programTable: Vector<Program>,
 		sprite: BatchSprite,
 		x: WVec<Float>,
 		y: WVec<Float>,
@@ -168,7 +168,7 @@ class Actor extends broker.entity.BasicBatchEntity {
 			PositionRef.invalidate(sprite);
 		} else {
 			final endCode = Vm.run(
-				bytecodeTable,
+				programTable,
 				eventHandler,
 				threads,
 				STACK_CAPACITY,

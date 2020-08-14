@@ -11,7 +11,7 @@ import broker.draw.BatchSprite;
 import firedancer.common.Geometry;
 import firedancer.types.PositionRef;
 import firedancer.types.EventHandler;
-import firedancer.bytecode.Bytecode;
+import firedancer.bytecode.Program;
 import firedancer.bytecode.Vm;
 import firedancer.bytecode.ThreadList;
 import actor.Constants.*;

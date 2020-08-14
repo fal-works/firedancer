@@ -11,8 +11,8 @@ class Async extends AstNode implements ripper.Data {
 		return false;
 
 	override public function toAssembly(context: CompileContext): AssemblyCode {
-		final bytecodeId = context.setCode(pattern.toAssembly(context));
+		final programId = context.setCode(pattern.toAssembly(context));
 
-		return useThread(bytecodeId);
+		return useThread(programId);
 	}
 }

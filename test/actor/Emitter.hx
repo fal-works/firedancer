@@ -15,9 +15,9 @@ class Emitter extends firedancer.types.Emitter implements ripper.Data {
 		vx: Float,
 		vy: Float,
 		fireCode: Int,
-		code: Maybe<Bytecode>,
+		program: Maybe<Program>,
 		originPositionRef: Maybe<PositionRef>
 	): Void {
-		aosoa.use(x, y, vx, vy, code, originPositionRef);
+		aosoa.use(x, y, vx, vy, program, originPositionRef);
 	}
 }

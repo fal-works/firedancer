@@ -31,9 +31,9 @@ abstract WordArray(Data) from Data to Data {
 	}
 
 	/**
-		Compiles `this` words to `Bytecode`.
+		Compiles `this` words to `Program`.
 	**/
-	public inline function toBytecode(): Bytecode {
+	public inline function toProgram(): Program {
 		final bytes = Bytes.alloc(getLengthInBytes());
 		final data = bytes.data;
 		var pos = UInt.zero;

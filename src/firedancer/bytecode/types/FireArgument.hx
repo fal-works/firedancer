@@ -16,15 +16,15 @@ abstract FireArgument(Int32) from Int32 {
 	/**
 		01111111 11111111 11111111 11111111
 	**/
-	static extern inline final bytecodeIdBitMask: Int32 = 0x7fffffff;
+	static extern inline final programIdBitMask: Int32 = 0x7fffffff;
 
 	/**
-		Creates a `FireArgument` value from `bytecodeId` and `bindPosition`.
+		Creates a `FireArgument` value from `programId` and `bindPosition`.
 	**/
-	public static function from(bytecodeId: UInt, bindPosition: Bool): FireArgument {
-		if (bytecodeId & ~bytecodeIdBitMask != 0) throw 'Invalid bytecode ID: $bytecodeId';
+	public static function from(programId: UInt, bindPosition: Bool): FireArgument {
+		if (programId & ~programIdBitMask != 0) throw 'Invalid program ID: $programId';
 
-		return (bindPosition ? bindPositionBitMask : 0) | bytecodeId;
+		return (bindPosition ? bindPositionBitMask : 0) | programId;
 	}
 
 	/**
@@ -34,9 +34,9 @@ abstract FireArgument(Int32) from Int32 {
 	public var bindPosition(get, never): Bool;
 
 	/**
-		The ID number of the `Bytecode` to be run by the actor being fired.
+		The ID number of the `Program` to be run by the actor being fired.
 	**/
-	public var bytecodeId(get, never): UInt;
+	public var programId(get, never): UInt;
 
 	@:to extern inline function toImmediate(): Immediate
 		return Int(this);
@@ -46,7 +46,7 @@ abstract FireArgument(Int32) from Int32 {
 	}
 
 	@:access(sinker.UInt)
-	extern inline function get_bytecodeId(): UInt {
-		return new UInt(this & bytecodeIdBitMask);
+	extern inline function get_programId(): UInt {
+		return new UInt(this & programIdBitMask);
 	}
 }
