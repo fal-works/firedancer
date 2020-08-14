@@ -1,7 +1,6 @@
 package firedancer.bytecode;
 
 import banker.vector.Vector;
-import firedancer.types.NInt;
 
 /**
 	Vector of `Thread` instances.
@@ -21,11 +20,14 @@ abstract ThreadList(Vector<Thread>) {
 		@param poolCapacity The number of `Thread` instances including the main thread.
 		@param memoryCapacity The memory capacity in bytes for each thread.
 	**/
-	public extern inline function new(poolCapacity: NInt, memoryCapacity: UInt)
+	public extern inline function new(poolCapacity: UInt, memoryCapacity: UInt) {
+		if (poolCapacity.isZero()) throw "Thread pool capacity must be 1 or more.";
+
 		this = Vector.createPopulated(
 			poolCapacity,
 			() -> new Thread(memoryCapacity)
 		);
+	}
 
 	@:op([]) public extern inline function get(index: UInt): Thread
 		return this[index];
