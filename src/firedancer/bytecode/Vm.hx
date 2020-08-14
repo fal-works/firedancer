@@ -1,6 +1,5 @@
 package firedancer.bytecode;
 
-import haxe.Int32;
 import banker.vector.Vector as RVec;
 import banker.vector.WritableVector as Vec;
 import reckoner.Random;
@@ -15,10 +14,6 @@ import firedancer.assembly.operation.WriteOperation;
 import firedancer.bytecode.internal.Constants.*;
 import firedancer.bytecode.types.FireArgument;
 import firedancer.common.Geometry;
-
-#if firedancer_verbose
-using firedancer.assembly.OpcodeExtension;
-#end
 
 /**
 	Virtual machine for executing bytecode.
@@ -65,46 +60,25 @@ class Vm {
 			vyVec[vecIndex] = velocity.y;
 		}
 
-		var code: BytecodeData;
-		final reg = new RegisterFile();
+		final scan = new Scanner();
+		final reg = new DataRegisterFile();
 		final mem = new Memory(stackCapacity);
-
-		inline function readOp(): Opcode {
-			final opcode: Opcode = cast code.getUI8(reg.pc);
-			#if firedancer_verbose
-			println('${opcode.toString()} (pos: $reg.pc)');
-			#end
-			reg.pc += Opcode.size;
-			return opcode;
-		}
-
-		inline function readI32(): Int32 {
-			final v = code.getI32(reg.pc);
-			reg.pc += LEN32;
-			return v;
-		}
-
-		inline function readF64(): Float {
-			final v = code.getF64(reg.pc);
-			reg.pc += LEN64;
-			return v;
-		}
 
 		for (i in 0...threads.length) {
 			final thread = threads[i];
 			if (!thread.active) continue;
 
-			code = thread.code.unwrap();
+			scan.reset(thread);
 			reg.reset(thread);
 			mem.reset(thread);
 
 			do {
-				if (reg.pcMax <= reg.pc) {
+				if (scan.reachedEnd()) {
 					thread.deactivate();
 					break;
 				}
 
-				final opcode = readOp();
+				final opcode = scan.opcode();
 
 				switch opcode.category {
 					case General:
@@ -114,28 +88,28 @@ class Vm {
 							case CountDownBreak:
 								if (0 < mem.peekInt()) {
 									mem.decrement();
-									reg.pc -= Opcode.size;
+									scan.pc -= Opcode.size;
 									break;
 								} else {
 									mem.dropInt();
 								}
 							case Jump:
-								final jumpLength = readI32();
-								reg.pc += jumpLength;
+								final jumpLength = scan.int();
+								scan.pc += jumpLength;
 							case CountDownJump:
 								if (0 < mem.peekInt()) {
 									mem.decrement();
-									reg.pc += LEN32; // skip the operand
+									scan.pc += LEN32; // skip the operand
 								} else {
 									mem.dropInt();
-									final jumpLength = readI32();
-									reg.pc += jumpLength;
+									final jumpLength = scan.int();
+									scan.pc += jumpLength;
 								}
 							case UseThread:
-								final bytecodeId = readI32();
+								final bytecodeId = scan.int();
 								threads.useSubThread(bytecodeTable[bytecodeId], thread);
 							case UseThreadS:
-								final bytecodeId = readI32();
+								final bytecodeId = scan.int();
 								final threadId = threads.useSubThread(
 									bytecodeTable[bytecodeId],
 									thread
@@ -143,56 +117,56 @@ class Vm {
 								mem.pushInt(threadId.int());
 							case AwaitThread:
 								if (threads[mem.peekInt()].active) {
-									reg.pc -= Opcode.size;
+									scan.pc -= Opcode.size;
 									break;
 								} else {
 									mem.dropInt();
 								}
 							case End:
-								final endCode = readI32();
+								final endCode = scan.int();
 								threads.deactivateAll();
 								updatePositionAndVelocity();
 								return endCode;
 
 							case LoadIntCV:
-								reg.int = readI32();
+								reg.int = scan.int();
 							case LoadFloatCV:
-								reg.float = readF64();
+								reg.float = scan.float();
 							case LoadVecCV:
-								reg.setVec(readF64(), readF64());
+								reg.setVec(scan.float(), scan.float());
 							case SaveIntV:
 								reg.saveInt();
 							case SaveFloatV:
 								reg.saveFloat();
 							case LoadIntLV:
-								reg.int = mem.getLocalInt(readI32());
+								reg.int = mem.getLocalInt(scan.int());
 							case LoadFloatLV:
-								reg.float = mem.getLocalFloat(readI32());
+								reg.float = mem.getLocalFloat(scan.int());
 							case StoreIntCL:
-								mem.setLocalInt(readI32(), readI32());
+								mem.setLocalInt(scan.int(), scan.int());
 							case StoreIntVL:
-								mem.setLocalInt(readI32(), reg.int);
+								mem.setLocalInt(scan.int(), reg.int);
 							case StoreFloatCL:
-								mem.setLocalFloat(readI32(), readF64());
+								mem.setLocalFloat(scan.int(), scan.float());
 							case StoreFloatVL:
-								mem.setLocalFloat(readI32(), reg.float);
+								mem.setLocalFloat(scan.int(), reg.float);
 
 							case PushIntC:
-								mem.pushInt(readI32());
+								mem.pushInt(scan.int());
 							case PushIntV:
 								mem.pushInt(reg.int);
 							case PushFloatC:
-								mem.pushFloat(readF64());
+								mem.pushFloat(scan.float());
 							case PushFloatV:
 								mem.pushFloat(reg.float);
 							case PushVecV:
 								mem.pushVec(reg.vecX, reg.vecY);
 							case PeekFloat:
-								reg.float = mem.peekFloatSkipped(readI32());
+								reg.float = mem.peekFloatSkipped(scan.int());
 							case DropFloat:
 								mem.dropFloat();
 							case PeekVec:
-								final vec = mem.peekVecSkipped(readI32());
+								final vec = mem.peekVecSkipped(scan.int());
 								reg.setVec(vec.x, vec.y);
 							case DropVec:
 								mem.dropVec();
@@ -208,7 +182,7 @@ class Vm {
 									Maybe.none()
 								);
 							case FireComplex:
-								final arg: FireArgument = readI32();
+								final arg: FireArgument = scan.int();
 								final bytecode = Maybe.from(bytecodeTable[arg.bytecodeId]);
 								emitter.emit(
 									position.getAbsoluteX() + thread.shotX,
@@ -220,7 +194,7 @@ class Vm {
 									if (arg.bindPosition) Maybe.from(thisPositionRef) else Maybe.none()
 								);
 							case FireSimpleWithCode:
-								final fireCode = readI32();
+								final fireCode = scan.int();
 								emitter.emit(
 									position.getAbsoluteX() + thread.shotX,
 									position.getAbsoluteY() + thread.shotY,
@@ -231,8 +205,8 @@ class Vm {
 									Maybe.none()
 								);
 							case FireComplexWithCode:
-								final arg: FireArgument = readI32();
-								final fireCode = readI32();
+								final arg: FireArgument = scan.int();
+								final fireCode = scan.int();
 								final bytecode = Maybe.from(bytecodeTable[arg.bytecodeId]);
 								emitter.emit(
 									position.getAbsoluteX() + thread.shotX,
@@ -265,65 +239,65 @@ class Vm {
 					case Calc:
 						switch opcode.op {
 							case AddIntVCV:
-								reg.int = reg.int + readI32();
+								reg.int = reg.int + scan.int();
 							case AddIntVVV:
 								reg.int = reg.intBuf + reg.int;
 							case SubIntVCV:
-								reg.int = reg.int - readI32();
+								reg.int = reg.int - scan.int();
 							case SubIntCVV:
-								reg.int = readI32() - reg.int;
+								reg.int = scan.int() - reg.int;
 							case SubIntVVV:
 								reg.int = reg.intBuf - reg.int;
 							case MinusIntV:
 								reg.int = -reg.int;
 							case MultIntVCV:
-								reg.int = reg.int * readI32();
+								reg.int = reg.int * scan.int();
 							case MultIntVVV:
 								reg.int = reg.intBuf * reg.int;
 							case DivIntVCV:
-								reg.int = Ints.divide(reg.int, readI32());
+								reg.int = Ints.divide(reg.int, scan.int());
 							case DivIntCVV:
-								reg.int = Ints.divide(readI32(), reg.int);
+								reg.int = Ints.divide(scan.int(), reg.int);
 							case DivIntVVV:
 								reg.int = Ints.divide(reg.intBuf, reg.int);
 							case ModIntVCV:
-								reg.int = reg.int % readI32();
+								reg.int = reg.int % scan.int();
 							case ModIntCVV:
-								reg.int = readI32() % reg.int;
+								reg.int = scan.int() % reg.int;
 							case ModIntVVV:
 								reg.int = reg.intBuf % reg.int;
 
 							case AddFloatVCV:
-								reg.float = reg.float + readF64();
+								reg.float = reg.float + scan.float();
 							case AddFloatVVV:
 								reg.float = reg.floatBuf + reg.float;
 							case SubFloatVCV:
-								reg.float = reg.float - readF64();
+								reg.float = reg.float - scan.float();
 							case SubFloatCVV:
-								reg.float = readF64() - reg.float;
+								reg.float = scan.float() - reg.float;
 							case SubFloatVVV:
 								reg.float = reg.floatBuf - reg.float;
 							case MinusFloatV:
 								reg.float = -reg.float;
 							case MultFloatVCV:
-								reg.float = reg.float * readF64();
+								reg.float = reg.float * scan.float();
 							case MultFloatVVV:
 								reg.float = reg.floatBuf * reg.float;
 							case DivFloatCVV:
-								reg.float = readF64() / reg.float;
+								reg.float = scan.float() / reg.float;
 							case DivFloatVVV:
 								reg.float = reg.floatBuf / reg.float;
 							case ModFloatVCV:
-								reg.float = reg.float % readF64();
+								reg.float = reg.float % scan.float();
 							case ModFloatCVV:
-								reg.float = readF64() % reg.float;
+								reg.float = scan.float() % reg.float;
 							case ModFloatVVV:
 								reg.float = reg.floatBuf % reg.float;
 
 							case MinusVecV:
 								reg.setVec(-reg.vecX, -reg.vecY);
 							case MultVecVCV:
-								final multiplier = readF64();
+								final multiplier = scan.float();
 								reg.setVec(reg.vecX * multiplier, reg.vecY * multiplier);
 							case MultVecVVV:
 								reg.setVec(reg.vecX * reg.float, reg.vecY * reg.float);
@@ -340,34 +314,34 @@ class Vm {
 							case RandomRatioV:
 								reg.float = Random.random();
 							case RandomFloatCV:
-								reg.float = Random.float(readF64());
+								reg.float = Random.float(scan.float());
 							case RandomFloatVV:
 								reg.float = Random.float(reg.float);
 							case RandomFloatSignedCV:
-								reg.float = Random.signed(readF64());
+								reg.float = Random.signed(scan.float());
 							case RandomFloatSignedVV:
 								reg.float = Random.signed(reg.float);
 							case RandomIntCV:
-								reg.int = Random.int(readI32());
+								reg.int = Random.int(scan.int());
 							case RandomIntVV:
 								reg.int = Random.int(reg.int);
 							case RandomIntSignedCV:
-								reg.int = Random.signedInt(readI32());
+								reg.int = Random.signedInt(scan.int());
 							case RandomIntSignedVV:
 								reg.int = Random.signedInt(reg.int);
 
 							case AddIntLCL:
-								mem.addLocalInt(readI32(), readI32());
+								mem.addLocalInt(scan.int(), scan.int());
 							case AddIntLVL:
-								mem.addLocalInt(readI32(), reg.int);
+								mem.addLocalInt(scan.int(), reg.int);
 							case IncrementL:
-								mem.addLocalInt(readI32(), 1);
+								mem.addLocalInt(scan.int(), 1);
 							case DecrementL:
-								mem.addLocalInt(readI32(), -1);
+								mem.addLocalInt(scan.int(), -1);
 							case AddFloatLCL:
-								mem.addLocalFloat(readI32(), readF64());
+								mem.addLocalFloat(scan.int(), scan.float());
 							case AddFloatLVL:
-								mem.addLocalFloat(readI32(), reg.float);
+								mem.addLocalFloat(scan.int(), reg.float);
 
 							#if debug
 							case other:
@@ -390,26 +364,26 @@ class Vm {
 								);
 
 							case CalcRelativePositionCV:
-								reg.setVec(readF64() - position.x, readF64() - position.y);
+								reg.setVec(scan.float() - position.x, scan.float() - position.y);
 							case CalcRelativeVelocityCV:
-								reg.setVec(readF64() - velocity.x, readF64() - velocity.y);
+								reg.setVec(scan.float() - velocity.x, scan.float() - velocity.y);
 							case CalcRelativePositionVV:
 								reg.setVec(reg.vecX - position.x, reg.vecY - position.y);
 							case CalcRelativeVelocityVV:
 								reg.setVec(reg.vecX - velocity.x, reg.vecY - velocity.y);
 							case CalcRelativeDistanceCV:
-								reg.float = readF64() - position.getDistance();
+								reg.float = scan.float() - position.getDistance();
 							case CalcRelativeBearingCV:
 								reg.float = Geometry.getAngleDifference(
 									position.getBearing(),
-									readF64()
+									scan.float()
 								);
 							case CalcRelativeSpeedCV:
-								reg.float = readF64() - velocity.getSpeed();
+								reg.float = scan.float() - velocity.getSpeed();
 							case CalcRelativeDirectionCV:
 								reg.float = Geometry.getAngleDifference(
 									velocity.getDirection(),
-									readF64()
+									scan.float()
 								);
 							case CalcRelativeDistanceVV:
 								reg.float = reg.float - position.getDistance();
@@ -425,31 +399,31 @@ class Vm {
 
 							case CalcRelativeShotPositionCV:
 								reg.setVec(
-									readF64() - thread.shotX,
-									readF64() - thread.shotY
+									scan.float() - thread.shotX,
+									scan.float() - thread.shotY
 								);
 							case CalcRelativeShotVelocityCV:
 								reg.setVec(
-									readF64() - thread.shotVx,
-									readF64() - thread.shotVy
+									scan.float() - thread.shotVx,
+									scan.float() - thread.shotVy
 								);
 							case CalcRelativeShotPositionVV:
 								reg.setVec(reg.vecX - thread.shotX, reg.vecY - thread.shotY);
 							case CalcRelativeShotVelocityVV:
 								reg.setVec(reg.vecX - thread.shotVx, reg.vecY - thread.shotVy);
 							case CalcRelativeShotDistanceCV:
-								reg.float = readF64() - thread.getShotDistance();
+								reg.float = scan.float() - thread.getShotDistance();
 							case CalcRelativeShotBearingCV:
 								reg.float = Geometry.getAngleDifference(
 									thread.getShotBearing(),
-									readF64()
+									scan.float()
 								);
 							case CalcRelativeShotSpeedCV:
-								reg.float = readF64() - thread.getShotSpeed();
+								reg.float = scan.float() - thread.getShotSpeed();
 							case CalcRelativeShotDirectionCV:
 								reg.float = Geometry.getAngleDifference(
 									thread.getShotDirection(),
-									readF64()
+									scan.float()
 								);
 							case CalcRelativeShotDistanceVV:
 								reg.float = reg.float - thread.getShotDistance();
@@ -475,13 +449,13 @@ class Vm {
 					case Write:
 						switch opcode.op {
 							case SetPositionC:
-								position.set(readF64(), readF64());
+								position.set(scan.float(), scan.float());
 							case AddPositionC:
-								position.add(readF64(), readF64());
+								position.add(scan.float(), scan.float());
 							case SetVelocityC:
-								velocity.set(readF64(), readF64());
+								velocity.set(scan.float(), scan.float());
 							case AddVelocityC:
-								velocity.add(readF64(), readF64());
+								velocity.add(scan.float(), scan.float());
 							case SetPositionV:
 								position.set(reg.vecX, reg.vecY);
 							case AddPositionV:
@@ -497,9 +471,9 @@ class Vm {
 								final vec = mem.peekVecSkipped(0);
 								position.add(vec.x, vec.y);
 							case SetDistanceC:
-								position.setDistance(readF64());
+								position.setDistance(scan.float());
 							case AddDistanceC:
-								position.addDistance(readF64());
+								position.addDistance(scan.float());
 							case SetDistanceV:
 								position.setDistance(reg.float);
 							case AddDistanceV:
@@ -507,9 +481,9 @@ class Vm {
 							case AddDistanceS:
 								position.addDistance(mem.peekFloat());
 							case SetBearingC:
-								position.setBearing(readF64());
+								position.setBearing(scan.float());
 							case AddBearingC:
-								position.addBearing(readF64());
+								position.addBearing(scan.float());
 							case SetBearingV:
 								position.setBearing(reg.float);
 							case AddBearingV:
@@ -517,9 +491,9 @@ class Vm {
 							case AddBearingS:
 								position.addBearing(mem.peekFloat());
 							case SetSpeedC:
-								velocity.setSpeed(readF64());
+								velocity.setSpeed(scan.float());
 							case AddSpeedC:
-								velocity.addSpeed(readF64());
+								velocity.addSpeed(scan.float());
 							case SetSpeedV:
 								velocity.setSpeed(reg.float);
 							case AddSpeedV:
@@ -527,9 +501,9 @@ class Vm {
 							case AddSpeedS:
 								velocity.addSpeed(mem.peekFloat());
 							case SetDirectionC:
-								velocity.setDirection(readF64());
+								velocity.setDirection(scan.float());
 							case AddDirectionC:
-								velocity.addDirection(readF64());
+								velocity.addDirection(scan.float());
 							case SetDirectionV:
 								velocity.setDirection(reg.float);
 							case AddDirectionV:
@@ -537,13 +511,13 @@ class Vm {
 							case AddDirectionS:
 								velocity.addDirection(mem.peekFloat());
 							case SetShotPositionC:
-								thread.setShotPosition(readF64(), readF64());
+								thread.setShotPosition(scan.float(), scan.float());
 							case AddShotPositionC:
-								thread.addShotPosition(readF64(), readF64());
+								thread.addShotPosition(scan.float(), scan.float());
 							case SetShotVelocityC:
-								thread.setShotVelocity(readF64(), readF64());
+								thread.setShotVelocity(scan.float(), scan.float());
 							case AddShotVelocityC:
-								thread.addShotVelocity(readF64(), readF64());
+								thread.addShotVelocity(scan.float(), scan.float());
 							case SetShotPositionV:
 								thread.setShotPosition(reg.vecX, reg.vecY);
 							case AddShotPositionV:
@@ -559,9 +533,9 @@ class Vm {
 								final vec = mem.peekVecSkipped(0);
 								thread.addShotVelocity(vec.x, vec.y);
 							case SetShotDistanceC:
-								thread.setShotDistance(readF64());
+								thread.setShotDistance(scan.float());
 							case AddShotDistanceC:
-								thread.addShotDistance(readF64());
+								thread.addShotDistance(scan.float());
 							case SetShotDistanceV:
 								thread.setShotDistance(reg.float);
 							case AddShotDistanceV:
@@ -569,9 +543,9 @@ class Vm {
 							case AddShotDistanceS:
 								thread.addShotDistance(mem.peekFloat());
 							case SetShotBearingC:
-								thread.setShotBearing(readF64());
+								thread.setShotBearing(scan.float());
 							case AddShotBearingC:
-								thread.addShotBearing(readF64());
+								thread.addShotBearing(scan.float());
 							case SetShotBearingV:
 								thread.setShotBearing(reg.float);
 							case AddShotBearingV:
@@ -579,9 +553,9 @@ class Vm {
 							case AddShotBearingS:
 								thread.addShotBearing(mem.peekFloat());
 							case SetShotSpeedC:
-								thread.setShotSpeed(readF64());
+								thread.setShotSpeed(scan.float());
 							case AddShotSpeedC:
-								thread.addShotSpeed(readF64());
+								thread.addShotSpeed(scan.float());
 							case SetShotSpeedV:
 								thread.setShotSpeed(reg.float);
 							case AddShotSpeedV:
@@ -589,9 +563,9 @@ class Vm {
 							case AddShotSpeedS:
 								thread.addShotSpeed(mem.peekFloat());
 							case SetShotDirectionC:
-								thread.setShotDirection(readF64());
+								thread.setShotDirection(scan.float());
 							case AddShotDirectionC:
-								thread.addShotDirection(readF64());
+								thread.addShotDirection(scan.float());
 							case SetShotDirectionV:
 								thread.setShotDirection(reg.float);
 							case AddShotDirectionV:
@@ -605,13 +579,10 @@ class Vm {
 						}
 				}
 
-				#if debug
-				reg.cnt += 1;
-				if (infiniteLoopCheckThreshold < reg.cnt) throw "Detected infinite loop.";
-				#end
+				scan.checkInfinite(infiniteLoopCheckThreshold);
 			} while (true);
 
-			thread.update(reg.pc, mem.sp);
+			thread.update(scan.pc, mem.sp);
 		}
 
 		updatePositionAndVelocity();
@@ -662,8 +633,4 @@ class Vm {
 		}
 	}
 
-	#if firedancer_verbose
-	static function println(s: String): Void
-		sneaker.print.Printer.println(s);
-	#end
 }

@@ -1,21 +1,10 @@
 package firedancer.bytecode;
 
 /**
-	Set of virtual registers used in the `Vm`.
+	Set of virtual data registers used in the `Vm`.
 **/
 @:nullSafety(Off)
-class RegisterFile {
-	/**
-		The program counter.
-		Indicates the current position in the bytecode.
-	**/
-	public var pc: UInt;
-
-	/**
-		The upper bound of the value of `pc` i.e. the length of the bytecode.
-	**/
-	public var pcMax(default, null): UInt;
-
+class DataRegisterFile {
 	/**
 		The main integer data register.
 	**/
@@ -46,34 +35,18 @@ class RegisterFile {
 	**/
 	public var vecY: Float;
 
-	#if debug
-	/**
-		Number of instructions that have been executed in the current frame.
-		Used for detecting infinite loop in debug mode.
-	**/
-	public var cnt: UInt;
-	#end
-
 	public extern inline function new() {}
 
 	/**
-		Resets all address registers according to the status of `thread` and
 		initializes all data registers with zero value.
 	**/
 	public extern inline function reset(thread: Thread): Void {
-		this.pc = thread.programCounter;
-		this.pcMax = thread.codeLength;
-
 		this.int = 0;
 		this.intBuf = 0;
 		this.float = 0.0;
 		this.floatBuf = 0.0;
 		this.vecX = 0.0;
 		this.vecY = 0.0;
-
-		#if debug
-		this.cnt = UInt.zero;
-		#end
 	}
 
 	/**
