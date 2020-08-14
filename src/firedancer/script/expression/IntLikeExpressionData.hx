@@ -1,7 +1,8 @@
 package firedancer.script.expression;
 
 import firedancer.assembly.Opcode;
-import firedancer.assembly.Opcode.*;
+import firedancer.assembly.operation.GeneralOperation;
+import firedancer.assembly.operation.CalcOperation;
 import firedancer.assembly.Instruction;
 import firedancer.assembly.AssemblyCode;
 import firedancer.assembly.Immediate;
@@ -42,7 +43,7 @@ class IntLikeExpressionData implements ExpressionData {
 	public function loadToVolatile(context: CompileContext): AssemblyCode {
 		return switch this.data {
 			case Constant(value):
-				new Instruction(general(LoadIntCV), [value.toImmediate()]);
+				new Instruction(LoadIntCV, [value.toImmediate()]);
 			case Runtime(expression):
 				expression.loadToVolatile(context);
 		}
@@ -123,52 +124,52 @@ class IntLikeExpressionData implements ExpressionData {
 	public function unaryMinus(): IntLikeExpressionData {
 		return unaryOperation({
 			constantOperator: Immediate(v -> -v),
-			runtimeOperator: calc(MinusIntV)
+			runtimeOperator: MinusIntV
 		});
 	}
 
 	public function add(other: IntLikeExpressionData): IntLikeExpressionData {
 		return binaryOperation({
 			operateConstants: (a, b) -> a + b,
-			operateVCV: calc(AddIntVCV),
-			operateCVV: calc(AddIntVCV),
-			operateVVV: calc(AddIntVVV)
+			operateVCV: AddIntVCV,
+			operateCVV: AddIntVCV,
+			operateVVV: AddIntVVV
 		}, other);
 	}
 
 	public function subtract(other: IntLikeExpressionData): IntLikeExpressionData {
 		return binaryOperation({
 			operateConstants: (a, b) -> a - b,
-			operateVCV: calc(SubIntVCV),
-			operateCVV: calc(SubIntCVV),
-			operateVVV: calc(SubIntVVV)
+			operateVCV: SubIntVCV,
+			operateCVV: SubIntCVV,
+			operateVVV: SubIntVVV
 		}, other);
 	}
 
 	public function multiply(other: IntLikeExpressionData): IntLikeExpressionData {
 		return binaryOperation({
 			operateConstants: (a, b) -> a * b,
-			operateVCV: calc(MultIntVCV),
-			operateCVV: calc(MultIntVCV),
-			operateVVV: calc(MultIntVVV)
+			operateVCV: MultIntVCV,
+			operateCVV: MultIntVCV,
+			operateVVV: MultIntVVV
 		}, other);
 	}
 
 	public function divide(other: IntLikeExpressionData): IntLikeExpressionData {
 		return binaryOperation({
 			operateConstants: (a, b) -> Ints.divide(a, b),
-			operateVCV: calc(DivIntVCV),
-			operateCVV: calc(DivIntCVV),
-			operateVVV: calc(DivIntVVV)
+			operateVCV: DivIntVCV,
+			operateCVV: DivIntCVV,
+			operateVVV: DivIntVVV
 		}, other);
 	}
 
 	public function modulo(other: IntLikeExpressionData): IntLikeExpressionData {
 		return binaryOperation({
 			operateConstants: (a, b) -> a % b,
-			operateVCV: calc(ModIntVCV),
-			operateCVV: calc(ModIntCVV),
-			operateVVV: calc(ModIntVVV)
+			operateVCV: ModIntVCV,
+			operateCVV: ModIntCVV,
+			operateVVV: ModIntVVV
 		}, other);
 	}
 
@@ -180,15 +181,15 @@ class IntLikeExpressionData implements ExpressionData {
 
 		final loadAsFloat: (context:CompileContext) -> AssemblyCode = if (constant.isSome()) {
 			context -> new Instruction(
-				general(LoadFloatCV),
+				LoadFloatCV,
 				[Float(constantFactor * constant.unwrap())]
 			);
 		} else {
 			context -> [
 				this.loadToVolatile(context),
-				[new Instruction(calc(CastIntToFloatVV), [])],
+				[new Instruction(CastIntToFloatVV, [])],
 				if (constantFactor == 1.0) [] else [
-					new Instruction(calc(MultFloatVCV), [Float(constantFactor)])
+					new Instruction(MultFloatVCV, [Float(constantFactor)])
 				]
 			].flatten();
 		}

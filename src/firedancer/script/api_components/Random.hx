@@ -1,8 +1,8 @@
 package firedancer.script.api_components;
 
+import firedancer.assembly.operation.CalcOperation;
 import firedancer.script.expression.IntExpression;
 import firedancer.script.expression.FloatExpression;
-import firedancer.assembly.Opcode.*;
 
 /**
 	Provides functions for generating pseudorandom numbers.
@@ -24,7 +24,7 @@ class Random {
 		Gets a random value between `0` and `1`.
 	**/
 	public inline function ratio(): FloatExpression
-		return FloatExpression.fromEnum(Runtime(Variable(calc(RandomRatioV))));
+		return FloatExpression.fromEnum(Runtime(Variable(RandomRatioV)));
 
 	/**
 		Gets a random value between `min` and `max`.
@@ -34,8 +34,8 @@ class Random {
 		max: FloatExpression
 	): FloatExpression {
 		return min + FloatExpression.fromEnum(Runtime(UnaryOperation({
-			constantOperator: Instruction(calc(RandomFloatCV)),
-			runtimeOperator: calc(RandomFloatVV)
+			constantOperator: Instruction(RandomFloatCV),
+			runtimeOperator: RandomFloatVV
 		}, max - min)));
 	}
 
@@ -44,8 +44,8 @@ class Random {
 	**/
 	public inline function signed(max: FloatExpression): FloatExpression {
 		return FloatExpression.fromEnum(Runtime(UnaryOperation({
-			constantOperator: Instruction(calc(RandomFloatSignedCV)),
-			runtimeOperator: calc(RandomFloatSignedVV)
+			constantOperator: Instruction(RandomFloatSignedCV),
+			runtimeOperator: RandomFloatSignedVV
 		}, max)));
 	}
 }
@@ -61,8 +61,8 @@ class RandomAngle {
 		max: AngleExpression
 	): AngleExpression {
 		return min + AngleExpression.fromEnum(Runtime(UnaryOperation({
-			constantOperator: Instruction(calc(RandomFloatCV)),
-			runtimeOperator: calc(RandomFloatVV)
+			constantOperator: Instruction(RandomFloatCV),
+			runtimeOperator: RandomFloatVV
 		}, max - min)));
 	}
 
@@ -71,8 +71,8 @@ class RandomAngle {
 	**/
 	public inline function signed(max: AngleExpression): AngleExpression {
 		return max.unaryOperation({
-			constantOperator: Instruction(calc(RandomFloatSignedCV)),
-			runtimeOperator: calc(RandomFloatSignedVV)
+			constantOperator: Instruction(RandomFloatSignedCV),
+			runtimeOperator: RandomFloatSignedVV
 		});
 	}
 
@@ -96,8 +96,8 @@ class RandomInt {
 		max: IntExpression
 	): IntExpression {
 		return min + IntExpression.fromEnum(Runtime(UnaryOperation({
-			constantOperator: Instruction(calc(RandomIntCV)),
-			runtimeOperator: calc(RandomIntVV)
+			constantOperator: Instruction(RandomIntCV),
+			runtimeOperator: RandomIntVV
 		}, max - min)));
 	}
 
@@ -106,8 +106,8 @@ class RandomInt {
 	**/
 	public inline function signed(max: IntExpression): IntExpression {
 		return max.unaryOperation({
-			constantOperator: Instruction(calc(RandomIntSignedCV)),
-			runtimeOperator: calc(RandomIntSignedVV)
+			constantOperator: Instruction(RandomIntSignedCV),
+			runtimeOperator: RandomIntSignedVV
 		});
 	}
 }

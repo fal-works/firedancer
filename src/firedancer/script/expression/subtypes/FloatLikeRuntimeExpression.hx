@@ -2,7 +2,7 @@ package firedancer.script.expression.subtypes;
 
 import firedancer.assembly.AssemblyCode;
 import firedancer.assembly.Instruction;
-import firedancer.assembly.Opcode.*;
+import firedancer.assembly.Opcode;
 import firedancer.assembly.Immediate;
 
 typedef FloatLikeRuntimeExpressionEnum = RuntimeExpressionEnum<FloatLikeConstant, FloatLikeExpressionData>;
@@ -14,8 +14,8 @@ typedef FloatLikeRuntimeExpressionEnum = RuntimeExpressionEnum<FloatLikeConstant
 abstract FloatLikeRuntimeExpression(
 	FloatLikeRuntimeExpressionEnum
 ) from FloatLikeRuntimeExpressionEnum to FloatLikeRuntimeExpressionEnum {
-	static extern inline final loadOpcode = general(LoadFloatCV);
-	static extern inline final saveOpcode = general(SaveFloatV);
+	static extern inline final loadOpcode = Opcode.general(LoadFloatCV);
+	static extern inline final saveOpcode = Opcode.general(SaveFloatV);
 
 	static function createImmediates(value: Float): Array<Immediate>
 		return [Float(value)];

@@ -1,7 +1,8 @@
 package firedancer.script.expression;
 
 import firedancer.assembly.Opcode;
-import firedancer.assembly.Opcode.*;
+import firedancer.assembly.operation.GeneralOperation;
+import firedancer.assembly.operation.CalcOperation;
 import firedancer.assembly.Instruction;
 import firedancer.assembly.AssemblyCode;
 import firedancer.assembly.Immediate;
@@ -40,7 +41,7 @@ class FloatLikeExpressionData implements ExpressionData {
 	public function loadToVolatile(context: CompileContext): AssemblyCode {
 		return switch this.data {
 			case Constant(value):
-				new Instruction(general(LoadFloatCV), [value.toImmediate()]);
+				new Instruction(LoadFloatCV, [value.toImmediate()]);
 			case Runtime(expression):
 				expression.loadToVolatile(context);
 		}
@@ -121,34 +122,34 @@ class FloatLikeExpressionData implements ExpressionData {
 	public function unaryMinus(): FloatLikeExpressionData {
 		return unaryOperation({
 			constantOperator: Immediate(v -> -v),
-			runtimeOperator: calc(MinusFloatV)
+			runtimeOperator: MinusFloatV
 		});
 	}
 
 	public function add(other: FloatLikeExpressionData): FloatLikeExpressionData {
 		return binaryOperation({
 			operateConstants: (a, b) -> a + b,
-			operateVCV: calc(AddFloatVCV),
-			operateCVV: calc(AddFloatVCV),
-			operateVVV: calc(AddFloatVVV)
+			operateVCV: AddFloatVCV,
+			operateCVV: AddFloatVCV,
+			operateVVV: AddFloatVVV
 		}, other);
 	}
 
 	public function subtract(other: FloatLikeExpressionData): FloatLikeExpressionData {
 		return binaryOperation({
 			operateConstants: (a, b) -> a - b,
-			operateVCV: calc(SubFloatVCV),
-			operateCVV: calc(SubFloatCVV),
-			operateVVV: calc(SubFloatVVV)
+			operateVCV: SubFloatVCV,
+			operateCVV: SubFloatCVV,
+			operateVVV: SubFloatVVV
 		}, other);
 	}
 
 	public function multiply(other: FloatExpression): FloatLikeExpressionData {
 		return binaryOperation({
 			operateConstants: (a, b) -> a * b,
-			operateVCV: calc(MultFloatVCV),
-			operateCVV: calc(MultFloatVCV),
-			operateVVV: calc(MultFloatVVV)
+			operateVCV: MultFloatVCV,
+			operateCVV: MultFloatVCV,
+			operateVVV: MultFloatVVV
 		}, other);
 	}
 
@@ -165,18 +166,18 @@ class FloatLikeExpressionData implements ExpressionData {
 
 		return binaryOperation({
 			operateConstants: (a, b) -> a / b,
-			operateVCV: calc(MultFloatVCV), // multiply by the reciprocal
-			operateCVV: calc(DivFloatCVV),
-			operateVVV: calc(DivFloatVVV)
+			operateVCV: MultFloatVCV, // multiply by the reciprocal
+			operateCVV: DivFloatCVV,
+			operateVVV: DivFloatVVV
 		}, other);
 	}
 
 	public function modulo(other: FloatLikeExpressionData): FloatLikeExpressionData {
 		return binaryOperation({
 			operateConstants: (a, b) -> a % b,
-			operateVCV: calc(ModFloatVCV),
-			operateCVV: calc(ModFloatCVV),
-			operateVVV: calc(ModFloatVVV)
+			operateVCV: ModFloatVCV,
+			operateCVV: ModFloatCVV,
+			operateVVV: ModFloatVVV
 		}, other);
 	}
 

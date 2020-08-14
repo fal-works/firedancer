@@ -1,7 +1,8 @@
 package firedancer.script.nodes;
 
 import firedancer.types.NInt;
-import firedancer.assembly.Opcode.*;
+import firedancer.assembly.operation.GeneralOperation;
+import firedancer.assembly.operation.CalcOperation;
 import firedancer.assembly.operation.ReadOperation;
 import firedancer.assembly.operation.WriteOperation;
 import firedancer.assembly.Instruction;
@@ -25,66 +26,42 @@ class OperateActor extends AstNode implements ripper.Data {
 		return switch attribute {
 			case Position:
 				switch operation {
-					case SetVector(e): writeVec(c, e, SetPositionC, SetPositionV);
-					case AddVector(e): writeVec(c, e, AddPositionC, AddPositionV);
-					case SetLength(e): writeF(c, e, SetDistanceC, SetDistanceV);
-					case AddLength(e): writeF(c, e, AddDistanceC, AddDistanceV);
-					case SetAngle(e): writeA(c, e, SetBearingC, SetBearingV);
-					case AddAngle(e): writeA(c, e, AddBearingC, AddBearingV);
+					case SetVector(e): e.use(c, SetPositionC, SetPositionV);
+					case AddVector(e): e.use(c, AddPositionC, AddPositionV);
+					case SetLength(e): e.use(c, SetDistanceC, SetDistanceV);
+					case AddLength(e): e.use(c, AddDistanceC, AddDistanceV);
+					case SetAngle(e): e.use(c, SetBearingC, SetBearingV);
+					case AddAngle(e): e.use(c, AddBearingC, AddBearingV);
 				}
 			case Velocity:
 				switch operation {
-					case SetVector(e): writeVec(c, e, SetVelocityC, SetVelocityV);
-					case AddVector(e): writeVec(c, e, AddVelocityC, AddVelocityV);
-					case SetLength(e): writeF(c, e, SetSpeedC, SetSpeedV);
-					case AddLength(e): writeF(c, e, AddSpeedC, AddSpeedV);
-					case SetAngle(e): writeA(c, e, SetDirectionC, SetDirectionV);
-					case AddAngle(e): writeA(c, e, AddDirectionC, AddDirectionV);
+					case SetVector(e): e.use(c, SetVelocityC, SetVelocityV);
+					case AddVector(e): e.use(c, AddVelocityC, AddVelocityV);
+					case SetLength(e): e.use(c, SetSpeedC, SetSpeedV);
+					case AddLength(e): e.use(c, AddSpeedC, AddSpeedV);
+					case SetAngle(e): e.use(c, SetDirectionC, SetDirectionV);
+					case AddAngle(e): e.use(c, AddDirectionC, AddDirectionV);
 				}
 			case ShotPosition:
 				switch operation {
-					case SetVector(e): writeVec(c, e, SetShotPositionC, SetShotPositionV);
-					case AddVector(e): writeVec(c, e, AddShotPositionC, AddShotPositionV);
-					case SetLength(e): writeF(c, e, SetShotDistanceC, SetShotDistanceV);
-					case AddLength(e): writeF(c, e, AddShotDistanceC, AddShotDistanceV);
-					case SetAngle(e): writeA(c, e, SetShotBearingC, SetShotBearingV);
-					case AddAngle(e): writeA(c, e, AddShotBearingC, AddShotBearingV);
+					case SetVector(e): e.use(c, SetShotPositionC, SetShotPositionV);
+					case AddVector(e): e.use(c, AddShotPositionC, AddShotPositionV);
+					case SetLength(e): e.use(c, SetShotDistanceC, SetShotDistanceV);
+					case AddLength(e): e.use(c, AddShotDistanceC, AddShotDistanceV);
+					case SetAngle(e): e.use(c, SetShotBearingC, SetShotBearingV);
+					case AddAngle(e): e.use(c, AddShotBearingC, AddShotBearingV);
 				}
 			case ShotVelocity:
 				switch operation {
-					case SetVector(e): writeVec(c, e, SetShotVelocityC, SetShotVelocityV);
-					case AddVector(e): writeVec(c, e, AddShotVelocityC, AddShotVelocityV);
-					case SetLength(e): writeF(c, e, SetShotSpeedC, SetShotSpeedV);
-					case AddLength(e): writeF(c, e, AddShotSpeedC, AddShotSpeedV);
-					case SetAngle(e): writeA(c, e, SetShotDirectionC, SetShotDirectionV);
-					case AddAngle(e): writeA(c, e, AddShotDirectionC, AddShotDirectionV);
+					case SetVector(e): e.use(c, SetShotVelocityC, SetShotVelocityV);
+					case AddVector(e): e.use(c, AddShotVelocityC, AddShotVelocityV);
+					case SetLength(e): e.use(c, SetShotSpeedC, SetShotSpeedV);
+					case AddLength(e): e.use(c, AddShotSpeedC, AddShotSpeedV);
+					case SetAngle(e): e.use(c, SetShotDirectionC, SetShotDirectionV);
+					case AddAngle(e): e.use(c, AddShotDirectionC, AddShotDirectionV);
 				}
 		}
 	}
-
-	static extern inline function writeVec(
-		context: CompileContext,
-		expr: VecExpression,
-		opC: WriteOperation,
-		opV: WriteOperation
-	): AssemblyCode
-		return expr.use(context, write(opC), write(opV));
-
-	static extern inline function writeF(
-		context: CompileContext,
-		expr: FloatExpression,
-		opC: WriteOperation,
-		opV: WriteOperation
-	): AssemblyCode
-		return expr.use(context, write(opC), write(opV));
-
-	static extern inline function writeA(
-		context: CompileContext,
-		expr: AngleExpression,
-		opC: WriteOperation,
-		opV: WriteOperation
-	): AssemblyCode
-		return expr.use(context, write(opC), write(opV));
 
 	final attribute: ActorAttribute;
 	final operation: ActorAttributeOperation;
@@ -216,16 +193,16 @@ class ActorAttributeOperationExtension {
 
 		switch setOperation {
 			case SetVector(vec):
-				multChange = instruction(calc(MultVecVCV), [Float(1.0 / frames)]);
-				pushChange = instruction(general(PushVecV));
+				multChange = instruction(MultVecVCV, [Float(1.0 / frames)]);
+				pushChange = instruction(PushVecV);
 				peekChange = peekVec(LEN32); // skip the loop counter
 				dropChange = dropVec();
 
 				addFromVolatile = switch attribute {
-					case Position: write(AddPositionV);
-					case Velocity: write(AddVelocityV);
-					case ShotPosition: write(AddShotPositionV);
-					case ShotVelocity: write(AddShotVelocityV);
+					case Position: AddPositionV;
+					case Velocity: AddVelocityV;
+					case ShotPosition: AddShotPositionV;
+					case ShotVelocity: AddShotVelocityV;
 				};
 
 				final immediate = vec.tryMakeImmediate();
@@ -236,7 +213,7 @@ class ActorAttributeOperationExtension {
 						case ShotPosition: CalcRelativeShotPositionCV;
 						case ShotVelocity: CalcRelativeShotVelocityCV;
 					};
-					calcRelative = instruction(read(calcRelativeCV), [immediate.unwrap()]);
+					calcRelative = instruction(calcRelativeCV, [immediate.unwrap()]);
 				} else {
 					final calcRelativeVV: ReadOperation = switch attribute {
 						case Position: CalcRelativePositionVV;
@@ -246,21 +223,21 @@ class ActorAttributeOperationExtension {
 					};
 					calcRelative = [
 						vec.loadToVolatile(context),
-						[instruction(read(calcRelativeVV))]
+						[instruction(calcRelativeVV)]
 					].flatten();
 				}
 
 			case SetLength(length):
-				multChange = instruction(calc(MultFloatVCV), [Float(1.0 / frames)]);
-				pushChange = instruction(general(PushFloatV));
+				multChange = instruction(MultFloatVCV, [Float(1.0 / frames)]);
+				pushChange = instruction(PushFloatV);
 				peekChange = peekFloat(LEN32); // skip the loop counter
 				dropChange = dropFloat();
 
 				addFromVolatile = switch attribute {
-					case Position: write(AddDistanceV);
-					case Velocity: write(AddSpeedV);
-					case ShotPosition: write(AddShotDistanceV);
-					case ShotVelocity: write(AddShotSpeedV);
+					case Position: AddDistanceV;
+					case Velocity: AddSpeedV;
+					case ShotPosition: AddShotDistanceV;
+					case ShotVelocity: AddShotSpeedV;
 				}
 
 				switch length.toEnum() {
@@ -271,7 +248,7 @@ class ActorAttributeOperationExtension {
 							case ShotPosition: CalcRelativeShotDistanceCV;
 							case ShotVelocity: CalcRelativeShotSpeedCV;
 						};
-						calcRelative = instruction(read(operation), [value.toImmediate()]);
+						calcRelative = instruction(operation, [value.toImmediate()]);
 					case Runtime(expression):
 						final calcRelativeVV:ReadOperation = switch attribute {
 							case Position: CalcRelativeDistanceVV;
@@ -280,20 +257,20 @@ class ActorAttributeOperationExtension {
 							case ShotVelocity: CalcRelativeShotDirectionVV;
 						}
 						calcRelative = expression.loadToVolatile(context);
-						calcRelative.push(instruction(read(calcRelativeVV)));
+						calcRelative.push(instruction(calcRelativeVV));
 				}
 
 			case SetAngle(angle):
-				multChange = instruction(calc(MultFloatVCV), [Float(1.0 / frames)]);
-				pushChange = instruction(general(PushFloatV));
+				multChange = instruction(MultFloatVCV, [Float(1.0 / frames)]);
+				pushChange = instruction(PushFloatV);
 				peekChange = peekFloat(LEN32); // skip the loop counter
 				dropChange = dropFloat();
 
 				addFromVolatile = switch attribute {
-					case Position: write(AddBearingV);
-					case Velocity: write(AddDirectionV);
-					case ShotPosition: write(AddShotBearingV);
-					case ShotVelocity: write(AddShotDirectionV);
+					case Position: AddBearingV;
+					case Velocity: AddDirectionV;
+					case ShotPosition: AddShotBearingV;
+					case ShotVelocity: AddShotDirectionV;
 				}
 
 				switch angle.toEnum() {
@@ -304,7 +281,7 @@ class ActorAttributeOperationExtension {
 							case ShotPosition: CalcRelativeShotBearingCV;
 							case ShotVelocity: CalcRelativeShotDirectionCV;
 						};
-						calcRelative = instruction(read(operation), [value.toImmediate()]);
+						calcRelative = instruction(operation, [value.toImmediate()]);
 					case Runtime(expression):
 						final calcRelativeVV:ReadOperation = switch attribute {
 							case Position: CalcRelativeBearingVV;
@@ -313,7 +290,7 @@ class ActorAttributeOperationExtension {
 							case ShotVelocity: CalcRelativeShotDirectionVV;
 						}
 						calcRelative = expression.loadToVolatile(context);
-						calcRelative.push(instruction(read(calcRelativeVV)));
+						calcRelative.push(instruction(calcRelativeVV));
 				}
 
 			default: throw "Unsupported operation.";

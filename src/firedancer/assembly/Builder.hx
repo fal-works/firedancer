@@ -3,7 +3,6 @@ package firedancer.assembly;
 import firedancer.bytecode.types.FireArgument;
 import firedancer.script.CompileContext;
 import firedancer.script.expression.IntExpression;
-import firedancer.assembly.Opcode.*;
 import firedancer.assembly.operation.GeneralOperation;
 
 /**
@@ -14,14 +13,14 @@ class Builder {
 		Creates a `PushIntC` instruction.
 	**/
 	public static inline function pushIntC(v: Int): Instruction {
-		return new Instruction(general(PushIntC), [Int(v)]);
+		return new Instruction(PushIntC, [Int(v)]);
 	}
 
 	/**
 		Creates a `PushIntV` instruction.
 	**/
 	public static inline function pushIntV(): Instruction {
-		return new Instruction(general(PushIntV), []);
+		return new Instruction(PushIntV, []);
 	}
 
 	/**
@@ -29,14 +28,14 @@ class Builder {
 		@param bytesToSkip Bytes to be skipped from the stack top. `0` for peeking from the top.
 	**/
 	public static inline function peekFloat(bytesToSkip: Int = 0): Instruction {
-		return new Instruction(general(PeekFloat), [Int(bytesToSkip)]);
+		return new Instruction(PeekFloat, [Int(bytesToSkip)]);
 	}
 
 	/**
 		Creates a `DropFloat` instruction.
 	**/
 	public static inline function dropFloat(): Instruction {
-		return new Instruction(general(DropFloat), []);
+		return new Instruction(DropFloat, []);
 	}
 
 	/**
@@ -44,28 +43,28 @@ class Builder {
 		@param bytesToSkip Bytes to be skipped from the stack top. `0` for peeking from the top.
 	**/
 	public static inline function peekVec(bytesToSkip: Int = 0): Instruction {
-		return new Instruction(general(PeekVec), [Int(bytesToSkip)]);
+		return new Instruction(PeekVec, [Int(bytesToSkip)]);
 	}
 
 	/**
 		Creates a `DropVec` instruction.
 	**/
 	public static inline function dropVec(): Instruction {
-		return new Instruction(general(DropVec), []);
+		return new Instruction(DropVec, []);
 	}
 
 	/**
 		Creates a `Break` instruction.
 	**/
 	public static inline function breakFrame(): Instruction {
-		return new Instruction(general(Break), []);
+		return new Instruction(Break, []);
 	}
 
 	/**
 		Creates a `CountDownBreak` instruction.
 	**/
 	public static inline function countDownbreak(): Instruction {
-		return new Instruction(general(CountDownBreak), []);
+		return new Instruction(CountDownBreak, []);
 	}
 
 	/**
@@ -77,7 +76,7 @@ class Builder {
 			throw 'Invalid value: $lengthInBytes';
 		#end
 
-		return new Instruction(general(Jump), [Int(lengthInBytes.int())]);
+		return new Instruction(Jump, [Int(lengthInBytes.int())]);
 	}
 
 	/**
@@ -92,7 +91,7 @@ class Builder {
 			throw 'Invalid value: $lengthInBytes';
 		#end
 
-		return new Instruction(general(Jump), [Int(totalBackLength)]);
+		return new Instruction(Jump, [Int(totalBackLength)]);
 	}
 
 	/**
@@ -100,7 +99,7 @@ class Builder {
 	**/
 	public static inline function countDownJump(lengthInBytes: UInt): Instruction {
 		return new Instruction(
-			general(CountDownJump),
+			CountDownJump,
 			[Int(lengthInBytes.int())]
 		);
 	}
@@ -117,7 +116,7 @@ class Builder {
 			pushIntC(countValue.unwrap());
 		} else {
 			final code = count.loadToVolatile(context);
-			code.pushInstruction(Opcode.general(PushIntV));
+			code.pushInstruction(PushIntV);
 			code;
 		};
 		prepareLoop.push(countDownJump(bodyLength + Jump.getBytecodeLength()));
@@ -152,20 +151,20 @@ class Builder {
 	): Instruction {
 		return if (fireArgument.isNone()) {
 			if (fireCode == 0) {
-				new Instruction(general(FireSimple), []);
+				new Instruction(FireSimple, []);
 			} else {
 				new Instruction(
-					general(FireSimpleWithCode),
+					FireSimpleWithCode,
 					[Int(fireCode)]
 				);
 			}
 		} else {
 			final arg = fireArgument.unwrap();
 			if (fireCode == 0) {
-				new Instruction(general(FireComplex), [arg]);
+				new Instruction(FireComplex, [arg]);
 			} else {
 				new Instruction(
-					general(FireComplexWithCode),
+					FireComplexWithCode,
 					[arg, Int(fireCode)]
 				);
 			}
@@ -176,20 +175,20 @@ class Builder {
 		Creates a `UseThread` instruction.
 	**/
 	public static inline function useThread(bytecodeId: Int): Instruction {
-		return new Instruction(general(UseThread), [Int(bytecodeId)]);
+		return new Instruction(UseThread, [Int(bytecodeId)]);
 	}
 
 	/**
 		Creates an `AwaitThread` instruction.
 	**/
 	public static inline function awaitThread(): Instruction {
-		return new Instruction(general(AwaitThread), []);
+		return new Instruction(AwaitThread, []);
 	}
 
 	/**
 		Creates an `End` instruction.
 	**/
 	public static inline function end(endCode: Int): Instruction {
-		return new Instruction(general(End), [Int(endCode)]);
+		return new Instruction(End, [Int(endCode)]);
 	}
 }

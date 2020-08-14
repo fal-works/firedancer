@@ -6,7 +6,8 @@ import firedancer.assembly.Instruction.create as instruction;
 import firedancer.assembly.AssemblyCode;
 import firedancer.assembly.Immediate;
 import firedancer.assembly.Opcode;
-import firedancer.assembly.Opcode.*;
+import firedancer.assembly.operation.GeneralOperation;
+import firedancer.assembly.operation.CalcOperation;
 
 /**
 	Underlying type of `VecExpression`.
@@ -117,7 +118,7 @@ class CartesianVecExpressionData extends VecExpressionData {
 
 			if (divisor.isNone()) {
 				// cVec
-				return instruction(general(LoadVecCV), [Vec(xVal, yVal)]);
+				return instruction(LoadVecCV, [Vec(xVal, yVal)]);
 			} else {
 				final divisorConstant = divisor.unwrap().tryGetConstant();
 
@@ -125,15 +126,15 @@ class CartesianVecExpressionData extends VecExpressionData {
 					// cVec / cDiv
 					final divVal = divisorConstant.unwrap();
 					return instruction(
-						general(LoadVecCV),
+						LoadVecCV,
 						[Vec(xVal / divVal, yVal / divVal)]
 					);
 				} else {
 					// cVec / rDiv
 					return [
-						[instruction(general(LoadVecCV), [Vec(xVal, yVal)])],
+						[instruction(LoadVecCV, [Vec(xVal, yVal)])],
 						divisor.unwrap().loadToVolatile(context),
-						[instruction(calc(DivFloatVVV))]
+						[instruction(DivFloatVVV)]
 					].flatten();
 				}
 			}
@@ -141,9 +142,9 @@ class CartesianVecExpressionData extends VecExpressionData {
 
 		final loadVecWithoutDivisor = [
 			x.loadToVolatile(context),
-			[instruction(general(SaveFloatV))],
+			[instruction(SaveFloatV)],
 			y.loadToVolatile(context),
-			[instruction(calc(CastCartesianVV))]
+			[instruction(CastCartesianVV)]
 		].flatten();
 
 		if (divisor.isNone()) {
@@ -158,14 +159,14 @@ class CartesianVecExpressionData extends VecExpressionData {
 				final multiplier = 1.0 / divVal;
 				return [
 					loadVecWithoutDivisor,
-					[instruction(calc(MultVecVCV), [Float(multiplier)])]
+					[instruction(MultVecVCV, [Float(multiplier)])]
 				].flatten();
 			} else {
 				// rVec / rDiv
 				return [
 					loadVecWithoutDivisor,
 					divisor.unwrap().loadToVolatile(context),
-					[instruction(calc(DivVecVVV))]
+					[instruction(DivVecVVV)]
 				].flatten();
 			}
 		}
@@ -230,7 +231,7 @@ class PolarVecExpressionData extends VecExpressionData {
 
 			if (divisor.isNone()) {
 				// cVec
-				return instruction(general(LoadVecCV), [Vec(vec.x, vec.y)]);
+				return instruction(LoadVecCV, [Vec(vec.x, vec.y)]);
 			} else {
 				final divisorConstant = divisor.unwrap().tryGetConstant();
 
@@ -238,15 +239,15 @@ class PolarVecExpressionData extends VecExpressionData {
 					// cVec / cDiv
 					final divVal = divisorConstant.unwrap();
 					return instruction(
-						general(LoadVecCV),
+						LoadVecCV,
 						[Vec(vec.x / divVal, vec.y / divVal)]
 					);
 				} else {
 					// cVec / rDiv
 					return [
-						[instruction(general(LoadVecCV), [Vec(vec.x, vec.y)])],
+						[instruction(LoadVecCV, [Vec(vec.x, vec.y)])],
 						divisor.unwrap().loadToVolatile(context),
-						[instruction(calc(DivFloatVVV))]
+						[instruction(DivFloatVVV)]
 					].flatten();
 				}
 			}
@@ -254,9 +255,9 @@ class PolarVecExpressionData extends VecExpressionData {
 
 		final loadVecWithoutDivisor = [
 			length.loadToVolatile(context),
-			[instruction(general(SaveFloatV))],
+			[instruction(SaveFloatV)],
 			angle.loadToVolatile(context),
-			[instruction(calc(CastPolarVV))]
+			[instruction(CastPolarVV)]
 		].flatten();
 
 		if (divisor.isNone()) {
@@ -271,14 +272,14 @@ class PolarVecExpressionData extends VecExpressionData {
 				final multiplier = 1.0 / divVal;
 				return [
 					loadVecWithoutDivisor,
-					[instruction(calc(MultVecVCV), [Float(multiplier)])]
+					[instruction(MultVecVCV, [Float(multiplier)])]
 				].flatten();
 			} else {
 				// rVec / rDiv
 				return [
 					loadVecWithoutDivisor,
 					divisor.unwrap().loadToVolatile(context),
-					[instruction(calc(DivVecVVV))]
+					[instruction(DivVecVVV)]
 				].flatten();
 			}
 		}

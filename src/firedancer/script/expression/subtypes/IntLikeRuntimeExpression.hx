@@ -2,7 +2,7 @@ package firedancer.script.expression.subtypes;
 
 import firedancer.assembly.AssemblyCode;
 import firedancer.assembly.Instruction;
-import firedancer.assembly.Opcode.*;
+import firedancer.assembly.Opcode;
 import firedancer.assembly.Immediate;
 
 typedef IntLikeRuntimeExpressionEnum = RuntimeExpressionEnum<IntLikeConstant, IntLikeExpressionData>;
@@ -14,8 +14,8 @@ typedef IntLikeRuntimeExpressionEnum = RuntimeExpressionEnum<IntLikeConstant, In
 abstract IntLikeRuntimeExpression(
 	IntLikeRuntimeExpressionEnum
 ) from IntLikeRuntimeExpressionEnum to IntLikeRuntimeExpressionEnum {
-	static extern inline final loadOpcode = general(LoadIntCV);
-	static extern inline final saveOpcode = general(SaveIntV);
+	static extern inline final loadOpcode = Opcode.general(LoadIntCV);
+	static extern inline final saveOpcode = Opcode.general(SaveIntV);
 
 	static function createImmediates(value: Int): Array<Immediate>
 		return [Int(value)];

@@ -1,6 +1,6 @@
 package firedancer.script.expression;
 
-import firedancer.assembly.Opcode.calc;
+import firedancer.assembly.operation.CalcOperation;
 import firedancer.script.nodes.DeclareLocalVariable;
 import firedancer.script.nodes.OperateLocalVariable;
 
@@ -15,9 +15,9 @@ abstract AngleLocalVariableExpression(String) {
 			final code = variable.loadToVolatile();
 			switch variable.type {
 				case Int:
-					code.pushInstruction(calc(CastIntToFloatVV));
+					code.pushInstruction(CastIntToFloatVV);
 					code.pushInstruction(
-						calc(MultFloatVCV),
+						MultFloatVCV,
 						[Float(AngleExpression.constantFactor)]
 					);
 				case Float:

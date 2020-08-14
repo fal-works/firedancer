@@ -200,11 +200,11 @@ class LocalVariableTable {
 		to the current volatile int/float.
 	**/
 	public function loadToVolatile(): AssemblyCode {
-		final opcode = general(switch this.type {
+		final opcode = switch this.type {
 			case Int: LoadIntLV;
 			case Float: LoadFloatLV;
 			case Vec: throw "Local variable of vector type is not supported.";
-		});
+		};
 
 		return new Instruction(opcode, [Int(this.address.int())]);
 	}
@@ -234,12 +234,12 @@ class LocalVariableTable {
 
 		return if (immediate.isSome()) {
 			new Instruction(
-				general(storeCL),
+				storeCL,
 				[Int(address), immediate.unwrap()]
 			);
 		} else [
 			value.loadToVolatile(context),
-			[new Instruction(general(storeVL), [Int(address)])]
+			[new Instruction(storeVL, [Int(address)])]
 		].flatten();
 	}
 
@@ -265,10 +265,10 @@ class LocalVariableTable {
 		final address = this.address.int();
 
 		return if (immediate.isSome()) {
-			new Instruction(calc(addLCL), [Int(address), immediate.unwrap()]);
+			new Instruction(addLCL, [Int(address), immediate.unwrap()]);
 		} else [
 			value.loadToVolatile(context),
-			[new Instruction(calc(addLVL), [Int(address)])]
+			[new Instruction(addLVL, [Int(address)])]
 		].flatten();
 	}
 
@@ -283,7 +283,7 @@ class LocalVariableTable {
 			default: throw "Cannot increment local variable that is not an integer.";
 		}
 
-		return new Instruction(calc(IncrementL), [Int(this.address.int())]);
+		return new Instruction(IncrementL, [Int(this.address.int())]);
 	}
 
 	/**
@@ -297,6 +297,6 @@ class LocalVariableTable {
 			default: throw "Cannot decrement local variable that is not an integer.";
 		}
 
-		return new Instruction(calc(DecrementL), [Int(this.address.int())]);
+		return new Instruction(DecrementL, [Int(this.address.int())]);
 	}
 }
