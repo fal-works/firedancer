@@ -337,6 +337,10 @@ class Vm {
 								reg.int = Random.signedInt(scan.int());
 							case RandomIntSignedVV:
 								reg.int = Random.signedInt(reg.int);
+							case Sin:
+								reg.float = Geometry.sin(reg.float);
+							case Cos:
+								reg.float = Geometry.cos(reg.float);
 
 							case AddIntLCL:
 								mem.addLocalInt(scan.int(), scan.int());

@@ -3,14 +3,28 @@ package firedancer.common;
 import reckoner.TmpVec2D;
 import reckoner.Geometry.hypot;
 import reckoner.Geometry.atan2;
-import reckoner.Geometry.cos;
-import reckoner.Geometry.sin;
+import reckoner.Geometry.cos as rCos;
+import reckoner.Geometry.sin as rSin;
 import reckoner.Geometry.normalizeAngle;
 
 /**
 	Static functions for 2D vector with north-based angle values.
 **/
 class Geometry {
+	/**
+		@param angle Angle in radians.
+		@return Trigonometric cosine of `angle`.
+	**/
+	public static extern inline function cos(angle: Float): Float
+		return rCos(angle);
+
+	/**
+		@param angle Angle in radians.
+		@return Trigonometric sine of `angle`.
+	**/
+	public static extern inline function sin(angle: Float): Float
+		return rSin(angle);
+
 	/**
 		@return The north-based angle in radians from the origin to the point `(x, y)`.
 	**/

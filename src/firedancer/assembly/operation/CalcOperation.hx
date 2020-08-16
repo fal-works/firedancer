@@ -61,6 +61,9 @@ enum abstract CalcOperation(Int) to Int {
 			case CalcOperation.RandomIntVV: RandomIntVV;
 			case CalcOperation.RandomIntSignedCV: RandomIntSignedCV;
 			case CalcOperation.RandomIntSignedVV: RandomIntSignedVV;
+			case CalcOperation.Sin: Sin;
+			case CalcOperation.Cos: Cos;
+
 			case CalcOperation.AddIntLCL: AddIntLCL;
 			case CalcOperation.AddIntLVL: AddIntLVL;
 			case CalcOperation.IncrementL: IncrementL;
@@ -304,6 +307,16 @@ enum abstract CalcOperation(Int) to Int {
 	final RandomIntSignedVV;
 
 	/**
+		Applies the trigonometric sine function to the volatile float.
+	**/
+	final Sin;
+
+	/**
+		Applies the trigonometric cosine function to the volatile float.
+	**/
+	final Cos;
+
+	/**
 		Adds the second constant integer to the local variable
 		(of which the address is specified by the first constant integer).
 	**/
@@ -394,6 +407,8 @@ class CalcOperationExtension {
 			case RandomIntVV: "random_int_vv";
 			case RandomIntSignedCV: "random_int_signed_cv";
 			case RandomIntSignedVV: "random_int_signed_vv";
+			case Cos: "cos";
+			case Sin: "sin";
 
 			case AddIntLCL: "add_int_lcl";
 			case AddIntLVL: "add_int_lvl";
@@ -454,6 +469,8 @@ class CalcOperationExtension {
 			case RandomIntVV: [];
 			case RandomIntSignedCV: [Int];
 			case RandomIntSignedVV: [];
+			case Cos: [];
+			case Sin: [];
 
 			case AddIntLCL: [Int, Int]; // address, value to add
 			case AddIntLVL: [Int]; // address
