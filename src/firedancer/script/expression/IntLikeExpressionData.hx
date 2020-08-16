@@ -129,6 +129,9 @@ class IntLikeExpressionData implements ExpressionData {
 	}
 
 	public function add(other: IntLikeExpressionData): IntLikeExpressionData {
+		if (this.tryGetConstant() == 0) return other;
+		if (other.tryGetConstant() == 0) return this;
+
 		return binaryOperation({
 			operateConstants: (a, b) -> a + b,
 			operateVCV: AddIntVCV,
@@ -138,6 +141,9 @@ class IntLikeExpressionData implements ExpressionData {
 	}
 
 	public function subtract(other: IntLikeExpressionData): IntLikeExpressionData {
+		if (this.tryGetConstant() == 0) return other.unaryMinus();
+		if (other.tryGetConstant() == 0) return this;
+
 		return binaryOperation({
 			operateConstants: (a, b) -> a - b,
 			operateVCV: SubIntVCV,
@@ -147,6 +153,16 @@ class IntLikeExpressionData implements ExpressionData {
 	}
 
 	public function multiply(other: IntLikeExpressionData): IntLikeExpressionData {
+		final thisConstant = this.tryGetConstant();
+		if (thisConstant == 0) return (0: IntExpression);
+		if (thisConstant == 1) return other;
+		if (thisConstant == -1) return other.unaryMinus();
+
+		final otherConstant = this.tryGetConstant();
+		if (otherConstant == 0) return (0: IntExpression);
+		if (otherConstant == 1) return this;
+		if (otherConstant == -1) return this.unaryMinus();
+
 		return binaryOperation({
 			operateConstants: (a, b) -> a * b,
 			operateVCV: MultIntVCV,
@@ -156,6 +172,11 @@ class IntLikeExpressionData implements ExpressionData {
 	}
 
 	public function divide(other: IntLikeExpressionData): IntLikeExpressionData {
+		final otherConstant = this.tryGetConstant();
+		if (otherConstant == 0) throw "Cannot divide by zero.";
+		if (otherConstant == 1) return this;
+		if (otherConstant == -1) return this.unaryMinus();
+
 		return binaryOperation({
 			operateConstants: (a, b) -> Ints.divide(a, b),
 			operateVCV: DivIntVCV,
@@ -165,6 +186,8 @@ class IntLikeExpressionData implements ExpressionData {
 	}
 
 	public function modulo(other: IntLikeExpressionData): IntLikeExpressionData {
+		if (this.tryGetConstant() == 0) throw "Cannot divide by zero.";
+
 		return binaryOperation({
 			operateConstants: (a, b) -> a % b,
 			operateVCV: ModIntVCV,

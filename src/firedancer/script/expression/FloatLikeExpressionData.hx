@@ -127,6 +127,9 @@ class FloatLikeExpressionData implements ExpressionData {
 	}
 
 	public function add(other: FloatLikeExpressionData): FloatLikeExpressionData {
+		if (this.tryGetConstant() == 0.0) return other;
+		if (other.tryGetConstant() == 0.0) return this;
+
 		return binaryOperation({
 			operateConstants: (a, b) -> a + b,
 			operateVCV: AddFloatVCV,
@@ -136,6 +139,9 @@ class FloatLikeExpressionData implements ExpressionData {
 	}
 
 	public function subtract(other: FloatLikeExpressionData): FloatLikeExpressionData {
+		if (this.tryGetConstant() == 0.0) return other.unaryMinus();
+		if (other.tryGetConstant() == 0.0) return this;
+
 		return binaryOperation({
 			operateConstants: (a, b) -> a - b,
 			operateVCV: SubFloatVCV,
@@ -144,7 +150,17 @@ class FloatLikeExpressionData implements ExpressionData {
 		}, other);
 	}
 
-	public function multiply(other: FloatExpression): FloatLikeExpressionData {
+	public function multiply(other: FloatLikeExpressionData): FloatLikeExpressionData {
+		final thisConstant = this.tryGetConstant();
+		if (thisConstant == 0.0) return (0.0: FloatExpression);
+		if (thisConstant == 1.0) return other;
+		if (thisConstant == -1.0) return other.unaryMinus();
+
+		final otherConstant = this.tryGetConstant();
+		if (otherConstant == 0.0) return (0.0: FloatExpression);
+		if (otherConstant == 1.0) return this;
+		if (otherConstant == -1.0) return this.unaryMinus();
+
 		return binaryOperation({
 			operateConstants: (a, b) -> a * b,
 			operateVCV: MultFloatVCV,
@@ -153,7 +169,12 @@ class FloatLikeExpressionData implements ExpressionData {
 		}, other);
 	}
 
-	public function divide(other: FloatExpression): FloatLikeExpressionData {
+	public function divide(other: FloatLikeExpressionData): FloatLikeExpressionData {
+		final otherConstant = this.tryGetConstant();
+		if (otherConstant == 0.0) throw "Cannot divide by zero.";
+		if (otherConstant == 1.0) return this;
+		if (otherConstant == -1.0) return this.unaryMinus();
+
 		switch this.data {
 			case Constant(_):
 			case Runtime(_):
@@ -173,6 +194,8 @@ class FloatLikeExpressionData implements ExpressionData {
 	}
 
 	public function modulo(other: FloatLikeExpressionData): FloatLikeExpressionData {
+		if (this.tryGetConstant() == 0.0) throw "Cannot divide by zero.";
+
 		return binaryOperation({
 			operateConstants: (a, b) -> a % b,
 			operateVCV: ModFloatVCV,
