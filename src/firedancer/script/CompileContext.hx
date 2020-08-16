@@ -4,11 +4,14 @@ import banker.vector.Vector;
 import firedancer.assembly.Instruction;
 import firedancer.assembly.AssemblyCode;
 import firedancer.assembly.ValueType;
-import firedancer.assembly.Opcode.*;
 import firedancer.assembly.operation.CalcOperation;
 import firedancer.assembly.operation.GeneralOperation;
 import firedancer.bytecode.ProgramPackage;
 import firedancer.script.expression.GenericExpression;
+
+#if debug
+import sneaker.print.Printer.println;
+#end
 
 /**
 	Context for compiling bullet patterns.
@@ -50,10 +53,14 @@ class CompileContext {
 		if (codeList.has(code))
 			return codeList.indexOf(code, 0);
 
-		final index = codeList.length;
+		final id = codeList.length;
 		codeList.push(code);
 
-		return index;
+		#if debug
+		println('[ASSEMBLY] ID: $id\n${code.toString()}\n');
+		#end
+
+		return id;
 	}
 
 	/**

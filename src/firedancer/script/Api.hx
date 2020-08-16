@@ -170,9 +170,6 @@ class Api {
 		for (name => ast in namedAstMap) {
 			final assemblyCode = ast.toAssembly(compileContext);
 			compileContext.setNamedCode(assemblyCode, name);
-			#if debug
-			println('[ASSEMBLY]\n${assemblyCode.toString()}\n');
-			#end
 		}
 
 		return compileContext.createPackage();
