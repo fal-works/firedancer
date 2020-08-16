@@ -16,7 +16,7 @@ class ShotVelocity {
 	**/
 	public inline function set(speed: FloatExpression, direction: AngleExpression) {
 		final vec: VecExpression = { length: speed, angle: direction };
-		return new SetActorAttribute(ShotVelocity, SetVector(vec));
+		return new SetActorVector(ShotVelocity, vec);
 	}
 
 	/**
@@ -39,7 +39,7 @@ class CartesianShotVelocity {
 	**/
 	public inline function set(vx: FloatExpression, vy: FloatExpression) {
 		final vec: VecExpression = { x: vx, y: vy };
-		return new SetActorAttribute(ShotVelocity, SetVector(vec));
+		return new SetActorVector(ShotVelocity, vec);
 	}
 
 	/**

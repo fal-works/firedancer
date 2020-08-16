@@ -16,6 +16,8 @@ abstract IntLikeRuntimeExpression(
 ) from IntLikeRuntimeExpressionEnum to IntLikeRuntimeExpressionEnum {
 	static extern inline final loadOpcode = Opcode.general(LoadIntCV);
 	static extern inline final saveOpcode = Opcode.general(SaveIntV);
+	static extern inline final pushOpcode = Opcode.general(PushIntV);
+	static extern inline final popOpcode = Opcode.general(PopInt);
 
 	static function createImmediates(value: Int): Array<Immediate>
 		return [Int(value)];
@@ -60,6 +62,7 @@ abstract IntLikeRuntimeExpression(
 				final operateVCV = type.operateVCV;
 				final operateCVV = type.operateCVV;
 				final operateVVV = type.operateVVV;
+				final commutative = type.commutative;
 
 				final constantA = operandExprA.tryGetConstant();
 				final constantB = operandExprB.tryGetConstant();
@@ -68,6 +71,7 @@ abstract IntLikeRuntimeExpression(
 					final valA = constantA.unwrap();
 					final operandsA = createImmediates(valA);
 					if (constantB.isSome()) {
+						// A: const, B: const
 						final valB = constantB.unwrap();
 						if (operateConstants.isSome()) {
 							final valueAB: IntLikeConstant = operateConstants.unwrap()(
@@ -77,33 +81,58 @@ abstract IntLikeRuntimeExpression(
 							code.pushInstruction(loadOpcode, [valueAB.toImmediate()]);
 						} else {
 							final operandsB = createImmediates(valB);
-							code.pushInstruction(loadOpcode, operandsA);
-							if (operateVCV.isSome())
+							if (operateVCV.isSome()) {
+								code.pushInstruction(loadOpcode, operandsA);
 								code.pushInstruction(operateVCV.unwrap(), operandsB);
-							else {
+							} else if(commutative && operateCVV.isSome()) {
+								code.pushInstruction(loadOpcode, operandsB);
+								code.pushInstruction(operateCVV.unwrap(), operandsA);
+							} else {
+								code.pushInstruction(loadOpcode, operandsA);
 								code.pushInstruction(saveOpcode);
 								code.pushInstruction(loadOpcode, operandsB);
 								code.pushInstruction(operateVVV, []);
 							}
 						}
 					} else {
+						// A: const, B: runtime
 						if (operateCVV.isSome()) {
 							code.pushFromArray(operandExprB.loadToVolatile(context));
 							code.pushInstruction(operateCVV.unwrap(), operandsA);
+						} else if (commutative && operateVCV.isSome()) {
+							code.pushFromArray(operandExprB.loadToVolatile(context));
+							code.pushInstruction(operateVCV.unwrap(), operandsA);
+						} else if (commutative) {
+							code.pushFromArray(operandExprB.loadToVolatile(context));
+							code.pushInstruction(saveOpcode);
+							code.pushInstruction(loadOpcode, operandsA);
+							code.pushInstruction(operateVVV);
 						} else {
+							code.pushFromArray(operandExprB.loadToVolatile(context));
+							code.pushInstruction(pushOpcode);
 							code.pushInstruction(loadOpcode, operandsA);
 							code.pushInstruction(saveOpcode);
-							code.pushFromArray(operandExprB.loadToVolatile(context));
+							code.pushInstruction(popOpcode);
 							code.pushInstruction(operateVVV);
+
+							// If operandExprB does not use the buffer register, the below also works:
+							// code.pushInstruction(loadOpcode, operandsA);
+							// code.pushInstruction(saveOpcode);
+							// code.pushFromArray(operandExprB.loadToVolatile(context));
+							// code.pushInstruction(operateVVV);
 						}
 					}
 				} else {
 					if (constantB.isSome()) {
+						// A: runtime, B: const
 						final valB = constantB.unwrap();
 						final operandsB = createImmediates(valB);
 						if (operateVCV.isSome()) {
 							code.pushFromArray(operandExprA.loadToVolatile(context));
 							code.pushInstruction(operateVCV.unwrap(), operandsB);
+						} else if (commutative && operateCVV.isSome()) {
+							code.pushFromArray(operandExprA.loadToVolatile(context));
+							code.pushInstruction(operateCVV.unwrap(), operandsB);
 						} else {
 							code.pushFromArray(operandExprA.loadToVolatile(context));
 							code.pushInstruction(saveOpcode);
@@ -111,10 +140,19 @@ abstract IntLikeRuntimeExpression(
 							code.pushInstruction(operateVVV);
 						}
 					} else {
+						// A: runtime, B: runtime
+						code.pushFromArray(operandExprB.loadToVolatile(context));
+						code.pushInstruction(pushOpcode);
 						code.pushFromArray(operandExprA.loadToVolatile(context));
 						code.pushInstruction(saveOpcode);
-						code.pushFromArray(operandExprB.loadToVolatile(context));
+						code.pushInstruction(popOpcode);
 						code.pushInstruction(operateVVV);
+
+						// If operandExprB does not use the buffer register, the below also works:
+						// code.pushFromArray(operandExprA.loadToVolatile(context));
+						// code.pushInstruction(saveOpcode);
+						// code.pushFromArray(operandExprB.loadToVolatile(context));
+						// code.pushInstruction(operateVVV);
 					}
 				}
 

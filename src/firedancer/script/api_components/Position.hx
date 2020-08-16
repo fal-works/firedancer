@@ -16,7 +16,7 @@ class Position {
 	**/
 	public inline function set(distance: FloatExpression, bearing: AngleExpression) {
 		final vec: VecExpression = { length: distance, angle: bearing };
-		return new SetActorAttribute(Position, SetVector(vec));
+		return new SetActorVector(Position, vec);
 	}
 
 	/**
@@ -39,7 +39,7 @@ class CartesianPosition {
 	**/
 	public inline function set(x: FloatExpression, y: FloatExpression) {
 		final vec: VecExpression = { x: x, y: y };
-		return new SetActorAttribute(Position, SetVector(vec));
+		return new SetActorVector(Position, vec);
 	}
 
 	/**

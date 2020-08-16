@@ -32,15 +32,22 @@ class GenericBinaryOperator<T, U, V> {
 	**/
 	public final operateVVV: Opcode;
 
+	/**
+		`true` if the operands can be swapped.
+	**/
+	public final commutative: Bool;
+
 	function new(
 		operateVVV: Opcode,
 		?operateConstants: T->U->V,
 		?operateVCV: Opcode,
-		?operateCVV: Opcode
+		?operateCVV: Opcode,
+		commutative = false
 	) {
 		this.operateConstants = Maybe.from(operateConstants);
 		this.operateVCV = Maybe.from(operateVCV);
 		this.operateCVV = Maybe.from(operateCVV);
 		this.operateVVV = operateVVV;
+		this.commutative = commutative;
 	}
 }

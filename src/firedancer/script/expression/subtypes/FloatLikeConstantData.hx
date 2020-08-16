@@ -3,6 +3,7 @@ package firedancer.script.expression.subtypes;
 import reckoner.Geometry.DEGREES_TO_RADIANS;
 import firedancer.types.Angle;
 import firedancer.assembly.Immediate;
+import firedancer.common.Geometry;
 
 /**
 	The underlying type of `FloatLikeConstant`.
@@ -33,6 +34,14 @@ class FloatLikeConstantData {
 
 	public function unaryMinus(): FloatLikeConstantData {
 		return { value: -value, factor: factor };
+	}
+
+	public function sin(): FloatLikeConstantData {
+		return { value: Geometry.sin(value * factor), factor: 1.0 };
+	}
+
+	public function cos(): FloatLikeConstantData {
+		return { value: Geometry.cos(value * factor), factor: 1.0 };
 	}
 
 	public function add(

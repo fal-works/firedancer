@@ -135,8 +135,8 @@ class IntLikeExpressionData implements ExpressionData {
 		return binaryOperation({
 			operateConstants: (a, b) -> a + b,
 			operateVCV: AddIntVCV,
-			operateCVV: AddIntVCV,
-			operateVVV: AddIntVVV
+			operateVVV: AddIntVVV,
+			commutative: true
 		}, other);
 	}
 
@@ -166,8 +166,8 @@ class IntLikeExpressionData implements ExpressionData {
 		return binaryOperation({
 			operateConstants: (a, b) -> a * b,
 			operateVCV: MultIntVCV,
-			operateCVV: MultIntVCV,
-			operateVVV: MultIntVVV
+			operateVVV: MultIntVVV,
+			commutative: true
 		}, other);
 	}
 

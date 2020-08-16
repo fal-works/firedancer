@@ -126,6 +126,20 @@ class FloatLikeExpressionData implements ExpressionData {
 		});
 	}
 
+	public function cos(): FloatLikeExpressionData {
+		return unaryOperation({
+			constantOperator: Immediate(v -> v.cos()),
+			runtimeOperator: Cos
+		});
+	}
+
+	public function sin(): FloatLikeExpressionData {
+		return unaryOperation({
+			constantOperator: Immediate(v -> v.sin()),
+			runtimeOperator: Sin
+		});
+	}
+
 	public function add(other: FloatLikeExpressionData): FloatLikeExpressionData {
 		if (this.tryGetConstant() == 0.0) return other;
 		if (other.tryGetConstant() == 0.0) return this;
@@ -133,8 +147,8 @@ class FloatLikeExpressionData implements ExpressionData {
 		return binaryOperation({
 			operateConstants: (a, b) -> a + b,
 			operateVCV: AddFloatVCV,
-			operateCVV: AddFloatVCV,
-			operateVVV: AddFloatVVV
+			operateVVV: AddFloatVVV,
+			commutative: true
 		}, other);
 	}
 
@@ -164,8 +178,8 @@ class FloatLikeExpressionData implements ExpressionData {
 		return binaryOperation({
 			operateConstants: (a, b) -> a * b,
 			operateVCV: MultFloatVCV,
-			operateCVV: MultFloatVCV,
-			operateVVV: MultFloatVVV
+			operateVVV: MultFloatVVV,
+			commutative: true
 		}, other);
 	}
 

@@ -151,7 +151,28 @@ class BulletPatterns {
 		]).count(2)
 	];
 
-	static final testAst = test(dumpTest); // Change this for testing
+	static final bearingVar = angleVar("bearing");
+	static final rotationVar = angleVar("rotation");
+
+	static final transformTest = [
+		loop([
+			fire([
+				bearingVar.let(),
+				rotationVar.let(),
+				loop([
+					position.set(150, bearingVar)
+						.rotate(rotationVar)
+						.scale(1.0, 0.3),
+					wait(1),
+					bearingVar.add(4),
+					rotationVar.add(2)
+				])
+			]).bind(),
+			wait(6)
+		]).count(24)
+	];
+
+	static final testAst = test(transformTest); // Change this for testing
 
 	public static final programPackage = compile(["test" => testAst]);
 	public static final testPattern = programPackage.getProgramByName("test");

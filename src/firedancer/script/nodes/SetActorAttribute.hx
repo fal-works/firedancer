@@ -34,25 +34,33 @@ class SetActorAttribute extends AstNode implements ripper.Data {
 		return switch attribute {
 			case Position:
 				switch operation {
-					case SetVector(e): e.use(c, SetPositionC, SetPositionV);
+					case SetVector(e, mat):
+						if (mat != null) e = e.transform(mat);
+						e.use(c, SetPositionC, SetPositionV);
 					case SetLength(e): e.use(c, SetDistanceC, SetDistanceV);
 					case SetAngle(e): e.use(c, SetBearingC, SetBearingV);
 				}
 			case Velocity:
 				switch operation {
-					case SetVector(e): e.use(c, SetVelocityC, SetVelocityV);
+					case SetVector(e, mat):
+						if (mat != null) e = e.transform(mat);
+						e.use(c, SetVelocityC, SetVelocityV);
 					case SetLength(e): e.use(c, SetSpeedC, SetSpeedV);
 					case SetAngle(e): e.use(c, SetDirectionC, SetDirectionV);
 				}
 			case ShotPosition:
 				switch operation {
-					case SetVector(e): e.use(c, SetShotPositionC, SetShotPositionV);
+					case SetVector(e, mat):
+						if (mat != null) e = e.transform(mat);
+						e.use(c, SetShotPositionC, SetShotPositionV);
 					case SetLength(e): e.use(c, SetShotDistanceC, SetShotDistanceV);
 					case SetAngle(e): e.use(c, SetShotBearingC, SetShotBearingV);
 				}
 			case ShotVelocity:
 				switch operation {
-					case SetVector(e): e.use(c, SetShotVelocityC, SetShotVelocityV);
+					case SetVector(e, mat):
+						if (mat != null) e = e.transform(mat);
+						e.use(c, SetShotVelocityC, SetShotVelocityV);
 					case SetLength(e): e.use(c, SetShotSpeedC, SetShotSpeedV);
 					case SetAngle(e): e.use(c, SetShotDirectionC, SetShotDirectionV);
 				}
@@ -61,18 +69,61 @@ class SetActorAttribute extends AstNode implements ripper.Data {
 }
 
 @:ripper_verified
-class SetActorAttributeLinear extends AstNode implements ripper.Data {
+class SetActorVector extends SetActorAttribute implements ripper.Data {
+	public function new(
+		attribute: ActorAttributeType,
+		vec: VecExpression,
+		?matrix: Transformation
+	) {
+		super(attribute, SetVector(vec, matrix));
+	}
+
+	public function transform(matrix: Transformation): SetActorVector {
+		return switch operation {
+			case SetVector(vec, mat):
+				new SetActorVector(
+					attribute,
+					vec,
+					if (mat != null) Transformation.multiply(mat, matrix) else matrix
+				);
+			default:
+				throw "Invalid operation in SetActorVector class.";
+		}
+	}
+
+	public function translate(x: FloatExpression, y: FloatExpression): SetActorVector
+		return this.transform(Transformation.createTranslate(x, y));
+
+	public function rotate(angle: AngleExpression): SetActorVector
+		return this.transform(Transformation.createRotate(angle));
+
+	public function scale(x: FloatExpression, y: FloatExpression): SetActorVector
+		return this.transform(Transformation.createScale(x, y));
+}
+
+class SetActorAttributeLinear extends AstNode {
 	final attribute: ActorAttributeType;
 	final operation: ActorAttributeSetOperation;
 	final frames: NInt;
-	var loopUnrolling = false;
+	final loopUnrolling: Bool;
+
+	public function new(
+		attribute: ActorAttributeType,
+		operation: ActorAttributeSetOperation,
+		frames: NInt,
+		loopUnrolling = false
+	) {
+		this.attribute = attribute;
+		this.operation = operation;
+		this.frames = frames;
+		this.loopUnrolling = loopUnrolling;
+	}
 
 	/**
 		Unrolls iteration when converting to `AssemblyCode`.
 	**/
-	public inline function unroll(): SetActorAttributeLinear {
-		this.loopUnrolling = true;
-		return this;
+	public function unroll(): SetActorAttributeLinear {
+		return new SetActorAttributeLinear(attribute, operation, frames, true);
 	}
 
 	override public inline function containsWait(): Bool
@@ -89,7 +140,9 @@ class SetActorAttributeLinear extends AstNode implements ripper.Data {
 		var dropChange: Instruction; // Drop change rate (after the loop)
 
 		switch operation {
-			case SetVector(vec):
+			case SetVector(vec, mat):
+				if (mat != null) vec = vec.transform(mat);
+
 				multChange = instruction(MultVecVCV, [Float(1.0 / frames)]);
 				pushChange = instruction(PushVecV);
 				peekChange = peekVec(LEN32); // skip the loop counter
@@ -118,10 +171,7 @@ class SetActorAttributeLinear extends AstNode implements ripper.Data {
 						case ShotPosition: CalcRelativeShotPositionVV;
 						case ShotVelocity: CalcRelativeShotVelocityVV;
 					};
-					calcRelative = [
-						vec.loadToVolatile(context),
-						[instruction(calcRelativeVV)]
-					].flatten();
+					calcRelative = [vec.loadToVolatile(context), [instruction(calcRelativeVV)]].flatten();
 				}
 
 			case SetLength(length):
@@ -212,11 +262,63 @@ class SetActorAttributeLinear extends AstNode implements ripper.Data {
 	}
 }
 
+@:ripper_verified
+class SetActorVectorLinear extends SetActorAttributeLinear implements ripper.Data {
+	public function new(
+		attribute: ActorAttributeType,
+		vec: VecExpression,
+		frames: NInt,
+		loopUnrolling: Bool,
+		?matrix: Transformation
+	) {
+		super(attribute, SetVector(vec, matrix), frames);
+	}
+
+	/**
+		Unrolls iteration when converting to `AssemblyCode`.
+	**/
+	override public function unroll(): SetActorAttributeLinear {
+		return switch operation {
+			case SetVector(arg, mat):
+				new SetActorVectorLinear(attribute, arg, frames, true, mat);
+			default:
+				throw "Invalid operation in SetActorVectorLinear class.";
+		}
+	}
+
+	/**
+		Applies transformation on the vector to be set.
+	**/
+	public function transform(matrix: Transformation): SetActorVectorLinear {
+		return switch operation {
+			case SetVector(vec, mat):
+				new SetActorVectorLinear(
+					attribute,
+					vec,
+					frames,
+					loopUnrolling,
+					if (mat != null) Transformation.multiply(mat, matrix) else matrix
+				);
+			default:
+				throw "Invalid operation in SetActorVectorLinear class.";
+		}
+	}
+
+	public function translate(x: FloatExpression, y: FloatExpression): SetActorVectorLinear
+		return this.transform(Transformation.createTranslate(x, y));
+
+	public function rotate(angle: AngleExpression): SetActorVectorLinear
+		return this.transform(Transformation.createRotate(angle));
+
+	public function scale(x: FloatExpression, y: FloatExpression): SetActorVectorLinear
+		return this.transform(Transformation.createScale(x, y));
+}
+
 /**
 	Represents a "set" operation on actor's attribute.
 **/
 private enum ActorAttributeSetOperation {
-	SetVector(arg: VecExpression);
+	SetVector(arg: VecExpression, ?mat: Transformation);
 	// SetX(arg: FloatExpression);
 	// SetY(arg: FloatExpression);
 	SetLength(arg: FloatExpression);

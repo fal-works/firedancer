@@ -33,6 +33,9 @@ class VecExpressionData implements ExpressionData {
 	public function divide(divisor: FloatExpression): VecExpressionData
 		throw new NotOverriddenException();
 
+	public function transform(matrix: Transformation): VecExpressionData
+		throw new NotOverriddenException();
+
 	public function divideByFloat(divisor: Float): VecExpressionData
 		throw new NotOverriddenException();
 
@@ -65,18 +68,33 @@ class VecExpressionData implements ExpressionData {
 class CartesianVecExpressionData extends VecExpressionData {
 	public final x: FloatExpression;
 	public final y: FloatExpression;
+	final transformation: Maybe<Transformation> = Maybe.none();
 
 	public function new(
 		x: FloatExpression,
 		y: FloatExpression,
-		?divisor: FloatExpression
+		?divisor: FloatExpression,
+		?transformation: Transformation
 	) {
 		super(divisor);
 		this.x = x;
 		this.y = y;
+		this.transformation = Maybe.from(transformation);
 	}
 
 	override public function tryGetConstant(): Maybe<{x: Float, y: Float }> {
+		var x = this.x;
+		var y = this.y;
+
+		if (this.transformation.isSome()) {
+			final newVec = Transformation.apply(
+				this.transformation.unwrap(),
+				{ x: x, y: y }
+			);
+			x = newVec.x;
+			y = newVec.y;
+		}
+
 		final xConstant = x.tryGetConstant();
 		if (xConstant.isNone()) return Maybe.none();
 
@@ -98,15 +116,44 @@ class CartesianVecExpressionData extends VecExpressionData {
 
 	override public function divide(divisor: FloatExpression): CartesianVecExpressionData {
 		if (this.divisor.isSome()) divisor = this.divisor.unwrap() * divisor;
-		return new CartesianVecExpressionData(x, y, divisor);
+		return new CartesianVecExpressionData(
+			x,
+			y,
+			divisor,
+			transformation.nullable()
+		);
+	}
+
+	override public function transform(
+		matrix: Transformation
+	): CartesianVecExpressionData {
+		return new CartesianVecExpressionData(
+			x,
+			y,
+			divisor.nullable(),
+			if (this.transformation.isSome()) Transformation.multiply(
+				this.transformation.unwrap(),
+				matrix
+			) else matrix
+		);
 	}
 
 	override public function divideByFloat(divisor: Float): CartesianVecExpressionData
 		return divide(divisor);
 
 	override public function loadToVolatile(context: CompileContext): AssemblyCode {
-		final x = this.x;
-		final y = this.y;
+		var x = this.x;
+		var y = this.y;
+
+		if (this.transformation.isSome()) {
+			final newVec = Transformation.apply(
+				this.transformation.unwrap(),
+				{ x: x, y: y }
+			);
+			x = newVec.x;
+			y = newVec.y;
+		}
+
 		final divisor = this.divisor;
 
 		final xConstant = x.tryGetConstant();
@@ -141,10 +188,14 @@ class CartesianVecExpressionData extends VecExpressionData {
 		}
 
 		final loadVecWithoutDivisor = [
-			x.loadToVolatile(context),
-			[instruction(SaveFloatV)],
 			y.loadToVolatile(context),
-			[instruction(CastCartesianVV)]
+			[instruction(PushFloatV)],
+			x.loadToVolatile(context),
+			[
+				instruction(SaveFloatV),
+				instruction(PopFloat),
+				instruction(CastCartesianVV)
+			]
 		].flatten();
 
 		if (divisor.isNone()) {
@@ -211,7 +262,23 @@ class PolarVecExpressionData extends VecExpressionData {
 
 	override public function divide(divisor: FloatExpression): PolarVecExpressionData {
 		if (this.divisor.isSome()) divisor = this.divisor.unwrap() * divisor;
-		return new PolarVecExpressionData(length, angle, divisor);
+		return new PolarVecExpressionData(
+			length,
+			angle,
+			divisor
+		);
+	}
+
+	override public function transform(
+		matrix: Transformation
+	): CartesianVecExpressionData {
+		// TODO: optimize
+		return new CartesianVecExpressionData(
+			length * angle.cos(),
+			length * angle.sin(),
+			divisor.nullable(),
+			matrix
+		);
 	}
 
 	override public function divideByFloat(divisor: Float): PolarVecExpressionData
@@ -252,12 +319,15 @@ class PolarVecExpressionData extends VecExpressionData {
 				}
 			}
 		}
-
 		final loadVecWithoutDivisor = [
-			length.loadToVolatile(context),
-			[instruction(SaveFloatV)],
 			angle.loadToVolatile(context),
-			[instruction(CastPolarVV)]
+			[instruction(PushFloatV)],
+			length.loadToVolatile(context),
+			[
+				instruction(SaveFloatV),
+				instruction(PopFloat),
+				instruction(CastPolarVV)
+			]
 		].flatten();
 
 		if (divisor.isNone()) {
