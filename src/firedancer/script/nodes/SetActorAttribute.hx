@@ -1,5 +1,6 @@
 package firedancer.script.nodes;
 
+import firedancer.types.ActorAttributeType;
 import firedancer.types.NInt;
 import firedancer.assembly.operation.GeneralOperation;
 import firedancer.assembly.operation.CalcOperation;
@@ -11,85 +12,65 @@ import firedancer.bytecode.internal.Constants.LEN32;
 import firedancer.script.expression.*;
 
 /**
-	Operates actor's attribute (e.g. position).
+	Sets actor's attribute (e.g. position).
 **/
 @:ripper_verified
-class OperateActor extends AstNode implements ripper.Data {
-	/**
-		Creates an `AssemblyCode` instance from `attribute` and `operation`.
-	**/
-	public static function createAssembly(
-		c: CompileContext,
-		attribute: ActorAttribute,
-		operation: ActorAttributeOperation
-	): AssemblyCode {
-		return switch attribute {
-			case Position:
-				switch operation {
-					case SetVector(e): e.use(c, SetPositionC, SetPositionV);
-					case AddVector(e): e.use(c, AddPositionC, AddPositionV);
-					case SetLength(e): e.use(c, SetDistanceC, SetDistanceV);
-					case AddLength(e): e.use(c, AddDistanceC, AddDistanceV);
-					case SetAngle(e): e.use(c, SetBearingC, SetBearingV);
-					case AddAngle(e): e.use(c, AddBearingC, AddBearingV);
-				}
-			case Velocity:
-				switch operation {
-					case SetVector(e): e.use(c, SetVelocityC, SetVelocityV);
-					case AddVector(e): e.use(c, AddVelocityC, AddVelocityV);
-					case SetLength(e): e.use(c, SetSpeedC, SetSpeedV);
-					case AddLength(e): e.use(c, AddSpeedC, AddSpeedV);
-					case SetAngle(e): e.use(c, SetDirectionC, SetDirectionV);
-					case AddAngle(e): e.use(c, AddDirectionC, AddDirectionV);
-				}
-			case ShotPosition:
-				switch operation {
-					case SetVector(e): e.use(c, SetShotPositionC, SetShotPositionV);
-					case AddVector(e): e.use(c, AddShotPositionC, AddShotPositionV);
-					case SetLength(e): e.use(c, SetShotDistanceC, SetShotDistanceV);
-					case AddLength(e): e.use(c, AddShotDistanceC, AddShotDistanceV);
-					case SetAngle(e): e.use(c, SetShotBearingC, SetShotBearingV);
-					case AddAngle(e): e.use(c, AddShotBearingC, AddShotBearingV);
-				}
-			case ShotVelocity:
-				switch operation {
-					case SetVector(e): e.use(c, SetShotVelocityC, SetShotVelocityV);
-					case AddVector(e): e.use(c, AddShotVelocityC, AddShotVelocityV);
-					case SetLength(e): e.use(c, SetShotSpeedC, SetShotSpeedV);
-					case AddLength(e): e.use(c, AddShotSpeedC, AddShotSpeedV);
-					case SetAngle(e): e.use(c, SetShotDirectionC, SetShotDirectionV);
-					case AddAngle(e): e.use(c, AddShotDirectionC, AddShotDirectionV);
-				}
-		}
-	}
-
-	final attribute: ActorAttribute;
-	final operation: ActorAttributeOperation;
+class SetActorAttribute extends AstNode implements ripper.Data {
+	final attribute: ActorAttributeType;
+	final operation: ActorAttributeSetOperation;
 
 	/**
 		Performs this operation gradually in `frames`.
 	**/
-	public inline function frames(frames: NInt)
-		return new OperateActorLinear(attribute, operation, frames);
+	public function frames(frames: NInt)
+		return new SetActorAttributeLinear(attribute, operation, frames);
 
 	override public inline function containsWait(): Bool
 		return false;
 
-	override public function toAssembly(context: CompileContext): AssemblyCode
-		return createAssembly(context, attribute, operation);
+	override public function toAssembly(context: CompileContext): AssemblyCode {
+		final c = context;
+
+		return switch attribute {
+			case Position:
+				switch operation {
+					case SetVector(e): e.use(c, SetPositionC, SetPositionV);
+					case SetLength(e): e.use(c, SetDistanceC, SetDistanceV);
+					case SetAngle(e): e.use(c, SetBearingC, SetBearingV);
+				}
+			case Velocity:
+				switch operation {
+					case SetVector(e): e.use(c, SetVelocityC, SetVelocityV);
+					case SetLength(e): e.use(c, SetSpeedC, SetSpeedV);
+					case SetAngle(e): e.use(c, SetDirectionC, SetDirectionV);
+				}
+			case ShotPosition:
+				switch operation {
+					case SetVector(e): e.use(c, SetShotPositionC, SetShotPositionV);
+					case SetLength(e): e.use(c, SetShotDistanceC, SetShotDistanceV);
+					case SetAngle(e): e.use(c, SetShotBearingC, SetShotBearingV);
+				}
+			case ShotVelocity:
+				switch operation {
+					case SetVector(e): e.use(c, SetShotVelocityC, SetShotVelocityV);
+					case SetLength(e): e.use(c, SetShotSpeedC, SetShotSpeedV);
+					case SetAngle(e): e.use(c, SetShotDirectionC, SetShotDirectionV);
+				}
+		}
+	}
 }
 
 @:ripper_verified
-class OperateActorLinear extends AstNode implements ripper.Data {
-	final attribute: ActorAttribute;
-	final operation: ActorAttributeOperation;
+class SetActorAttributeLinear extends AstNode implements ripper.Data {
+	final attribute: ActorAttributeType;
+	final operation: ActorAttributeSetOperation;
 	final frames: NInt;
 	var loopUnrolling = false;
 
 	/**
 		Unrolls iteration when converting to `AssemblyCode`.
 	**/
-	public inline function unroll(): OperateActorLinear {
+	public inline function unroll(): SetActorAttributeLinear {
 		this.loopUnrolling = true;
 		return this;
 	}
@@ -99,91 +80,7 @@ class OperateActorLinear extends AstNode implements ripper.Data {
 
 	override public function toAssembly(context: CompileContext): AssemblyCode {
 		final frames = this.frames;
-		var prepare: AssemblyCode;
-		var body: AssemblyCode;
-		var complete: AssemblyCode;
 
-		switch operation {
-			case AddVector(_) | AddLength(_) | AddAngle(_):
-				prepare = [];
-				body = [
-					[breakFrame()],
-					OperateActor.createAssembly(context, attribute, operation.divide(frames))
-				].flatten();
-				complete = [];
-			default:
-				final ret = operation.relativeChange(context, attribute, frames);
-				prepare = ret.prepare;
-				body = ret.body;
-				complete = ret.complete;
-		}
-
-		final loopedBody = if (this.loopUnrolling) {
-			loopUnrolled(0...frames, _ -> body);
-		} else loop(context, body, frames);
-
-		return [
-			prepare,
-			loopedBody,
-			complete
-		].flatten();
-	}
-}
-
-/**
-	Type of actor's attribute to be operated.
-**/
-enum abstract ActorAttribute(Int) {
-	final Position;
-	final Velocity;
-	final ShotPosition;
-	final ShotVelocity;
-}
-
-/**
-	Represents an operation on actor's attribute.
-**/
-@:using(firedancer.script.nodes.OperateActor.ActorAttributeOperationExtension)
-enum ActorAttributeOperation {
-	SetVector(arg: VecExpression);
-	AddVector(arg: VecExpression);
-	// SetX(arg: FloatExpression);
-	// AddX(arg: FloatExpression);
-	// SetY(arg: FloatExpression);
-	// AddY(arg: FloatExpression);
-	SetLength(arg: FloatExpression);
-	AddLength(arg: FloatExpression);
-	SetAngle(arg: AngleExpression);
-	AddAngle(arg: AngleExpression);
-}
-
-class ActorAttributeOperationExtension {
-	/**
-		Divides the value to be added by `divisor`.
-
-		Only for ADD operations (such as `AddVector`).
-	**/
-	public static function divide(addOperation: ActorAttributeOperation, divisor: Int) {
-		return switch addOperation {
-			case AddVector(arg): AddVector(arg / divisor);
-			case AddLength(arg): AddLength(arg / divisor);
-			case AddAngle(arg): AddAngle(arg / divisor);
-			default: throw "Unsupported operation.";
-		}
-	}
-
-	/**
-		Creates loop components for constructing `AssemblyCode` that gradually changes actor's attribute
-		relatively from a start value.
-
-		Only for SET operations (such as `SetVector`).
-	**/
-	public static function relativeChange(
-		setOperation: ActorAttributeOperation,
-		context: CompileContext,
-		attribute: ActorAttribute,
-		frames: NInt
-	) {
 		var calcRelative: AssemblyCode; // Calculate total change (before the loop)
 		var multChange: Instruction; // Get change rate (before the loop)
 		var pushChange: Instruction; // Push change rate (before the loop)
@@ -191,7 +88,7 @@ class ActorAttributeOperationExtension {
 		var addFromVolatile: Opcode; // Apply change rate (in the loop)
 		var dropChange: Instruction; // Drop change rate (after the loop)
 
-		switch setOperation {
+		switch operation {
 			case SetVector(vec):
 				multChange = instruction(MultVecVCV, [Float(1.0 / frames)]);
 				pushChange = instruction(PushVecV);
@@ -292,22 +189,36 @@ class ActorAttributeOperationExtension {
 						calcRelative = expression.loadToVolatile(context);
 						calcRelative.push(instruction(calcRelativeVV));
 				}
-
-			default: throw "Unsupported operation.";
 		}
 
 		final prepare: AssemblyCode = calcRelative.concat([multChange, pushChange]);
+
 		final body: AssemblyCode = [
 			breakFrame(),
 			peekChange,
 			instruction(addFromVolatile)
 		];
+		final loopedBody = if (this.loopUnrolling) {
+			loopUnrolled(0...frames, _ -> body);
+		} else loop(context, body, frames);
+
 		final complete: AssemblyCode = [dropChange];
 
-		return {
-			prepare: prepare,
-			body: body,
-			complete: complete
-		};
+		return [
+			prepare,
+			loopedBody,
+			complete
+		].flatten();
 	}
+}
+
+/**
+	Represents a "set" operation on actor's attribute.
+**/
+private enum ActorAttributeSetOperation {
+	SetVector(arg: VecExpression);
+	// SetX(arg: FloatExpression);
+	// SetY(arg: FloatExpression);
+	SetLength(arg: FloatExpression);
+	SetAngle(arg: AngleExpression);
 }

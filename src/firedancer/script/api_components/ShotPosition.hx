@@ -16,7 +16,7 @@ class ShotPosition {
 	**/
 	public inline function set(distance: FloatExpression, bearing: AngleExpression) {
 		final vec: VecExpression = { length: distance, angle: bearing };
-		return new OperateActor(ShotPosition, SetVector(vec));
+		return new SetActorAttribute(ShotPosition, SetVector(vec));
 	}
 
 	/**
@@ -24,7 +24,7 @@ class ShotPosition {
 	**/
 	public inline function add(distance: FloatExpression, bearing: AngleExpression) {
 		final vec: VecExpression = { length: distance, angle: bearing };
-		return new OperateActor(ShotPosition, AddVector(vec));
+		return new AddActorAttribute(ShotPosition, AddVector(vec));
 	}
 }
 
@@ -39,7 +39,7 @@ class CartesianShotPosition {
 	**/
 	public inline function set(x: FloatExpression, y: FloatExpression) {
 		final vec: VecExpression = { x: x, y: y };
-		return new OperateActor(ShotPosition, SetVector(vec));
+		return new SetActorAttribute(ShotPosition, SetVector(vec));
 	}
 
 	/**
@@ -47,7 +47,7 @@ class CartesianShotPosition {
 	**/
 	public inline function add(x: FloatExpression, y: FloatExpression) {
 		final vec: VecExpression = { x: x, y: y };
-		return new OperateActor(ShotPosition, AddVector(vec));
+		return new AddActorAttribute(ShotPosition, AddVector(vec));
 	}
 }
 
@@ -61,14 +61,14 @@ class ShotDistance {
 		Sets the length of shot position vector to `value`.
 	**/
 	public inline function set(value: FloatExpression) {
-		return new OperateActor(ShotPosition, SetLength(value));
+		return new SetActorAttribute(ShotPosition, SetLength(value));
 	}
 
 	/**
 		Adds `value` to the length of shot position vector.
 	**/
 	public inline function add(value: FloatExpression) {
-		return new OperateActor(ShotPosition, AddLength(value));
+		return new AddActorAttribute(ShotPosition, AddLength(value));
 	}
 }
 
@@ -82,13 +82,13 @@ class ShotBearing {
 		Sets the angle of shot position vector to `value`.
 	**/
 	public inline function set(value: AngleExpression) {
-		return new OperateActor(ShotPosition, SetAngle(value));
+		return new SetActorAttribute(ShotPosition, SetAngle(value));
 	}
 
 	/**
 		Adds `value` to the angle of shot position vector.
 	**/
 	public inline function add(value: AngleExpression) {
-		return new OperateActor(ShotPosition, AddAngle(value));
+		return new AddActorAttribute(ShotPosition, AddAngle(value));
 	}
 }

@@ -16,7 +16,7 @@ class ShotVelocity {
 	**/
 	public inline function set(speed: FloatExpression, direction: AngleExpression) {
 		final vec: VecExpression = { length: speed, angle: direction };
-		return new OperateActor(ShotVelocity, SetVector(vec));
+		return new SetActorAttribute(ShotVelocity, SetVector(vec));
 	}
 
 	/**
@@ -24,7 +24,7 @@ class ShotVelocity {
 	**/
 	public inline function add(speed: FloatExpression, direction: AngleExpression) {
 		final vec: VecExpression = { length: speed, angle: direction };
-		return new OperateActor(ShotVelocity, AddVector(vec));
+		return new AddActorAttribute(ShotVelocity, AddVector(vec));
 	}
 }
 
@@ -39,7 +39,7 @@ class CartesianShotVelocity {
 	**/
 	public inline function set(vx: FloatExpression, vy: FloatExpression) {
 		final vec: VecExpression = { x: vx, y: vy };
-		return new OperateActor(ShotVelocity, SetVector(vec));
+		return new SetActorAttribute(ShotVelocity, SetVector(vec));
 	}
 
 	/**
@@ -47,7 +47,7 @@ class CartesianShotVelocity {
 	**/
 	public inline function add(vx: FloatExpression, vy: FloatExpression) {
 		final vec: VecExpression = { x: vx, y: vy };
-		return new OperateActor(ShotVelocity, AddVector(vec));
+		return new AddActorAttribute(ShotVelocity, AddVector(vec));
 	}
 }
 
@@ -61,14 +61,14 @@ class ShotSpeed {
 		Sets the length of shot velocity vector to `value`.
 	**/
 	public inline function set(value: FloatExpression) {
-		return new OperateActor(ShotVelocity, SetLength(value));
+		return new SetActorAttribute(ShotVelocity, SetLength(value));
 	}
 
 	/**
 		Adds `value` to the length of shot velocity vector.
 	**/
 	public inline function add(value: FloatExpression) {
-		return new OperateActor(ShotVelocity, AddLength(value));
+		return new AddActorAttribute(ShotVelocity, AddLength(value));
 	}
 }
 
@@ -82,13 +82,13 @@ class ShotDirection {
 		Sets the angle of shot velocity vector to `value`.
 	**/
 	public inline function set(value: AngleExpression) {
-		return new OperateActor(ShotVelocity, SetAngle(value));
+		return new SetActorAttribute(ShotVelocity, SetAngle(value));
 	}
 
 	/**
 		Adds `value` to the angle of shot velocity vector.
 	**/
 	public inline function add(value: AngleExpression) {
-		return new OperateActor(ShotVelocity, AddAngle(value));
+		return new AddActorAttribute(ShotVelocity, AddAngle(value));
 	}
 }
