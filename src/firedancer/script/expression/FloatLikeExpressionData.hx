@@ -170,7 +170,7 @@ class FloatLikeExpressionData implements ExpressionData {
 		if (thisConstant == 1.0) return other;
 		if (thisConstant == -1.0) return other.unaryMinus();
 
-		final otherConstant = this.tryGetConstant();
+		final otherConstant = other.tryGetConstant();
 		if (otherConstant == 0.0) return (0.0: FloatExpression);
 		if (otherConstant == 1.0) return this;
 		if (otherConstant == -1.0) return this.unaryMinus();
