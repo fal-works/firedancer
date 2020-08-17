@@ -8,13 +8,11 @@ import firedancer.script.api_components.Velocity;
 import firedancer.script.api_components.Shot;
 import firedancer.script.api_components.Random;
 import firedancer.script.expression.IntExpression;
+import firedancer.script.expression.FloatExpression;
+import firedancer.script.expression.AngleExpression;
 import firedancer.script.expression.IntLocalVariableExpression;
 import firedancer.script.expression.FloatLocalVariableExpression;
 import firedancer.script.expression.AngleLocalVariableExpression;
-
-#if debug
-import sneaker.print.Printer.println;
-#end
 
 class Api {
 	/**
@@ -140,6 +138,18 @@ class Api {
 	**/
 	public static inline function angleVar(name: String): AngleLocalVariableExpression
 		return new AngleLocalVariableExpression(name);
+
+	/**
+		Calculates the trigonometric sine of `angle`.
+	**/
+	public static inline function sin(angle: AngleExpression): FloatExpression
+		return angle.sin();
+
+	/**
+		Calculates the trigonometric cosine of `angle`.
+	**/
+	public static inline function cos(angle: AngleExpression): FloatExpression
+		return angle.cos();
 
 	/**
 		Invokes a global event.

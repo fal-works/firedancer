@@ -172,7 +172,25 @@ class BulletPatterns {
 		]).count(24)
 	];
 
-	static final testAst = test(transformTest); // Change this for testing
+
+	static final sinCosTest = [
+		loop([
+			fire([
+				bearingVar.let(),
+				loop([
+					position.cartesian.set(
+						300 * cos(bearingVar),
+						60 * sin(bearingVar)
+					),
+					wait(1),
+					bearingVar.add(4)
+				])
+			]).bind(),
+			wait(4)
+		]).count(16)
+	];
+
+	static final testAst = test(sinCosTest); // Change this for testing
 
 	public static final programPackage = compile(["test" => testAst]);
 	public static final testPattern = programPackage.getProgramByName("test");
