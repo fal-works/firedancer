@@ -27,6 +27,9 @@ abstract AngleLocalVariableExpression(String) {
 		})));
 	}
 
+	@:to public function toString(): String
+		return 'AngleVar($this)';
+
 	@:op(-A)
 	extern inline function unaryMinus(): AngleExpression
 		return get().unaryMinus();

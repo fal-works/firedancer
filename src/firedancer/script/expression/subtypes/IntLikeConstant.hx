@@ -10,6 +10,9 @@ abstract IntLikeConstant(haxe.Int32) from Int from haxe.Int32{
 	public inline function raw(): haxe.Int32
 		return this;
 
+	@:to public function toString(): String
+		return Std.string(this);
+
 	@:op(-A) function unaryMinus(): IntLikeConstant;
 
 	@:op(A + B) static function add(

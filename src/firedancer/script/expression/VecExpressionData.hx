@@ -62,6 +62,9 @@ class VecExpressionData implements ExpressionData {
 			code;
 		}
 	}
+
+	public function toString(): String
+		throw new NotOverriddenException();
 }
 
 @:structInit
@@ -222,6 +225,9 @@ class CartesianVecExpressionData extends VecExpressionData {
 			}
 		}
 	}
+
+	override public function toString(): String
+		return '{ x: ${x.toString()}, y: ${y.toString()} }';
 }
 
 @:structInit
@@ -354,4 +360,7 @@ class PolarVecExpressionData extends VecExpressionData {
 			}
 		}
 	}
+
+	override public function toString(): String
+		return '{ r: ${length.toString()}, θ: ${angle.toString()} }';
 }

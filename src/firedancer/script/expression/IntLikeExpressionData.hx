@@ -199,6 +199,13 @@ class IntLikeExpressionData implements ExpressionData {
 	public extern inline function toEnum()
 		return this.data;
 
+	public function toString(): String {
+		return switch data {
+			case Constant(value): 'IntC(${value.toString()})';
+			case Runtime(expression): 'IntR(${expression.toString()})';
+		}
+	}
+
 	function toFloatLikeExpressionData(constantFactor: Float): FloatLikeExpressionData {
 		final constant = this.tryGetConstant();
 

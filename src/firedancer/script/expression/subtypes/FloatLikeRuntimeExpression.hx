@@ -3,6 +3,7 @@ package firedancer.script.expression.subtypes;
 import firedancer.assembly.AssemblyCode;
 import firedancer.assembly.Instruction;
 import firedancer.assembly.Opcode;
+import firedancer.assembly.OpcodeExtension;
 import firedancer.assembly.Immediate;
 
 typedef FloatLikeRuntimeExpressionEnum = RuntimeExpressionEnum<FloatLikeConstant, FloatLikeExpressionData>;
@@ -21,6 +22,19 @@ abstract FloatLikeRuntimeExpression(
 
 	static function createImmediates(value: Float): Array<Immediate>
 		return [Float(value)];
+
+	@:to public function toString(): String {
+		return switch this {
+			case Variable(loadV):
+				'Var(${OpcodeExtension.toString(loadV)})';
+			case UnaryOperation(_, operand):
+				'UnOp(${operand.toString()})';
+			case BinaryOperation(_, operandA, operandB):
+				'BiOp(${operandA.toString()}, ${operandB.toString()})';
+			case Custom(_):
+				"Custom";
+		}
+	}
 
 	/**
 		Creates an `AssemblyCode` that assigns `this` value to the current volatile float.

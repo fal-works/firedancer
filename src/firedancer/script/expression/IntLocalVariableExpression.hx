@@ -8,6 +8,9 @@ abstract IntLocalVariableExpression(String) {
 	public extern inline function new(name: String)
 		this = name;
 
+	@:to public function toString(): String
+		return 'IntVar($this)';
+
 	@:to function toIntExpression(): IntExpression {
 		return IntExpression.fromEnum(IntLikeExpressionEnum.Runtime(Custom(context -> {
 			final variable = context.localVariables.get(this);

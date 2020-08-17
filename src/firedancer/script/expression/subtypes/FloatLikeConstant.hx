@@ -19,6 +19,9 @@ abstract FloatLikeConstant(FloatLikeConstantData) from FloatLikeConstantData to 
 	@:from static extern inline function fromAngle(value: Angle): FloatLikeConstant
 		return FloatLikeConstantData.fromAngle(value);
 
+	@:to public function toString(): String
+		return this.toString();
+
 	@:op(-A) inline function unaryMinus(): FloatLikeConstant
 		return this.unaryMinus();
 

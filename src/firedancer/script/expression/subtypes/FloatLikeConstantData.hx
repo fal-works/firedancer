@@ -100,4 +100,7 @@ class FloatLikeConstantData {
 	**/
 	public function toImmediate(): Immediate
 		return Float(toImmediateValue());
+
+	public function toString(): String
+		return '{v:$value,f:$factor}';
 }

@@ -22,6 +22,9 @@ abstract FloatLocalVariableExpression(String) {
 		})));
 	}
 
+	@:to public function toString(): String
+		return 'FloatVar($this)';
+
 	@:op(-A)
 	extern inline function unaryMinus(): FloatExpression
 		return get().unaryMinus();

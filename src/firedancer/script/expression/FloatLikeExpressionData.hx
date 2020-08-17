@@ -220,4 +220,11 @@ class FloatLikeExpressionData implements ExpressionData {
 
 	public extern inline function toEnum(): FloatLikeExpressionEnum
 		return this.data;
+
+	public function toString(): String {
+		return switch data {
+			case Constant(value): 'FloatC(${value.toString()})';
+			case Runtime(expression): 'FloatR(${expression.toString()})';
+		}
+	}
 }
