@@ -10,7 +10,12 @@ class AstNode {
 	public var nodeType(default, null): AstNodeType = Other;
 
 	/**
-		@return `true` if `this` or any descendant node contains `Wait` element.
+		Checks that `this` node contains any `Wait` element or kind of that.
+
+		Used for detecting infinite loops, however note that this cannot detect
+		zero or negative runtime value of waiting frames.
+
+		@return `true` if `this` or any descendant node contains `Wait` element or kind of that.
 	**/
 	public function containsWait(): Bool
 		throw new NotOverriddenException();
