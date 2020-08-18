@@ -1,7 +1,6 @@
 package firedancer.script.nodes;
 
 import firedancer.types.ActorAttributeType;
-import firedancer.types.NInt;
 import firedancer.assembly.operation.GeneralOperation;
 import firedancer.assembly.operation.CalcOperation;
 import firedancer.assembly.operation.ReadOperation;
@@ -22,7 +21,7 @@ class SetActorAttribute extends AstNode implements ripper.Data {
 	/**
 		Performs this operation gradually in `frames`.
 	**/
-	public function frames(frames: NInt)
+	public function frames(frames: IntExpression)
 		return new SetActorAttributeLinear(attribute, operation, frames);
 
 	override public inline function containsWait(): Bool
@@ -104,13 +103,13 @@ class SetActorVector extends SetActorAttribute implements ripper.Data {
 class SetActorAttributeLinear extends AstNode {
 	final attribute: ActorAttributeType;
 	final operation: ActorAttributeSetOperation;
-	final frames: NInt;
+	final frames: IntExpression;
 	final loopUnrolling: Bool;
 
 	public function new(
 		attribute: ActorAttributeType,
 		operation: ActorAttributeSetOperation,
-		frames: NInt,
+		frames: IntExpression,
 		loopUnrolling = false
 	) {
 		this.attribute = attribute;
@@ -126,14 +125,31 @@ class SetActorAttributeLinear extends AstNode {
 		return new SetActorAttributeLinear(attribute, operation, frames, true);
 	}
 
-	override public inline function containsWait(): Bool
-		return true;
+	override public inline function containsWait(): Bool {
+		final constFrames = this.frames.tryGetConstant();
+		return if (constFrames.isSome()) 0 < constFrames.unwrap() else true;
+	}
 
 	override public function toAssembly(context: CompileContext): AssemblyCode {
 		final frames = this.frames;
+		final constFrames = frames.tryGetConstant();
+
+		inline function getDivChange(isVec: Bool): AssemblyCode {
+			return if (constFrames.isSome()) {
+				final multVCV = isVec ? MultVecVCV : MultFloatVCV;
+				instruction(multVCV, [Float(1.0 / constFrames.unwrap())]);
+			} else {
+				final divVVV = isVec ? DivVecVVV : DivFloatVVV;
+				final code: AssemblyCode = isVec ? [] : [instruction(SaveFloatV)];
+				final loadFramesAsFloat = (frames : FloatExpression).loadToVolatile(context);
+				code.pushFromArray(loadFramesAsFloat);
+				code.pushInstruction(divVVV);
+				code;
+			};
+		}
 
 		var calcRelative: AssemblyCode; // Calculate total change (before the loop)
-		var multChange: Instruction; // Get change rate (before the loop)
+		var divChange: AssemblyCode; // Get change rate (before the loop)
 		var pushChange: Instruction; // Push change rate (before the loop)
 		var peekChange: Instruction; // Peek change rate (in the loop)
 		var addFromVolatile: Opcode; // Apply change rate (in the loop)
@@ -143,7 +159,7 @@ class SetActorAttributeLinear extends AstNode {
 			case SetVector(vec, mat):
 				if (mat != null) vec = vec.transform(mat);
 
-				multChange = instruction(MultVecVCV, [Float(1.0 / frames)]);
+				divChange = getDivChange(true);
 				pushChange = instruction(PushVecV);
 				peekChange = peekVec(LEN32); // skip the loop counter
 				dropChange = dropVec();
@@ -175,7 +191,7 @@ class SetActorAttributeLinear extends AstNode {
 				}
 
 			case SetLength(length):
-				multChange = instruction(MultFloatVCV, [Float(1.0 / frames)]);
+				divChange = getDivChange(false);
 				pushChange = instruction(PushFloatV);
 				peekChange = peekFloat(LEN32); // skip the loop counter
 				dropChange = dropFloat();
@@ -208,7 +224,7 @@ class SetActorAttributeLinear extends AstNode {
 				}
 
 			case SetAngle(angle):
-				multChange = instruction(MultFloatVCV, [Float(1.0 / frames)]);
+				divChange = getDivChange(false);
 				pushChange = instruction(PushFloatV);
 				peekChange = peekFloat(LEN32); // skip the loop counter
 				dropChange = dropFloat();
@@ -241,16 +257,25 @@ class SetActorAttributeLinear extends AstNode {
 				}
 		}
 
-		final prepare: AssemblyCode = calcRelative.concat([multChange, pushChange]);
+		final prepare: AssemblyCode = calcRelative.concat(divChange).concat([pushChange]);
 
 		final body: AssemblyCode = [
 			breakFrame(),
 			peekChange,
 			instruction(addFromVolatile)
 		];
-		final loopedBody = if (this.loopUnrolling) {
-			loopUnrolled(0...frames, _ -> body);
-		} else loop(context, body, frames);
+		final loopedBody = if (constFrames.isSome()) {
+			if (this.loopUnrolling) {
+				loopUnrolled(0...constFrames.unwrap(), _ -> body);
+			} else {
+				final pushLoopCount = instruction(PushIntC, [Int(constFrames.unwrap())]);
+				constructLoop(pushLoopCount, body);
+			}
+		} else {
+			// frames should be already loaded to int register in getDivChange() if it's not a constant
+			final pushLoopCount = instruction(PushIntV);
+			constructLoop(pushLoopCount, body);
+		};
 
 		final complete: AssemblyCode = [dropChange];
 
@@ -267,7 +292,7 @@ class SetActorVectorLinear extends SetActorAttributeLinear implements ripper.Dat
 	public function new(
 		attribute: ActorAttributeType,
 		vec: VecExpression,
-		frames: NInt,
+		frames: IntExpression,
 		loopUnrolling: Bool,
 		?matrix: Transformation
 	) {

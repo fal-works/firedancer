@@ -107,18 +107,11 @@ class Builder {
 	/**
 		Creates a code instance that repeats `body` in runtime.
 	**/
-	public static function loop(context: CompileContext, body: AssemblyCode, count: IntExpression): AssemblyCode {
+	public static function constructLoop(pushLoopCount: AssemblyCode, body: AssemblyCode) {
 		final bodyLength = body.bytecodeLength().int();
 
-		final countValue = count.tryGetConstant();
-
-		final prepareLoop: AssemblyCode = if (countValue.isSome()) {
-			pushIntC(countValue.unwrap());
-		} else {
-			final code = count.loadToVolatile(context);
-			code.pushInstruction(PushIntV);
-			code;
-		};
+		final prepareLoop: AssemblyCode = [];
+		prepareLoop.pushFromArray(pushLoopCount);
 		prepareLoop.push(countDownJump(bodyLength + Jump.getBytecodeLength()));
 
 		final closeLoop: AssemblyCode = {
@@ -130,6 +123,25 @@ class Builder {
 			body,
 			closeLoop
 		].flatten();
+	}
+
+	/**
+		Creates a code instance that repeats `body` in runtime.
+
+		Use `pushLoopCount()` to avoid evaluating `count` and provide the preparation code instead.
+	**/
+	public static function loop(context: CompileContext, body: AssemblyCode, count: IntExpression): AssemblyCode {
+		final countValue = count.tryGetConstant();
+
+		final pushLoopCount: AssemblyCode = if (countValue.isSome()) {
+			pushIntC(countValue.unwrap());
+		} else {
+			final code = count.loadToVolatile(context);
+			code.pushInstruction(PushIntV);
+			code;
+		};
+
+		return constructLoop(pushLoopCount, body);
 	}
 
 	/**
