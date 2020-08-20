@@ -16,8 +16,8 @@ enum abstract GeneralOperation(Int) to Int {
 		return switch value {
 			case GeneralOperation.Break: Break;
 			case GeneralOperation.CountDownBreak: CountDownBreak;
-			case GeneralOperation.Jump: Jump;
-			case GeneralOperation.CountDownJump: CountDownJump;
+			case GeneralOperation.Goto: Goto;
+			case GeneralOperation.CountDownGoto: CountDownGoto;
 			case GeneralOperation.UseThread: UseThread;
 			case GeneralOperation.UseThreadS: UseThreadS;
 			case GeneralOperation.AwaitThread: AwaitThread;
@@ -77,17 +77,17 @@ enum abstract GeneralOperation(Int) to Int {
 	final CountDownBreak;
 
 	/**
-		Adds a given constant value to the current program counter.
+		Adds the current program counter to a given constant value.
 	**/
-	final Jump;
+	final Goto;
 
 	/**
 		Peeks the top integer (which should be the remaining loop count) from the stack and checks the value.
 		- If `1` or more, decrements the loop counter at the stack top and goes to next.
 		- If `0` or less, drops the loop counter from the stack and
-			adds a given constant value to the current program counter.
+			sets the current program counter to a given constant value.
 	**/
-	final CountDownJump;
+	final CountDownGoto;
 
 	/**
 		Activates a new thread with program ID specified by a given constant integer.
@@ -301,8 +301,8 @@ class GeneralOperationExtension {
 		return switch code {
 			case Break: "break";
 			case CountDownBreak: "count_down_break";
-			case Jump: "jump";
-			case CountDownJump: "count_down_jump";
+			case Goto: "goto";
+			case CountDownGoto: "count_down_goto";
 			case UseThread: "use_thread";
 			case UseThreadS: "use_thread_s";
 			case AwaitThread: "await_thread";
@@ -343,56 +343,4 @@ class GeneralOperationExtension {
 			case Debug: "debug";
 		}
 	}
-
-	/**
-		Creates an `InstructionType` instance that corresponds to `op`.
-	**/
-	public static inline function toInstructionType(op: GeneralOperation): InstructionType {
-		return switch op {
-			case Break: [];
-			case CountDownBreak: [];
-			case Jump: [Int]; // program length to jump
-			case CountDownJump: [Int]; // bytecode length to jump
-			case UseThread | UseThreadS: [Int]; // program ID
-			case AwaitThread: [];
-			case End: [Int]; // end code
-
-			case LoadIntCV: [Int];
-			case LoadFloatCV: [Float];
-			case LoadVecCV: [Vec];
-			case SaveIntV: [];
-			case SaveFloatV: [];
-			case LoadIntLV: [Int]; // address
-			case LoadFloatLV: [Int]; // address
-			case StoreIntCL: [Int, Int]; // address, value
-			case StoreIntVL: [Int]; // address
-			case StoreFloatCL: [Int, Float]; // address, value
-			case StoreFloatVL: [Int]; // address
-
-			case PushIntC: [Int]; // integer to push
-			case PushIntV: [];
-			case PushFloatC: [Float]; // float to push
-			case PushFloatV: [];
-			case PushVecV: [];
-			case PopInt | PopFloat: [];
-			case PeekFloat | PeekVec: [Int]; // bytes to be skipped from the stack top
-			case DropFloat | DropVec: [];
-
-			case FireSimple: [];
-			case FireComplex: [Int]; // FireArgument value
-			case FireSimpleWithCode: [Int]; // fire code
-			case FireComplexWithCode: [Int, Int]; // 1. FireArgument value, 2. fire code
-
-			case GlobalEvent: [];
-			case LocalEvent: [];
-
-			case Debug: [Int]; // type
-		}
-	}
-
-	/**
-		@return The bytecode length in bytes required for an instruction with `op`.
-	**/
-	public static inline function getBytecodeLength(op: GeneralOperation): UInt
-		return toInstructionType(op).bytecodeLength();
 }

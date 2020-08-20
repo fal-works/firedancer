@@ -1,5 +1,7 @@
 package actor;
 
+import firedancer.bytecode.ProgramPackage;
+
 /**
 	Functions internally used in `Army.new()`.
 **/
@@ -8,6 +10,7 @@ class ArmyBuilder {
 
 	public static function createActors(
 		maxEntityCount: UInt,
+		programPackage: ProgramPackage,
 		batch: BatchDraw,
 		tile: Tile,
 		?bullets: ActorAosoa
@@ -19,7 +22,7 @@ class ArmyBuilder {
 
 		final spriteFactory = () -> new BatchSprite(tile);
 
-		final programTable = BulletPatterns.programPackage.programTable;
+		final programTable = programPackage.programTable;
 		final eventHandler = new TestEventHandler();
 		final emitter = new Emitter(Nulls.coalesce(bullets, aosoa));
 

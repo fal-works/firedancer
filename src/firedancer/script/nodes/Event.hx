@@ -15,13 +15,13 @@ class Event extends AstNode implements ripper.Data {
 		return false;
 
 	override public function toAssembly(context: CompileContext): AssemblyCode {
-		final eventOpcode = Opcode.general(switch category {
+		final instruction: Instruction = switch category {
 			case Global: GlobalEvent;
 			case Local: LocalEvent;
-		});
+		};
 
 		final code = eventCode.loadToVolatile(context);
-		code.pushInstruction(eventOpcode);
+		code.push(instruction);
 		return code;
 	}
 }

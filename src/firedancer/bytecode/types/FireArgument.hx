@@ -41,6 +41,9 @@ abstract FireArgument(Int32) from Int32 {
 	@:to extern inline function toImmediate(): Immediate
 		return Int(this);
 
+	public inline function int(): Int
+		return this;
+
 	extern inline function get_bindPosition(): Bool {
 		return (this & bindPositionBitMask) != 0;
 	}

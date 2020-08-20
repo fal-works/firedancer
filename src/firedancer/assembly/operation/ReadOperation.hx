@@ -173,32 +173,4 @@ class ReadOperationExtension {
 			case CalcRelativeShotDirectionVV: "calc_rel_direction_vv";
 		}
 	}
-
-	/**
-		Creates an `InstructionType` instance that corresponds to `op`.
-	**/
-	public static inline function toInstructionType(op: ReadOperation): InstructionType {
-		return switch op {
-			case LoadTargetPositionV | LoadTargetXV | LoadTargetYV: [];
-			case LoadBearingToTargetV: [];
-			case CalcRelativePositionCV | CalcRelativeVelocityCV: [Vec]; // vector before calc
-			case CalcRelativePositionVV | CalcRelativeVelocityVV: [];
-			case CalcRelativeDistanceCV | CalcRelativeBearingCV: [Float]; // value before calc
-			case CalcRelativeSpeedCV | CalcRelativeDirectionCV: [Float]; // value before calc
-			case CalcRelativeDistanceVV | CalcRelativeBearingVV: [];
-			case CalcRelativeSpeedVV | CalcRelativeDirectionVV: [];
-			case CalcRelativeShotPositionCV | CalcRelativeShotVelocityCV: [Vec]; // vector before calc
-			case CalcRelativeShotPositionVV | CalcRelativeShotVelocityVV: [];
-			case CalcRelativeShotDistanceCV | CalcRelativeShotBearingCV: [Float]; // value before calc
-			case CalcRelativeShotSpeedCV | CalcRelativeShotDirectionCV: [Float]; // value before calc
-			case CalcRelativeShotDistanceVV | CalcRelativeShotBearingVV: [];
-			case CalcRelativeShotSpeedVV | CalcRelativeShotDirectionVV: [];
-		}
-	}
-
-	/**
-		@return The bytecode length in bytes required for an instruction with `op`.
-	**/
-	public static inline function getBytecodeLength(op: ReadOperation): UInt
-		return toInstructionType(op).bytecodeLength();
 }

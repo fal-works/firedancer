@@ -38,7 +38,12 @@ class Fire extends AstNode implements ripper.Data {
 		final fireArgument: Maybe<FireArgument> = if (this.pattern.isNone()) {
 			Maybe.none();
 		} else {
+			final nextLabelIdStack = context.nextLabelIdStack;
+			nextLabelIdStack.push(UInt.zero);
 			final programId = context.setCode(this.pattern.unwrap().toAssembly(context));
+			nextLabelIdStack.pop();
+			// TODO: check duplicates
+
 			Maybe.from(FireArgument.from(programId, this.bindPosition));
 		};
 

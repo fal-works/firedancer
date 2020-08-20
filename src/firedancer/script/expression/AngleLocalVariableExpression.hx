@@ -1,6 +1,5 @@
 package firedancer.script.expression;
 
-import firedancer.assembly.operation.CalcOperation;
 import firedancer.script.nodes.DeclareLocalVariable;
 import firedancer.script.nodes.OperateLocalVariable;
 
@@ -15,11 +14,8 @@ abstract AngleLocalVariableExpression(String) {
 			final code = variable.loadToVolatile();
 			switch variable.type {
 				case Int:
-					code.pushInstruction(CastIntToFloatVV);
-					code.pushInstruction(
-						MultFloatVCV,
-						[Float(AngleExpression.constantFactor)]
-					);
+					code.push(CastIntToFloat);
+					code.push(Mult(Rfb, Immediate(Float(AngleExpression.constantFactor))));
 				case Float:
 				case Vec: throw "Cannot cast vector to float.";
 			}

@@ -297,37 +297,4 @@ class WriteOperationExtension {
 			case AddShotDirectionS: "add_shot_direction_s";
 		}
 	}
-
-	/**
-		Creates an `InstructionType` instance that corresponds to `op`.
-	**/
-	public static inline function toInstructionType(op: WriteOperation): InstructionType {
-		return switch op {
-			case SetPositionC | AddPositionC | SetVelocityC | AddVelocityC: [Vec];
-			case SetPositionV | AddPositionV | SetVelocityV | AddVelocityV: [];
-			case AddPositionS | AddVelocityS: [];
-			case SetDistanceC | AddDistanceC | SetBearingC | AddBearingC: [Float];
-			case SetSpeedC | AddSpeedC | SetDirectionC | AddDirectionC: [Float];
-			case SetDistanceV | AddDistanceV | SetBearingV | AddBearingV: [];
-			case SetSpeedV | AddSpeedV | SetDirectionV | AddDirectionV: [];
-			case AddDistanceS | AddBearingS: [];
-			case AddSpeedS | AddDirectionS: [];
-
-			case SetShotPositionC | AddShotPositionC | SetShotVelocityC | AddShotVelocityC: [Vec];
-			case SetShotPositionV | AddShotPositionV | SetShotVelocityV | AddShotVelocityV: [];
-			case AddShotPositionS | AddShotVelocityS: [];
-			case SetShotDistanceC | AddShotDistanceC | SetShotBearingC | AddShotBearingC: [Float];
-			case SetShotSpeedC | AddShotSpeedC | SetShotDirectionC | AddShotDirectionC: [Float];
-			case SetShotDistanceV | AddShotDistanceV | SetShotBearingV | AddShotBearingV: [];
-			case SetShotSpeedV | AddShotSpeedV | SetShotDirectionV | AddShotDirectionV: [];
-			case AddShotDistanceS | AddShotBearingS: [];
-			case AddShotSpeedS | AddShotDirectionS: [];
-		}
-	}
-
-	/**
-		@return The bytecode length in bytes required for an instruction with `op`.
-	**/
-	public static inline function getBytecodeLength(op: WriteOperation): UInt
-		return toInstructionType(op).bytecodeLength();
 }

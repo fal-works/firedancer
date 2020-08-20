@@ -1,9 +1,6 @@
 package firedancer.script.nodes;
 
 import firedancer.types.ActorAttributeType;
-import firedancer.assembly.operation.GeneralOperation;
-import firedancer.assembly.operation.CalcOperation;
-import firedancer.assembly.operation.WriteOperation;
 import firedancer.assembly.Instruction;
 import firedancer.assembly.AssemblyCode;
 import firedancer.bytecode.internal.Constants.LEN32;
@@ -31,27 +28,27 @@ class AddActorAttribute extends AstNode implements ripper.Data {
 		return switch attribute {
 			case Position:
 				switch operation {
-					case AddVector(e): e.use(c, AddPositionC, AddPositionV);
-					case AddLength(e): e.use(c, AddDistanceC, AddDistanceV);
-					case AddAngle(e): e.use(c, AddBearingC, AddBearingV);
+					case AddVector(e): e.use(c, AddVector(Position, Vector, Reg(Rvec)));
+					case AddLength(e): e.use(c, AddVector(Position, Length, Reg(Rf)));
+					case AddAngle(e): e.use(c, AddVector(Position, Angle, Reg(Rf)));
 				}
 			case Velocity:
 				switch operation {
-					case AddVector(e): e.use(c, AddVelocityC, AddVelocityV);
-					case AddLength(e): e.use(c, AddSpeedC, AddSpeedV);
-					case AddAngle(e): e.use(c, AddDirectionC, AddDirectionV);
+					case AddVector(e): e.use(c, AddVector(Velocity, Vector, Reg(Rvec)));
+					case AddLength(e): e.use(c, AddVector(Velocity, Length, Reg(Rf)));
+					case AddAngle(e): e.use(c, AddVector(Velocity, Angle, Reg(Rf)));
 				}
 			case ShotPosition:
 				switch operation {
-					case AddVector(e): e.use(c, AddShotPositionC, AddShotPositionV);
-					case AddLength(e): e.use(c, AddShotDistanceC, AddShotDistanceV);
-					case AddAngle(e): e.use(c, AddShotBearingC, AddShotBearingV);
+					case AddVector(e): e.use(c, AddVector(ShotPosition, Vector, Reg(Rvec)));
+					case AddLength(e): e.use(c, AddVector(ShotPosition, Length, Reg(Rf)));
+					case AddAngle(e): e.use(c, AddVector(ShotPosition, Angle, Reg(Rf)));
 				}
 			case ShotVelocity:
 				switch operation {
-					case AddVector(e): e.use(c, AddShotVelocityC, AddShotVelocityV);
-					case AddLength(e): e.use(c, AddShotSpeedC, AddShotSpeedV);
-					case AddAngle(e): e.use(c, AddShotDirectionC, AddShotDirectionV);
+					case AddVector(e): e.use(c, AddVector(ShotVelocity, Vector, Reg(Rvec)));
+					case AddLength(e): e.use(c, AddVector(Velocity, Length, Reg(Rf)));
+					case AddAngle(e): e.use(c, AddVector(Velocity, Angle, Reg(Rf)));
 				}
 		}
 	}
@@ -62,15 +59,6 @@ class AddActorAttributeLinear extends AstNode implements ripper.Data {
 	final attribute: ActorAttributeType;
 	final operation: ActorAttributeAddOperation;
 	final frames: IntExpression;
-	var loopUnrolling = false;
-
-	/**
-		Unrolls iteration when converting to `AssemblyCode`.
-	**/
-	public inline function unroll(): AddActorAttributeLinear {
-		this.loopUnrolling = true;
-		return this;
-	}
 
 	override public inline function containsWait(): Bool {
 		final constFrames = this.frames.tryGetConstant();
@@ -79,104 +67,59 @@ class AddActorAttributeLinear extends AstNode implements ripper.Data {
 
 	override public function toAssembly(context: CompileContext): AssemblyCode {
 		final frames = this.frames;
-		final constFrames = frames.tryGetConstant();
 
 		inline function getDivChange(isVec: Bool): AssemblyCode {
-			return if (constFrames.isSome()) {
-				final multVCV = isVec ? MultVecVCV : MultFloatVCV;
-				instruction(multVCV, [Float(1.0 / constFrames.unwrap())]);
-			} else {
-				final divVVV = isVec ? DivVecVVV : DivFloatVVV;
-				final code: AssemblyCode = isVec ? [] : [instruction(SaveFloatV)];
-				final loadFramesAsFloat = (frames : FloatExpression).loadToVolatile(context);
-				code.pushFromArray(loadFramesAsFloat);
-				code.pushInstruction(divVVV);
-				code;
-			};
+			final divVVV: Instruction = Div(Reg(isVec ? Rvec : Rfb), Reg(Rf));
+			final code: AssemblyCode = isVec ? [] : [Save(Float)];
+			final loadFramesAsFloat = (frames : FloatExpression).loadToVolatile(context);
+			code.pushFromArray(loadFramesAsFloat);
+			code.push(divVVV);
+			return code;
 		}
 
 		var loadChange: AssemblyCode; // Load the total change (before the loop)
 		var divChange: AssemblyCode; // Get change rate (before the loop)
 		var pushChange: Instruction; // Push change rate (before the loop)
 		var peekChange: Instruction; // Peek change rate (in the loop)
-		var addFromVolatile: Opcode; // Apply change rate (in the loop)
+		var addFromVolatile: Instruction; // Apply change rate (in the loop)
 		var dropChange: Instruction; // Drop change rate (after the loop)
 
 		switch operation {
 			case AddVector(vec):
-				final immediate = vec.tryMakeImmediate();
-				loadChange = if (immediate.isSome()) {
-					instruction(LoadVecCV, [immediate.unwrap()]);
-				} else {
-					vec.loadToVolatile(context);
-				}
+				loadChange = vec.loadToVolatile(context);
 				divChange = getDivChange(true);
-				pushChange = instruction(PushVecV);
-				peekChange = peekVec(LEN32); // skip the loop counter
-				addFromVolatile = switch attribute {
-					case Position: AddPositionV;
-					case Velocity: AddVelocityV;
-					case ShotPosition: AddShotPositionV;
-					case ShotVelocity: AddShotVelocityV;
-				};
-				dropChange = dropVec();
+				pushChange = Push(Reg(Rvec));
+				peekChange = Peek(Vec, LEN32); // skip the loop counter
+				addFromVolatile = AddVector(attribute, Vector, Reg(Rvec));
+				dropChange = Drop(Vec);
 
 			case AddLength(length):
-				loadChange = switch length.toEnum() {
-					case Constant(value):
-						instruction(LoadFloatCV, [value.toImmediate()]);
-					case Runtime(expression):
-						expression.loadToVolatile(context);
-				}
+				loadChange = length.loadToVolatile(context);
 				divChange = getDivChange(false);
-				pushChange = instruction(PushFloatV);
-				peekChange = peekFloat(LEN32); // skip the loop counter
-				addFromVolatile = switch attribute {
-					case Position: AddDistanceV;
-					case Velocity: AddSpeedV;
-					case ShotPosition: AddShotDistanceV;
-					case ShotVelocity: AddShotSpeedV;
-				}
-				dropChange = dropFloat();
+				pushChange = Push(Reg(Rf));
+				peekChange = Peek(Float, LEN32); // skip the loop counter
+				addFromVolatile = AddVector(attribute, Length, Reg(Rf));
+				dropChange = Drop(Float);
 
 			case AddAngle(angle):
-				loadChange = switch angle.toEnum() {
-					case Constant(value):
-						instruction(LoadFloatCV, [value.toImmediate()]);
-					case Runtime(expression):
-						expression.loadToVolatile(context);
-				}
+				loadChange = angle.loadToVolatile(context);
 				divChange = getDivChange(false);
-				pushChange = instruction(PushFloatV);
-				peekChange = peekFloat(LEN32); // skip the loop counter
-				addFromVolatile = switch attribute {
-					case Position: AddBearingV;
-					case Velocity: AddDirectionV;
-					case ShotPosition: AddShotBearingV;
-					case ShotVelocity: AddShotDirectionV;
-				}
-				dropChange = dropFloat();
+				pushChange = Push(Reg(Rf));
+				peekChange = Peek(Float, LEN32); // skip the loop counter
+				addFromVolatile = AddVector(attribute, Angle, Reg(Rf));
+				dropChange = Drop(Float);
 		}
 
 		final prepare: AssemblyCode = loadChange.concat(divChange).concat([pushChange]);
 
 		final body: AssemblyCode = [
-			breakFrame(),
+			Break,
 			peekChange,
-			instruction(addFromVolatile)
+			addFromVolatile
 		];
-		final loopedBody = if (constFrames.isSome()) {
-			if (this.loopUnrolling) {
-				loopUnrolled(0...constFrames.unwrap(), _ -> body);
-			} else {
-				final pushLoopCount = instruction(PushIntC, [Int(constFrames.unwrap())]);
-				constructLoop(pushLoopCount, body);
-			}
-		} else {
-			// frames should be already loaded to int register in getDivChange() if it's not a constant
-			final pushLoopCount = instruction(PushIntV);
-			constructLoop(pushLoopCount, body);
-		};
+
+		// frames should be already loaded to int register in getDivChange() if it's not a constant
+		final loopedBody = constructLoop(context, Push(Reg(Ri)), body);
 
 		final complete: AssemblyCode = [dropChange];
 

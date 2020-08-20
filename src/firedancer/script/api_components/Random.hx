@@ -24,7 +24,7 @@ class Random {
 		Gets a random value between `0` and `1`.
 	**/
 	public inline function ratio(): FloatExpression
-		return FloatExpression.fromEnum(Runtime(Variable(RandomRatioV)));
+		return FloatExpression.fromEnum(Runtime(Variable(RandomRatio)));
 
 	/**
 		Gets a random value between `min` and `max`.
@@ -33,20 +33,14 @@ class Random {
 		min: FloatExpression,
 		max: FloatExpression
 	): FloatExpression {
-		return min + FloatExpression.fromEnum(Runtime(UnaryOperation({
-			constantOperator: Instruction(RandomFloatCV),
-			runtimeOperator: RandomFloatVV
-		}, max - min)));
+		return min + FloatExpression.fromEnum(Runtime(UnaryOperation(Random(Reg(Rf)), max - min)));
 	}
 
 	/**
 		Gets a random value between `-max` and `max`.
 	**/
 	public inline function signed(max: FloatExpression): FloatExpression {
-		return FloatExpression.fromEnum(Runtime(UnaryOperation({
-			constantOperator: Instruction(RandomFloatSignedCV),
-			runtimeOperator: RandomFloatSignedVV
-		}, max)));
+		return FloatExpression.fromEnum(Runtime(UnaryOperation(RandomSigned(Reg(Rf)), max)));
 	}
 }
 
@@ -60,20 +54,14 @@ class RandomAngle {
 		min: AngleExpression,
 		max: AngleExpression
 	): AngleExpression {
-		return min + AngleExpression.fromEnum(Runtime(UnaryOperation({
-			constantOperator: Instruction(RandomFloatCV),
-			runtimeOperator: RandomFloatVV
-		}, max - min)));
+		return min + AngleExpression.fromEnum(Runtime(UnaryOperation(Random(Reg(Rf)), max - min)));
 	}
 
 	/**
 		Gets a random angle between `-max` and `max`.
 	**/
 	public inline function signed(max: AngleExpression): AngleExpression {
-		return max.unaryOperation({
-			constantOperator: Instruction(RandomFloatSignedCV),
-			runtimeOperator: RandomFloatSignedVV
-		});
+		return max.unaryOperation(RandomSigned(Reg(Rf)));
 	}
 
 	/**
@@ -95,19 +83,13 @@ class RandomInt {
 		min: IntExpression,
 		max: IntExpression
 	): IntExpression {
-		return min + IntExpression.fromEnum(Runtime(UnaryOperation({
-			constantOperator: Instruction(RandomIntCV),
-			runtimeOperator: RandomIntVV
-		}, max - min)));
+		return min + IntExpression.fromEnum(Runtime(UnaryOperation(Random(Reg(Ri)), max - min)));
 	}
 
 	/**
 		Gets a random angle between `-max` and `max`.
 	**/
 	public inline function signed(max: IntExpression): IntExpression {
-		return max.unaryOperation({
-			constantOperator: Instruction(RandomIntSignedCV),
-			runtimeOperator: RandomIntSignedVV
-		});
+		return max.unaryOperation(RandomSigned(Reg(Ri)));
 	}
 }

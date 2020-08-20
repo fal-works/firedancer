@@ -2,7 +2,8 @@
 	"indentation": {
 		"character": "tab",
 		"tabWidth": 2,
-		"conditionalPolicy": "alignedNestedIncrease"
+		"conditionalPolicy": "alignedNestedIncrease",
+		"indentCaseLabels": false
 	},
 	"sameLine": {
 		"caseBody": "keep",

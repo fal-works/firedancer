@@ -12,5 +12,5 @@ class End extends AstNode implements ripper.Data {
 		return false;
 
 	override public function toAssembly(context: CompileContext): AssemblyCode
-		return end(endCode);
+		return [End(endCode)];
 }

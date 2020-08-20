@@ -1,6 +1,6 @@
 package firedancer.script.expression;
 
-import firedancer.assembly.Opcode;
+import firedancer.assembly.Instruction;
 import firedancer.assembly.Immediate;
 import firedancer.assembly.AssemblyCode;
 
@@ -70,19 +70,18 @@ abstract GenericExpression(Data) from Data {
 	}
 
 	/**
-		Creates an `AssemblyCode` that runs either `constantOpcode` or `volatileOpcode`
+		Creates an `AssemblyCode` that runs `instruction`
 		receiving `this` value as argument.
 	**/
 	public function use(
 		context: CompileContext,
-		constantOpcode: Opcode,
-		volatileOpcode: Opcode
+		instruction: Instruction
 	): AssemblyCode {
 		return switch this {
-			case IntExpr(expr): expr.use(context, constantOpcode, volatileOpcode);
-			case FloatExpr(expr): expr.use(context, constantOpcode, volatileOpcode);
-			case AngleExpr(expr): expr.use(context, constantOpcode, volatileOpcode);
-			case VecExpr(expr): expr.use(context, constantOpcode, volatileOpcode);
+			case IntExpr(expr): expr.use(context, instruction);
+			case FloatExpr(expr): expr.use(context, instruction);
+			case AngleExpr(expr): expr.use(context, instruction);
+			case VecExpr(expr): expr.use(context, instruction);
 		}
 	}
 

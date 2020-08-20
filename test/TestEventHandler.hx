@@ -1,9 +1,10 @@
 import firedancer.types.EventHandler;
+import sneaker.print.Printer;
 
 class TestEventHandler extends EventHandler {
 	public function new() {}
 
 	override public function onGlobalEvent(eventCode: Int): Void {
-		Sys.println('Invoked global event. (code: $eventCode)');
+		Printer.println('Invoked global event. (code: $eventCode)');
 	}
 }

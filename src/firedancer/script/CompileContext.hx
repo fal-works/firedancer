@@ -23,6 +23,11 @@ class CompileContext {
 	public final localVariables: LocalVariableTable;
 
 	/**
+		Stack for storing the label ID to be used for the next label.
+	**/
+	public var nextLabelIdStack: Array<UInt> = [UInt.zero];
+
+	/**
 		List of `AssemblyCode` that should be able to retrieved by an `UInt` ID.
 	**/
 	final codeList: Array<AssemblyCode> = [];
@@ -207,13 +212,11 @@ class LocalVariableTable {
 		to the current volatile int/float.
 	**/
 	public function loadToVolatile(): AssemblyCode {
-		final opcode = switch this.type {
-			case Int: LoadIntLV;
-			case Float: LoadFloatLV;
+		return switch this.type {
+			case Int: [Load(LocalVariable(address, Int))];
+			case Float: [Load(LocalVariable(address, Float))];
 			case Vec: throw "Local variable of vector type is not supported.";
 		};
-
-		return new Instruction(opcode, [Int(this.address.int())]);
 	}
 
 	/**
@@ -222,31 +225,18 @@ class LocalVariableTable {
 		This does not check the type of `value` and it should be checked/determined before being passed.
 	**/
 	public function setValue(value: GenericExpression): AssemblyCode {
-		var storeCL: GeneralOperation;
-		var storeVL: GeneralOperation;
-
-		switch this.type {
+		final store: Instruction = switch this.type {
 			case Int:
-				storeCL = StoreIntCL;
-				storeVL = StoreIntVL;
+				Store(Reg(Ri), address);
 			case Float:
-				storeCL = StoreFloatCL;
-				storeVL = StoreFloatVL;
+				Store(Reg(Rf), address);
 			case Vec:
 				throw "Local variable of vector type is not supported.";
 		}
 
-		final immediate = value.tryMakeImmediate();
-		final address = this.address.int();
-
-		return if (immediate.isSome()) {
-			new Instruction(
-				storeCL,
-				[Int(address), immediate.unwrap()]
-			);
-		} else [
+		return [
 			value.loadToVolatile(context),
-			[new Instruction(storeVL, [Int(address)])]
+			[store]
 		].flatten();
 	}
 
@@ -254,28 +244,19 @@ class LocalVariableTable {
 		Creates an `AssemblyCode` that adds `value` to the local variable specified by `this`.
 	**/
 	public function addValue(value: GenericExpression): AssemblyCode {
-		var addLCL: CalcOperation;
-		var addLVL: CalcOperation;
-
-		switch this.type {
+		final store:Instruction = switch this.type {
 			case Int:
-				addLCL = AddIntLCL;
-				addLVL = AddIntLVL;
+				Add(LocalVariable(address, Int), Reg(Ri));
 			case Float:
-				addLCL = AddFloatLCL;
-				addLVL = AddFloatLVL;
+				Add(LocalVariable(address, Float), Reg(Rf));
 			case Vec:
 				throw "Local variable of vector type is not supported.";
 		}
 
-		final immediate = value.tryMakeImmediate();
-		final address = this.address.int();
 
-		return if (immediate.isSome()) {
-			new Instruction(addLCL, [Int(address), immediate.unwrap()]);
-		} else [
+		return [
 			value.loadToVolatile(context),
-			[new Instruction(addLVL, [Int(address)])]
+			[store]
 		].flatten();
 	}
 
@@ -290,7 +271,7 @@ class LocalVariableTable {
 			default: throw "Cannot increment local variable that is not an integer.";
 		}
 
-		return new Instruction(IncrementL, [Int(this.address.int())]);
+		return [IncrementL(address)];
 	}
 
 	/**
@@ -304,6 +285,6 @@ class LocalVariableTable {
 			default: throw "Cannot decrement local variable that is not an integer.";
 		}
 
-		return new Instruction(DecrementL, [Int(this.address.int())]);
+		return [DecrementL(address)];
 	}
 }

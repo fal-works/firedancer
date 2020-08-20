@@ -20,8 +20,15 @@ class Loop extends AstNode implements ripper.Data {
 	override public function toAssembly(context: CompileContext): AssemblyCode {
 		if (!this.containsWait()) throw "Infinite loop must contain Wait.";
 
-		final code = this.node.toAssembly(context);
-		code.push(jumpBack(code.bytecodeLength()));
+		final nextLabelIdStack = context.nextLabelIdStack;
+		var nextLabelId = nextLabelIdStack.pop().unwrap();
+		final labelId = nextLabelId++;
+		nextLabelIdStack.push(nextLabelId);
+
+		final code: AssemblyCode = [];
+		code.push(Label(labelId));
+		code.pushFromArray(this.node.toAssembly(context));
+		code.push(GotoLabel(labelId));
 
 		return code;
 	}

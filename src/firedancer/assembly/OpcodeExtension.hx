@@ -8,30 +8,6 @@ import firedancer.assembly.operation.*;
 **/
 class OpcodeExtension {
 	/**
-		Creates an `InstructionType` instance that corresponds to `opcode`.
-	**/
-	public static inline function toInstructionType(opcode: Opcode): InstructionType {
-		return switch opcode.category {
-			case General: GeneralOperation.from(opcode.op).toInstructionType();
-			case Calc: CalcOperation.from(opcode.op).toInstructionType();
-			case Read: ReadOperation.from(opcode.op).toInstructionType();
-			case Write: WriteOperation.from(opcode.op).toInstructionType();
-		}
-	}
-
-	/**
-		@return The bytecode length in bytes required for an instruction with `opcode`.
-	**/
-	public static inline function getBytecodeLength(opcode: Opcode): UInt {
-		return switch opcode.category {
-			case General: GeneralOperation.from(opcode.op).getBytecodeLength();
-			case Calc: CalcOperation.from(opcode.op).getBytecodeLength();
-			case Read: ReadOperation.from(opcode.op).getBytecodeLength();
-			case Write: WriteOperation.from(opcode.op).getBytecodeLength();
-		}
-	}
-
-	/**
 		@return The mnemonic for `opcode`.
 	**/
 	public static inline function toString(opcode: Opcode): String {

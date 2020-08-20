@@ -14,6 +14,6 @@ class Debug extends AstNode implements ripper.Data {
 		return false;
 
 	override public function toAssembly(context: CompileContext): AssemblyCode {
-		return new Instruction(Opcode.general(Debug), [Int(debugCode)]);
+		return [Debug(debugCode)];
 	}
 }

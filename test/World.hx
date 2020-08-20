@@ -1,3 +1,4 @@
+import firedancer.bytecode.ProgramPackage;
 import broker.object.Object;
 import broker.image.Tile;
 import broker.draw.DrawArea;
@@ -36,11 +37,14 @@ class World {
 
 		final targetPositionRef = PositionRef.createImmutable(0, 0.75 * worldHeight);
 
+		final patterns = new BulletPatterns();
+
 		army = WorldBuilder.createArmy(
 			armies,
 			targetPositionRef,
 			worldWidth,
-			worldHeight
+			worldHeight,
+			patterns.programPackage
 		);
 
 		// first agent
@@ -51,7 +55,7 @@ class World {
 			position.y,
 			velocity.x,
 			velocity.y,
-			BulletPatterns.testPattern
+			patterns.testPattern
 		);
 	}
 
@@ -72,7 +76,8 @@ private class WorldBuilder {
 		parent: Object,
 		targetPositionRef: PositionRef,
 		areaWidth: UInt,
-		areaHeight: UInt
+		areaHeight: UInt,
+		programPackage: ProgramPackage
 	) {
 		final agentTile = Tile.fromRgb(0xf0f0f0, 48, 48).toCentered();
 		final agentBatch = new BatchDraw(
@@ -92,12 +97,14 @@ private class WorldBuilder {
 
 		final bullets = ArmyBuilder.createActors(
 			World.maxBulletCount,
+			programPackage,
 			bulletBatch,
 			bulletTile
 		);
 
 		final agents = ArmyBuilder.createActors(
 			World.maxAgentCount,
+			programPackage,
 			agentBatch,
 			agentTile,
 			bullets

@@ -1,6 +1,5 @@
 package firedancer.script.expression;
 
-import firedancer.assembly.Opcode;
 import firedancer.script.nodes.DeclareLocalVariable;
 import firedancer.script.nodes.OperateLocalVariable;
 
@@ -14,7 +13,7 @@ abstract FloatLocalVariableExpression(String) {
 			final variable = context.localVariables.get(this);
 			final code = variable.loadToVolatile();
 			switch variable.type {
-				case Int: code.pushInstruction(Opcode.calc(CastIntToFloatVV));
+				case Int: code.push(CastIntToFloat);
 				case Float:
 				case Vec: throw "Cannot cast vector to float.";
 			}

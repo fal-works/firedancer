@@ -16,12 +16,6 @@ abstract AssemblyCode(Data) from Data to Data {
 		return [instruction];
 
 	/**
-		Pushes a new `Instruction` created from `opcode` and `operands`.
-	**/
-	public function pushInstruction(opcode: Opcode, ?operands: Array<Immediate>): Void
-		this.push(Instruction.create(opcode, operands));
-
-	/**
 		@return The bytecode length in bytes after assembled.
 	**/
 	public function bytecodeLength(): UInt {
@@ -34,7 +28,30 @@ abstract AssemblyCode(Data) from Data to Data {
 		Assembles `this` code into `Program`.
 	**/
 	public function assemble(): Program {
-		final words: WordArray = this.map(instruction -> instruction.toWordArray()).flatten();
+		final labelAddressMap = new Map<UInt, UInt>();
+		final instructions: Array<Instruction> = [];
+		var lengthInBytes = UInt.zero;
+
+		// consume labels
+		for (i in 0...this.length) {
+			final cur = this[i];
+			switch cur {
+				case Label(labelId):
+					labelAddressMap.set(labelId, lengthInBytes);
+				default:
+					instructions.push(cur);
+					lengthInBytes += cur.bytecodeLength();
+			}
+		}
+
+		final words: WordArray = [];
+
+		for (i in 0...instructions.length) {
+			final instruction = instructions[i];
+			final curWords = instruction.toWordArray(labelAddressMap);
+			words.pushFromArray(curWords);
+		}
+
 		return words.toProgram();
 	}
 

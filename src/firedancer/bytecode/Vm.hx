@@ -94,17 +94,17 @@ class Vm {
 								} else {
 									mem.dropInt();
 								}
-							case Jump:
-								final jumpLength = scan.int();
-								scan.pc += jumpLength;
-							case CountDownJump:
+							case Goto:
+								final address = scan.int();
+								scan.pc = address;
+							case CountDownGoto:
 								if (0 < mem.peekInt()) {
 									mem.decrement();
 									scan.pc += LEN32; // skip the operand
 								} else {
 									mem.dropInt();
-									final jumpLength = scan.int();
-									scan.pc += jumpLength;
+									final address = scan.int();
+									scan.pc = address;
 								}
 							case UseThread:
 								final programId = scan.int();
@@ -295,6 +295,8 @@ class Vm {
 								reg.float = reg.float * scan.float();
 							case MultFloatVVV:
 								reg.float = reg.floatBuf * reg.float;
+							case DivFloatVCV:
+								reg.float = reg.float / scan.float();
 							case DivFloatCVV:
 								reg.float = scan.float() / reg.float;
 							case DivFloatVVV:

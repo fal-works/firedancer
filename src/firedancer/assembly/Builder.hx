@@ -10,113 +10,24 @@ import firedancer.assembly.operation.GeneralOperation;
 **/
 class Builder {
 	/**
-		Creates a `PushIntC` instruction.
-	**/
-	public static inline function pushIntC(v: Int): Instruction {
-		return new Instruction(PushIntC, [Int(v)]);
-	}
-
-	/**
-		Creates a `PushIntV` instruction.
-	**/
-	public static inline function pushIntV(): Instruction {
-		return new Instruction(PushIntV, []);
-	}
-
-	/**
-		Creates a `PeekFloat` instruction.
-		@param bytesToSkip Bytes to be skipped from the stack top. `0` for peeking from the top.
-	**/
-	public static inline function peekFloat(bytesToSkip: Int = 0): Instruction {
-		return new Instruction(PeekFloat, [Int(bytesToSkip)]);
-	}
-
-	/**
-		Creates a `DropFloat` instruction.
-	**/
-	public static inline function dropFloat(): Instruction {
-		return new Instruction(DropFloat, []);
-	}
-
-	/**
-		Creates a `PeekVec` instruction.
-		@param bytesToSkip Bytes to be skipped from the stack top. `0` for peeking from the top.
-	**/
-	public static inline function peekVec(bytesToSkip: Int = 0): Instruction {
-		return new Instruction(PeekVec, [Int(bytesToSkip)]);
-	}
-
-	/**
-		Creates a `DropVec` instruction.
-	**/
-	public static inline function dropVec(): Instruction {
-		return new Instruction(DropVec, []);
-	}
-
-	/**
-		Creates a `Break` instruction.
-	**/
-	public static inline function breakFrame(): Instruction {
-		return new Instruction(Break, []);
-	}
-
-	/**
-		Creates a `CountDownBreak` instruction.
-	**/
-	public static inline function countDownbreak(): Instruction {
-		return new Instruction(CountDownBreak, []);
-	}
-
-	/**
-		Creates a `Jump` instruction with a positive argument.
-	**/
-	public static inline function jump(lengthInBytes: UInt): Instruction {
-		#if debug
-		if (lengthInBytes != lengthInBytes & 0xffffffff)
-			throw 'Invalid value: $lengthInBytes';
-		#end
-
-		return new Instruction(Jump, [Int(lengthInBytes.int())]);
-	}
-
-	/**
-		Creates a `Jump` instruction with a negative argument.
-	**/
-	public static inline function jumpBack(lengthInBytes: UInt): Instruction {
-		final jumpBackLength = Jump.toInstructionType().bytecodeLength();
-		final totalBackLength = -jumpBackLength - lengthInBytes.int();
-
-		#if debug
-		if (totalBackLength != totalBackLength & 0xffffffff)
-			throw 'Invalid value: $lengthInBytes';
-		#end
-
-		return new Instruction(Jump, [Int(totalBackLength)]);
-	}
-
-	/**
-		Creates a `CountDownJump` instruction.
-	**/
-	public static inline function countDownJump(lengthInBytes: UInt): Instruction {
-		return new Instruction(
-			CountDownJump,
-			[Int(lengthInBytes.int())]
-		);
-	}
-
-	/**
 		Creates a code instance that repeats `body` in runtime.
 	**/
-	public static function constructLoop(pushLoopCount: AssemblyCode, body: AssemblyCode) {
-		final bodyLength = body.bytecodeLength().int();
+	public static function constructLoop(context: CompileContext, pushLoopCount: AssemblyCode, body: AssemblyCode) {
+		final nextLabelIdStack = context.nextLabelIdStack;
+		var nextLabelId = nextLabelIdStack.pop().unwrap();
+		final startLabelId = nextLabelId++;
+		final endLabelId = nextLabelId++;
+		nextLabelIdStack.push(nextLabelId);
 
 		final prepareLoop: AssemblyCode = [];
 		prepareLoop.pushFromArray(pushLoopCount);
-		prepareLoop.push(countDownJump(bodyLength + Jump.getBytecodeLength()));
+		prepareLoop.push(Label(startLabelId));
+		prepareLoop.push(CountDownGotoLabel(endLabelId));
 
-		final closeLoop: AssemblyCode = {
-			jumpBack(body.bytecodeLength() + CountDownJump.getBytecodeLength());
-		};
+		final closeLoop: AssemblyCode = [
+			GotoLabel(startLabelId),
+			Label(endLabelId)
+		];
 
 		return [
 			prepareLoop,
@@ -128,20 +39,13 @@ class Builder {
 	/**
 		Creates a code instance that repeats `body` in runtime.
 
-		Use `pushLoopCount()` to avoid evaluating `count` and provide the preparation code instead.
+		Use `constructLoop()` to avoid evaluating `count` and provide the preparation code instead.
 	**/
 	public static function loop(context: CompileContext, body: AssemblyCode, count: IntExpression): AssemblyCode {
-		final countValue = count.tryGetConstant();
+		final pushLoopCount: AssemblyCode = count.loadToVolatile(context);
+		pushLoopCount.push(Push(Reg(Ri)));
 
-		final pushLoopCount: AssemblyCode = if (countValue.isSome()) {
-			pushIntC(countValue.unwrap());
-		} else {
-			final code = count.loadToVolatile(context);
-			code.pushInstruction(PushIntV);
-			code;
-		};
-
-		return constructLoop(pushLoopCount, body);
+		return constructLoop(context, pushLoopCount, body);
 	}
 
 	/**
@@ -162,45 +66,16 @@ class Builder {
 		fireCode: Int = 0
 	): Instruction {
 		return if (fireArgument.isNone()) {
-			if (fireCode == 0) {
-				new Instruction(FireSimple, []);
-			} else {
-				new Instruction(
-					FireSimpleWithCode,
-					[Int(fireCode)]
-				);
+			switch fireCode {
+				case 0: FireSimple;
+				default: FireSimpleWithCode(fireCode);
 			}
 		} else {
 			final arg = fireArgument.unwrap();
-			if (fireCode == 0) {
-				new Instruction(FireComplex, [arg]);
-			} else {
-				new Instruction(
-					FireComplexWithCode,
-					[arg, Int(fireCode)]
-				);
+			switch fireCode {
+				case 0: FireComplex(arg);
+				default: FireComplexWithCode(arg, fireCode);
 			}
 		}
-	}
-
-	/**
-		Creates a `UseThread` instruction.
-	**/
-	public static inline function useThread(programId: Int): Instruction {
-		return new Instruction(UseThread, [Int(programId)]);
-	}
-
-	/**
-		Creates an `AwaitThread` instruction.
-	**/
-	public static inline function awaitThread(): Instruction {
-		return new Instruction(AwaitThread, []);
-	}
-
-	/**
-		Creates an `End` instruction.
-	**/
-	public static inline function end(endCode: Int): Instruction {
-		return new Instruction(End, [Int(endCode)]);
 	}
 }

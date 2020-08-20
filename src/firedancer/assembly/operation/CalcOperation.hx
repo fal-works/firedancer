@@ -37,6 +37,7 @@ enum abstract CalcOperation(Int) to Int {
 			case CalcOperation.MinusFloatV: MinusFloatV;
 			case CalcOperation.MultFloatVCV: MultFloatVCV;
 			case CalcOperation.MultFloatVVV: MultFloatVVV;
+			case CalcOperation.DivFloatVCV: DivFloatVCV;
 			case CalcOperation.DivFloatCVV: DivFloatCVV;
 			case CalcOperation.DivFloatVVV: DivFloatVVV;
 			case CalcOperation.ModFloatVCV: ModFloatVCV;
@@ -186,6 +187,11 @@ enum abstract CalcOperation(Int) to Int {
 		Multiplies the last saved volatile float and the current volatile float, and reassigns it to the volatile float.
 	**/
 	final MultFloatVVV;
+
+	/**
+		Divides the current volatile float by a given constant float.
+	**/
+	final DivFloatVCV;
 
 	/**
 		Divides a given constant float by the current volatile float and reassigns it to the volatile float.
@@ -387,6 +393,7 @@ class CalcOperationExtension {
 			case ModFloatCVV: "mod_float_cvv";
 			case ModFloatVVV: "mod_float_vvv";
 			case DivFloatCVV: "div_float_cvv";
+			case DivFloatVCV: "div_float_vcv";
 			case DivFloatVVV: "div_float_vvv";
 
 			case MinusVecV: "minus_vec_v";
@@ -418,72 +425,4 @@ class CalcOperationExtension {
 			case AddFloatLVL: "add_float_lvl";
 		}
 	}
-
-	/**
-		Creates an `InstructionType` instance that corresponds to `op`.
-	**/
-	public static inline function toInstructionType(op: CalcOperation): InstructionType {
-		return switch op {
-			case AddIntVCV: [Int]; // value to add
-			case AddIntVVV: [];
-			case SubIntVCV: [Int]; // value to subtract
-			case SubIntCVV: [Int]; // value from which to subtract
-			case SubIntVVV: [];
-			case MinusIntV: [];
-			case MultIntVVV: [];
-			case MultIntVCV: [Int]; // multiplier value
-			case ModIntVCV: [Int]; // divisor
-			case ModIntCVV: [Int]; // value to be divided
-			case ModIntVVV: [];
-			case DivIntVCV: [Int]; // divisor value
-			case DivIntCVV: [Int]; // value to be divided
-			case DivIntVVV: [];
-
-			case AddFloatVCV: [Float]; // value to add
-			case AddFloatVVV: [];
-			case SubFloatVCV: [Float]; // value to subtract
-			case SubFloatCVV: [Float]; // value from which to subtract
-			case SubFloatVVV: [];
-			case MinusFloatV: [];
-			case MultFloatVVV: [];
-			case MultFloatVCV: [Float]; // multiplier value
-			case ModFloatVCV: [Float]; // divisor
-			case ModFloatCVV: [Float]; // value to be divided
-			case ModFloatVVV: [];
-			case DivFloatCVV: [Float]; // value to be divided
-			case DivFloatVVV: [];
-
-			case MinusVecV: [];
-			case MultVecVCV: [Float]; // multiplier value
-			case MultVecVVV: [];
-			case DivVecVVV: [];
-
-			case CastIntToFloatVV | CastCartesianVV | CastPolarVV: [];
-
-			case RandomRatioV: [];
-			case RandomFloatCV: [Float];
-			case RandomFloatVV: [];
-			case RandomFloatSignedCV: [Float];
-			case RandomFloatSignedVV: [];
-			case RandomIntCV: [Int];
-			case RandomIntVV: [];
-			case RandomIntSignedCV: [Int];
-			case RandomIntSignedVV: [];
-			case Cos: [];
-			case Sin: [];
-
-			case AddIntLCL: [Int, Int]; // address, value to add
-			case AddIntLVL: [Int]; // address
-			case IncrementL: [Int]; // address
-			case DecrementL: [Int]; // address
-			case AddFloatLCL: [Int, Float]; // address, value to add
-			case AddFloatLVL: [Int]; // address
-		}
-	}
-
-	/**
-		@return The bytecode length in bytes required for an instruction with `op`.
-	**/
-	public static inline function getBytecodeLength(op: CalcOperation): UInt
-		return toInstructionType(op).bytecodeLength();
 }

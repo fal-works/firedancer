@@ -1,10 +1,6 @@
 package firedancer.script.nodes;
 
 import firedancer.types.ActorAttributeType;
-import firedancer.assembly.operation.GeneralOperation;
-import firedancer.assembly.operation.CalcOperation;
-import firedancer.assembly.operation.ReadOperation;
-import firedancer.assembly.operation.WriteOperation;
 import firedancer.assembly.Instruction;
 import firedancer.assembly.AssemblyCode;
 import firedancer.bytecode.internal.Constants.LEN32;
@@ -35,33 +31,33 @@ class SetActorAttribute extends AstNode implements ripper.Data {
 				switch operation {
 					case SetVector(e, mat):
 						if (mat != null) e = e.transform(mat);
-						e.use(c, SetPositionC, SetPositionV);
-					case SetLength(e): e.use(c, SetDistanceC, SetDistanceV);
-					case SetAngle(e): e.use(c, SetBearingC, SetBearingV);
+						e.use(c, SetVector(Position, Vector, Reg(Rvec)));
+					case SetLength(e): e.use(c, SetVector(Position, Length, Reg(Rf)));
+					case SetAngle(e): e.use(c, SetVector(Position, Angle, Reg(Rf)));
 				}
 			case Velocity:
 				switch operation {
 					case SetVector(e, mat):
 						if (mat != null) e = e.transform(mat);
-						e.use(c, SetVelocityC, SetVelocityV);
-					case SetLength(e): e.use(c, SetSpeedC, SetSpeedV);
-					case SetAngle(e): e.use(c, SetDirectionC, SetDirectionV);
+						e.use(c, SetVector(Velocity, Vector, Reg(Rvec)));
+					case SetLength(e): e.use(c, SetVector(Velocity, Length, Reg(Rvec)));
+					case SetAngle(e): e.use(c, SetVector(Velocity, Angle, Reg(Rvec)));
 				}
 			case ShotPosition:
 				switch operation {
 					case SetVector(e, mat):
 						if (mat != null) e = e.transform(mat);
-						e.use(c, SetShotPositionC, SetShotPositionV);
-					case SetLength(e): e.use(c, SetShotDistanceC, SetShotDistanceV);
-					case SetAngle(e): e.use(c, SetShotBearingC, SetShotBearingV);
+						e.use(c, SetVector(ShotPosition, Vector, Reg(Rvec)));
+					case SetLength(e): e.use(c, SetVector(ShotPosition, Length, Reg(Rf)));
+					case SetAngle(e): e.use(c, SetVector(ShotPosition, Angle, Reg(Rf)));
 				}
 			case ShotVelocity:
 				switch operation {
 					case SetVector(e, mat):
 						if (mat != null) e = e.transform(mat);
-						e.use(c, SetShotVelocityC, SetShotVelocityV);
-					case SetLength(e): e.use(c, SetShotSpeedC, SetShotSpeedV);
-					case SetAngle(e): e.use(c, SetShotDirectionC, SetShotDirectionV);
+						e.use(c, SetVector(ShotVelocity, Vector, Reg(Rvec)));
+					case SetLength(e): e.use(c, SetVector(ShotVelocity, Length, Reg(Rvec)));
+					case SetAngle(e): e.use(c, SetVector(ShotVelocity, Angle, Reg(Rvec)));
 				}
 		}
 	}
@@ -135,15 +131,12 @@ class SetActorAttributeLinear extends AstNode {
 		final constFrames = frames.tryGetConstant();
 
 		inline function getDivChange(isVec: Bool): AssemblyCode {
-			return if (constFrames.isSome()) {
-				final multVCV = isVec ? MultVecVCV : MultFloatVCV;
-				instruction(multVCV, [Float(1.0 / constFrames.unwrap())]);
-			} else {
-				final divVVV = isVec ? DivVecVVV : DivFloatVVV;
-				final code: AssemblyCode = isVec ? [] : [instruction(SaveFloatV)];
+			return {
+				final divVVV: Instruction = Div(Reg(isVec ? Rvec : Rfb), Reg(Rf));
+				final code: AssemblyCode = isVec ? [] : [Save(Float)];
 				final loadFramesAsFloat = (frames : FloatExpression).loadToVolatile(context);
 				code.pushFromArray(loadFramesAsFloat);
-				code.pushInstruction(divVVV);
+				code.push(divVVV);
 				code;
 			};
 		}
@@ -152,7 +145,7 @@ class SetActorAttributeLinear extends AstNode {
 		var divChange: AssemblyCode; // Get change rate (before the loop)
 		var pushChange: Instruction; // Push change rate (before the loop)
 		var peekChange: Instruction; // Peek change rate (in the loop)
-		var addFromVolatile: Opcode; // Apply change rate (in the loop)
+		var addFromVolatile: Instruction; // Apply change rate (in the loop)
 		var dropChange: Instruction; // Drop change rate (after the loop)
 
 		switch operation {
@@ -160,121 +153,57 @@ class SetActorAttributeLinear extends AstNode {
 				if (mat != null) vec = vec.transform(mat);
 
 				divChange = getDivChange(true);
-				pushChange = instruction(PushVecV);
-				peekChange = peekVec(LEN32); // skip the loop counter
-				dropChange = dropVec();
+				pushChange = Push(Reg(Rvec));
+				peekChange = Peek(Vec, LEN32); // skip the loop counter
+				dropChange = Drop(Vec);
 
-				addFromVolatile = switch attribute {
-					case Position: AddPositionV;
-					case Velocity: AddVelocityV;
-					case ShotPosition: AddShotPositionV;
-					case ShotVelocity: AddShotVelocityV;
-				};
+				addFromVolatile = SetVector(attribute, Vector, Reg(Rvec));
 
-				final immediate = vec.tryMakeImmediate();
-				if (immediate.isSome()) {
-					final calcRelativeCV: ReadOperation = switch attribute {
-						case Position: CalcRelativePositionCV;
-						case Velocity: CalcRelativeVelocityCV;
-						case ShotPosition: CalcRelativeShotPositionCV;
-						case ShotVelocity: CalcRelativeShotVelocityCV;
-					};
-					calcRelative = instruction(calcRelativeCV, [immediate.unwrap()]);
-				} else {
-					final calcRelativeVV: ReadOperation = switch attribute {
-						case Position: CalcRelativePositionVV;
-						case Velocity: CalcRelativeVelocityVV;
-						case ShotPosition: CalcRelativeShotPositionVV;
-						case ShotVelocity: CalcRelativeShotVelocityVV;
-					};
-					calcRelative = [vec.loadToVolatile(context), [instruction(calcRelativeVV)]].flatten();
-				}
+				final calcRelativeVV: Instruction = CalcRelative(attribute, Vector, Reg(Rvec));
+				calcRelative = [vec.loadToVolatile(context), [calcRelativeVV]].flatten();
 
 			case SetLength(length):
 				divChange = getDivChange(false);
-				pushChange = instruction(PushFloatV);
-				peekChange = peekFloat(LEN32); // skip the loop counter
-				dropChange = dropFloat();
+				pushChange = Push(Reg(Rf));
+				peekChange = Peek(Float, LEN32); // skip the loop counter
+				dropChange = Drop(Float);
 
-				addFromVolatile = switch attribute {
-					case Position: AddDistanceV;
-					case Velocity: AddSpeedV;
-					case ShotPosition: AddShotDistanceV;
-					case ShotVelocity: AddShotSpeedV;
-				}
+				addFromVolatile = AddVector(attribute, Length, Reg(Rf));
 
-				switch length.toEnum() {
-					case Constant(value):
-						final operation:ReadOperation = switch attribute {
-							case Position: CalcRelativeDistanceCV;
-							case Velocity: CalcRelativeSpeedCV;
-							case ShotPosition: CalcRelativeShotDistanceCV;
-							case ShotVelocity: CalcRelativeShotSpeedCV;
-						};
-						calcRelative = instruction(operation, [value.toImmediate()]);
-					case Runtime(expression):
-						final calcRelativeVV:ReadOperation = switch attribute {
-							case Position: CalcRelativeDistanceVV;
-							case Velocity: CalcRelativeSpeedVV;
-							case ShotPosition: CalcRelativeShotDistanceVV;
-							case ShotVelocity: CalcRelativeShotDirectionVV;
-						}
-						calcRelative = expression.loadToVolatile(context);
-						calcRelative.push(instruction(calcRelativeVV));
-				}
+				final calcRelativeVV: Instruction = CalcRelative(attribute, Length, Reg(Rf));
+				calcRelative = length.loadToVolatile(context);
+				calcRelative.push(calcRelativeVV);
 
 			case SetAngle(angle):
 				divChange = getDivChange(false);
-				pushChange = instruction(PushFloatV);
-				peekChange = peekFloat(LEN32); // skip the loop counter
-				dropChange = dropFloat();
+				pushChange = Push(Reg(Rf));
+				peekChange = Peek(Float, LEN32); // skip the loop counter
+				dropChange = Drop(Float);
 
-				addFromVolatile = switch attribute {
-					case Position: AddBearingV;
-					case Velocity: AddDirectionV;
-					case ShotPosition: AddShotBearingV;
-					case ShotVelocity: AddShotDirectionV;
-				}
+				addFromVolatile = AddVector(attribute, Angle, Reg(Rf));
 
-				switch angle.toEnum() {
-					case Constant(value):
-						final operation:ReadOperation = switch attribute {
-							case Position: CalcRelativeBearingCV;
-							case Velocity: CalcRelativeDirectionCV;
-							case ShotPosition: CalcRelativeShotBearingCV;
-							case ShotVelocity: CalcRelativeShotDirectionCV;
-						};
-						calcRelative = instruction(operation, [value.toImmediate()]);
-					case Runtime(expression):
-						final calcRelativeVV:ReadOperation = switch attribute {
-							case Position: CalcRelativeBearingVV;
-							case Velocity: CalcRelativeDirectionVV;
-							case ShotPosition: CalcRelativeShotBearingVV;
-							case ShotVelocity: CalcRelativeShotDirectionVV;
-						}
-						calcRelative = expression.loadToVolatile(context);
-						calcRelative.push(instruction(calcRelativeVV));
-				}
+				final calcRelativeVV:Instruction = CalcRelative(attribute, Angle, Reg(Rf));
+				calcRelative = angle.loadToVolatile(context);
+				calcRelative.push(calcRelativeVV);
 		}
 
 		final prepare: AssemblyCode = calcRelative.concat(divChange).concat([pushChange]);
 
 		final body: AssemblyCode = [
-			breakFrame(),
+			Break,
 			peekChange,
-			instruction(addFromVolatile)
+			addFromVolatile
 		];
 		final loopedBody = if (constFrames.isSome()) {
 			if (this.loopUnrolling) {
 				loopUnrolled(0...constFrames.unwrap(), _ -> body);
 			} else {
-				final pushLoopCount = instruction(PushIntC, [Int(constFrames.unwrap())]);
-				constructLoop(pushLoopCount, body);
+				final pushLoopCount = Push(Immediate(Int(constFrames.unwrap())));
+				constructLoop(context, pushLoopCount, body);
 			}
 		} else {
 			// frames should be already loaded to int register in getDivChange() if it's not a constant
-			final pushLoopCount = instruction(PushIntV);
-			constructLoop(pushLoopCount, body);
+			constructLoop(context, Push(Reg(Ri)), body);
 		};
 
 		final complete: AssemblyCode = [dropChange];

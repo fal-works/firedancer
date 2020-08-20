@@ -22,27 +22,10 @@ class Wait extends AstNode implements ripper.Data {
 
 	override public function toAssembly(context: CompileContext): AssemblyCode {
 		final injectionCode = context.getInjectionCode();
-		final loopBody: AssemblyCode = injectionCode.concat([breakFrame()]);
+		final loopBody: AssemblyCode = injectionCode.concat([Break]);
 
-		switch frames.toEnum() {
-			case Constant(constFrames):
-				final framesValue = constFrames.raw();
-				final totalLength = framesValue * loopBody.bytecodeLength();
-
-				if (totalLength <= unrollThreshold)
-					return loopUnrolled(0...framesValue, _ -> loopBody);
-
-				if (injectionCode.length == 0)
-					return [pushIntC(framesValue), countDownbreak()];
-
-			default:
-				if (injectionCode.length == 0) {
-					return [
-						frames.loadToVolatile(context),
-						[pushIntV(), countDownbreak()]
-					].flatten();
-				}
-		}
+		if (injectionCode.length == 0)
+			return [frames.loadToVolatile(context), [Push(Reg(Ri)), CountDownBreak]].flatten();
 
 		return loop(context, loopBody, frames);
 	}

@@ -1,11 +1,10 @@
 package firedancer.script.nodes;
 
+import firedancer.assembly.Instruction;
 import firedancer.script.expression.AngleExpression;
 import firedancer.script.expression.FloatExpression;
 import firedancer.script.expression.IntExpression;
-import firedancer.assembly.Instruction.create as instruction;
 import firedancer.assembly.ValueType;
-import firedancer.assembly.operation.GeneralOperation;
 import firedancer.script.expression.GenericExpression;
 
 /**
@@ -45,34 +44,22 @@ class DeclareLocalVariable extends AstNode {
 		return false;
 
 	override public function toAssembly(context: CompileContext): AssemblyCode {
-		var valueType: ValueType;
-		var storeCL: GeneralOperation;
-		var storeVL: GeneralOperation;
+		inline function getAddress(valueType: ValueType): UInt
+			return context.localVariables.push(this.name, valueType);
 
-		switch initialValue.toEnum() {
+		final storeVL: Instruction = switch initialValue.toEnum() {
 			case IntExpr(_):
-				valueType = Int;
-				storeCL = StoreIntCL;
-				storeVL = StoreIntVL;
+				Store(Reg(Ri), getAddress(Int));
 			case FloatExpr(_) | AngleExpr(_):
-				valueType = Float;
-				storeCL = StoreFloatCL;
-				storeVL = StoreFloatVL;
+				Store(Reg(Rf), getAddress(Float));
 			case VecExpr(_):
 				throw "Local variable of vector type is not supported.";
 		}
 
-		final address: Int = context.localVariables.push(this.name, valueType);
-		final immediate = initialValue.tryMakeImmediate();
-
-		return if (immediate.isSome()) {
-			final store = Opcode.general(storeCL);
-			instruction(store, [Int(address), immediate.unwrap()]);
-		} else {
-			final store = Opcode.general(storeVL);
+		return {
 			[
 				initialValue.loadToVolatile(context),
-				[instruction(store, [Int(address)])]
+				[storeVL]
 			].flatten();
 		}
 	}
