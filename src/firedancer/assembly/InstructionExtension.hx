@@ -765,11 +765,11 @@ class InstructionExtension {
 			// ---- other ---------------------------------------------------
 
 		case GlobalEvent:
-			'global event v->n';
+			'global event ri -> n';
 		case LocalEvent:
-			'local event v->n';
+			'local event ri -> n';
 		case Debug(debugCode):
-			'debug c->n ${itoa(debugCode)}';
+			'debug ${itoa(debugCode)} -> n';
 
 			// ---- calc values ---------------------------------------------
 
@@ -815,9 +815,11 @@ class InstructionExtension {
 			'cos rf -> rf';
 
 		case IncrementL(address):
-			'increment l->l ${itoa(address)}';
+			final inOutStr = varToString(address, Int);
+			'increment $inOutStr -> $inOutStr';
 		case DecrementL(address):
-			'decrement l->l ${itoa(address)}';
+			final inOutStr = varToString(address, Int);
+			'decrement $inOutStr -> $inOutStr';
 
 			// ---- read actor data
 
