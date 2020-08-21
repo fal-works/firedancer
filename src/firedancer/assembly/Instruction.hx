@@ -14,15 +14,15 @@ enum Instruction {
 	Label(labelId: UInt);
 	GotoLabel(labelId: UInt);
 	CountDownGotoLabel(labelId: UInt);
-	UseThread(programId: UInt, output: NullOrStack);
+	UseThread(programId: UInt, output: Operand);
 	AwaitThread;
 	End(endCode: Int);
 	// ---- move values ---------------------------------------------
-	Load(input: ImmOrVar);
+	Load(input: Operand);
 	Save(type: ValueType);
-	Store(input: ImmOrReg, address: UInt);
+	Store(input: Operand, address: UInt);
 	// ---- read/write stack ----------------------------------------
-	Push(input: ImmOrReg);
+	Push(input: Operand);
 	Pop(type: ValueType);
 	Peek(type: ValueType, bytesToSkip: Int);
 	Drop(type: ValueType);
@@ -36,18 +36,18 @@ enum Instruction {
 	LocalEvent;
 	Debug(debugCode: Int);
 	// ---- calc values ----------------------------------------------
-	Add(inputA: RegOrVar, inputB: ImmOrReg);
-	Sub(inputA: ImmOrReg, inputB: ImmOrReg);
-	Minus(reg: DataRegisterSpecifier);
-	Mult(regA: DataRegisterSpecifier, inputB: ImmOrReg);
-	Div(inputA: ImmOrReg, inputB: ImmOrReg);
-	Mod(inputA: ImmOrReg, inputB: ImmOrReg);
+	Add(input: OperandPair);
+	Sub(input: OperandPair);
+	Minus(input: Operand);
+	Mult(inputA: Operand, inputB: Operand);
+	Div(inputA: Operand, inputB: Operand);
+	Mod(inputA: Operand, inputB: Operand);
 	CastIntToFloat;
 	CastCartesian;
 	CastPolar;
 	RandomRatio;
-	Random(max: ImmOrReg);
-	RandomSigned(maxMagnitude: ImmOrReg);
+	Random(max: Operand);
+	RandomSigned(maxMagnitude: Operand);
 	Sin;
 	Cos;
 	IncrementL(address: UInt);
@@ -60,18 +60,18 @@ enum Instruction {
 	CalcRelative(
 		attrType: ActorAttributeType,
 		cmpType: ActorAttributeComponentType,
-		input: ImmOrReg
+		input: Operand
 	);
 	// ---- write actor data ------------------------------------------
 	SetVector(
 		attrType: ActorAttributeType,
 		cmpType: ActorAttributeComponentType,
-		input: ImmOrRegOrStack
+		input: Operand
 	);
 	AddVector(
 		attrType: ActorAttributeType,
 		cmpType: ActorAttributeComponentType,
-		input: ImmOrRegOrStack
+		input: Operand
 	);
 	None;
 }

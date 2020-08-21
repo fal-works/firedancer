@@ -36,7 +36,7 @@ class FloatLikeExpressionData implements ExpressionData {
 	public function loadToVolatile(context: CompileContext): AssemblyCode {
 		return switch this.data {
 			case Constant(value):
-				Load(Immediate(Float(value.toImmediateValue())));
+				Load(Float(Imm(value.toImmediateValue())));
 			case Runtime(expression):
 				expression.loadToVolatile(context);
 		}
@@ -88,7 +88,7 @@ class FloatLikeExpressionData implements ExpressionData {
 	}
 
 	public function unaryMinus(): FloatLikeExpressionData
-		return unaryOperation(Minus(Rf));
+		return unaryOperation(Minus(Float(Reg)));
 
 	public function cos(): FloatLikeExpressionData
 		return unaryOperation(Cos);
@@ -97,19 +97,19 @@ class FloatLikeExpressionData implements ExpressionData {
 		return unaryOperation(Sin);
 
 	public function add(other: FloatLikeExpressionData): FloatLikeExpressionData
-		return binaryOperation(Add(Reg(Rfb), Reg(Rf)), other);
+		return binaryOperation(Add(Float(RegBuf, Reg)), other);
 
 	public function subtract(other: FloatLikeExpressionData): FloatLikeExpressionData
-		return binaryOperation(Sub(Reg(Rfb), Reg(Rf)), other);
+		return binaryOperation(Sub(Float(RegBuf, Reg)), other);
 
 	public function multiply(other: FloatLikeExpressionData): FloatLikeExpressionData
-		return binaryOperation(Mult(Rfb, Reg(Rf)), other);
+		return binaryOperation(Mult(Float(RegBuf), Float(Reg)), other);
 
 	public function divide(other: FloatLikeExpressionData): FloatLikeExpressionData
-		return binaryOperation(Div(Reg(Rfb), Reg(Rf)), other);
+		return binaryOperation(Div(Float(RegBuf), Float(Reg)), other);
 
 	public function modulo(other: FloatLikeExpressionData): FloatLikeExpressionData
-		return binaryOperation(Mod(Reg(Rfb), Reg(Rf)), other);
+		return binaryOperation(Mod(Float(RegBuf), Float(Reg)), other);
 
 	public extern inline function toEnum(): FloatLikeExpressionEnum
 		return this.data;

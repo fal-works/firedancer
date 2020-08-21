@@ -40,7 +40,11 @@ class InstructionExtension {
 		case UseThread(programId, output):
 			switch output {
 			case Null: [op(UseThread), programId];
-			case Stack: [op(UseThreadS), programId];
+			case Int(operand):
+				switch operand {
+				case Stack: [op(UseThreadS), programId];
+				default: throw unsupported();
+				}
 			default: throw unsupported();
 			}
 		case AwaitThread:
@@ -52,22 +56,28 @@ class InstructionExtension {
 
 		case Load(input):
 			switch input {
-			case Immediate(imm):
-				switch imm {
-				case Int(value): [op(LoadIntCV), value];
-				case Float(value): [op(LoadFloatCV), value];
-				case Vec(x, y): [
+			case Int(operand):
+				switch operand {
+				case Imm(value): [op(LoadIntCV), value];
+				case Var(address): [op(LoadIntLV), address];
+				default: throw unsupported();
+				}
+			case Float(operand):
+				switch operand {
+				case Imm(value): [op(LoadFloatCV), value];
+				case Var(address): [op(LoadFloatLV), address];
+				default: throw unsupported();
+				}
+			case Vec(operand):
+				switch operand {
+				case Imm(x, y): [
 						op(LoadVecCV),
 						x,
 						y
 					];
+				default: throw unsupported();
 				}
-			case LocalVariable(address, type):
-				switch type {
-				case Int: [op(LoadIntLV), address];
-				case Float: [op(LoadFloatLV), address];
-				case Vec: throw unsupported();
-				}
+			default: throw unsupported();
 			}
 
 		case Save(type):
@@ -78,49 +88,54 @@ class InstructionExtension {
 			}
 		case Store(input, address):
 			switch input {
-			case Immediate(imm):
-				switch imm {
-				case Int(value):
-					[
+			case Int(operand):
+				switch operand {
+				case Imm(value): [
 						op(StoreIntCL),
 						address,
 						value
 					];
-				case Float(value):
-					[
-						op(StoreIntCL),
-						address,
-						value
-					];
-				case Vec(_, _):
-					throw unsupported();
-				}
-			case Reg(reg):
-				switch reg {
-				case Ri: [op(StoreIntVL), address];
-				case Rf: [op(StoreFloatVL), address];
+				case Reg: [op(StoreIntVL), address];
 				default: throw unsupported();
 				}
+			case Float(operand):
+				switch operand {
+				case Imm(value): [
+						op(StoreFloatCL),
+						address,
+						value
+					];
+				case Reg: [op(StoreFloatVL), address];
+				default: throw unsupported();
+				}
+
+			default: throw unsupported();
 			}
 
 			// ---- read/write stack ---------------------------------------------
 
 		case Push(input):
 			switch input {
-			case Immediate(imm):
-				switch imm {
-				case Int(value): [op(PushIntC), value];
-				case Float(value): [op(PushFloatC), value];
-				case Vec(_, _): throw unsupported();
-				}
-			case Reg(reg):
-				switch reg {
-				case Ri: op(PushIntV);
-				case Rf: op(PushFloatV);
-				case Rvec: op(PushVecV);
+			case Int(operand):
+				switch operand {
+				case Imm(value): [op(PushIntC), value];
+				case Reg: op(PushIntV);
 				default: throw unsupported();
 				}
+			case Float(operand):
+				switch operand {
+				case Imm(value): [op(PushFloatC), value];
+				case Reg: op(PushFloatV);
+				default: throw unsupported();
+				}
+			case Vec(operand):
+				switch operand {
+				case Reg: op(PushVecV);
+				default: throw unsupported();
+				}
+			default: throw unsupported();
 			}
+
 		case Pop(type):
 			op(switch type {
 			case Int: PopInt;
@@ -166,224 +181,328 @@ class InstructionExtension {
 
 			// ---- calc values ---------------------------------------------
 
-		case Add(inputA, inputB):
-			if (inputA.getType() != inputB.getType()) throw unsupported();
-			switch inputA {
-			case Reg(regA):
-				switch inputB {
-				case Immediate(immB):
-					switch immB {
-					case Int(valueB):
-						[op(AddIntVCV), (valueB : Int)];
-					case Float(valueB):
-						[op(AddFloatVCV), valueB];
-					case Vec(_, _):
-						throw unsupported();
+		case Add(input):
+			switch input {
+			case Int(a, b):
+				switch a {
+				case Reg:
+					switch b {
+					case Imm(bVal): [op(AddIntVCV), bVal];
+					default: throw unsupported();
 					}
-				case Reg(regB):
-					if (regA == Rib && regB == Ri) {
-						op(AddIntVVV);
-					} else if (regA == Rfb && regB == Rf) {
-						op(AddFloatVVV);
-					} else throw unsupported();
-				}
-			case LocalVariable(address, _):
-				switch inputB {
-				case Immediate(immB):
-					switch immB {
-					case Int(valueB):
-						[
+				case RegBuf:
+					switch b {
+					case Reg: op(AddIntVVV);
+					default: throw unsupported();
+					}
+				case Var(address):
+					switch b {
+					case Imm(bVal): [
 							op(AddIntLCL),
 							address,
-							valueB
+							bVal
 						];
-					case Float(valueB):
-						[
+					case Reg: [op(AddIntLVL), address];
+					default: throw unsupported();
+					}
+				default: throw unsupported();
+				}
+			case Float(a, b):
+				switch a {
+				case Reg:
+					switch b {
+					case Imm(bVal): [op(AddFloatVCV), bVal];
+					default: throw unsupported();
+					}
+				case RegBuf:
+					switch b {
+					case Reg: op(AddFloatVVV);
+					default: throw unsupported();
+					}
+				case Var(address):
+					switch b {
+					case Imm(bVal): [
 							op(AddFloatLCL),
 							address,
-							valueB
+							bVal
 						];
-					case Vec(_, _): throw unsupported();
-					}
-				case Reg(regB):
-					switch regB {
-					case Ri: [op(AddIntLVL), address];
-					case Rf: [op(AddFloatLVL), address];
+					case Reg: [op(AddFloatLVL), address];
 					default: throw unsupported();
 					}
+				default: throw unsupported();
 				}
-			}
-		case Sub(inputA, inputB):
-			if (inputA.getType() != inputB.getType()) throw unsupported();
-			switch inputA {
-			case Immediate(immA):
-				switch immA {
-				case Int(valueA):
-					switch inputB {
-					case Reg(regB):
-						switch regB {
-						case Ri: [op(SubIntCVV), valueA];
-						default: throw unsupported();
-						}
-					default: throw unsupported();
-					}
-				case Float(valueA):
-					switch inputB {
-					case Reg(regB):
-						switch regB {
-						case Rf: [op(SubFloatCVV), valueA];
-						default: throw unsupported();
-						}
-					default: throw unsupported();
-					}
-				case Vec(_, _): throw unsupported();
-				}
-			case Reg(regA):
-				switch inputB {
-				case Immediate(immB):
-					switch immB {
-					case Int(valueB):
-						[op(SubIntVCV), (valueB : Int)];
-					case Float(valueB):
-						[op(SubFloatVCV), valueB];
-					case Vec(_, _):
-						throw unsupported();
-					}
-				case Reg(regB):
-					if (regA == Rib && regB == Ri) {
-						op(SubIntVVV);
-					} else if (regA == Rfb && regB == Rf) {
-						op(SubFloatVVV);
-					} else throw unsupported();
-				}
-			}
-		case Minus(reg):
-			switch reg {
-			case Ri: op(MinusIntV);
-			case Rf: op(MinusFloatV);
-			case Rvec: op(MinusVecV);
 			default: throw unsupported();
-			};
-		case Mult(regA, inputB):
-			if (regA.getType() != inputB.getType()) throw unsupported();
-			switch inputB {
-			case Immediate(immB):
-				switch immB {
-				case Float(valueB):
-					switch regA {
-					case Ri: [op(MultIntVCV), valueB];
-					case Rf: [op(MultFloatVCV), valueB];
-					case Rvec: [op(MultVecVCV), valueB];
-					default: throw unsupported();
-					}
-				default: throw unsupported();
-				}
-			case Reg(regB):
-				switch regA {
-				case Rib: switch regB {
-					case Ri: op(MultIntVVV); // rib * ri
-					default: throw unsupported();
-					}
-				case Rfb: switch regB {
-					case Rf: op(MultFloatVVV); // rfb * rf
-					default: throw unsupported();
-					}
-				case Rvec: switch regB {
-					case Rf: op(MultVecVVV); // rvec * rf
-					default: throw unsupported();
-					}
-				default: throw unsupported();
-				}
 			}
+		case Sub(input):
+			switch input {
+			case Int(a, b):
+				switch a {
+				case Imm(aVal):
+					switch b {
+					case Reg: [op(SubIntCVV), aVal];
+					default: throw unsupported();
+					}
+				case Reg:
+					switch b {
+					case Imm(bVal): [op(SubIntVCV), bVal];
+					default: throw unsupported();
+					}
+				case RegBuf:
+					switch b {
+					case Reg: op(SubIntVVV);
+					default: throw unsupported();
+					}
+				default: throw unsupported();
+				}
+			case Float(a, b):
+				switch a {
+				case Imm(aVal):
+					switch b {
+					case Reg: [op(SubFloatCVV), aVal];
+					default: throw unsupported();
+					}
+				case Reg:
+					switch b {
+					case Imm(bVal): [op(SubFloatVCV), bVal];
+					default: throw unsupported();
+					}
+				case RegBuf:
+					switch b {
+					case Reg: op(SubFloatVVV);
+					default: throw unsupported();
+					}
+				default: throw unsupported();
+				}
+			default: throw unsupported();
+			}
+		case Minus(input):
+			switch input {
+			case Int(operand):
+				switch operand {
+				case Reg: op(MinusIntV);
+				default: throw unsupported();
+				}
+			case Float(operand):
+				switch operand {
+				case Reg: op(MinusFloatV);
+				default: throw unsupported();
+				}
+			case Vec(operand):
+				switch operand {
+				case Reg: op(MinusVecV);
+				default: throw unsupported();
+				}
+			default: throw unsupported();
+			}
+
+		case Mult(inputA, inputB):
+			switch inputA {
+			case Int(operandA):
+				switch operandA {
+				case Reg:
+					switch inputB {
+					case Int(operandB):
+						switch operandB {
+						case Imm(bVal): [op(MultIntVCV), bVal];
+						default: throw unsupported();
+						}
+					default: throw unsupported();
+					}
+				case RegBuf:
+					switch inputB {
+					case Int(operandB):
+						switch operandB {
+						case Reg: op(MultIntVVV);
+						default: throw unsupported();
+						}
+					default: throw unsupported();
+					}
+				default: throw unsupported();
+				}
+			case Float(operandA):
+				switch operandA {
+				case Reg:
+					switch inputB {
+					case Float(operandB):
+						switch operandB {
+						case Imm(bVal): [op(MultFloatVCV), bVal];
+						default: throw unsupported();
+						}
+					default: throw unsupported();
+					}
+				case RegBuf:
+					switch inputB {
+					case Float(operandB):
+						switch operandB {
+						case Reg: op(MultFloatVVV);
+						default: throw unsupported();
+						}
+					default: throw unsupported();
+					}
+				default: throw unsupported();
+				}
+			case Vec(operandA):
+				switch operandA {
+				case Reg:
+					switch inputB {
+					case Float(operandB):
+						switch operandB {
+						case Imm(bVal): [op(MultVecVCV), bVal];
+						case Reg: op(MultVecVVV);
+						default: throw unsupported();
+						}
+					default: throw unsupported();
+					}
+				default: throw unsupported();
+				}
+			default: throw unsupported();
+			}
+
 		case Div(inputA, inputB):
-			if (inputA.getType() != inputB.getType()) throw unsupported();
 			switch inputA {
-			case Immediate(immA):
-				switch immA {
-				case Int(valueA):
+			case Int(operandA):
+				switch operandA {
+				case Imm(aVal):
 					switch inputB {
-					case Reg(regB):
-						switch regB {
-						case Ri: [op(DivIntCVV), valueA];
+					case Int(operandB):
+						switch operandB {
+						case Reg: [op(DivIntCVV), aVal];
 						default: throw unsupported();
 						}
 					default: throw unsupported();
 					}
-				case Float(valueA):
+				case Reg:
 					switch inputB {
-					case Reg(regB):
-						switch regB {
-						case Rf: [op(DivFloatCVV), valueA];
+					case Int(operandB):
+						switch operandB {
+						case Imm(bVal): [op(DivIntVCV), bVal];
 						default: throw unsupported();
 						}
 					default: throw unsupported();
 					}
-				case Vec(_, _): throw unsupported();
-				}
-			case Reg(regA):
-				switch inputB {
-				case Immediate(immB):
-					switch immB {
-					case Int(valueB):
-						[op(DivIntVCV), (valueB : Int)];
-					case Float(valueB):
-						[op(DivFloatVCV), valueB];
-					case Vec(_, _):
-						throw unsupported();
+				case RegBuf:
+					switch inputB {
+					case Int(operandB):
+						switch operandB {
+						case Reg: op(DivIntVVV);
+						default: throw unsupported();
+						}
+					default: throw unsupported();
 					}
-				case Reg(regB):
-					if (regA == Rib && regB == Ri) {
-						op(DivIntVVV);
-					} else if (regA == Rfb && regB == Rf) {
-						op(DivFloatVVV);
-					} else if (regA == Rvec && regB == Rf) {
-						op(DivVecVVV);
-					} else throw unsupported();
+				default: throw unsupported();
 				}
+			case Float(operandA):
+				switch operandA {
+				case Imm(aVal):
+					switch inputB {
+					case Int(operandB):
+						switch operandB {
+						case Reg: [op(DivFloatCVV), aVal];
+						default: throw unsupported();
+						}
+					default: throw unsupported();
+					}
+				case Reg:
+					switch inputB {
+					case Float(operandB):
+						switch operandB {
+						case Imm(bVal): [op(DivFloatVCV), bVal];
+						default: throw unsupported();
+						}
+					default: throw unsupported();
+					}
+				case RegBuf:
+					switch inputB {
+					case Float(operandB):
+						switch operandB {
+						case Reg: op(DivFloatVVV);
+						default: throw unsupported();
+						}
+					default: throw unsupported();
+					}
+				default: throw unsupported();
+				}
+			case Vec(operandA):
+				switch operandA {
+				case Reg:
+					switch inputB {
+					case Float(operandB):
+						switch operandB {
+						case Reg: op(DivVecVVV);
+						default: throw unsupported();
+						}
+					default: throw unsupported();
+					}
+				default: throw unsupported();
+				}
+			default: throw unsupported();
 			}
+
 		case Mod(inputA, inputB):
-			if (inputA.getType() != inputB.getType()) throw unsupported();
 			switch inputA {
-			case Immediate(immA):
-				switch immA {
-				case Int(valueA):
+			case Int(operandA):
+				switch operandA {
+				case Imm(aVal):
 					switch inputB {
-					case Reg(regB):
-						switch regB {
-						case Ri: [op(ModIntCVV), valueA];
+					case Int(operandB):
+						switch operandB {
+						case Reg: [op(ModIntCVV), aVal];
 						default: throw unsupported();
 						}
 					default: throw unsupported();
 					}
-				case Float(valueA):
+				case Reg:
 					switch inputB {
-					case Reg(regB):
-						switch regB {
-						case Rf: [op(ModFloatCVV), valueA];
+					case Int(operandB):
+						switch operandB {
+						case Imm(bVal): [op(ModIntVCV), bVal];
 						default: throw unsupported();
 						}
 					default: throw unsupported();
 					}
-				case Vec(_, _): throw unsupported();
-				}
-			case Reg(regA):
-				switch inputB {
-				case Immediate(immB):
-					switch immB {
-					case Int(valueB):
-						[op(ModIntVCV), (valueB : Int)];
-					case Float(valueB):
-						[op(ModFloatVCV), valueB];
-					case Vec(_, _):
-						throw unsupported();
+				case RegBuf:
+					switch inputB {
+					case Int(operandB):
+						switch operandB {
+						case Reg: op(ModIntVVV);
+						default: throw unsupported();
+						}
+					default: throw unsupported();
 					}
-				case Reg(regB):
-					if (regA == Rib && regB == Ri) {
-						op(ModIntVVV);
-					} else if (regA == Rfb && regB == Rf) {
-						op(ModFloatVVV);
-					} else throw unsupported();
+				default: throw unsupported();
 				}
+			case Float(operandA):
+				switch operandA {
+				case Imm(aVal):
+					switch inputB {
+					case Int(operandB):
+						switch operandB {
+						case Reg: [op(ModFloatCVV), aVal];
+						default: throw unsupported();
+						}
+					default: throw unsupported();
+					}
+				case Reg:
+					switch inputB {
+					case Float(operandB):
+						switch operandB {
+						case Imm(bVal): [op(ModFloatVCV), bVal];
+						default: throw unsupported();
+						}
+					default: throw unsupported();
+					}
+				case RegBuf:
+					switch inputB {
+					case Float(operandB):
+						switch operandB {
+						case Reg: op(ModFloatVVV);
+						default: throw unsupported();
+						}
+					default: throw unsupported();
+					}
+				default: throw unsupported();
+				}
+			default: throw unsupported();
 			}
 
 		case CastIntToFloat:
@@ -397,33 +516,35 @@ class InstructionExtension {
 			op(RandomRatioV);
 		case Random(max):
 			switch max {
-			case Immediate(imm):
-				switch imm {
-				case Int(value): [op(RandomIntCV), value];
-				case Float(value): [op(RandomFloatCV), value];
+			case Int(operand):
+				switch operand {
+				case Imm(value): [op(RandomIntCV), value];
+				case Reg: op(RandomIntVV);
 				default: throw unsupported();
 				}
-			case Reg(reg):
-				switch reg {
-				case Ri: op(RandomIntVV);
-				case Rf: op(RandomFloatVV);
+			case Float(operand):
+				switch operand {
+				case Imm(value): [op(RandomFloatCV), value];
+				case Reg: op(RandomFloatVV);
 				default: throw unsupported();
 				}
+			default: throw unsupported();
 			}
 		case RandomSigned(maxMagnitude):
 			switch maxMagnitude {
-			case Immediate(imm):
-				switch imm {
-				case Int(value): [op(RandomIntSignedCV), value];
-				case Float(value): [op(RandomFloatSignedCV), value];
+			case Int(operand):
+				switch operand {
+				case Imm(value): [op(RandomIntSignedCV), value];
+				case Reg: op(RandomIntSignedVV);
 				default: throw unsupported();
 				}
-			case Reg(reg):
-				switch reg {
-				case Ri: op(RandomIntSignedVV);
-				case Rf: op(RandomFloatSignedVV);
+			case Float(operand):
+				switch operand {
+				case Imm(value): [op(RandomFloatSignedCV), value];
+				case Reg: op(RandomFloatSignedVV);
 				default: throw unsupported();
 				}
+			default: throw unsupported();
 			}
 
 		case Sin:
@@ -449,252 +570,249 @@ class InstructionExtension {
 
 		case CalcRelative(attrType, cmpType, input):
 			switch input {
-			case Immediate(imm):
-				final opcode:Opcode = switch cmpType {
-				case Vector:
-					switch attrType {
+			case Vec(operand):
+				if (cmpType != Vector) throw unsupported();
+				switch operand {
+				case Imm(x, y):
+					final opcode:Opcode = switch attrType {
 					case Position: CalcRelativePositionCV;
 					case Velocity: CalcRelativeVelocityCV;
 					case ShotPosition: CalcRelativeShotPositionCV;
 					case ShotVelocity: CalcRelativeShotVelocityCV;
-					}
-				case Length:
-					switch attrType {
-					case Position: CalcRelativeDistanceCV;
-					case Velocity: CalcRelativeSpeedCV;
-					case ShotPosition: CalcRelativeShotDistanceCV;
-					case ShotVelocity: CalcRelativeShotSpeedCV;
-					}
-				case Angle:
-					switch attrType {
-					case Position: CalcRelativeBearingCV;
-					case Velocity: CalcRelativeDirectionCV;
-					case ShotPosition: CalcRelativeShotBearingCV;
-					case ShotVelocity: CalcRelativeShotDirectionCV;
-					}
-				};
-				switch imm {
-				case Vec(x, y):
-					if (cmpType != Vector) throw unsupported();
+					};
 					[
 						op(opcode),
 						x,
 						y
 					];
-				case Float(value):
-					if (cmpType == Vector) throw unsupported();
-					[op(opcode), value];
-				default: throw unsupported();
-				}
-			case Reg(reg):
-				final opcode:Opcode = switch cmpType {
-				case Vector:
-					switch attrType {
+				case Reg:
+					final opcode:Opcode = switch attrType {
 					case Position: CalcRelativePositionVV;
 					case Velocity: CalcRelativeVelocityVV;
 					case ShotPosition: CalcRelativeShotPositionVV;
 					case ShotVelocity: CalcRelativeShotVelocityVV;
-					}
-				case Length:
-					switch attrType {
-					case Position: CalcRelativeDistanceVV;
-					case Velocity: CalcRelativeSpeedVV;
-					case ShotPosition: CalcRelativeShotDistanceVV;
-					case ShotVelocity: CalcRelativeShotSpeedVV;
-					}
-				case Angle:
-					switch attrType {
-					case Position: CalcRelativeBearingVV;
-					case Velocity: CalcRelativeDirectionVV;
-					case ShotPosition: CalcRelativeShotBearingVV;
-					case ShotVelocity: CalcRelativeShotDirectionVV;
-					}
-				};
-				switch reg {
-				case Rvec:
-					if (cmpType != Vector) throw unsupported();
-					op(opcode);
-				case Rf:
-					if (cmpType == Vector) throw unsupported();
+					};
 					op(opcode);
 				default: throw unsupported();
 				}
+			case Float(operand):
+				switch operand {
+				case Imm(value):
+					final opcode:Opcode = switch cmpType {
+					case Vector: throw unsupported();
+					case Length:
+						switch attrType {
+						case Position: CalcRelativeDistanceCV;
+						case Velocity: CalcRelativeSpeedCV;
+						case ShotPosition: CalcRelativeShotDistanceCV;
+						case ShotVelocity: CalcRelativeShotSpeedCV;
+						}
+					case Angle:
+						switch attrType {
+						case Position: CalcRelativeBearingCV;
+						case Velocity: CalcRelativeDirectionCV;
+						case ShotPosition: CalcRelativeShotBearingCV;
+						case ShotVelocity: CalcRelativeShotDirectionCV;
+						}
+					};
+					[op(opcode), value];
+				case Reg:
+					final opcode:Opcode = switch cmpType {
+					case Vector: throw unsupported();
+					case Length:
+						switch attrType {
+						case Position: CalcRelativeDistanceVV;
+						case Velocity: CalcRelativeSpeedVV;
+						case ShotPosition: CalcRelativeShotDistanceVV;
+						case ShotVelocity: CalcRelativeShotSpeedVV;
+						}
+					case Angle:
+						switch attrType {
+						case Position: CalcRelativeBearingVV;
+						case Velocity: CalcRelativeDirectionVV;
+						case ShotPosition: CalcRelativeShotBearingVV;
+						case ShotVelocity: CalcRelativeShotDirectionVV;
+						}
+					};
+					op(opcode);
+				default: throw unsupported();
+				}
+			default: throw unsupported();
 			}
 
 			// ---- write actor data -----------------------------------------
 
 		case SetVector(attrType, cmpType, input):
 			switch input {
-			case Imm(imm):
-				final opcode:Opcode = switch cmpType {
-				case Vector:
-					switch attrType {
+			case Vec(operand):
+				if (cmpType != Vector) throw unsupported();
+				switch operand {
+				case Imm(x, y):
+					final opcode:Opcode = switch attrType {
 					case Position: SetPositionC;
 					case Velocity: SetVelocityC;
 					case ShotPosition: SetShotPositionC;
 					case ShotVelocity: SetShotVelocityC;
-					}
-				case Length:
-					switch attrType {
-					case Position: SetDistanceC;
-					case Velocity: SetSpeedC;
-					case ShotPosition: SetShotDistanceC;
-					case ShotVelocity: SetShotSpeedC;
-					}
-				case Angle:
-					switch attrType {
-					case Position: SetBearingC;
-					case Velocity: SetDirectionC;
-					case ShotPosition: SetShotBearingC;
-					case ShotVelocity: SetShotDirectionC;
-					}
-				};
-				switch imm {
-				case Vec(x, y):
-					if (cmpType != Vector) throw unsupported();
+					};
 					[
 						op(opcode),
 						x,
 						y
 					];
-				case Float(value):
-					if (cmpType == Vector) throw unsupported();
-					[op(opcode), value];
-				default: throw unsupported();
-				}
-			case Reg(reg):
-				final opcode:Opcode = switch cmpType {
-				case Vector:
-					switch attrType {
+				case Reg:
+					final opcode:Opcode = switch attrType {
 					case Position: SetPositionV;
 					case Velocity: SetVelocityV;
 					case ShotPosition: SetShotPositionV;
 					case ShotVelocity: SetShotVelocityV;
-					}
-				case Length:
-					switch attrType {
-					case Position: SetDistanceV;
-					case Velocity: SetSpeedV;
-					case ShotPosition: SetShotDistanceV;
-					case ShotVelocity: SetShotSpeedV;
-					}
-				case Angle:
-					switch attrType {
-					case Position: SetBearingV;
-					case Velocity: SetDirectionV;
-					case ShotPosition: SetShotBearingV;
-					case ShotVelocity: SetShotDirectionV;
-					}
-				};
-				switch reg {
-				case Rvec:
-					if (cmpType != Vector) throw unsupported();
-					op(opcode);
-				case Rf:
-					if (cmpType == Vector) throw unsupported();
+					};
 					op(opcode);
 				default: throw unsupported();
 				}
-			case Stack: throw unsupported();
+			case Float(operand):
+				switch operand {
+				case Imm(value):
+					final opcode:Opcode = switch cmpType {
+					case Vector: throw unsupported();
+					case Length:
+						switch attrType {
+						case Position: SetDistanceC;
+						case Velocity: SetSpeedC;
+						case ShotPosition: SetShotDistanceC;
+						case ShotVelocity: SetShotSpeedC;
+						}
+					case Angle:
+						switch attrType {
+						case Position: SetBearingC;
+						case Velocity: SetDirectionC;
+						case ShotPosition: SetShotBearingC;
+						case ShotVelocity: SetShotDirectionC;
+						}
+					};
+					[op(opcode), value];
+				case Reg:
+					final opcode:Opcode = switch cmpType {
+					case Vector: throw unsupported();
+					case Length:
+						switch attrType {
+						case Position: SetDistanceV;
+						case Velocity: SetSpeedV;
+						case ShotPosition: SetShotDistanceV;
+						case ShotVelocity: SetShotSpeedV;
+						}
+					case Angle:
+						switch attrType {
+						case Position: SetBearingV;
+						case Velocity: SetDirectionV;
+						case ShotPosition: SetShotBearingV;
+						case ShotVelocity: SetShotDirectionV;
+						}
+					};
+					op(opcode);
+				default: throw unsupported();
+				}
+			default: throw unsupported();
 			}
+
 		case AddVector(attrType, cmpType, input):
 			switch input {
-			case Imm(imm):
-				final opcode:Opcode = switch cmpType {
-				case Vector:
-					switch attrType {
-					case Position: AddPositionC;
-					case Velocity: AddVelocityC;
-					case ShotPosition: AddShotPositionC;
-					case ShotVelocity: AddShotVelocityC;
-					}
-				case Length:
-					switch attrType {
-					case Position: AddDistanceC;
-					case Velocity: AddSpeedC;
-					case ShotPosition: AddShotDistanceC;
-					case ShotVelocity: AddShotSpeedC;
-					}
-				case Angle:
-					switch attrType {
-					case Position: AddBearingC;
-					case Velocity: AddDirectionC;
-					case ShotPosition: AddShotBearingC;
-					case ShotVelocity: AddShotDirectionC;
-					}
-				};
-				switch imm {
-				case Vec(x, y):
+				case Vec(operand):
 					if (cmpType != Vector) throw unsupported();
-					[
-						op(opcode),
-						x,
-						y
-					];
-				case Float(value):
-					if (cmpType == Vector) throw unsupported();
-					[op(opcode), value];
+					switch operand {
+					case Imm(x, y):
+						final opcode:Opcode = switch attrType {
+						case Position: AddPositionC;
+						case Velocity: AddVelocityC;
+						case ShotPosition: AddShotPositionC;
+						case ShotVelocity: AddShotVelocityC;
+						};
+						[
+							op(opcode),
+							x,
+							y
+						];
+					case Reg:
+						final opcode:Opcode = switch attrType {
+						case Position: AddPositionV;
+						case Velocity: AddVelocityV;
+						case ShotPosition: AddShotPositionV;
+						case ShotVelocity: AddShotVelocityV;
+						};
+						op(opcode);
+					case Stack:
+						final opcode:Opcode = switch attrType {
+							case Position: AddPositionS;
+							case Velocity: AddVelocityS;
+							case ShotPosition: AddShotPositionS;
+							case ShotVelocity: AddShotVelocityS;
+						};
+						op(opcode);
+					default: throw unsupported();
+					}
+				case Float(operand):
+					switch operand {
+					case Imm(value):
+						final opcode:Opcode = switch cmpType {
+						case Vector: throw unsupported();
+						case Length:
+							switch attrType {
+							case Position: AddDistanceC;
+							case Velocity: AddSpeedC;
+							case ShotPosition: AddShotDistanceC;
+							case ShotVelocity: AddShotSpeedC;
+							}
+						case Angle:
+							switch attrType {
+							case Position: AddBearingC;
+							case Velocity: AddDirectionC;
+							case ShotPosition: AddShotBearingC;
+							case ShotVelocity: AddShotDirectionC;
+							}
+						};
+						[op(opcode), value];
+					case Reg:
+						final opcode:Opcode = switch cmpType {
+						case Vector: throw unsupported();
+						case Length:
+							switch attrType {
+							case Position: AddDistanceV;
+							case Velocity: AddSpeedV;
+							case ShotPosition: AddShotDistanceV;
+							case ShotVelocity: AddShotSpeedV;
+							}
+						case Angle:
+							switch attrType {
+							case Position: AddBearingV;
+							case Velocity: AddDirectionV;
+							case ShotPosition: AddShotBearingV;
+							case ShotVelocity: AddShotDirectionV;
+							}
+						};
+						op(opcode);
+					case Stack:
+						final opcode:Opcode = switch cmpType {
+						case Vector: throw unsupported();
+						case Length:
+							switch attrType {
+							case Position: AddDistanceS;
+							case Velocity: AddSpeedS;
+							case ShotPosition: AddShotDistanceS;
+							case ShotVelocity: AddShotSpeedS;
+							}
+						case Angle:
+							switch attrType {
+							case Position: AddBearingS;
+							case Velocity: AddDirectionS;
+							case ShotPosition: AddShotBearingS;
+							case ShotVelocity: AddShotDirectionS;
+							}
+						};
+						op(opcode);
+					default: throw unsupported();
+					}
 				default: throw unsupported();
 				}
-			case Reg(reg):
-				final opcode:Opcode = switch cmpType {
-				case Vector:
-					switch attrType {
-					case Position: AddPositionV;
-					case Velocity: AddVelocityV;
-					case ShotPosition: AddShotPositionV;
-					case ShotVelocity: AddShotVelocityV;
-					}
-				case Length:
-					switch attrType {
-					case Position: AddDistanceV;
-					case Velocity: AddSpeedV;
-					case ShotPosition: AddShotDistanceV;
-					case ShotVelocity: AddShotSpeedV;
-					}
-				case Angle:
-					switch attrType {
-					case Position: AddBearingV;
-					case Velocity: AddDirectionV;
-					case ShotPosition: AddShotBearingV;
-					case ShotVelocity: AddShotDirectionV;
-					}
-				};
-				switch reg {
-				case Rvec:
-					if (cmpType != Vector) throw unsupported();
-					op(opcode);
-				case Rf:
-					if (cmpType == Vector) throw unsupported();
-					op(opcode);
-				default: throw unsupported();
-				}
-			case Stack:
-				final opcode:Opcode = switch cmpType {
-				case Vector:
-					switch attrType {
-					case Position: AddPositionS;
-					case Velocity: AddVelocityS;
-					case ShotPosition: AddShotPositionS;
-					case ShotVelocity: AddShotVelocityS;
-					}
-				case Length:
-					switch attrType {
-					case Position: AddDistanceS;
-					case Velocity: AddSpeedS;
-					case ShotPosition: AddShotDistanceS;
-					case ShotVelocity: AddShotSpeedS;
-					}
-				case Angle:
-					switch attrType {
-					case Position: AddBearingS;
-					case Velocity: AddDirectionS;
-					case ShotPosition: AddShotBearingS;
-					case ShotVelocity: AddShotDirectionS;
-					}
-				};
-				op(opcode);
-			}
+
 		case None:
 			throw unsupported();
 		}
@@ -775,26 +893,58 @@ class InstructionExtension {
 
 			// ---- calc values ---------------------------------------------
 
-		case Add(inputA, inputB):
-			final outputStr = switch inputA {
-			case Reg(regA): DataRegisterSpecifier.get(regA.getType()).toString();
-			case LocalVariable(address, type): varToString(address, type);
-			}
-			'add ${inputA.toString()}, ${inputB.toString()} -> $outputStr';
-		case Sub(inputA, inputB):
-			final outputStr = DataRegisterSpecifier.get(inputA.getType()).toString();
-			'sub ${inputA.toString()}, ${inputB.toString()} -> $outputStr';
+		case Add(input):
+			final outputStr = switch input {
+				case Int(a, b):
+					switch a {
+						case Var(_): a.toString();
+						case Reg: a.toString();
+						case RegBuf: b.toString();
+						default: throw unsupported();
+					}
+				case Float(a, b):
+					switch a {
+						case Var(_): a.toString();
+						case Reg: a.toString();
+						case RegBuf: b.toString();
+						default: throw unsupported();
+					}
+				default: throw unsupported();
+			};
+			'add ${input.toString()} -> $outputStr';
+		case Sub(input):
+			final outputStr = switch input {
+				case Int(a, b): a.toString();
+				case Float(a, b): a.toString();
+				default: throw unsupported();
+			};
+			'sub ${input.toString()} -> $outputStr';
 		case Minus(reg):
 			final inOutStr = reg.toString();
 			'minus $inOutStr -> $inOutStr';
-		case Mult(regA, inputB):
-			final outputStr = DataRegisterSpecifier.get(regA.getType()).toString();
-			'mult ${regA.toString()}, ${inputB.toString()} -> $outputStr';
+		case Mult(inputA, inputB):
+			final outputStr = switch inputA {
+				case Int(_): DataRegisterSpecifier.Ri.toString();
+				case Float(_): DataRegisterSpecifier.Rf.toString();
+				case Vec(_): DataRegisterSpecifier.Rvec.toString();
+				default: throw unsupported();
+			};
+			'mult ${inputA.toString()}, ${inputB.toString()} -> $outputStr';
 		case Div(inputA, inputB):
-			final outputStr = DataRegisterSpecifier.get(inputA.getType()).toString();
+			final outputStr = switch inputA {
+				case Int(_): DataRegisterSpecifier.Ri.toString();
+				case Float(_): DataRegisterSpecifier.Rf.toString();
+				case Vec(_): DataRegisterSpecifier.Rvec.toString();
+				default: throw unsupported();
+			};
 			'div ${inputA.toString()}, ${inputB.toString()} -> $outputStr';
 		case Mod(inputA, inputB):
-			final outputStr = DataRegisterSpecifier.get(inputA.getType()).toString();
+			final outputStr = switch inputA {
+				case Int(_): DataRegisterSpecifier.Ri.toString();
+				case Float(_): DataRegisterSpecifier.Rf.toString();
+				case Vec(_): DataRegisterSpecifier.Rvec.toString();
+				default: throw unsupported();
+			};
 			'mod ${inputA.toString()}, ${inputB.toString()} -> $outputStr';
 
 		case CastIntToFloat:
@@ -894,8 +1044,8 @@ class InstructionExtension {
 
 			// ---- calc values ---------------------------------------------
 
-		case Add(inputA, inputB): inputA.bytecodeLength() + inputB.bytecodeLength();
-		case Sub(inputA, inputB): inputA.bytecodeLength() + inputB.bytecodeLength();
+		case Add(input): input.bytecodeLength();
+		case Sub(input): input.bytecodeLength();
 		case Minus(reg): UInt.zero;
 		case Mult(regA, inputB): inputB.bytecodeLength();
 		case Div(inputA, inputB): inputA.bytecodeLength() + inputB.bytecodeLength();

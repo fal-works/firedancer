@@ -41,7 +41,7 @@ abstract IntLikeRuntimeExpression(
 			case BinaryOperation(instruction, operandExprA, operandExprB):
 				final code: AssemblyCode = [];
 				code.pushFromArray(operandExprB.loadToVolatile(context));
-				code.push(Push(Reg(Ri)));
+				code.push(Push(Int(Reg)));
 				code.pushFromArray(operandExprA.loadToVolatile(context));
 				code.push(Save(Int));
 				code.push(Pop(Int));

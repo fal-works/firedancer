@@ -33,14 +33,14 @@ class Random {
 		min: FloatExpression,
 		max: FloatExpression
 	): FloatExpression {
-		return min + FloatExpression.fromEnum(Runtime(UnaryOperation(Random(Reg(Rf)), max - min)));
+		return min + FloatExpression.fromEnum(Runtime(UnaryOperation(Random(Float(Reg)), max - min)));
 	}
 
 	/**
 		Gets a random value between `-max` and `max`.
 	**/
 	public inline function signed(max: FloatExpression): FloatExpression {
-		return FloatExpression.fromEnum(Runtime(UnaryOperation(RandomSigned(Reg(Rf)), max)));
+		return FloatExpression.fromEnum(Runtime(UnaryOperation(RandomSigned(Float(Reg)), max)));
 	}
 }
 
@@ -54,14 +54,14 @@ class RandomAngle {
 		min: AngleExpression,
 		max: AngleExpression
 	): AngleExpression {
-		return min + AngleExpression.fromEnum(Runtime(UnaryOperation(Random(Reg(Rf)), max - min)));
+		return min + AngleExpression.fromEnum(Runtime(UnaryOperation(Random(Float(Reg)), max - min)));
 	}
 
 	/**
 		Gets a random angle between `-max` and `max`.
 	**/
 	public inline function signed(max: AngleExpression): AngleExpression {
-		return max.unaryOperation(RandomSigned(Reg(Rf)));
+		return max.unaryOperation(RandomSigned(Float(Reg)));
 	}
 
 	/**
@@ -83,13 +83,13 @@ class RandomInt {
 		min: IntExpression,
 		max: IntExpression
 	): IntExpression {
-		return min + IntExpression.fromEnum(Runtime(UnaryOperation(Random(Reg(Ri)), max - min)));
+		return min + IntExpression.fromEnum(Runtime(UnaryOperation(Random(Int(Reg)), max - min)));
 	}
 
 	/**
 		Gets a random angle between `-max` and `max`.
 	**/
 	public inline function signed(max: IntExpression): IntExpression {
-		return max.unaryOperation(RandomSigned(Reg(Ri)));
+		return max.unaryOperation(RandomSigned(Int(Reg)));
 	}
 }

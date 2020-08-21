@@ -41,7 +41,7 @@ abstract FloatLikeRuntimeExpression(
 			case BinaryOperation(instruction, operandExprA, operandExprB):
 				final code: AssemblyCode = [];
 				code.pushFromArray(operandExprB.loadToVolatile(context));
-				code.push(Push(Reg(Rf)));
+				code.push(Push(Float(Reg)));
 				code.pushFromArray(operandExprA.loadToVolatile(context));
 				code.push(Save(Float));
 				code.push(Pop(Float));

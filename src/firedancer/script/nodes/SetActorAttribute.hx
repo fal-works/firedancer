@@ -31,33 +31,33 @@ class SetActorAttribute extends AstNode implements ripper.Data {
 				switch operation {
 					case SetVector(e, mat):
 						if (mat != null) e = e.transform(mat);
-						e.use(c, SetVector(Position, Vector, Reg(Rvec)));
-					case SetLength(e): e.use(c, SetVector(Position, Length, Reg(Rf)));
-					case SetAngle(e): e.use(c, SetVector(Position, Angle, Reg(Rf)));
+						e.use(c, SetVector(Position, Vector, Vec(Reg)));
+					case SetLength(e): e.use(c, SetVector(Position, Length, Float(Reg)));
+					case SetAngle(e): e.use(c, SetVector(Position, Angle, Float(Reg)));
 				}
 			case Velocity:
 				switch operation {
 					case SetVector(e, mat):
 						if (mat != null) e = e.transform(mat);
-						e.use(c, SetVector(Velocity, Vector, Reg(Rvec)));
-					case SetLength(e): e.use(c, SetVector(Velocity, Length, Reg(Rvec)));
-					case SetAngle(e): e.use(c, SetVector(Velocity, Angle, Reg(Rvec)));
+						e.use(c, SetVector(Velocity, Vector, Vec(Reg)));
+					case SetLength(e): e.use(c, SetVector(Velocity, Length, Vec(Reg)));
+					case SetAngle(e): e.use(c, SetVector(Velocity, Angle, Vec(Reg)));
 				}
 			case ShotPosition:
 				switch operation {
 					case SetVector(e, mat):
 						if (mat != null) e = e.transform(mat);
-						e.use(c, SetVector(ShotPosition, Vector, Reg(Rvec)));
-					case SetLength(e): e.use(c, SetVector(ShotPosition, Length, Reg(Rf)));
-					case SetAngle(e): e.use(c, SetVector(ShotPosition, Angle, Reg(Rf)));
+						e.use(c, SetVector(ShotPosition, Vector, Vec(Reg)));
+					case SetLength(e): e.use(c, SetVector(ShotPosition, Length, Float(Reg)));
+					case SetAngle(e): e.use(c, SetVector(ShotPosition, Angle, Float(Reg)));
 				}
 			case ShotVelocity:
 				switch operation {
 					case SetVector(e, mat):
 						if (mat != null) e = e.transform(mat);
-						e.use(c, SetVector(ShotVelocity, Vector, Reg(Rvec)));
-					case SetLength(e): e.use(c, SetVector(ShotVelocity, Length, Reg(Rvec)));
-					case SetAngle(e): e.use(c, SetVector(ShotVelocity, Angle, Reg(Rvec)));
+						e.use(c, SetVector(ShotVelocity, Vector, Vec(Reg)));
+					case SetLength(e): e.use(c, SetVector(ShotVelocity, Length, Vec(Reg)));
+					case SetAngle(e): e.use(c, SetVector(ShotVelocity, Angle, Vec(Reg)));
 				}
 		}
 	}
@@ -132,7 +132,7 @@ class SetActorAttributeLinear extends AstNode {
 
 		inline function getDivChange(isVec: Bool): AssemblyCode {
 			return {
-				final divVVV: Instruction = Div(Reg(isVec ? Rvec : Rfb), Reg(Rf));
+				final divVVV: Instruction = Div(isVec ? Vec(Reg) : Float(RegBuf), Float(Reg));
 				final code: AssemblyCode = isVec ? [] : [Save(Float)];
 				final loadFramesAsFloat = (frames : FloatExpression).loadToVolatile(context);
 				code.pushFromArray(loadFramesAsFloat);
@@ -153,36 +153,36 @@ class SetActorAttributeLinear extends AstNode {
 				if (mat != null) vec = vec.transform(mat);
 
 				divChange = getDivChange(true);
-				pushChange = Push(Reg(Rvec));
+				pushChange = Push(Vec(Reg));
 				peekChange = Peek(Vec, LEN32); // skip the loop counter
 				dropChange = Drop(Vec);
 
-				addFromVolatile = SetVector(attribute, Vector, Reg(Rvec));
+				addFromVolatile = SetVector(attribute, Vector, Vec(Reg));
 
-				final calcRelativeVV: Instruction = CalcRelative(attribute, Vector, Reg(Rvec));
+				final calcRelativeVV: Instruction = CalcRelative(attribute, Vector, Vec(Reg));
 				calcRelative = [vec.loadToVolatile(context), [calcRelativeVV]].flatten();
 
 			case SetLength(length):
 				divChange = getDivChange(false);
-				pushChange = Push(Reg(Rf));
+				pushChange = Push(Float(Reg));
 				peekChange = Peek(Float, LEN32); // skip the loop counter
 				dropChange = Drop(Float);
 
-				addFromVolatile = AddVector(attribute, Length, Reg(Rf));
+				addFromVolatile = AddVector(attribute, Length, Float(Reg));
 
-				final calcRelativeVV: Instruction = CalcRelative(attribute, Length, Reg(Rf));
+				final calcRelativeVV: Instruction = CalcRelative(attribute, Length, Float(Reg));
 				calcRelative = length.loadToVolatile(context);
 				calcRelative.push(calcRelativeVV);
 
 			case SetAngle(angle):
 				divChange = getDivChange(false);
-				pushChange = Push(Reg(Rf));
+				pushChange = Push(Float(Reg));
 				peekChange = Peek(Float, LEN32); // skip the loop counter
 				dropChange = Drop(Float);
 
-				addFromVolatile = AddVector(attribute, Angle, Reg(Rf));
+				addFromVolatile = AddVector(attribute, Angle, Float(Reg));
 
-				final calcRelativeVV:Instruction = CalcRelative(attribute, Angle, Reg(Rf));
+				final calcRelativeVV:Instruction = CalcRelative(attribute, Angle, Float(Reg));
 				calcRelative = angle.loadToVolatile(context);
 				calcRelative.push(calcRelativeVV);
 		}
@@ -198,12 +198,12 @@ class SetActorAttributeLinear extends AstNode {
 			if (this.loopUnrolling) {
 				loopUnrolled(0...constFrames.unwrap(), _ -> body);
 			} else {
-				final pushLoopCount = Push(Immediate(Int(constFrames.unwrap())));
+				final pushLoopCount = Push(Int(Imm(constFrames.unwrap())));
 				constructLoop(context, pushLoopCount, body);
 			}
 		} else {
 			// frames should be already loaded to int register in getDivChange() if it's not a constant
-			constructLoop(context, Push(Reg(Ri)), body);
+			constructLoop(context, Push(Int(Reg)), body);
 		};
 
 		final complete: AssemblyCode = [dropChange];

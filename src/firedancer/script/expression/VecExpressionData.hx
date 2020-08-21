@@ -151,7 +151,7 @@ class CartesianVecExpressionData extends VecExpressionData {
 
 		final loadVecWithoutDivisor = [
 			y.loadToVolatile(context),
-			[Push(Reg(Rf))],
+			[Push(Float(Reg))],
 			x.loadToVolatile(context),
 			[
 				Save(Float),
@@ -168,7 +168,7 @@ class CartesianVecExpressionData extends VecExpressionData {
 			return [
 				loadVecWithoutDivisor,
 				divisor.unwrap().loadToVolatile(context),
-				[Div(Reg(Rvec), Reg(Rf))]
+				[Div(Vec(Reg), Float(Reg))]
 			].flatten();
 		}
 	}
@@ -243,7 +243,7 @@ class PolarVecExpressionData extends VecExpressionData {
 
 		final loadVecWithoutDivisor = [
 			angle.loadToVolatile(context),
-			[Push(Reg(Rf))],
+			[Push(Float(Reg))],
 			length.loadToVolatile(context),
 			[
 				Save(Float),
@@ -260,7 +260,7 @@ class PolarVecExpressionData extends VecExpressionData {
 			return [
 				loadVecWithoutDivisor,
 				divisor.unwrap().loadToVolatile(context),
-				[Div(Reg(Rvec), Reg(Rf))]
+				[Div(Vec(Reg), Float(Reg))]
 			].flatten();
 		}
 	}

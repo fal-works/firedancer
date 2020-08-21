@@ -6,164 +6,184 @@ import firedancer.assembly.OperandTools.*;
 @:using(firedancer.assembly.Operand.OperandExtension)
 enum Operand {
 	Null;
-	Immediate(imm: Immediate);
-	Reg(reg: DataRegisterSpecifier);
-	Stack;
-	LocalVariable(address: UInt, type: ValueType);
-}
-
-@:using(firedancer.assembly.Operand.NullOrStackExtension)
-enum NullOrStack {
-	Null;
-	Stack;
-}
-
-@:using(firedancer.assembly.Operand.ImmOrVarExtension)
-enum ImmOrVar {
-	Immediate(imm: Immediate);
-	LocalVariable(address: UInt, type: ValueType);
-}
-
-@:using(firedancer.assembly.Operand.ImmOrRegExtension)
-enum ImmOrReg {
-	Immediate(imm: Immediate);
-	Reg(reg: DataRegisterSpecifier);
-}
-
-@:using(firedancer.assembly.Operand.RegOrVarExtension)
-enum RegOrVar {
-	Reg(reg: DataRegisterSpecifier);
-	LocalVariable(address: UInt, type: ValueType);
-}
-
-@:using(firedancer.assembly.Operand.ImmOrRegOrStackExtension)
-enum ImmOrRegOrStack {
-	Imm(imm: Immediate);
-	Reg(reg: DataRegisterSpecifier);
-	Stack;
+	Int(operand: IntOperand);
+	Float(operand: FloatOperand);
+	Vec(operand: VecOperand);
 }
 
 class OperandExtension {
 	public static function toString(_this: Operand): String {
 		return switch _this {
 			case Null: "n";
-			case Immediate(imm): '${imm.toString()}';
-			case Reg(reg): reg;
-			case Stack: "s";
-			case LocalVariable(address, type): varToString(address, type);
+			case Int(operand): operand.toString();
+			case Float(operand): operand.toString();
+			case Vec(operand): operand.toString();
 		}
 	}
 
 	public static function bytecodeLength(_this: Operand): UInt {
 		return switch _this {
 			case Null: UInt.zero;
-			case Immediate(imm):
-				switch imm {
-					case Int(_): LEN32;
-					case Float(_): LEN64;
-					case Vec(_, _): LEN64 + LEN64;
-				}
-			case Reg(_): UInt.zero;
-			case Stack: UInt.zero;
-			case LocalVariable(_, _): LEN32; // for address
+			case Int(operand): operand.bytecodeLength();
+			case Float(operand): operand.bytecodeLength();
+			case Vec(operand): operand.bytecodeLength();
 		};
 	}
 
 	public static function getType(_this: Operand): ValueType {
 		return switch _this {
 			case Null: throw "Cannot determine type of Null.";
-			case Immediate(imm): imm.getType();
-			case Reg(reg): reg.getType();
-			case Stack: throw "Cannot determine type of Stack.";
-			case LocalVariable(_, type): type;
+			case Int(_): Int;
+			case Float(_): Float;
+			case Vec(_): Vec;
 		}
 	}
 }
 
-class NullOrStackExtension {
-	public static function toString(_this: NullOrStack): String
-		return toOperand(_this).toString();
+@:using(firedancer.assembly.Operand.OperandPairExtension)
+enum OperandPair {
+	Int(a: IntOperand, b: IntOperand);
+	Float(a: FloatOperand, b: FloatOperand);
+	Vec(a: VecOperand, b: VecOperand);
+}
 
-	public static function bytecodeLength(_this: NullOrStack): UInt
-		return toOperand(_this).bytecodeLength();
-
-	static function toOperand(_this: NullOrStack): Operand {
+class OperandPairExtension {
+	public static function toString(_this: OperandPair): String {
 		return switch _this {
-			case Null: Null;
-			case Stack: Stack;
+			case Int(a, b): '${a.toString()}, ${b.toString()}';
+			case Float(a, b):  '${a.toString()}, ${b.toString()}';
+			case Vec(a, b): '${a.toString()}, ${b.toString()}';
+		}
+	}
+
+	public static function bytecodeLength(_this: OperandPair): UInt {
+		return switch _this {
+			case Int(a, b): a.bytecodeLength() + b.bytecodeLength();
+			case Float(a, b): a.bytecodeLength() + b.bytecodeLength();
+			case Vec(a, b): a.bytecodeLength() + b.bytecodeLength();
+		};
+	}
+
+	public static function getType(_this: OperandPair): ValueType {
+		return switch _this {
+			case Int(_): Int;
+			case Float(_): Float;
+			case Vec(_): Vec;
+		}
+	}
+
+	public static function tryReplaceRegWithImm(_this: OperandPair, maybeImm: Operand): Maybe<OperandPair> {
+		final newPair: Null<OperandPair> = switch _this {
+			case Int(a, b):
+				switch maybeImm {
+					case Int(maybeIntImm):
+						switch maybeIntImm {
+							case Imm(value):
+								if (a == Reg) Int(maybeIntImm, b);
+								else if (b == Reg) Int(a, maybeIntImm);
+								else null;
+							default: null;
+						}
+					default: null;
+				}
+			case Float(a, b):
+				switch maybeImm {
+					case Float(maybeFloatImm):
+						switch maybeFloatImm {
+							case Imm(value):
+								if (a == Reg) Float(maybeFloatImm, b);
+								else if (b == Reg) Float(a, maybeFloatImm);
+								else null;
+							default: null;
+						}
+					default: null;
+				}
+			case Vec(a, b): null;
+			default: null;
+		}
+
+		return Maybe.from(newPair);
+	}
+}
+
+@:using(firedancer.assembly.Operand.IntOperandExtension)
+enum IntOperand {
+	Imm(value: Int);
+	Reg;
+	RegBuf;
+	Stack;
+	Var(address: UInt);
+}
+
+class IntOperandExtension {
+	public static function toString(_this: IntOperand): String {
+		return switch _this {
+			case Imm(value): Std.string(value);
+			case Reg: "ri";
+			case RegBuf: "rib";
+			case Stack: "s";
+			case Var(address): 'ivar($address)';
+		}
+	}
+
+	public static function bytecodeLength(_this: IntOperand): UInt {
+		return switch _this {
+			case Imm(_): LEN32;
+			case Var(_): LEN32;
+			default: UInt.zero;
 		}
 	}
 }
 
-class ImmOrVarExtension {
-	public static function toString(_this: ImmOrVar): String
-		return toOperand(_this).toString();
+@:using(firedancer.assembly.Operand.FloatOperandExtension)
+enum FloatOperand {
+	Imm(value: Float);
+	Reg;
+	RegBuf;
+	Stack;
+	Var(address: UInt);
+}
 
-	public static function bytecodeLength(_this: ImmOrVar): UInt
-		return toOperand(_this).bytecodeLength();
-
-	public static function getType(_this: ImmOrVar): ValueType
-		return toOperand(_this).getType();
-
-	static function toOperand(_this: ImmOrVar): Operand {
+class FloatOperandExtension {
+	public static function toString(_this: FloatOperand): String {
 		return switch _this {
-			case Immediate(imm): Immediate(imm);
-			case LocalVariable(address, type): LocalVariable(address, type);
+			case Imm(value): ftoa(value);
+			case Reg: "rf";
+			case RegBuf: "rfb";
+			case Stack: "s";
+			case Var(address): 'fvar($address)';
+		}
+	}
+
+	public static function bytecodeLength(_this: FloatOperand): UInt {
+		return switch _this {
+			case Imm(_): LEN64;
+			case Var(_): LEN32;
+			default: UInt.zero;
 		}
 	}
 }
 
-class ImmOrRegExtension {
-	public static function toString(_this: ImmOrReg): String
-		return toOperand(_this).toString();
-
-	public static function bytecodeLength(_this: ImmOrReg): UInt
-		return toOperand(_this).bytecodeLength();
-
-	public static function getType(_this: ImmOrReg): ValueType
-		return toOperand(_this).getType();
-
-	static function toOperand(_this: ImmOrReg): Operand {
-		return switch _this {
-			case Immediate(imm): Immediate(imm);
-			case Reg(reg): Reg(reg);
-		}
-	}
+@:using(firedancer.assembly.Operand.VecOperandExtension)
+enum VecOperand {
+	Imm(x: Float, y: Float);
+	Reg;
+	Stack;
 }
 
-class RegOrVarExtension {
-	public static function toString(_this: RegOrVar): String
-		return toOperand(_this).toString();
-
-	public static function bytecodeLength(_this: RegOrVar): UInt
-		return toOperand(_this).bytecodeLength();
-
-	public static function getType(_this: RegOrVar): ValueType
-		return toOperand(_this).getType();
-
-	static function toOperand(_this: RegOrVar): Operand {
+class VecOperandExtension {
+	public static function toString(_this: VecOperand): String {
 		return switch _this {
-			case Reg(reg): Reg(reg);
-			case LocalVariable(address, type): LocalVariable(address, type);
+			case Imm(x, y): '(${ftoa(x)}, ${ftoa(y)})';
+			case Reg: "rf";
+			case Stack: "s";
 		}
 	}
-}
 
-class ImmOrRegOrStackExtension {
-	public static function toString(_this: ImmOrRegOrStack): String
-		return toOperand(_this).toString();
-
-	public static function bytecodeLength(_this: ImmOrRegOrStack): UInt
-		return toOperand(_this).bytecodeLength();
-
-	public static function getType(_this: ImmOrRegOrStack): ValueType
-		return toOperand(_this).getType();
-
-	static function toOperand(_this: ImmOrRegOrStack): Operand {
+	public static function bytecodeLength(_this: VecOperand): UInt {
 		return switch _this {
-			case Imm(imm): Immediate(imm);
-			case Reg(reg): Reg(reg);
-			case Stack: Stack;
+			case Imm(_): LEN64 + LEN64;
+			default: UInt.zero;
 		}
 	}
 }

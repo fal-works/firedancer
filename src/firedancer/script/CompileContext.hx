@@ -213,8 +213,8 @@ class LocalVariableTable {
 	**/
 	public function loadToVolatile(): AssemblyCode {
 		return switch this.type {
-			case Int: [Load(LocalVariable(address, Int))];
-			case Float: [Load(LocalVariable(address, Float))];
+			case Int: [Load(Int(Var(address)))];
+			case Float: [Load(Float(Var(address)))];
 			case Vec: throw "Local variable of vector type is not supported.";
 		};
 	}
@@ -227,9 +227,9 @@ class LocalVariableTable {
 	public function setValue(value: GenericExpression): AssemblyCode {
 		final store: Instruction = switch this.type {
 			case Int:
-				Store(Reg(Ri), address);
+				Store(Int(Reg), address);
 			case Float:
-				Store(Reg(Rf), address);
+				Store(Float(Reg), address);
 			case Vec:
 				throw "Local variable of vector type is not supported.";
 		}
@@ -246,9 +246,9 @@ class LocalVariableTable {
 	public function addValue(value: GenericExpression): AssemblyCode {
 		final store:Instruction = switch this.type {
 			case Int:
-				Add(LocalVariable(address, Int), Reg(Ri));
+				Add(Int(Var(address), Reg));
 			case Float:
-				Add(LocalVariable(address, Float), Reg(Rf));
+				Add(Float(Var(address), Reg));
 			case Vec:
 				throw "Local variable of vector type is not supported.";
 		}

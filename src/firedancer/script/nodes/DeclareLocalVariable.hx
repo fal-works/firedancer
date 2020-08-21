@@ -49,9 +49,9 @@ class DeclareLocalVariable extends AstNode {
 
 		final storeVL: Instruction = switch initialValue.toEnum() {
 			case IntExpr(_):
-				Store(Reg(Ri), getAddress(Int));
+				Store(Int(Reg), getAddress(Int));
 			case FloatExpr(_) | AngleExpr(_):
-				Store(Reg(Rf), getAddress(Float));
+				Store(Float(Reg), getAddress(Float));
 			case VecExpr(_):
 				throw "Local variable of vector type is not supported.";
 		}

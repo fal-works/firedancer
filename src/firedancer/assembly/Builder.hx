@@ -43,7 +43,7 @@ class Builder {
 	**/
 	public static function loop(context: CompileContext, body: AssemblyCode, count: IntExpression): AssemblyCode {
 		final pushLoopCount: AssemblyCode = count.loadToVolatile(context);
-		pushLoopCount.push(Push(Reg(Ri)));
+		pushLoopCount.push(Push(Int(Reg)));
 
 		return constructLoop(context, pushLoopCount, body);
 	}

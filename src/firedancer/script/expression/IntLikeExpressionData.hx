@@ -41,7 +41,7 @@ class IntLikeExpressionData implements ExpressionData {
 	public function loadToVolatile(context: CompileContext): AssemblyCode {
 		return switch this.data {
 		case Constant(value):
-			Load(Immediate(Int(value.toImmediateValue())));
+			Load(Int(Imm(value.toImmediateValue())));
 		case Runtime(expression):
 			expression.loadToVolatile(context);
 		}
@@ -87,22 +87,22 @@ class IntLikeExpressionData implements ExpressionData {
 	}
 
 	public function unaryMinus(): IntLikeExpressionData
-		return unaryOperation(Minus(Ri));
+		return unaryOperation(Minus(Int(Reg)));
 
 	public function add(other: IntLikeExpressionData): IntLikeExpressionData
-		return binaryOperation(Add(Reg(Rib), Reg(Ri)), other);
+		return binaryOperation(Add(Int(RegBuf, Reg)), other);
 
 	public function subtract(other: IntLikeExpressionData): IntLikeExpressionData
-		return binaryOperation(Sub(Reg(Rib), Reg(Ri)), other);
+		return binaryOperation(Sub(Int(RegBuf, Reg)), other);
 
 	public function multiply(other: IntLikeExpressionData): IntLikeExpressionData
-		return binaryOperation(Mult(Rib, Reg(Ri)), other);
+		return binaryOperation(Mult(Int(RegBuf), Int(Reg)), other);
 
 	public function divide(other: IntLikeExpressionData): IntLikeExpressionData
-		return binaryOperation(Div(Reg(Rib), Reg(Ri)), other);
+		return binaryOperation(Div(Int(RegBuf), Int(Reg)), other);
 
 	public function modulo(other: IntLikeExpressionData): IntLikeExpressionData
-		return binaryOperation(Mod(Reg(Rib), Reg(Ri)), other);
+		return binaryOperation(Mod(Int(RegBuf), Int(Reg)), other);
 
 	public extern inline function toEnum()
 		return this.data;
@@ -119,7 +119,7 @@ class IntLikeExpressionData implements ExpressionData {
 			this.loadToVolatile(context),
 			[CastIntToFloat],
 			if (constantFactor == 1.0) [] else {
-				[Mult(Rf, Immediate(Float(constantFactor)))];
+				[Mult(Float(Reg), Float(Imm(constantFactor)))];
 			}
 		].flatten();
 

@@ -28,27 +28,27 @@ class AddActorAttribute extends AstNode implements ripper.Data {
 		return switch attribute {
 			case Position:
 				switch operation {
-					case AddVector(e): e.use(c, AddVector(Position, Vector, Reg(Rvec)));
-					case AddLength(e): e.use(c, AddVector(Position, Length, Reg(Rf)));
-					case AddAngle(e): e.use(c, AddVector(Position, Angle, Reg(Rf)));
+					case AddVector(e): e.use(c, AddVector(Position, Vector, Vec(Reg)));
+					case AddLength(e): e.use(c, AddVector(Position, Length, Float(Reg)));
+					case AddAngle(e): e.use(c, AddVector(Position, Angle, Float(Reg)));
 				}
 			case Velocity:
 				switch operation {
-					case AddVector(e): e.use(c, AddVector(Velocity, Vector, Reg(Rvec)));
-					case AddLength(e): e.use(c, AddVector(Velocity, Length, Reg(Rf)));
-					case AddAngle(e): e.use(c, AddVector(Velocity, Angle, Reg(Rf)));
+					case AddVector(e): e.use(c, AddVector(Velocity, Vector, Vec(Reg)));
+					case AddLength(e): e.use(c, AddVector(Velocity, Length, Float(Reg)));
+					case AddAngle(e): e.use(c, AddVector(Velocity, Angle, Float(Reg)));
 				}
 			case ShotPosition:
 				switch operation {
-					case AddVector(e): e.use(c, AddVector(ShotPosition, Vector, Reg(Rvec)));
-					case AddLength(e): e.use(c, AddVector(ShotPosition, Length, Reg(Rf)));
-					case AddAngle(e): e.use(c, AddVector(ShotPosition, Angle, Reg(Rf)));
+					case AddVector(e): e.use(c, AddVector(ShotPosition, Vector, Vec(Reg)));
+					case AddLength(e): e.use(c, AddVector(ShotPosition, Length, Float(Reg)));
+					case AddAngle(e): e.use(c, AddVector(ShotPosition, Angle, Float(Reg)));
 				}
 			case ShotVelocity:
 				switch operation {
-					case AddVector(e): e.use(c, AddVector(ShotVelocity, Vector, Reg(Rvec)));
-					case AddLength(e): e.use(c, AddVector(Velocity, Length, Reg(Rf)));
-					case AddAngle(e): e.use(c, AddVector(Velocity, Angle, Reg(Rf)));
+					case AddVector(e): e.use(c, AddVector(ShotVelocity, Vector, Vec(Reg)));
+					case AddLength(e): e.use(c, AddVector(Velocity, Length, Float(Reg)));
+					case AddAngle(e): e.use(c, AddVector(Velocity, Angle, Float(Reg)));
 				}
 		}
 	}
@@ -69,7 +69,7 @@ class AddActorAttributeLinear extends AstNode implements ripper.Data {
 		final frames = this.frames;
 
 		inline function getDivChange(isVec: Bool): AssemblyCode {
-			final divVVV: Instruction = Div(Reg(isVec ? Rvec : Rfb), Reg(Rf));
+			final divVVV: Instruction = Div(isVec ? Vec(Reg) : Float(RegBuf), Float(Reg));
 			final code: AssemblyCode = isVec ? [] : [Save(Float)];
 			final loadFramesAsFloat = (frames : FloatExpression).loadToVolatile(context);
 			code.pushFromArray(loadFramesAsFloat);
@@ -88,25 +88,25 @@ class AddActorAttributeLinear extends AstNode implements ripper.Data {
 			case AddVector(vec):
 				loadChange = vec.loadToVolatile(context);
 				divChange = getDivChange(true);
-				pushChange = Push(Reg(Rvec));
+				pushChange = Push(Vec(Reg));
 				peekChange = Peek(Vec, LEN32); // skip the loop counter
-				addFromVolatile = AddVector(attribute, Vector, Reg(Rvec));
+				addFromVolatile = AddVector(attribute, Vector, Vec(Reg));
 				dropChange = Drop(Vec);
 
 			case AddLength(length):
 				loadChange = length.loadToVolatile(context);
 				divChange = getDivChange(false);
-				pushChange = Push(Reg(Rf));
+				pushChange = Push(Float(Reg));
 				peekChange = Peek(Float, LEN32); // skip the loop counter
-				addFromVolatile = AddVector(attribute, Length, Reg(Rf));
+				addFromVolatile = AddVector(attribute, Length, Float(Reg));
 				dropChange = Drop(Float);
 
 			case AddAngle(angle):
 				loadChange = angle.loadToVolatile(context);
 				divChange = getDivChange(false);
-				pushChange = Push(Reg(Rf));
+				pushChange = Push(Float(Reg));
 				peekChange = Peek(Float, LEN32); // skip the loop counter
-				addFromVolatile = AddVector(attribute, Angle, Reg(Rf));
+				addFromVolatile = AddVector(attribute, Angle, Float(Reg));
 				dropChange = Drop(Float);
 		}
 
@@ -119,7 +119,7 @@ class AddActorAttributeLinear extends AstNode implements ripper.Data {
 		];
 
 		// frames should be already loaded to int register in getDivChange() if it's not a constant
-		final loopedBody = constructLoop(context, Push(Reg(Ri)), body);
+		final loopedBody = constructLoop(context, Push(Int(Reg)), body);
 
 		final complete: AssemblyCode = [dropChange];
 
