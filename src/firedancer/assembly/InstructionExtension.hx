@@ -716,102 +716,102 @@ class InstructionExtension {
 
 		case AddVector(attrType, cmpType, input):
 			switch input {
-				case Vec(operand):
-					if (cmpType != Vector) throw unsupported();
-					switch operand {
-					case Imm(x, y):
-						final opcode:Opcode = switch attrType {
-						case Position: AddPositionC;
-						case Velocity: AddVelocityC;
-						case ShotPosition: AddShotPositionC;
-						case ShotVelocity: AddShotVelocityC;
-						};
-						[
-							op(opcode),
-							x,
-							y
-						];
-					case Reg:
-						final opcode:Opcode = switch attrType {
-						case Position: AddPositionV;
-						case Velocity: AddVelocityV;
-						case ShotPosition: AddShotPositionV;
-						case ShotVelocity: AddShotVelocityV;
-						};
-						op(opcode);
-					case Stack:
-						final opcode:Opcode = switch attrType {
-							case Position: AddPositionS;
-							case Velocity: AddVelocityS;
-							case ShotPosition: AddShotPositionS;
-							case ShotVelocity: AddShotVelocityS;
-						};
-						op(opcode);
-					default: throw unsupported();
-					}
-				case Float(operand):
-					switch operand {
-					case Imm(value):
-						final opcode:Opcode = switch cmpType {
-						case Vector: throw unsupported();
-						case Length:
-							switch attrType {
-							case Position: AddDistanceC;
-							case Velocity: AddSpeedC;
-							case ShotPosition: AddShotDistanceC;
-							case ShotVelocity: AddShotSpeedC;
-							}
-						case Angle:
-							switch attrType {
-							case Position: AddBearingC;
-							case Velocity: AddDirectionC;
-							case ShotPosition: AddShotBearingC;
-							case ShotVelocity: AddShotDirectionC;
-							}
-						};
-						[op(opcode), value];
-					case Reg:
-						final opcode:Opcode = switch cmpType {
-						case Vector: throw unsupported();
-						case Length:
-							switch attrType {
-							case Position: AddDistanceV;
-							case Velocity: AddSpeedV;
-							case ShotPosition: AddShotDistanceV;
-							case ShotVelocity: AddShotSpeedV;
-							}
-						case Angle:
-							switch attrType {
-							case Position: AddBearingV;
-							case Velocity: AddDirectionV;
-							case ShotPosition: AddShotBearingV;
-							case ShotVelocity: AddShotDirectionV;
-							}
-						};
-						op(opcode);
-					case Stack:
-						final opcode:Opcode = switch cmpType {
-						case Vector: throw unsupported();
-						case Length:
-							switch attrType {
-							case Position: AddDistanceS;
-							case Velocity: AddSpeedS;
-							case ShotPosition: AddShotDistanceS;
-							case ShotVelocity: AddShotSpeedS;
-							}
-						case Angle:
-							switch attrType {
-							case Position: AddBearingS;
-							case Velocity: AddDirectionS;
-							case ShotPosition: AddShotBearingS;
-							case ShotVelocity: AddShotDirectionS;
-							}
-						};
-						op(opcode);
-					default: throw unsupported();
-					}
+			case Vec(operand):
+				if (cmpType != Vector) throw unsupported();
+				switch operand {
+				case Imm(x, y):
+					final opcode:Opcode = switch attrType {
+					case Position: AddPositionC;
+					case Velocity: AddVelocityC;
+					case ShotPosition: AddShotPositionC;
+					case ShotVelocity: AddShotVelocityC;
+					};
+					[
+						op(opcode),
+						x,
+						y
+					];
+				case Reg:
+					final opcode:Opcode = switch attrType {
+					case Position: AddPositionV;
+					case Velocity: AddVelocityV;
+					case ShotPosition: AddShotPositionV;
+					case ShotVelocity: AddShotVelocityV;
+					};
+					op(opcode);
+				case Stack:
+					final opcode:Opcode = switch attrType {
+					case Position: AddPositionS;
+					case Velocity: AddVelocityS;
+					case ShotPosition: AddShotPositionS;
+					case ShotVelocity: AddShotVelocityS;
+					};
+					op(opcode);
 				default: throw unsupported();
 				}
+			case Float(operand):
+				switch operand {
+				case Imm(value):
+					final opcode:Opcode = switch cmpType {
+					case Vector: throw unsupported();
+					case Length:
+						switch attrType {
+						case Position: AddDistanceC;
+						case Velocity: AddSpeedC;
+						case ShotPosition: AddShotDistanceC;
+						case ShotVelocity: AddShotSpeedC;
+						}
+					case Angle:
+						switch attrType {
+						case Position: AddBearingC;
+						case Velocity: AddDirectionC;
+						case ShotPosition: AddShotBearingC;
+						case ShotVelocity: AddShotDirectionC;
+						}
+					};
+					[op(opcode), value];
+				case Reg:
+					final opcode:Opcode = switch cmpType {
+					case Vector: throw unsupported();
+					case Length:
+						switch attrType {
+						case Position: AddDistanceV;
+						case Velocity: AddSpeedV;
+						case ShotPosition: AddShotDistanceV;
+						case ShotVelocity: AddShotSpeedV;
+						}
+					case Angle:
+						switch attrType {
+						case Position: AddBearingV;
+						case Velocity: AddDirectionV;
+						case ShotPosition: AddShotBearingV;
+						case ShotVelocity: AddShotDirectionV;
+						}
+					};
+					op(opcode);
+				case Stack:
+					final opcode:Opcode = switch cmpType {
+					case Vector: throw unsupported();
+					case Length:
+						switch attrType {
+						case Position: AddDistanceS;
+						case Velocity: AddSpeedS;
+						case ShotPosition: AddShotDistanceS;
+						case ShotVelocity: AddShotSpeedS;
+						}
+					case Angle:
+						switch attrType {
+						case Position: AddBearingS;
+						case Velocity: AddDirectionS;
+						case ShotPosition: AddShotBearingS;
+						case ShotVelocity: AddShotDirectionS;
+						}
+					};
+					op(opcode);
+				default: throw unsupported();
+				}
+			default: throw unsupported();
+			}
 
 		case None:
 			throw unsupported();
@@ -895,28 +895,28 @@ class InstructionExtension {
 
 		case Add(input):
 			final outputStr = switch input {
-				case Int(a, b):
-					switch a {
-						case Var(_): a.toString();
-						case Reg: a.toString();
-						case RegBuf: b.toString();
-						default: throw unsupported();
-					}
-				case Float(a, b):
-					switch a {
-						case Var(_): a.toString();
-						case Reg: a.toString();
-						case RegBuf: b.toString();
-						default: throw unsupported();
-					}
+			case Int(a, b):
+				switch a {
+				case Var(_): a.toString();
+				case Reg: a.toString();
+				case RegBuf: b.toString();
 				default: throw unsupported();
+				}
+			case Float(a, b):
+				switch a {
+				case Var(_): a.toString();
+				case Reg: a.toString();
+				case RegBuf: b.toString();
+				default: throw unsupported();
+				}
+			default: throw unsupported();
 			};
 			'add ${input.toString()} -> $outputStr';
 		case Sub(input):
 			final outputStr = switch input {
-				case Int(a, b): a.toString();
-				case Float(a, b): a.toString();
-				default: throw unsupported();
+			case Int(a, b): a.toString();
+			case Float(a, b): a.toString();
+			default: throw unsupported();
 			};
 			'sub ${input.toString()} -> $outputStr';
 		case Minus(reg):
@@ -924,26 +924,26 @@ class InstructionExtension {
 			'minus $inOutStr -> $inOutStr';
 		case Mult(inputA, inputB):
 			final outputStr = switch inputA {
-				case Int(_): DataRegisterSpecifier.Ri.toString();
-				case Float(_): DataRegisterSpecifier.Rf.toString();
-				case Vec(_): DataRegisterSpecifier.Rvec.toString();
-				default: throw unsupported();
+			case Int(_): DataRegisterSpecifier.Ri.toString();
+			case Float(_): DataRegisterSpecifier.Rf.toString();
+			case Vec(_): DataRegisterSpecifier.Rvec.toString();
+			default: throw unsupported();
 			};
 			'mult ${inputA.toString()}, ${inputB.toString()} -> $outputStr';
 		case Div(inputA, inputB):
 			final outputStr = switch inputA {
-				case Int(_): DataRegisterSpecifier.Ri.toString();
-				case Float(_): DataRegisterSpecifier.Rf.toString();
-				case Vec(_): DataRegisterSpecifier.Rvec.toString();
-				default: throw unsupported();
+			case Int(_): DataRegisterSpecifier.Ri.toString();
+			case Float(_): DataRegisterSpecifier.Rf.toString();
+			case Vec(_): DataRegisterSpecifier.Rvec.toString();
+			default: throw unsupported();
 			};
 			'div ${inputA.toString()}, ${inputB.toString()} -> $outputStr';
 		case Mod(inputA, inputB):
 			final outputStr = switch inputA {
-				case Int(_): DataRegisterSpecifier.Ri.toString();
-				case Float(_): DataRegisterSpecifier.Rf.toString();
-				case Vec(_): DataRegisterSpecifier.Rvec.toString();
-				default: throw unsupported();
+			case Int(_): DataRegisterSpecifier.Ri.toString();
+			case Float(_): DataRegisterSpecifier.Rf.toString();
+			case Vec(_): DataRegisterSpecifier.Rvec.toString();
+			default: throw unsupported();
 			};
 			'mod ${inputA.toString()}, ${inputB.toString()} -> $outputStr';
 
@@ -1047,7 +1047,7 @@ class InstructionExtension {
 		case Add(input): input.bytecodeLength();
 		case Sub(input): input.bytecodeLength();
 		case Minus(reg): UInt.zero;
-		case Mult(regA, inputB): inputB.bytecodeLength();
+		case Mult(inputA, inputB): inputB.bytecodeLength();
 		case Div(inputA, inputB): inputA.bytecodeLength() + inputB.bytecodeLength();
 		case Mod(inputA, inputB): inputA.bytecodeLength() + inputB.bytecodeLength();
 
@@ -1115,5 +1115,156 @@ class InstructionExtension {
 			case Angle: "shot_direction";
 			}
 		}
+	}
+
+	public static function readsReg(inst: Instruction, regType: ValueType): Bool {
+		return switch inst {
+		case Load(input): input.tryGetRegType() == regType;
+		case Save(type): type == regType;
+		case Store(input, _): input.tryGetRegType() == regType;
+		case Push(input): input.tryGetRegType() == regType;
+
+		case Add(input): input.tryGetRegType() == regType;
+		case Sub(input): input.tryGetRegType() == regType;
+		case Minus(input): input.tryGetRegType() == regType;
+		case Mult(inputA, inputB): inputA.tryGetRegType() == regType || inputB.tryGetRegType() == regType;
+		case Div(inputA, inputB): inputA.tryGetRegType() == regType || inputB.tryGetRegType() == regType;
+		case Mod(inputA, inputB): inputA.tryGetRegType() == regType || inputB.tryGetRegType() == regType;
+
+		case CastIntToFloat: regType == Int;
+		case CastCartesian: regType == Float;
+		case CastPolar: regType == Float;
+
+		case Random(max): max.tryGetRegType() == regType;
+		case RandomSigned(maxMagnitude): maxMagnitude.tryGetRegType() == regType;
+
+		case Sin: regType == Float;
+		case Cos: regType == Float;
+
+		case CalcRelative(_, _, input): input.tryGetRegType() == regType;
+
+		case SetVector(_, _, input): input.tryGetRegType() == regType;
+		case AddVector(_, _, input): input.tryGetRegType() == regType;
+
+		default: false;
+		}
+	}
+
+	public static function writesReg(inst: Instruction, regType: ValueType): Bool {
+		return switch inst {
+		case Load(input): input.getType() == regType;
+		case Pop(type): type == regType;
+		case Peek(type, _): type == regType;
+
+		case Add(input): input.tryGetRegType() == regType;
+		case Sub(input): input.tryGetRegType() == regType;
+		case Minus(input): input.getType() == regType;
+		case Mult(inputA, inputB): inputA.tryGetRegType() == regType || inputB.tryGetRegType() == regType;
+		case Div(inputA, inputB): inputA.tryGetRegType() == regType || inputB.tryGetRegType() == regType;
+		case Mod(inputA, inputB): inputA.tryGetRegType() == regType || inputB.tryGetRegType() == regType;
+
+		case CastIntToFloat: regType == Float;
+		case CastCartesian: regType == Vec;
+		case CastPolar: regType == Vec;
+
+		case RandomRatio: regType == Float;
+		case Random(max): max.getType() == regType;
+		case RandomSigned(maxMagnitude): maxMagnitude.getType() == regType;
+
+		case Sin: regType == Float;
+		case Cos: regType == Float;
+
+		case LoadTargetPositionV: regType == Vec;
+		case LoadTargetXV: regType == Float;
+		case LoadTargetYV: regType == Float;
+		case LoadBearingToTargetV: regType == Float;
+
+		case CalcRelative(_, _, input): input.getType() == Float;
+
+		default: false;
+		}
+	}
+
+	public static function tryFoldConstant(
+		inst: Instruction,
+		loaded: Operand
+	): Maybe<Instruction> {
+		final newInst: Null<Instruction> = switch inst {
+		case Load(input):
+			final newInput = input.tryReplaceRegWithImm(loaded);
+			if (newInput.isSome()) Load(newInput.unwrap()) else null;
+
+		case Store(input, address):
+			final newInput = input.tryReplaceRegWithImm(loaded);
+			if (newInput.isSome()) Store(newInput.unwrap(), address) else null;
+
+		case Push(input):
+			final newInput = input.tryReplaceRegWithImm(loaded);
+			if (newInput.isSome()) Push(newInput.unwrap()) else null;
+
+		case Minus(input):
+			final newInput = input.tryReplaceRegWithImm(loaded);
+			if (newInput.isSome()) Minus(newInput.unwrap()) else null;
+
+		case Add(nextOperands):
+			final newNextOperands = nextOperands.tryReplaceRegWithImm(loaded);
+			if (newNextOperands.isSome()) Add(newNextOperands.unwrap()) else null;
+
+		case Sub(nextOperands):
+			final newNextOperands = nextOperands.tryReplaceRegWithImm(loaded);
+			if (newNextOperands.isSome()) Add(newNextOperands.unwrap()) else null;
+
+		case Mult(inputA, inputB):
+			final newInputA = inputA.tryReplaceRegWithImm(loaded);
+			if (newInputA.isSome()) {
+				Instruction.Mult(newInputA.unwrap(), inputB);
+			} else {
+				final newInputB = inputB.tryReplaceRegWithImm(loaded);
+				if (newInputB.isSome()) Instruction.Mult(inputA, newInputB.unwrap());
+				else null;
+			}
+
+		case Div(inputA, inputB):
+			final newInputA = inputA.tryReplaceRegWithImm(loaded);
+			if (newInputA.isSome()) {
+				Instruction.Div(newInputA.unwrap(), inputB);
+			} else {
+				final newInputB = inputB.tryReplaceRegWithImm(loaded);
+				if (newInputB.isSome()) Instruction.Div(inputA, newInputB.unwrap())
+				else null;
+			}
+
+		case Mod(inputA, inputB):
+			final newInputA = inputA.tryReplaceRegWithImm(loaded);
+			if (newInputA.isSome()) {
+				Instruction.Mod(newInputA.unwrap(), inputB);
+			} else {
+				final newInputB = inputB.tryReplaceRegWithImm(loaded);
+				if (newInputB.isSome()) Instruction.Mod(inputA, newInputB.unwrap())
+				else null;
+			}
+
+		case CalcRelative(attrType, cmpType, input):
+			final newInput = input.tryReplaceRegWithImm(loaded);
+			if (newInput.isSome()) {
+				CalcRelative(attrType, cmpType, newInput.unwrap());
+			} else null;
+
+		case SetVector(attrType, cmpType, input):
+			final newInput = input.tryReplaceRegWithImm(loaded);
+			if (newInput.isSome()) {
+				SetVector(attrType, cmpType, newInput.unwrap());
+			} else null;
+
+		case AddVector(attrType, cmpType, input):
+			final newInput = input.tryReplaceRegWithImm(loaded);
+			if (newInput.isSome()) {
+				AddVector(attrType, cmpType, newInput.unwrap());
+			} else null;
+
+		default: null;
+		}
+
+		return Maybe.from(newInst);
 	}
 }

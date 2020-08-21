@@ -38,6 +38,83 @@ class OperandExtension {
 			case Vec(_): Vec;
 		}
 	}
+
+	/**
+		@return `ValueType` if `this` is `Reg`.
+	**/
+	public static function tryGetRegType(_this: Operand): Maybe<ValueType> {
+		final type: Null<ValueType> = switch _this {
+			case Null: null;
+			case Int(operand):
+				switch operand {
+					case Reg: Int;
+					default: null;
+				}
+			case Float(operand):
+				switch operand {
+					case Reg: Float;
+					default: null;
+				}
+			case Vec(operand):
+				switch operand {
+					case Reg: Vec;
+					default: null;
+				}
+		}
+		return Maybe.from(type);
+	}
+
+	/**
+		Returns `maybeImm` if:
+		- `this` is a register, and
+		- `maybeImm` is an immediate with the same type as `this`.
+	**/
+	public static function tryReplaceRegWithImm(_this: Operand, maybeImm: Operand): Maybe<Operand> {
+		final newOperand: Null<Operand> = switch _this {
+			case Null: null;
+			case Int(thisOperand):
+				switch thisOperand {
+					case Reg:
+						switch maybeImm {
+							case Int(maybeIntImm):
+								switch maybeIntImm {
+									case Imm(_): maybeImm;
+									default: null;
+								}
+							default: null;
+						}
+					default: null;
+				}
+			case Float(thisOperand):
+				switch thisOperand {
+					case Reg:
+						switch maybeImm {
+							case Float(maybeIntImm):
+								switch maybeIntImm {
+									case Imm(_): maybeImm;
+									default: null;
+								}
+							default: null;
+						}
+					default: null;
+				}
+			case Vec(thisOperand):
+				switch thisOperand {
+					case Reg:
+						switch maybeImm {
+							case Vec(maybeIntImm):
+								switch maybeIntImm {
+									case Imm(_): maybeImm;
+									default: null;
+								}
+							default: null;
+						}
+					default: null;
+				}
+		}
+
+		return Maybe.from(newOperand);
+	}
 }
 
 @:using(firedancer.assembly.Operand.OperandPairExtension)
@@ -72,6 +149,25 @@ class OperandPairExtension {
 		}
 	}
 
+	/**
+		@return `ValueType` if `this` contains `Reg`.
+	**/
+	public static function tryGetRegType(_this: OperandPair): Maybe<ValueType> {
+		final type: Null<ValueType> = switch _this {
+			case Int(a, b):
+				if (a.isReg() || b.isReg()) Int else null;
+			case Float(a, b):
+				if (a.isReg() || b.isReg()) Float else null;
+			case Vec(a, b):
+				if (a.isReg() || b.isReg()) Vec else null;
+		}
+		return Maybe.from(type);
+	}
+
+	/**
+		If `this` takes a register as an input and `maybeImm` is an immediate with the same type,
+		returns a new operand with the register operand replaced by `maybeImm`.
+	**/
 	public static function tryReplaceRegWithImm(_this: OperandPair, maybeImm: Operand): Maybe<OperandPair> {
 		final newPair: Null<OperandPair> = switch _this {
 			case Int(a, b):
@@ -79,8 +175,15 @@ class OperandPairExtension {
 					case Int(maybeIntImm):
 						switch maybeIntImm {
 							case Imm(value):
-								if (a.isReg()) Int(maybeIntImm, b);
-								else if (b.isReg()) Int(a, maybeIntImm);
+								// do not replace A if B is a buffer register
+								if (a.isReg()) switch b {
+									case RegBuf: null;
+									default: Int(maybeIntImm, b);
+								}
+								else if (b.isReg()) switch a {
+									case RegBuf: null;
+									default: Int(a, maybeIntImm);
+								}
 								else null;
 							default: null;
 						}
@@ -91,8 +194,15 @@ class OperandPairExtension {
 					case Float(maybeFloatImm):
 						switch maybeFloatImm {
 							case Imm(value):
-								if (a.isReg()) Float(maybeFloatImm, b);
-								else if (b.isReg()) Float(a, maybeFloatImm);
+								// do not replace A if B is a buffer register
+								if (a.isReg()) switch b {
+									case RegBuf: null;
+									default: Float(maybeFloatImm, b);
+								}
+								else if (b.isReg()) switch a {
+									case RegBuf: null;
+									default: Float(a, maybeFloatImm);
+								}
 								else null;
 							default: null;
 						}

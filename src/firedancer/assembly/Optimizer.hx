@@ -16,51 +16,62 @@ class Optimizer {
 	}
 
 	public static function tryOptimize(code: AssemblyCode): Maybe<AssemblyCode> {
-		if (code.length <= UInt.one) return code;
+		if (code.length <= UInt.one) return Maybe.none();
 
-		final newCode: AssemblyCode = [];
+		// Sys.println("Try optimization.");
+		// Sys.println(code.toString());
+		code = code.copy();
+
 		var optimized = false;
 
-		final lastIndex = code.length - 1;
 		var i = UInt.zero;
-		while (i <= lastIndex) {
-			final cur = code[i];
+		while (i < code.length) {
+			final curInst = code[i];
 
-			if (i == lastIndex) {
-				newCode.push(cur);
-				break;
-			}
-
-			final next = code[i + 1];
-
-			switch cur {
+			switch curInst {
 			case Load(loaded):
-				switch next {
-					case Add(nextOperands):
-						final newNextOperands = nextOperands.tryReplaceRegWithImm(loaded);
-						if (newNextOperands.isSome()) {
-							newCode.push(Add(newNextOperands.unwrap()));
-							optimized = true;
-							i += 2;
-							continue;
-						}
-					case Sub(nextOperands):
-						final newNextOperands = nextOperands.tryReplaceRegWithImm(loaded);
-						if (newNextOperands.isSome()) {
-							newCode.push(Add(newNextOperands.unwrap()));
-							optimized = true;
-							i += 2;
-							continue;
-						}
-					default:
+				// Sys.println('[$i] ${curInst.toString()}');
+				inline function findNextReader(startIndex: UInt): MaybeUInt {
+					final nextWriter = code.indexOfFirstIn(
+						inst -> inst.writesReg(loaded.getType()),
+						startIndex,
+						code.length
+					);
+					final nextReader = code.indexOfFirstIn(
+						inst -> inst.readsReg(loaded.getType()),
+						startIndex,
+						if (nextWriter.isSome()) nextWriter.unwrap() + 1 else code.length
+					);
+					return nextReader;
 				}
+				var nextRegReaderIndex = findNextReader(i + 1);
+				if (nextRegReaderIndex.isNone()) {
+					// Sys.println("Found no succeeding reg reader.");
+					// Sys.println("  Delete: " + code[i].toString());
+					code.removeAt(i);
+					optimized = true;
+					continue;
+				} else {
+					// Sys.println("Found next reg reader.");
+					do {
+						final index = nextRegReaderIndex.unwrap();
+						final optimizedInst = code[index].tryFoldConstant(loaded);
+						if (optimizedInst.isSome()) {
+							// Sys.println("  Replace: " + code[index]);
+							// Sys.println("  by: " + optimizedInst.unwrap());
+							code[index] = optimizedInst.unwrap();
+							optimized = true;
+						}
+						nextRegReaderIndex = findNextReader(index + 1);
+					} while (nextRegReaderIndex.isSome());
+				}
+
 			default:
 			}
 
-			newCode.push(cur);
 			++i;
 		}
 
-		return optimized ? Maybe.from(newCode) : Maybe.none();
+		return optimized ? Maybe.from(code) : Maybe.none();
 	}
 }
