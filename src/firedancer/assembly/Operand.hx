@@ -79,8 +79,8 @@ class OperandPairExtension {
 					case Int(maybeIntImm):
 						switch maybeIntImm {
 							case Imm(value):
-								if (a == Reg) Int(maybeIntImm, b);
-								else if (b == Reg) Int(a, maybeIntImm);
+								if (a.isReg()) Int(maybeIntImm, b);
+								else if (b.isReg()) Int(a, maybeIntImm);
 								else null;
 							default: null;
 						}
@@ -91,8 +91,8 @@ class OperandPairExtension {
 					case Float(maybeFloatImm):
 						switch maybeFloatImm {
 							case Imm(value):
-								if (a == Reg) Float(maybeFloatImm, b);
-								else if (b == Reg) Float(a, maybeFloatImm);
+								if (a.isReg()) Float(maybeFloatImm, b);
+								else if (b.isReg()) Float(a, maybeFloatImm);
 								else null;
 							default: null;
 						}
@@ -133,6 +133,13 @@ class IntOperandExtension {
 			default: UInt.zero;
 		}
 	}
+
+	public static function isReg(_this: IntOperand): Bool {
+		return switch _this {
+			case Reg: true;
+			default: false;
+		}
+	}
 }
 
 @:using(firedancer.assembly.Operand.FloatOperandExtension)
@@ -162,6 +169,13 @@ class FloatOperandExtension {
 			default: UInt.zero;
 		}
 	}
+
+	public static function isReg(_this: FloatOperand): Bool {
+		return switch _this {
+			case Reg: true;
+			default: false;
+		}
+	}
 }
 
 @:using(firedancer.assembly.Operand.VecOperandExtension)
@@ -184,6 +198,13 @@ class VecOperandExtension {
 		return switch _this {
 			case Imm(_): LEN64 + LEN64;
 			default: UInt.zero;
+		}
+	}
+
+	public static function isReg(_this: VecOperand): Bool {
+		return switch _this {
+			case Reg: true;
+			default: false;
 		}
 	}
 }

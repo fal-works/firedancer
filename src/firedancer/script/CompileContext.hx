@@ -4,6 +4,8 @@ import banker.vector.Vector;
 import firedancer.assembly.Instruction;
 import firedancer.assembly.AssemblyCode;
 import firedancer.assembly.ValueType;
+import firedancer.assembly.Optimizer;
+import firedancer.assembly.Assembler;
 import firedancer.assembly.operation.CalcOperation;
 import firedancer.assembly.operation.GeneralOperation;
 import firedancer.bytecode.ProgramPackage;
@@ -61,10 +63,6 @@ class CompileContext {
 		final id = codeList.length;
 		codeList.push(code);
 
-		#if debug
-		println('[ASSEMBLY] ID: $id\n${code.toString()}\n');
-		#end
-
 		return id;
 	}
 
@@ -113,7 +111,17 @@ class CompileContext {
 		Creates a `ProgramPackage` instance.
 	**/
 	public function createPackage(): ProgramPackage {
-		final bytecodeList = Vector.fromArrayCopy(this.codeList.map(code -> code.assemble()));
+		final optimized = this.codeList.map(Optimizer.optimize);
+
+		#if debug
+		for (id in 0...optimized.length) {
+			println('[ASSEMBLY] ID: $id');
+			println('${optimized[id].toString()}\n');
+		}
+		#end
+
+		final assembled = optimized.map(Assembler.assemble);
+		final bytecodeList = Vector.fromArrayCopy(assembled);
 
 		return new ProgramPackage(bytecodeList, this.nameIndexMap);
 	}
