@@ -73,4 +73,5 @@ enum Instruction {
 		cmpType: ActorAttributeComponentType,
 		input: ImmOrRegOrStack
 	);
+	None;
 }

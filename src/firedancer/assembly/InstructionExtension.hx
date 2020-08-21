@@ -695,6 +695,8 @@ class InstructionExtension {
 				};
 				op(opcode);
 			}
+		case None:
+			throw unsupported();
 		}
 	}
 
@@ -844,6 +846,11 @@ class InstructionExtension {
 		case AddVector(attrType, cmpType, input):
 			final output = actorAttributeToString(attrType, cmpType);
 			'add ${input.toString()} -> $output';
+
+			// ----
+
+		case None:
+			"none";
 		}
 	}
 
@@ -921,6 +928,10 @@ class InstructionExtension {
 
 		case SetVector(_, _, input): input.bytecodeLength();
 		case AddVector(_, _, input): input.bytecodeLength();
+
+			// ----
+
+		case None: UInt.zero;
 		}
 	}
 
