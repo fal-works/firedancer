@@ -2,6 +2,7 @@ package firedancer.assembly;
 
 import haxe.Int32;
 import firedancer.bytecode.internal.Constants.*;
+import reckoner.Numeric.nearlyEqual;
 
 /**
 	Immediate value embedded in an `Instruction`.
@@ -61,6 +62,28 @@ class ImmediateExtension {
 			case Int(_): Int;
 			case Float(_): Float;
 			case Vec(_, _): Vec;
+		}
+	}
+
+	/**
+		@return `true` if the value is nearly equal to `0`.
+	**/
+	public static function isZero(_this: Immediate): Bool {
+		return switch _this {
+			case Int(value): value == 0;
+			case Float(value): nearlyEqual(value, 0.0);
+			case Vec(x, y): nearlyEqual(x, 0.0) && nearlyEqual(y, 0.0);
+		}
+	}
+
+	/**
+		@return `true` if the value is nearly equal to `1`. Always `false` if `Vec`.
+	**/
+	public static function isOne(_this: Immediate): Bool {
+		return switch _this {
+			case Int(value): value == 1;
+			case Float(value): nearlyEqual(value, 1.0);
+			case Vec(x, y): false;
 		}
 	}
 }
