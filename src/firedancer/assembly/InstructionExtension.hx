@@ -1126,6 +1126,9 @@ class InstructionExtension {
 		}
 	}
 
+	/**
+		@return `true` if `this` receives `Reg` with `regType` as input.
+	**/
 	public static function readsReg(inst: Instruction, regType: ValueType): Bool {
 		return switch inst {
 		case Load(input): input.tryGetRegType() == regType;
@@ -1159,39 +1162,42 @@ class InstructionExtension {
 		}
 	}
 
-	public static function writesReg(inst: Instruction, regType: ValueType): Bool {
-		return switch inst {
-		case Load(input): input.getType() == regType;
-		case Pop(type): type == regType;
-		case Peek(type, _): type == regType;
+	/**
+		@return The output `ValueType` if the output of `this` is `Reg`.
+	**/
+	public static function tryGetWriteRegType(inst: Instruction): Maybe<ValueType> {
+		return Maybe.from(switch inst {
+		case Load(input): input.getType();
+		case Pop(type): type;
+		case Peek(type, _): type;
 
-		case Add(input): input.tryGetRegType() == regType;
-		case Sub(input): input.tryGetRegType() == regType;
-		case Minus(input): input.getType() == regType;
-		case Mult(inputA, inputB): inputA.tryGetRegType() == regType || inputB.tryGetRegType() == regType;
-		case Div(inputA, inputB): inputA.tryGetRegType() == regType || inputB.tryGetRegType() == regType;
-		case Mod(inputA, inputB): inputA.tryGetRegType() == regType || inputB.tryGetRegType() == regType;
+		case Add(input): input.tryGetRegType().nullable();
+		case Sub(input): input.tryGetRegType().nullable();
+		case Minus(input): input.getType();
+		case Mult(inputA, _): inputA.getType();
+		case Div(inputA, _): inputA.getType();
+		case Mod(inputA, _): inputA.getType();
 
-		case CastIntToFloat: regType == Float;
-		case CastCartesian: regType == Vec;
-		case CastPolar: regType == Vec;
+		case CastIntToFloat: ValueType.Float;
+		case CastCartesian: ValueType.Vec;
+		case CastPolar: ValueType.Vec;
 
-		case RandomRatio: regType == Float;
-		case Random(max): max.getType() == regType;
-		case RandomSigned(maxMagnitude): maxMagnitude.getType() == regType;
+		case RandomRatio: ValueType.Float;
+		case Random(max): max.getType();
+		case RandomSigned(maxMagnitude): maxMagnitude.getType();
 
-		case Sin: regType == Float;
-		case Cos: regType == Float;
+		case Sin: ValueType.Float;
+		case Cos: ValueType.Float;
 
-		case LoadTargetPositionR: regType == Vec;
-		case LoadTargetXR: regType == Float;
-		case LoadTargetYR: regType == Float;
-		case LoadBearingToTargetR: regType == Float;
+		case LoadTargetPositionR: ValueType.Vec;
+		case LoadTargetXR: ValueType.Float;
+		case LoadTargetYR: ValueType.Float;
+		case LoadBearingToTargetR: ValueType.Float;
 
-		case CalcRelative(_, _, input): input.getType() == Float;
+		case CalcRelative(_, _, input): input.getType();
 
-		default: false;
-		}
+		default: null;
+		});
 	}
 
 	public static function tryFoldConstant(

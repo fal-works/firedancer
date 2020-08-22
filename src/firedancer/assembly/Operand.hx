@@ -65,6 +65,31 @@ class OperandExtension {
 	}
 
 	/**
+		@return `ValueType` if `this` is `Imm`.
+	**/
+	public static function tryGetImmType(_this: Operand): Maybe<ValueType> {
+		final type: Null<ValueType> = switch _this {
+			case Null: null;
+			case Int(operand):
+				switch operand {
+					case Imm(_): Int;
+					default: null;
+				}
+			case Float(operand):
+				switch operand {
+					case Imm(_): Float;
+					default: null;
+				}
+			case Vec(operand):
+				switch operand {
+					case Imm(_): Vec;
+					default: null;
+				}
+		}
+		return Maybe.from(type);
+	}
+
+	/**
 		@return `true` if `this` is `Reg`.
 	**/
 	public static function isReg(_this: Operand): Bool {
