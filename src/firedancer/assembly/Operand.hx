@@ -14,28 +14,28 @@ enum Operand {
 class OperandExtension {
 	public static function toString(_this: Operand): String {
 		return switch _this {
-			case Null: "n";
-			case Int(operand): operand.toString();
-			case Float(operand): operand.toString();
-			case Vec(operand): operand.toString();
+		case Null: "n";
+		case Int(operand): operand.toString();
+		case Float(operand): operand.toString();
+		case Vec(operand): operand.toString();
 		}
 	}
 
 	public static function bytecodeLength(_this: Operand): UInt {
 		return switch _this {
-			case Null: UInt.zero;
-			case Int(operand): operand.bytecodeLength();
-			case Float(operand): operand.bytecodeLength();
-			case Vec(operand): operand.bytecodeLength();
+		case Null: UInt.zero;
+		case Int(operand): operand.bytecodeLength();
+		case Float(operand): operand.bytecodeLength();
+		case Vec(operand): operand.bytecodeLength();
 		};
 	}
 
 	public static function getType(_this: Operand): ValueType {
 		return switch _this {
-			case Null: throw "Cannot determine type of Null.";
-			case Int(_): Int;
-			case Float(_): Float;
-			case Vec(_): Vec;
+		case Null: throw "Cannot determine type of Null.";
+		case Int(_): Int;
+		case Float(_): Float;
+		case Vec(_): Vec;
 		}
 	}
 
@@ -44,22 +44,43 @@ class OperandExtension {
 	**/
 	public static function tryGetRegType(_this: Operand): Maybe<ValueType> {
 		final type: Null<ValueType> = switch _this {
-			case Null: null;
-			case Int(operand):
-				switch operand {
-					case Reg: Int;
-					default: null;
-				}
-			case Float(operand):
-				switch operand {
-					case Reg: Float;
-					default: null;
-				}
-			case Vec(operand):
-				switch operand {
-					case Reg: Vec;
-					default: null;
-				}
+		case Null: null;
+		case Int(operand):
+			switch operand {
+			case Reg: Int;
+			default: null;
+			}
+		case Float(operand):
+			switch operand {
+			case Reg: Float;
+			default: null;
+			}
+		case Vec(operand):
+			switch operand {
+			case Reg: Vec;
+			default: null;
+			}
+		}
+		return Maybe.from(type);
+	}
+
+	/**
+		@return `ValueType` if `this` is `RegBuf`.
+	**/
+	public static function tryGetRegBufType(_this: Operand): Maybe<ValueType> {
+		final type: Null<ValueType> = switch _this {
+		case Null: null;
+		case Int(operand):
+			switch operand {
+			case RegBuf: Int;
+			default: null;
+			}
+		case Float(operand):
+			switch operand {
+			case RegBuf: Float;
+			default: null;
+			}
+		default: null;
 		}
 		return Maybe.from(type);
 	}
@@ -69,22 +90,22 @@ class OperandExtension {
 	**/
 	public static function tryGetImmType(_this: Operand): Maybe<ValueType> {
 		final type: Null<ValueType> = switch _this {
-			case Null: null;
-			case Int(operand):
-				switch operand {
-					case Imm(_): Int;
-					default: null;
-				}
-			case Float(operand):
-				switch operand {
-					case Imm(_): Float;
-					default: null;
-				}
-			case Vec(operand):
-				switch operand {
-					case Imm(_): Vec;
-					default: null;
-				}
+		case Null: null;
+		case Int(operand):
+			switch operand {
+			case Imm(_): Int;
+			default: null;
+			}
+		case Float(operand):
+			switch operand {
+			case Imm(_): Float;
+			default: null;
+			}
+		case Vec(operand):
+			switch operand {
+			case Imm(_): Vec;
+			default: null;
+			}
 		}
 		return Maybe.from(type);
 	}
@@ -94,10 +115,10 @@ class OperandExtension {
 	**/
 	public static function isReg(_this: Operand): Bool {
 		return switch _this {
-			case Null: false;
-			case Int(operand): operand.isReg();
-			case Float(operand): operand.isReg();
-			case Vec(operand): operand.isReg();
+		case Null: false;
+		case Int(operand): operand.isReg();
+		case Float(operand): operand.isReg();
+		case Vec(operand): operand.isReg();
 		}
 	}
 
@@ -106,10 +127,10 @@ class OperandExtension {
 	**/
 	public static function isRegBuf(_this: Operand): Bool {
 		return switch _this {
-			case Null: false;
-			case Int(operand): operand.isRegBuf();
-			case Float(operand): operand.isRegBuf();
-			case Vec(operand): false;
+		case Null: false;
+		case Int(operand): operand.isRegBuf();
+		case Float(operand): operand.isRegBuf();
+		case Vec(operand): false;
 		}
 	}
 
@@ -118,10 +139,10 @@ class OperandExtension {
 	**/
 	public static function isStack(_this: Operand): Bool {
 		return switch _this {
-			case Null: false;
-			case Int(operand): operand == Stack;
-			case Float(operand): operand == Stack;
-			case Vec(operand): operand == Stack;
+		case Null: false;
+		case Int(operand): operand == Stack;
+		case Float(operand): operand == Stack;
+		case Vec(operand): operand == Stack;
 		}
 	}
 
@@ -130,30 +151,66 @@ class OperandExtension {
 	**/
 	public static function getKind(_this: Operand): OperandKind {
 		return switch _this {
-			case Null: Null;
-			case Int(operand):
-				switch operand {
-					case Imm(_): Imm;
-					case Reg: Reg;
-					case RegBuf: RegBuf;
-					case Stack: Stack;
-					case Var(_): Var;
-				}
-			case Float(operand):
-				switch operand {
-					case Imm(_): Imm;
-					case Reg: Reg;
-					case RegBuf: RegBuf;
-					case Stack: Stack;
-					case Var(_): Var;
-				}
-			case Vec(operand):
-				switch operand {
-					case Imm(_, _): Imm;
-					case Reg: Reg;
-					case Stack: Stack;
-				}
+		case Null: Null;
+		case Int(operand):
+			switch operand {
+			case Imm(_): Imm;
+			case Reg: Reg;
+			case RegBuf: RegBuf;
+			case Stack: Stack;
+			case Var(_): Var;
+			}
+		case Float(operand):
+			switch operand {
+			case Imm(_): Imm;
+			case Reg: Reg;
+			case RegBuf: RegBuf;
+			case Stack: Stack;
+			case Var(_): Var;
+			}
+		case Vec(operand):
+			switch operand {
+			case Imm(_, _): Imm;
+			case Reg: Reg;
+			case Stack: Stack;
+			}
 		}
+	}
+
+	public static function tryGetIntImm(_this: Operand): Maybe<Int> {
+		final result: Null<Int> = switch _this {
+		case Int(operand):
+			switch operand {
+			case Imm(value): value;
+			default: null;
+			}
+		default: null;
+		};
+		return Maybe.from(result);
+	}
+
+	public static function tryGetFloatImm(_this: Operand): Maybe<Float> {
+		final result: Null<Float> = switch _this {
+		case Float(operand):
+			switch operand {
+			case Imm(value): value;
+			default: null;
+			}
+		default: null;
+		};
+		return Maybe.from(result);
+	}
+
+	public static function tryGetVecImm(_this: Operand): Maybe<{x: Float, y: Float }> {
+		final result: Null<{x: Float, y: Float }> = switch _this {
+		case Vec(operand):
+			switch operand {
+			case Imm(x, y): { x: x, y: y };
+			default: null;
+			}
+		default: null;
+		};
+		return Maybe.from(result);
 	}
 
 	/**
@@ -161,48 +218,51 @@ class OperandExtension {
 		- `this` is a register, and
 		- `maybeImm` is an immediate with the same type as `this`.
 	**/
-	public static function tryReplaceRegWithImm(_this: Operand, maybeImm: Operand): Maybe<Operand> {
+	public static function tryReplaceRegWithImm(
+		_this: Operand,
+		maybeImm: Operand
+	): Maybe<Operand> {
 		final newOperand: Null<Operand> = switch _this {
-			case Null: null;
-			case Int(thisOperand):
-				switch thisOperand {
-					case Reg:
-						switch maybeImm {
-							case Int(maybeIntImm):
-								switch maybeIntImm {
-									case Imm(_): maybeImm;
-									default: null;
-								}
-							default: null;
-						}
+		case Null: null;
+		case Int(thisOperand):
+			switch thisOperand {
+			case Reg:
+				switch maybeImm {
+				case Int(maybeIntImm):
+					switch maybeIntImm {
+					case Imm(_): maybeImm;
 					default: null;
+					}
+				default: null;
 				}
-			case Float(thisOperand):
-				switch thisOperand {
-					case Reg:
-						switch maybeImm {
-							case Float(maybeIntImm):
-								switch maybeIntImm {
-									case Imm(_): maybeImm;
-									default: null;
-								}
-							default: null;
-						}
+			default: null;
+			}
+		case Float(thisOperand):
+			switch thisOperand {
+			case Reg:
+				switch maybeImm {
+				case Float(maybeIntImm):
+					switch maybeIntImm {
+					case Imm(_): maybeImm;
 					default: null;
+					}
+				default: null;
 				}
-			case Vec(thisOperand):
-				switch thisOperand {
-					case Reg:
-						switch maybeImm {
-							case Vec(maybeIntImm):
-								switch maybeIntImm {
-									case Imm(_): maybeImm;
-									default: null;
-								}
-							default: null;
-						}
+			default: null;
+			}
+		case Vec(thisOperand):
+			switch thisOperand {
+			case Reg:
+				switch maybeImm {
+				case Vec(maybeIntImm):
+					switch maybeIntImm {
+					case Imm(_): maybeImm;
 					default: null;
+					}
+				default: null;
 				}
+			default: null;
+			}
 		}
 
 		return Maybe.from(newOperand);
@@ -219,25 +279,25 @@ enum OperandPair {
 class OperandPairExtension {
 	public static function toString(_this: OperandPair): String {
 		return switch _this {
-			case Int(a, b): '${a.toString()}, ${b.toString()}';
-			case Float(a, b):  '${a.toString()}, ${b.toString()}';
-			case Vec(a, b): '${a.toString()}, ${b.toString()}';
+		case Int(a, b): '${a.toString()}, ${b.toString()}';
+		case Float(a, b): '${a.toString()}, ${b.toString()}';
+		case Vec(a, b): '${a.toString()}, ${b.toString()}';
 		}
 	}
 
 	public static function bytecodeLength(_this: OperandPair): UInt {
 		return switch _this {
-			case Int(a, b): a.bytecodeLength() + b.bytecodeLength();
-			case Float(a, b): a.bytecodeLength() + b.bytecodeLength();
-			case Vec(a, b): a.bytecodeLength() + b.bytecodeLength();
+		case Int(a, b): a.bytecodeLength() + b.bytecodeLength();
+		case Float(a, b): a.bytecodeLength() + b.bytecodeLength();
+		case Vec(a, b): a.bytecodeLength() + b.bytecodeLength();
 		};
 	}
 
 	public static function getType(_this: OperandPair): ValueType {
 		return switch _this {
-			case Int(_): Int;
-			case Float(_): Float;
-			case Vec(_): Vec;
+		case Int(_): Int;
+		case Float(_): Float;
+		case Vec(_): Vec;
 		}
 	}
 
@@ -246,12 +306,26 @@ class OperandPairExtension {
 	**/
 	public static function tryGetRegType(_this: OperandPair): Maybe<ValueType> {
 		final type: Null<ValueType> = switch _this {
-			case Int(a, b):
-				if (a.isReg() || b.isReg()) Int else null;
-			case Float(a, b):
-				if (a.isReg() || b.isReg()) Float else null;
-			case Vec(a, b):
-				if (a.isReg() || b.isReg()) Vec else null;
+		case Int(a, b):
+			if (a.isReg() || b.isReg()) Int else null;
+		case Float(a, b):
+			if (a.isReg() || b.isReg()) Float else null;
+		case Vec(a, b):
+			if (a.isReg() || b.isReg()) Vec else null;
+		}
+		return Maybe.from(type);
+	}
+
+	/**
+		@return `ValueType` if `this` contains `RegBuf`.
+	**/
+	public static function tryGetRegBufType(_this: OperandPair): Maybe<ValueType> {
+		final type: Null<ValueType> = switch _this {
+		case Int(a, b):
+			if (a.isRegBuf() || b.isRegBuf()) Int else null;
+		case Float(a, b):
+			if (a.isRegBuf() || b.isRegBuf()) Float else null;
+		default: null;
 		}
 		return Maybe.from(type);
 	}
@@ -260,48 +334,51 @@ class OperandPairExtension {
 		If `this` takes a register as an input and `maybeImm` is an immediate with the same type,
 		returns a new operand with the register operand replaced by `maybeImm`.
 	**/
-	public static function tryReplaceRegWithImm(_this: OperandPair, maybeImm: Operand): Maybe<OperandPair> {
+	public static function tryReplaceRegWithImm(
+		_this: OperandPair,
+		maybeImm: Operand
+	): Maybe<OperandPair> {
 		final newPair: Null<OperandPair> = switch _this {
-			case Int(a, b):
-				switch maybeImm {
-					case Int(maybeIntImm):
-						switch maybeIntImm {
-							case Imm(value):
-								// do not replace A if B is a buffer register
-								if (a.isReg()) switch b {
-									case RegBuf: null;
-									default: Int(maybeIntImm, b);
-								}
-								else if (b.isReg()) switch a {
-									case RegBuf: null;
-									default: Int(a, maybeIntImm);
-								}
-								else null;
-							default: null;
-						}
-					default: null;
+		case Int(a, b):
+			switch maybeImm {
+			case Int(maybeIntImm):
+				switch maybeIntImm {
+				case Imm(value):
+					// do not replace A if B is a buffer register
+					if (a.isReg()) switch b {
+					case RegBuf: null;
+					default: Int(maybeIntImm, b);
+					}
+					else if (b.isReg()) switch a {
+					case RegBuf: null;
+					default: Int(a, maybeIntImm);
+					}
+					else null;
+				default: null;
 				}
-			case Float(a, b):
-				switch maybeImm {
-					case Float(maybeFloatImm):
-						switch maybeFloatImm {
-							case Imm(value):
-								// do not replace A if B is a buffer register
-								if (a.isReg()) switch b {
-									case RegBuf: null;
-									default: Float(maybeFloatImm, b);
-								}
-								else if (b.isReg()) switch a {
-									case RegBuf: null;
-									default: Float(a, maybeFloatImm);
-								}
-								else null;
-							default: null;
-						}
-					default: null;
-				}
-			case Vec(a, b): null;
 			default: null;
+			}
+		case Float(a, b):
+			switch maybeImm {
+			case Float(maybeFloatImm):
+				switch maybeFloatImm {
+				case Imm(value):
+					// do not replace A if B is a buffer register
+					if (a.isReg()) switch b {
+					case RegBuf: null;
+					default: Float(maybeFloatImm, b);
+					}
+					else if (b.isReg()) switch a {
+					case RegBuf: null;
+					default: Float(a, maybeFloatImm);
+					}
+					else null;
+				default: null;
+				}
+			default: null;
+			}
+		case Vec(a, b): null;
+		default: null;
 		}
 
 		return Maybe.from(newPair);
@@ -320,33 +397,33 @@ enum IntOperand {
 class IntOperandExtension {
 	public static function toString(_this: IntOperand): String {
 		return switch _this {
-			case Imm(value): Std.string(value);
-			case Reg: "ri";
-			case RegBuf: "rib";
-			case Stack: "s";
-			case Var(address): 'ivar($address)';
+		case Imm(value): Std.string(value);
+		case Reg: "ri";
+		case RegBuf: "rib";
+		case Stack: "s";
+		case Var(address): 'ivar($address)';
 		}
 	}
 
 	public static function bytecodeLength(_this: IntOperand): UInt {
 		return switch _this {
-			case Imm(_): LEN32;
-			case Var(_): LEN32;
-			default: UInt.zero;
+		case Imm(_): LEN32;
+		case Var(_): LEN32;
+		default: UInt.zero;
 		}
 	}
 
 	public static function isReg(_this: IntOperand): Bool {
 		return switch _this {
-			case Reg: true;
-			default: false;
+		case Reg: true;
+		default: false;
 		}
 	}
 
 	public static function isRegBuf(_this: IntOperand): Bool {
 		return switch _this {
-			case RegBuf: true;
-			default: false;
+		case RegBuf: true;
+		default: false;
 		}
 	}
 }
@@ -363,33 +440,33 @@ enum FloatOperand {
 class FloatOperandExtension {
 	public static function toString(_this: FloatOperand): String {
 		return switch _this {
-			case Imm(value): ftoa(value);
-			case Reg: "rf";
-			case RegBuf: "rfb";
-			case Stack: "s";
-			case Var(address): 'fvar($address)';
+		case Imm(value): ftoa(value);
+		case Reg: "rf";
+		case RegBuf: "rfb";
+		case Stack: "s";
+		case Var(address): 'fvar($address)';
 		}
 	}
 
 	public static function bytecodeLength(_this: FloatOperand): UInt {
 		return switch _this {
-			case Imm(_): LEN64;
-			case Var(_): LEN32;
-			default: UInt.zero;
+		case Imm(_): LEN64;
+		case Var(_): LEN32;
+		default: UInt.zero;
 		}
 	}
 
 	public static function isReg(_this: FloatOperand): Bool {
 		return switch _this {
-			case Reg: true;
-			default: false;
+		case Reg: true;
+		default: false;
 		}
 	}
 
 	public static function isRegBuf(_this: FloatOperand): Bool {
 		return switch _this {
-			case RegBuf: true;
-			default: false;
+		case RegBuf: true;
+		default: false;
 		}
 	}
 }
@@ -404,23 +481,23 @@ enum VecOperand {
 class VecOperandExtension {
 	public static function toString(_this: VecOperand): String {
 		return switch _this {
-			case Imm(x, y): '(${ftoa(x)}, ${ftoa(y)})';
-			case Reg: "rvec";
-			case Stack: "s";
+		case Imm(x, y): '(${ftoa(x)}, ${ftoa(y)})';
+		case Reg: "rvec";
+		case Stack: "s";
 		}
 	}
 
 	public static function bytecodeLength(_this: VecOperand): UInt {
 		return switch _this {
-			case Imm(_): LEN64 + LEN64;
-			default: UInt.zero;
+		case Imm(_): LEN64 + LEN64;
+		default: UInt.zero;
 		}
 	}
 
 	public static function isReg(_this: VecOperand): Bool {
 		return switch _this {
-			case Reg: true;
-			default: false;
+		case Reg: true;
+		default: false;
 		}
 	}
 }

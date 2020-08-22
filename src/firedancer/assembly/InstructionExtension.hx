@@ -1,5 +1,6 @@
 package firedancer.assembly;
 
+import firedancer.types.Azimuth;
 import firedancer.types.ActorAttributeType;
 import firedancer.types.ActorAttributeComponentType;
 import firedancer.bytecode.Word;
@@ -1163,6 +1164,42 @@ class InstructionExtension {
 	}
 
 	/**
+		@return `true` if `this` receives `RegBuf` with `regType` as input.
+	**/
+	public static function readsRegBuf(inst: Instruction, regType: ValueType): Bool {
+		return switch inst {
+		case Load(input): input.tryGetRegBufType() == regType;
+		case Save(input): input.tryGetRegBufType() == regType;
+		case Store(input, _): input.tryGetRegBufType() == regType;
+		case Push(input): input.tryGetRegBufType() == regType;
+
+		case Add(input): input.tryGetRegBufType() == regType;
+		case Sub(input): input.tryGetRegBufType() == regType;
+		case Minus(input): input.tryGetRegBufType() == regType;
+		case Mult(inputA, inputB): inputA.tryGetRegBufType() == regType || inputB.tryGetRegBufType() == regType;
+		case Div(inputA, inputB): inputA.tryGetRegBufType() == regType || inputB.tryGetRegBufType() == regType;
+		case Mod(inputA, inputB): inputA.tryGetRegBufType() == regType || inputB.tryGetRegBufType() == regType;
+
+		case CastIntToFloat: regType == Int;
+		case CastCartesian: regType == Float;
+		case CastPolar: regType == Float;
+
+		case Random(max): max.tryGetRegBufType() == regType;
+		case RandomSigned(maxMagnitude): maxMagnitude.tryGetRegBufType() == regType;
+
+		case Sin: regType == Float;
+		case Cos: regType == Float;
+
+		case CalcRelative(_, _, input): input.tryGetRegBufType() == regType;
+
+		case SetVector(_, _, input): input.tryGetRegBufType() == regType;
+		case AddVector(_, _, input): input.tryGetRegBufType() == regType;
+
+		default: false;
+		}
+	}
+
+	/**
 		@return The output `ValueType` if the output of `this` is `Reg`.
 	**/
 	public static function tryGetWriteRegType(inst: Instruction): Maybe<ValueType> {
@@ -1173,10 +1210,13 @@ class InstructionExtension {
 
 		case Add(input): input.tryGetRegType().nullable();
 		case Sub(input): input.tryGetRegType().nullable();
-		case Minus(input): input.getType();
-		case Mult(inputA, _): inputA.getType();
-		case Div(inputA, _): inputA.getType();
-		case Mod(inputA, _): inputA.getType();
+		case Minus(input): input.tryGetRegType().nullable();
+		case Mult(inputA, _):
+			inputA.tryGetRegType().coalesce(inputA.tryGetRegBufType()).nullable();
+		case Div(inputA, _):
+			inputA.tryGetRegType().coalesce(inputA.tryGetRegBufType()).nullable();
+		case Mod(inputA, _):
+			inputA.tryGetRegType().coalesce(inputA.tryGetRegBufType()).nullable();
 
 		case CastIntToFloat: ValueType.Float;
 		case CastCartesian: ValueType.Vec;
@@ -1200,71 +1240,81 @@ class InstructionExtension {
 		});
 	}
 
+	/**
+		@return The output `ValueType` if the output of `this` is `RegBuf`.
+	**/
+	public static function tryGetWriteRegBufType(inst: Instruction): Maybe<ValueType> {
+		return Maybe.from(switch inst {
+		case Save(input): input.getType();
+		default: null;
+		});
+	}
+
 	public static function tryReplaceRegWithImm(
 		inst: Instruction,
-		loaded: Operand
+		maybeImm: Operand
 	): Maybe<Instruction> {
 		final newInst: Null<Instruction> = switch inst {
 		case Load(input):
-			final newInput = input.tryReplaceRegWithImm(loaded);
+			final newInput = input.tryReplaceRegWithImm(maybeImm);
 			if (newInput.isSome()) Load(newInput.unwrap()) else null;
 
 		case Store(input, address):
-			final newInput = input.tryReplaceRegWithImm(loaded);
+			final newInput = input.tryReplaceRegWithImm(maybeImm);
 			if (newInput.isSome()) Store(newInput.unwrap(), address) else null;
 
 		case Save(input):
-			final newInput = input.tryReplaceRegWithImm(loaded);
+			final newInput = input.tryReplaceRegWithImm(maybeImm);
 			if (newInput.isSome()) Save(newInput.unwrap()) else null;
 
 		case Push(input):
-			final newInput = input.tryReplaceRegWithImm(loaded);
+			final newInput = input.tryReplaceRegWithImm(maybeImm);
 			if (newInput.isSome()) Push(newInput.unwrap()) else null;
 
 		case Minus(input):
-			final newInput = input.tryReplaceRegWithImm(loaded);
+			final newInput = input.tryReplaceRegWithImm(maybeImm);
 			if (newInput.isSome()) Minus(newInput.unwrap()) else null;
 
 		case Add(nextOperands):
-			final newNextOperands = nextOperands.tryReplaceRegWithImm(loaded);
+			final newNextOperands = nextOperands.tryReplaceRegWithImm(maybeImm);
 			if (newNextOperands.isSome()) Add(newNextOperands.unwrap()) else null;
 
 		case Sub(nextOperands):
-			final newNextOperands = nextOperands.tryReplaceRegWithImm(loaded);
+			final newNextOperands = nextOperands.tryReplaceRegWithImm(maybeImm);
 			if (newNextOperands.isSome()) Sub(newNextOperands.unwrap()) else null;
 
 		case Mult(inputA, inputB):
-			final newInputA = inputA.tryReplaceRegWithImm(loaded);
+			final newInputA = inputA.tryReplaceRegWithImm(maybeImm);
 			if (newInputA.isSome()) {
 				Instruction.Mult(newInputA.unwrap(), inputB);
 			} else if (!inputA.isRegBuf()) {
-				final newInputB = inputB.tryReplaceRegWithImm(loaded);
+				final newInputB = inputB.tryReplaceRegWithImm(maybeImm);
 				if (newInputB.isSome()) Instruction.Mult(inputA, newInputB.unwrap());
 				else null;
 			} else null;
 
 		case Div(inputA, inputB):
-			final newInputA = inputA.tryReplaceRegWithImm(loaded);
+			final newInputA = inputA.tryReplaceRegWithImm(maybeImm);
 			if (newInputA.isSome()) {
 				Instruction.Div(newInputA.unwrap(), inputB);
 			} else if (!inputA.isRegBuf()) {
-				final newInputB = inputB.tryReplaceRegWithImm(loaded);
+				final newInputB = inputB.tryReplaceRegWithImm(maybeImm);
 				if (newInputB.isSome()) Instruction.Div(inputA, newInputB.unwrap())
 				else null;
 			} else null;
 
 		case Mod(inputA, inputB):
-			final newInputA = inputA.tryReplaceRegWithImm(loaded);
+			final newInputA = inputA.tryReplaceRegWithImm(maybeImm);
 			if (newInputA.isSome()) {
 				Instruction.Mod(newInputA.unwrap(), inputB);
 			} else {
-				final newInputB = inputB.tryReplaceRegWithImm(loaded);
+				final newInputB = inputB.tryReplaceRegWithImm(maybeImm);
 				if (newInputB.isSome()) Instruction.Mod(inputA, newInputB.unwrap())
 				else null;
 			}
 
 		case CastIntToFloat:
-			switch loaded {
+			switch maybeImm {
 			case Int(operand):
 				switch operand {
 				case Imm(value):
@@ -1275,22 +1325,246 @@ class InstructionExtension {
 			}
 
 		case CalcRelative(attrType, cmpType, input):
-			final newInput = input.tryReplaceRegWithImm(loaded);
+			final newInput = input.tryReplaceRegWithImm(maybeImm);
 			if (newInput.isSome()) {
 				CalcRelative(attrType, cmpType, newInput.unwrap());
 			} else null;
 
 		case SetVector(attrType, cmpType, input):
-			final newInput = input.tryReplaceRegWithImm(loaded);
+			final newInput = input.tryReplaceRegWithImm(maybeImm);
 			if (newInput.isSome()) {
 				SetVector(attrType, cmpType, newInput.unwrap());
 			} else null;
 
 		case AddVector(attrType, cmpType, input):
-			final newInput = input.tryReplaceRegWithImm(loaded);
+			final newInput = input.tryReplaceRegWithImm(maybeImm);
 			if (newInput.isSome()) {
 				AddVector(attrType, cmpType, newInput.unwrap());
 			} else null;
+
+		default: null;
+		}
+
+		return Maybe.from(newInst);
+	}
+
+	public static function tryReplaceRegBufAndRegWithImm(
+		inst: Instruction,
+		maybeImmA: Operand,
+		maybeImmB: Operand
+	): Maybe<Instruction> {
+		final newInst: Null<Instruction> = switch inst {
+		case Add(nextOperands):
+			switch nextOperands {
+			case Int(a, b):
+				if (a.isRegBuf() && b.isReg()) {
+					final immA = maybeImmA.tryGetIntImm();
+					final immB = maybeImmB.tryGetIntImm();
+					if (immA.isSome() && immB.isSome()) {
+						Load(Int(Imm(immA.unwrap() + immB.unwrap())));
+					} else null;
+				} else null;
+			case Float(a, b):
+				if (a.isRegBuf() && b.isReg()) {
+					final immA = maybeImmA.tryGetFloatImm();
+					final immB = maybeImmB.tryGetFloatImm();
+					if (immA.isSome() && immB.isSome()) {
+						Load(Float(Imm(immA.unwrap() + immB.unwrap())));
+					} else null;
+				} else null;
+			default: null;
+			}
+
+		case Sub(nextOperands):
+			switch nextOperands {
+			case Int(a, b):
+				if (a.isRegBuf() && b.isReg()) {
+					final immA = maybeImmA.tryGetIntImm();
+					final immB = maybeImmB.tryGetIntImm();
+					if (immA.isSome() && immB.isSome()) {
+						Load(Int(Imm(immA.unwrap() - immB.unwrap())));
+					} else null;
+				} else null;
+			case Float(a, b):
+				if (a.isRegBuf() && b.isReg()) {
+					final immA = maybeImmA.tryGetFloatImm();
+					final immB = maybeImmB.tryGetFloatImm();
+					if (immA.isSome() && immB.isSome()) {
+						Load(Float(Imm(immA.unwrap() - immB.unwrap())));
+					} else null;
+				} else null;
+			default: null;
+			}
+
+		case Mult(inputA, inputB):
+			switch inputA {
+			case Int(operandA):
+				if (operandA.isRegBuf()) {
+					switch inputB {
+					case Int(operandB):
+						if (operandB.isReg()) {
+							final immA = maybeImmA.tryGetIntImm();
+							final immB = maybeImmB.tryGetIntImm();
+							if (immA.isSome() && immB.isSome()) {
+								Load(Int(Imm(immA.unwrap() * immB.unwrap())));
+							} else null;
+						} else null;
+					default: null;
+					}
+				} else null;
+			case Float(operandA):
+				if (operandA.isRegBuf()) {
+					switch inputB {
+					case Float(operandB):
+						if (operandB.isReg()) {
+							final immA = maybeImmA.tryGetFloatImm();
+							final immB = maybeImmB.tryGetFloatImm();
+							if (immA.isSome() && immB.isSome()) {
+								Load(Float(Imm(immA.unwrap() * immB.unwrap())));
+							} else null;
+						} else null;
+					default: null;
+					}
+				} else null;
+			case Vec(operandA):
+				if (operandA.isReg()) {
+					switch inputB {
+					case Float(operandB):
+						if (operandB.isReg()) {
+							final immA = maybeImmA.tryGetVecImm();
+							final immB = maybeImmB.tryGetFloatImm();
+							if (immA.isSome() && immB.isSome()) {
+								final vecA = immA.unwrap();
+								final b = immB.unwrap();
+								Load(Vec(Imm(vecA.x * b, vecA.y * b)));
+							} else null;
+						} else null;
+					default: null;
+					}
+				} else null;
+			default: null;
+			}
+
+		case Div(inputA, inputB):
+			switch inputA {
+			case Int(operandA):
+				if (operandA.isRegBuf()) {
+					switch inputB {
+					case Int(operandB):
+						if (operandB.isReg()) {
+							final immA = maybeImmA.tryGetIntImm();
+							final immB = maybeImmB.tryGetIntImm();
+							if (immA.isSome() && immB.isSome()) {
+								Load(Int(Imm(Ints.divide(immA.unwrap(), immB.unwrap()))));
+							} else null;
+						} else null;
+					default: null;
+					}
+				} else null;
+			case Float(operandA):
+				if (operandA.isRegBuf()) {
+					switch inputB {
+					case Float(operandB):
+						if (operandB.isReg()) {
+							final immA = maybeImmA.tryGetFloatImm();
+							final immB = maybeImmB.tryGetFloatImm();
+							if (immA.isSome() && immB.isSome()) {
+								Load(Float(Imm(immA.unwrap() / immB.unwrap())));
+							} else null;
+						} else null;
+					default: null;
+					}
+				} else null;
+			case Vec(operandA):
+				if (operandA.isReg()) {
+					switch inputB {
+					case Float(operandB):
+						if (operandB.isReg()) {
+							final immA = maybeImmA.tryGetVecImm();
+							final immB = maybeImmB.tryGetFloatImm();
+							if (immA.isSome() && immB.isSome()) {
+								final vecA = immA.unwrap();
+								final b = immB.unwrap();
+								Load(Vec(Imm(vecA.x / b, vecA.y / b)));
+							} else null;
+						} else null;
+					default: null;
+					}
+				} else null;
+			default: null;
+			}
+
+		case Mod(inputA, inputB):
+			switch inputA {
+			case Int(operandA):
+				if (operandA.isRegBuf()) {
+					switch inputB {
+					case Int(operandB):
+						if (operandB.isReg()) {
+							final immA = maybeImmA.tryGetIntImm();
+							final immB = maybeImmB.tryGetIntImm();
+							if (immA.isSome() && immB.isSome()) {
+								Load(Int(Imm(immA.unwrap() % immB.unwrap())));
+							} else null;
+						} else null;
+					default: null;
+					}
+				} else null;
+			case Float(operandA):
+				if (operandA.isRegBuf()) {
+					switch inputB {
+					case Float(operandB):
+						if (operandB.isReg()) {
+							final immA = maybeImmA.tryGetFloatImm();
+							final immB = maybeImmB.tryGetFloatImm();
+							if (immA.isSome() && immB.isSome()) {
+								Load(Float(Imm(immA.unwrap() % immB.unwrap())));
+							} else null;
+						} else null;
+					default: null;
+					}
+				} else null;
+			default: null;
+			}
+
+		case CastCartesian:
+			switch maybeImmA {
+			case Float(operandA):
+				switch operandA {
+				case Imm(x):
+					switch maybeImmB {
+					case Float(operandB):
+						switch operandB {
+						case Imm(y):
+							Load(Vec(Imm(x, y)));
+						default: null;
+						}
+					default: null;
+					}
+				default: null;
+				}
+			default: null;
+			}
+
+		case CastPolar:
+			switch maybeImmA {
+			case Float(operandA):
+				switch operandA {
+				case Imm(length):
+					switch maybeImmB {
+					case Float(operandB):
+						switch operandB {
+						case Imm(angle):
+							final vec = Azimuth.fromRadians(angle).toVec2D(length);
+							Load(Vec(Imm(vec.x, vec.y)));
+						default: null;
+						}
+					default: null;
+					}
+				default: null;
+				}
+			default: null;
+			}
 
 		default: null;
 		}

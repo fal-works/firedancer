@@ -27,11 +27,13 @@ class Optimizer {
 		if (code.length <= UInt.one) return Maybe.none();
 
 		code = code.copy();
-		var optimized = false;
+		var optimizedAny = false;
 
 		var curIntImmInReg: Maybe<Operand> = Maybe.none();
 		var curFloatImmInReg: Maybe<Operand> = Maybe.none();
 		var curVecImmInReg: Maybe<Operand> = Maybe.none();
+		var curIntImmInRegBuf: Maybe<Operand> = Maybe.none();
+		var curFloatImmInRegBuf: Maybe<Operand> = Maybe.none();
 		final curStacked: Array<StackElement> = [];
 
 		inline function peeksStack() {
@@ -41,29 +43,13 @@ class Optimizer {
 
 		var i = UInt.zero;
 		while (i < code.length) {
-			final curInst = code[i];
-
-			final writeRegType = curInst.tryGetWriteRegType();
-			if (writeRegType.isSome()) {
-				switch writeRegType.unwrap() {
-				case Int: curIntImmInReg = Maybe.none();
-				case Float: curFloatImmInReg = Maybe.none();
-				case Vec: curVecImmInReg = Maybe.none();
-				}
-			}
+			var curInst = code[i];
+			var optimizedCur = false;
+			var removedCur = false;
 
 			switch curInst {
 			case Load(loaded):
-				final immType = loaded.tryGetImmType();
-				if (immType.isSome()) {
-					switch immType.unwrap() {
-					case Int: curIntImmInReg = Maybe.from(loaded);
-					case Float: curFloatImmInReg = Maybe.from(loaded);
-					case Vec: curVecImmInReg = Maybe.from(loaded);
-					}
-				}
-
-				inline function findNextReader(startIndex: UInt): MaybeUInt {
+				inline function findNextRegReader(startIndex: UInt): MaybeUInt {
 					final nextWriter = code.indexOfFirstIn(
 						inst -> inst.tryGetWriteRegType() == loaded.getType(),
 						startIndex,
@@ -83,11 +69,37 @@ class Optimizer {
 						MaybeUInt.none;
 					}
 				}
-				var nextRegReaderIndex = findNextReader(i + 1);
+				var nextRegReaderIndex = findNextRegReader(i + 1);
 				if (nextRegReaderIndex.isNone()) {
 					code.removeAt(i);
-					optimized = true;
-					continue;
+					optimizedCur = removedCur = true;
+				}
+
+			case Save(saved):
+				inline function findNextRegBufReader(startIndex: UInt): MaybeUInt {
+					final nextWriter = code.indexOfFirstIn(
+						inst -> inst.tryGetWriteRegBufType() == saved.getType(),
+						startIndex,
+						code.length
+					);
+					final nextReader = code.indexOfFirstIn(
+						inst -> inst.readsRegBuf(saved.getType()),
+						startIndex,
+						code.length
+					);
+
+					return if (nextReader.isNone()) {
+						MaybeUInt.none;
+					} else if (nextWriter.isNone() || nextReader.unwrap() <= nextWriter.unwrap()) {
+						nextReader;
+					} else {
+						MaybeUInt.none;
+					}
+				}
+				var nextRegBufReaderIndex = findNextRegBufReader(i + 1);
+				if (nextRegBufReaderIndex.isNone()) {
+					code.removeAt(i);
+					optimizedCur = removedCur = true;
 				}
 
 			case Push(input):
@@ -97,7 +109,8 @@ class Optimizer {
 				if (!stackTop.mayBeRead && stackTop.operand.getKind() == Imm) {
 					code[i] = Load(stackTop.operand);
 					code.removeAt(stackTop.pushInstIndex);
-					optimized = true;
+					optimizedCur = true;
+					--i;
 				}
 				curStacked.pop();
 			case Drop(_):
@@ -125,6 +138,8 @@ class Optimizer {
 			default:
 			}
 
+			// Sys.println('inst: ${code[i].toString()}');
+
 			inline function tryFoldConstant(
 				mightBeImm: Maybe<Operand>,
 				regOrStack: RegOrStack
@@ -138,28 +153,124 @@ class Optimizer {
 					}
 					if (optimizedInst.isSome()) {
 						code[i] = optimizedInst.unwrap();
-						++i;
-						result = optimized = true;
+						result = optimizedCur = true;
 					}
 				}
 				return result;
 			}
 
-			if (tryFoldConstant(curIntImmInReg, Reg)) continue;
-			if (tryFoldConstant(curFloatImmInReg, Reg)) continue;
-			if (tryFoldConstant(curVecImmInReg, Reg)) continue;
-			final stackTop = curStacked.getLastSafe();
-			if (stackTop.isSome()) {
-				if (tryFoldConstant(
-					Maybe.from(stackTop.unwrap().operand),
-					Stack
-				)) continue;
+			inline function tryFoldConstantBinop(
+				mightBeImmA: Maybe<Operand>,
+				mightBeImmB: Maybe<Operand>
+			): Bool {
+				var result = false;
+				if (mightBeImmA.isSome() && mightBeImmB.isSome()) {
+					final maybeImmA = mightBeImmA.unwrap();
+					final maybeImmB = mightBeImmB.unwrap();
+					final optimizedInst = curInst.tryReplaceRegBufAndRegWithImm(
+						maybeImmA,
+						maybeImmB
+					);
+					if (optimizedInst.isSome()) {
+						code[i] = optimizedInst.unwrap();
+						result = optimizedCur = true;
+					}
+				}
+				return result;
 			}
 
-			++i;
+			inline function tryFoldConstantAll(): Bool {
+				return if (tryFoldConstant(curIntImmInReg, Reg)) {
+					true;
+				} else if (tryFoldConstant(curFloatImmInReg, Reg)) {
+					true;
+				} else if (tryFoldConstant(curVecImmInReg, Reg)) {
+					true;
+				} else if (tryFoldConstantBinop(curIntImmInRegBuf, curIntImmInReg)) {
+					true;
+				} else if (tryFoldConstantBinop(
+					curFloatImmInRegBuf,
+					curFloatImmInReg
+				)) {
+					true;
+				} else {
+					final stackTop = curStacked.getLastSafe();
+					if (stackTop.isSome()) {
+						tryFoldConstant(Maybe.from(stackTop.unwrap().operand), Stack);
+					} else {
+						false;
+					}
+				}
+			}
+
+			if (!removedCur) {
+				curInst = code[i];
+				tryFoldConstantAll();
+			}
+
+			// update current registers
+			curInst = code[i];
+			final writeRegType = curInst.tryGetWriteRegType();
+			if (writeRegType.isSome()) {
+				switch curInst {
+				case Load(loaded):
+					switch loaded {
+						case Int(operand):
+							curIntImmInReg = Maybe.from(switch operand {
+								case Imm(_): loaded;
+								default: null;
+							});
+						case Float(operand):
+							curFloatImmInReg = Maybe.from(switch operand {
+								case Imm(_): loaded;
+								default: null;
+							});
+						case Vec(operand):
+							curVecImmInReg = Maybe.from(switch operand {
+								case Imm(_): loaded;
+								default: null;
+							});
+						default:
+					}
+				default:
+					switch writeRegType.unwrap() {
+					case Int: curIntImmInReg = Maybe.none();
+					case Float: curFloatImmInReg = Maybe.none();
+					case Vec: curVecImmInReg = Maybe.none();
+					}
+				}
+			}
+			final writeRegBufType = curInst.tryGetWriteRegBufType();
+			if (writeRegBufType.isSome()) {
+				switch curInst {
+				case Save(saved):
+					switch saved {
+						case Int(operand):
+							curIntImmInRegBuf = Maybe.from(switch operand {
+								case Imm(_): saved;
+								default: null;
+							});
+						case Float(operand):
+							curFloatImmInRegBuf = Maybe.from(switch operand {
+								case Imm(_): saved;
+								default: null;
+							});
+						default:
+					}
+				default:
+					switch writeRegBufType.unwrap() {
+					case Int: curIntImmInRegBuf = Maybe.none();
+					case Float: curFloatImmInRegBuf = Maybe.none();
+					default:
+					}
+				}
+			}
+
+			if (!optimizedCur) ++i;
+			optimizedAny = optimizedAny || optimizedCur;
 		}
 
-		return optimized ? Maybe.from(code) : Maybe.none();
+		return optimizedAny ? Maybe.from(code) : Maybe.none();
 	}
 }
 
