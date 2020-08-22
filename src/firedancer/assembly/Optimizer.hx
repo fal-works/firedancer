@@ -2,6 +2,7 @@ package firedancer.assembly;
 
 class Optimizer {
 	public static function optimize(code: AssemblyCode): AssemblyCode {
+		#if !firedancer_no_optimization
 		var cnt = 0;
 
 		while (true) {
@@ -11,6 +12,7 @@ class Optimizer {
 
 			if (1024 < ++cnt) throw "Detected infinite loop in the optimization process.";
 		}
+		#end
 
 		return code;
 	}

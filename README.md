@@ -10,12 +10,13 @@ which can be run on `firedancer` virtual machine.
 Inspired by [BulletML](http://www.asahi-net.or.jp/~cs8k-cyu/bulletml/index_e.html).
 
 
-## Compilation flags
+## Compiler flags
 
 |flag|description|
 |---|---|
 |firedancer_verbose|Emits verbose log.|
 |firedancer_positionref_type|Specifies the underlying type of `firedancer.types.PositionRef`. Example: `-D firedancer_positionref_type=broker_BatchSprite` (Valid values: "broker_BatchSprite" for `broker.draw.BatchSprite`, "heaps_BatchElement" for `h2d.SpriteBatch.BatchElement`, otherwise an anonymous structure `{ x: Float, y: Float }`)|
+|firedancer_no_optimization|Disables the optimization of virtual assembly language code.|
 
 
 ## Dependencies
