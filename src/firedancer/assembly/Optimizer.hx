@@ -1,5 +1,7 @@
 package firedancer.assembly;
 
+import haxe.macro.Expr.Case;
+
 class Optimizer {
 	public static function optimize(code: AssemblyCode): AssemblyCode {
 		#if !firedancer_no_optimization
@@ -17,6 +19,10 @@ class Optimizer {
 		return code;
 	}
 
+	/**
+		- Try constant folding.
+		- Replace `Pop` with `Load` if the stack top is an immediate and never read before `Pop`.
+	**/
 	public static function tryOptimize(code: AssemblyCode): Maybe<AssemblyCode> {
 		if (code.length <= UInt.one) return Maybe.none();
 
@@ -26,7 +32,12 @@ class Optimizer {
 		var curIntImmInReg: Maybe<Operand> = Maybe.none();
 		var curFloatImmInReg: Maybe<Operand> = Maybe.none();
 		var curVecImmInReg: Maybe<Operand> = Maybe.none();
-		final curStacked: Array<Operand> = [];
+		final curStacked: Array<StackElement> = [];
+
+		inline function peeksStack() {
+			final stackTop = curStacked.getLastSafe();
+			if (stackTop.isSome()) stackTop.unwrap().mayBeRead = true;
+		}
 
 		var i = UInt.zero;
 		while (i < code.length) {
@@ -40,31 +51,6 @@ class Optimizer {
 				case Vec: curVecImmInReg = Maybe.none();
 				}
 			}
-
-			inline function tryFoldConstant(
-				mightBeImm: Maybe<Operand>,
-				regOrStack: RegOrStack
-			): Bool {
-				var result = false;
-				if (mightBeImm.isSome()) {
-					final maybeImm = mightBeImm.unwrap();
-					final optimizedInst = switch regOrStack {
-					case Reg: curInst.tryReplaceRegWithImm(maybeImm);
-					case Stack: curInst.tryReplaceStackWithImm(maybeImm);
-					}
-					if (optimizedInst.isSome()) {
-						code[i] = optimizedInst.unwrap();
-						++i;
-						result = optimized = true;
-					}
-				}
-				return result;
-			}
-
-			if (tryFoldConstant(curIntImmInReg, Reg)) continue;
-			if (tryFoldConstant(curFloatImmInReg, Reg)) continue;
-			if (tryFoldConstant(curVecImmInReg, Reg)) continue;
-			if (tryFoldConstant(curStacked.getLastSafe(), Stack)) continue;
 
 			switch curInst {
 			case Load(loaded):
@@ -105,11 +91,19 @@ class Optimizer {
 				}
 
 			case Push(input):
-				curStacked.push(input);
+				curStacked.push({ operand: input, pushInstIndex: i });
 			case Pop(_):
+				final stackTop = curStacked.getLast();
+				if (!stackTop.mayBeRead && stackTop.operand.getKind() == Imm) {
+					code[i] = Load(stackTop.operand);
+					code.removeAt(stackTop.pushInstIndex);
+					optimized = true;
+				}
 				curStacked.pop();
 			case Drop(_):
 				curStacked.pop();
+			case Peek(_, _):
+				peeksStack();
 			case CountDownBreak:
 				curStacked.pop();
 			case CountDownGotoLabel(_):
@@ -118,15 +112,48 @@ class Optimizer {
 				switch output {
 				case Int(operand):
 					switch operand {
-					case Stack: curStacked.push(output);
+					case Stack: curStacked.push({ operand: output, pushInstIndex: i });
 					default:
 					}
 				default:
 				}
 			case AwaitThread:
 				curStacked.pop();
+			case AddVector(_, _, input):
+				if (input.isStack()) peeksStack();
 
 			default:
+			}
+
+			inline function tryFoldConstant(
+				mightBeImm: Maybe<Operand>,
+				regOrStack: RegOrStack
+			): Bool {
+				var result = false;
+				if (mightBeImm.isSome()) {
+					final maybeImm = mightBeImm.unwrap();
+					final optimizedInst = switch regOrStack {
+					case Reg: curInst.tryReplaceRegWithImm(maybeImm);
+					case Stack: curInst.tryReplaceStackWithImm(maybeImm);
+					}
+					if (optimizedInst.isSome()) {
+						code[i] = optimizedInst.unwrap();
+						++i;
+						result = optimized = true;
+					}
+				}
+				return result;
+			}
+
+			if (tryFoldConstant(curIntImmInReg, Reg)) continue;
+			if (tryFoldConstant(curFloatImmInReg, Reg)) continue;
+			if (tryFoldConstant(curVecImmInReg, Reg)) continue;
+			final stackTop = curStacked.getLastSafe();
+			if (stackTop.isSome()) {
+				if (tryFoldConstant(
+					Maybe.from(stackTop.unwrap().operand),
+					Stack
+				)) continue;
 			}
 
 			++i;
@@ -139,4 +166,11 @@ class Optimizer {
 private enum abstract RegOrStack(Int) {
 	final Reg;
 	final Stack;
+}
+
+@:structInit
+private class StackElement {
+	public final operand: Operand;
+	public final pushInstIndex: UInt;
+	public var mayBeRead: Bool = false;
 }

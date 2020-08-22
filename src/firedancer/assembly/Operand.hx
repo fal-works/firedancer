@@ -114,6 +114,49 @@ class OperandExtension {
 	}
 
 	/**
+		@return `true` if `this` is `Stack`.
+	**/
+	public static function isStack(_this: Operand): Bool {
+		return switch _this {
+			case Null: false;
+			case Int(operand): operand == Stack;
+			case Float(operand): operand == Stack;
+			case Vec(operand): operand == Stack;
+		}
+	}
+
+	/**
+		@return The kind of `this` operand.
+	**/
+	public static function getKind(_this: Operand): OperandKind {
+		return switch _this {
+			case Null: Null;
+			case Int(operand):
+				switch operand {
+					case Imm(_): Imm;
+					case Reg: Reg;
+					case RegBuf: RegBuf;
+					case Stack: Stack;
+					case Var(_): Var;
+				}
+			case Float(operand):
+				switch operand {
+					case Imm(_): Imm;
+					case Reg: Reg;
+					case RegBuf: RegBuf;
+					case Stack: Stack;
+					case Var(_): Var;
+				}
+			case Vec(operand):
+				switch operand {
+					case Imm(_, _): Imm;
+					case Reg: Reg;
+					case Stack: Stack;
+				}
+		}
+	}
+
+	/**
 		Returns `maybeImm` if:
 		- `this` is a register, and
 		- `maybeImm` is an immediate with the same type as `this`.
@@ -380,4 +423,13 @@ class VecOperandExtension {
 			default: false;
 		}
 	}
+}
+
+private enum abstract OperandKind(Int) {
+	final Null;
+	final Imm;
+	final Reg;
+	final RegBuf;
+	final Stack;
+	final Var;
 }
