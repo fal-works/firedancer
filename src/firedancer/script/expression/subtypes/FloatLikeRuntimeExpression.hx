@@ -43,7 +43,7 @@ abstract FloatLikeRuntimeExpression(
 				code.pushFromArray(operandExprB.loadToVolatile(context));
 				code.push(Push(Float(Reg)));
 				code.pushFromArray(operandExprA.loadToVolatile(context));
-				code.push(Save(Float));
+				code.push(Save(Float(Reg)));
 				code.push(Pop(Float));
 				code.push(instruction);
 				code;

@@ -80,11 +80,21 @@ class InstructionExtension {
 			default: throw unsupported();
 			}
 
-		case Save(type):
-			switch type {
-			case Int: op(SaveIntR);
-			case Float: op(SaveFloatR);
-			case Vec: throw unsupported();
+		case Save(input):
+			switch input {
+			case Int(operand):
+				switch operand {
+				case Imm(value): [op(SaveIntC), value];
+				case Reg: op(SaveIntR);
+				default: throw unsupported();
+				}
+			case Float(operand):
+				switch operand {
+				case Imm(value): [op(SaveFloatC), value];
+				case Reg: op(SaveFloatR);
+				default: throw unsupported();
+				}
+			default: throw unsupported();
 			}
 		case Store(input, address):
 			switch input {
@@ -851,9 +861,8 @@ class InstructionExtension {
 		case Load(input):
 			final output = DataRegisterSpecifier.get(input.getType());
 			'load ${input.toString()} -> $output';
-		case Save(type):
-			final input = DataRegisterSpecifier.get(type);
-			final output = input.getBuffer();
+		case Save(input):
+			final output = DataRegisterSpecifier.get(input.getType()).getBuffer();
 			'save ${input.toString()} -> ${output.toString()}';
 		case Store(input, address):
 			'store ${input.toString()} -> ${varToString(address, input.getType())}';
@@ -1019,7 +1028,7 @@ class InstructionExtension {
 			// ---- load values ------------------------------------------------
 
 		case Load(input): input.bytecodeLength();
-		case Save(type): UInt.zero;
+		case Save(input): input.bytecodeLength();
 		case Store(input, address): input.bytecodeLength() + LEN32;
 
 			// ---- read/write stack ---------------------------------------------
@@ -1120,7 +1129,7 @@ class InstructionExtension {
 	public static function readsReg(inst: Instruction, regType: ValueType): Bool {
 		return switch inst {
 		case Load(input): input.tryGetRegType() == regType;
-		case Save(type): type == regType;
+		case Save(input): input.tryGetRegType() == regType;
 		case Store(input, _): input.tryGetRegType() == regType;
 		case Push(input): input.tryGetRegType() == regType;
 
@@ -1197,6 +1206,10 @@ class InstructionExtension {
 		case Store(input, address):
 			final newInput = input.tryReplaceRegWithImm(loaded);
 			if (newInput.isSome()) Store(newInput.unwrap(), address) else null;
+
+		case Save(input):
+			final newInput = input.tryReplaceRegWithImm(loaded);
+			if (newInput.isSome()) Save(newInput.unwrap()) else null;
 
 		case Push(input):
 			final newInput = input.tryReplaceRegWithImm(loaded);

@@ -19,7 +19,7 @@ enum Instruction {
 	End(endCode: Int);
 	// ---- move values ---------------------------------------------
 	Load(input: Operand);
-	Save(type: ValueType);
+	Save(input: Operand);
 	Store(input: Operand, address: UInt);
 	// ---- read/write stack ----------------------------------------
 	Push(input: Operand);

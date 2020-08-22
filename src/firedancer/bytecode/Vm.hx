@@ -135,8 +135,12 @@ class Vm {
 								reg.float = scan.float();
 							case LoadVecCR:
 								reg.setVec(scan.float(), scan.float());
+							case SaveIntC:
+								reg.intBuf = scan.int();
 							case SaveIntR:
 								reg.saveInt();
+							case SaveFloatC:
+								reg.floatBuf = scan.float();
 							case SaveFloatR:
 								reg.saveFloat();
 							case LoadIntVR:

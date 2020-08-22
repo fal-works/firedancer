@@ -132,9 +132,19 @@ enum abstract GeneralOperation(Int) to Int {
 	final LoadVecCR;
 
 	/**
+		(int immediate) -> (int register buffer)
+	**/
+	final SaveIntC;
+
+	/**
 		(int register) -> (int register buffer)
 	**/
 	final SaveIntR;
+
+	/**
+		(float immediate) -> (float register buffer)
+	**/
+	final SaveFloatC;
 
 	/**
 		(float register) -> (float register buffer)
@@ -319,7 +329,9 @@ class GeneralOperationExtension {
 			case LoadIntCR: "load_int_cr";
 			case LoadFloatCR: "load_float_cr";
 			case LoadVecCR: "load_vec_cr";
+			case SaveIntC: "save_int_c";
 			case SaveIntR: "save_int_r";
+			case SaveFloatC: "save_float_c";
 			case SaveFloatR: "save_float_r";
 			case LoadIntVR: "load_int_vr";
 			case LoadFloatVR: "load_float_vr";

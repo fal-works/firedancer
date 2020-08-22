@@ -43,7 +43,7 @@ abstract IntLikeRuntimeExpression(
 				code.pushFromArray(operandExprB.loadToVolatile(context));
 				code.push(Push(Int(Reg)));
 				code.pushFromArray(operandExprA.loadToVolatile(context));
-				code.push(Save(Int));
+				code.push(Save(Int(Reg)));
 				code.push(Pop(Int));
 				code.push(instruction);
 				code;

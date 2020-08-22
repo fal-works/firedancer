@@ -154,7 +154,7 @@ class CartesianVecExpressionData extends VecExpressionData {
 			[Push(Float(Reg))],
 			x.loadToVolatile(context),
 			[
-				Save(Float),
+				Save(Float(Reg)),
 				Pop(Float),
 				CastCartesian
 			]
@@ -246,7 +246,7 @@ class PolarVecExpressionData extends VecExpressionData {
 			[Push(Float(Reg))],
 			length.loadToVolatile(context),
 			[
-				Save(Float),
+				Save(Float(Reg)),
 				Pop(Float),
 				CastPolar
 			]
