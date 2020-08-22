@@ -26,6 +26,7 @@ class Optimizer {
 		var curIntImmInReg: Maybe<Operand> = Maybe.none();
 		var curFloatImmInReg: Maybe<Operand> = Maybe.none();
 		var curVecImmInReg: Maybe<Operand> = Maybe.none();
+		final curStacked: Array<Operand> = [];
 
 		var i = UInt.zero;
 		while (i < code.length) {
@@ -40,20 +41,30 @@ class Optimizer {
 				}
 			}
 
-			inline function tryFoldConstant(maybeImm: Maybe<Operand>): Bool {
-				return if (maybeImm.isSome()) {
-					final optimizedInst = curInst.tryFoldConstant(maybeImm.unwrap());
+			inline function tryFoldConstant(
+				mightBeImm: Maybe<Operand>,
+				regOrStack: RegOrStack
+			): Bool {
+				var result = false;
+				if (mightBeImm.isSome()) {
+					final maybeImm = mightBeImm.unwrap();
+					final optimizedInst = switch regOrStack {
+					case Reg: curInst.tryReplaceRegWithImm(maybeImm);
+					case Stack: curInst.tryReplaceStackWithImm(maybeImm);
+					}
 					if (optimizedInst.isSome()) {
 						code[i] = optimizedInst.unwrap();
 						++i;
-						optimized = true;
-					} else false;
-				} else false;
+						result = optimized = true;
+					}
+				}
+				return result;
 			}
 
-			if (tryFoldConstant(curIntImmInReg)) continue;
-			if (tryFoldConstant(curFloatImmInReg)) continue;
-			if (tryFoldConstant(curVecImmInReg)) continue;
+			if (tryFoldConstant(curIntImmInReg, Reg)) continue;
+			if (tryFoldConstant(curFloatImmInReg, Reg)) continue;
+			if (tryFoldConstant(curVecImmInReg, Reg)) continue;
+			if (tryFoldConstant(curStacked.getLastSafe(), Stack)) continue;
 
 			switch curInst {
 			case Load(loaded):
@@ -93,6 +104,28 @@ class Optimizer {
 					continue;
 				}
 
+			case Push(input):
+				curStacked.push(input);
+			case Pop(_):
+				curStacked.pop();
+			case Drop(_):
+				curStacked.pop();
+			case CountDownBreak:
+				curStacked.pop();
+			case CountDownGotoLabel(_):
+				curStacked.pop();
+			case UseThread(_, output):
+				switch output {
+				case Int(operand):
+					switch operand {
+					case Stack: curStacked.push(output);
+					default:
+					}
+				default:
+				}
+			case AwaitThread:
+				curStacked.pop();
+
 			default:
 			}
 
@@ -101,4 +134,9 @@ class Optimizer {
 
 		return optimized ? Maybe.from(code) : Maybe.none();
 	}
+}
+
+private enum abstract RegOrStack(Int) {
+	final Reg;
+	final Stack;
 }

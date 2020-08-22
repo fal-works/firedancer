@@ -1200,7 +1200,7 @@ class InstructionExtension {
 		});
 	}
 
-	public static function tryFoldConstant(
+	public static function tryReplaceRegWithImm(
 		inst: Instruction,
 		loaded: Operand
 	): Maybe<Instruction> {
@@ -1291,6 +1291,70 @@ class InstructionExtension {
 			if (newInput.isSome()) {
 				AddVector(attrType, cmpType, newInput.unwrap());
 			} else null;
+
+		default: null;
+		}
+
+		return Maybe.from(newInst);
+	}
+
+	public static function tryReplaceStackWithImm(
+		inst: Instruction,
+		maybeImm: Operand
+	): Maybe<Instruction> {
+		final newInst: Null<Instruction> = switch inst {
+		case Peek(type, bytesToSkip):
+			if (bytesToSkip != 0) null else {
+				switch maybeImm {
+				case Null: null;
+				case Int(operand):
+					if (type == Int) switch operand {
+					case Imm(_): Load(maybeImm);
+					default: null;
+					} else null;
+				case Float(operand):
+					if (type == Float) switch operand {
+					case Imm(_): Load(maybeImm);
+					default: null;
+					} else null;
+				case Vec(operand):
+					if (type == Vec) switch operand {
+					case Imm(_): Load(maybeImm);
+					default: null;
+					} else null;
+				}
+			}
+
+		case AddVector(attrType, cmpType, input):
+			switch input {
+			case Vec(operand):
+				switch operand {
+				case Stack:
+					switch maybeImm {
+					case Vec(maybeImmOperand):
+						switch maybeImmOperand {
+						case Imm(_, _): AddVector(attrType, cmpType, maybeImm);
+						default: null;
+						}
+					default: null;
+					}
+				default: null;
+				}
+			case Float(operand):
+				switch operand {
+				case Stack:
+					switch maybeImm {
+					case Float(maybeImmOperand):
+						switch maybeImmOperand {
+						case Imm(_): AddVector(attrType, cmpType, maybeImm);
+						default: null;
+						}
+					default: null;
+					}
+				default: null;
+				}
+			default: null;
+			}
 
 		default: null;
 		}
