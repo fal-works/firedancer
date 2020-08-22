@@ -1225,7 +1225,7 @@ class InstructionExtension {
 
 		case Sub(nextOperands):
 			final newNextOperands = nextOperands.tryReplaceRegWithImm(loaded);
-			if (newNextOperands.isSome()) Add(newNextOperands.unwrap()) else null;
+			if (newNextOperands.isSome()) Sub(newNextOperands.unwrap()) else null;
 
 		case Mult(inputA, inputB):
 			final newInputA = inputA.tryReplaceRegWithImm(loaded);
