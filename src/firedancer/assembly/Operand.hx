@@ -65,6 +65,30 @@ class OperandExtension {
 	}
 
 	/**
+		@return `true` if `this` is `Reg`.
+	**/
+	public static function isReg(_this: Operand): Bool {
+		return switch _this {
+			case Null: false;
+			case Int(operand): operand.isReg();
+			case Float(operand): operand.isReg();
+			case Vec(operand): operand.isReg();
+		}
+	}
+
+	/**
+		@return `true` if `this` is `RegBuf`.
+	**/
+	public static function isRegBuf(_this: Operand): Bool {
+		return switch _this {
+			case Null: false;
+			case Int(operand): operand.isRegBuf();
+			case Float(operand): operand.isRegBuf();
+			case Vec(operand): false;
+		}
+	}
+
+	/**
 		Returns `maybeImm` if:
 		- `this` is a register, and
 		- `maybeImm` is an immediate with the same type as `this`.
@@ -250,6 +274,13 @@ class IntOperandExtension {
 			default: false;
 		}
 	}
+
+	public static function isRegBuf(_this: IntOperand): Bool {
+		return switch _this {
+			case RegBuf: true;
+			default: false;
+		}
+	}
 }
 
 @:using(firedancer.assembly.Operand.FloatOperandExtension)
@@ -286,6 +317,13 @@ class FloatOperandExtension {
 			default: false;
 		}
 	}
+
+	public static function isRegBuf(_this: FloatOperand): Bool {
+		return switch _this {
+			case RegBuf: true;
+			default: false;
+		}
+	}
 }
 
 @:using(firedancer.assembly.Operand.VecOperandExtension)
@@ -299,7 +337,7 @@ class VecOperandExtension {
 	public static function toString(_this: VecOperand): String {
 		return switch _this {
 			case Imm(x, y): '(${ftoa(x)}, ${ftoa(y)})';
-			case Reg: "rf";
+			case Reg: "rvec";
 			case Stack: "s";
 		}
 	}

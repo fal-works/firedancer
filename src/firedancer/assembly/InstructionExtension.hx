@@ -1231,21 +1231,21 @@ class InstructionExtension {
 			final newInputA = inputA.tryReplaceRegWithImm(loaded);
 			if (newInputA.isSome()) {
 				Instruction.Mult(newInputA.unwrap(), inputB);
-			} else {
+			} else if (!inputA.isRegBuf()) {
 				final newInputB = inputB.tryReplaceRegWithImm(loaded);
 				if (newInputB.isSome()) Instruction.Mult(inputA, newInputB.unwrap());
 				else null;
-			}
+			} else null;
 
 		case Div(inputA, inputB):
 			final newInputA = inputA.tryReplaceRegWithImm(loaded);
 			if (newInputA.isSome()) {
 				Instruction.Div(newInputA.unwrap(), inputB);
-			} else {
+			} else if (!inputA.isRegBuf()) {
 				final newInputB = inputB.tryReplaceRegWithImm(loaded);
 				if (newInputB.isSome()) Instruction.Div(inputA, newInputB.unwrap())
 				else null;
-			}
+			} else null;
 
 		case Mod(inputA, inputB):
 			final newInputA = inputA.tryReplaceRegWithImm(loaded);
@@ -1255,6 +1255,17 @@ class InstructionExtension {
 				final newInputB = inputB.tryReplaceRegWithImm(loaded);
 				if (newInputB.isSome()) Instruction.Mod(inputA, newInputB.unwrap())
 				else null;
+			}
+
+		case CastIntToFloat:
+			switch loaded {
+			case Int(operand):
+				switch operand {
+				case Imm(value):
+					Load(Float(Imm((value : Float))));
+				default: null;
+				}
+			default: null;
 			}
 
 		case CalcRelative(attrType, cmpType, input):

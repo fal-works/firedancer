@@ -31,7 +31,11 @@ class Optimizer {
 			switch curInst {
 			case Load(loaded):
 				// Sys.println('[$i] ${curInst.toString()}');
-				inline function findNextReader(startIndex: UInt): MaybeUInt {
+				inline function findNextReader(
+					startIndex: UInt,
+					includeWriter: Bool
+				): MaybeUInt {
+					// TODO: refactor
 					final nextWriter = code.indexOfFirstIn(
 						inst -> inst.writesReg(loaded.getType()),
 						startIndex,
@@ -40,30 +44,42 @@ class Optimizer {
 					final nextReader = code.indexOfFirstIn(
 						inst -> inst.readsReg(loaded.getType()),
 						startIndex,
-						if (nextWriter.isSome()) nextWriter.unwrap() + 1 else code.length
+						code.length
 					);
-					return nextReader;
+
+					return if (nextReader.isNone()) {
+						MaybeUInt.none;
+					} else if (nextWriter.isNone()) {
+						nextReader;
+					} else {
+						if (includeWriter) {
+							if (nextReader.unwrap() <= nextWriter.unwrap()) nextReader else MaybeUInt.none;
+						} else {
+							if (nextReader.unwrap() < nextWriter.unwrap()) nextReader else MaybeUInt.none;
+						}
+					}
 				}
-				var nextRegReaderIndex = findNextReader(i + 1);
+				var nextRegReaderIndex = findNextReader(i + 1, true);
 				if (nextRegReaderIndex.isNone()) {
 					// Sys.println("Found no succeeding reg reader.");
 					// Sys.println("  Delete: " + code[i].toString());
 					code.removeAt(i);
 					optimized = true;
 					continue;
-				} else {
-					// Sys.println("Found next reg reader.");
-					do {
-						final index = nextRegReaderIndex.unwrap();
-						final optimizedInst = code[index].tryFoldConstant(loaded);
-						if (optimizedInst.isSome()) {
-							// Sys.println("  Replace: " + code[index]);
-							// Sys.println("  by: " + optimizedInst.unwrap());
-							code[index] = optimizedInst.unwrap();
-							optimized = true;
-						}
-						nextRegReaderIndex = findNextReader(index + 1);
-					} while (nextRegReaderIndex.isSome());
+				}
+
+				// Sys.println("Found next reg reader.");
+				nextRegReaderIndex = findNextReader(i + 1, false);
+				while (nextRegReaderIndex.isSome()) {
+					final index = nextRegReaderIndex.unwrap();
+					final optimizedInst = code[index].tryFoldConstant(loaded);
+					if (optimizedInst.isSome()) {
+						// Sys.println("  Replace: " + code[index]);
+						// Sys.println("  by: " + optimizedInst.unwrap());
+						code[index] = optimizedInst.unwrap();
+						optimized = true;
+					}
+					nextRegReaderIndex = findNextReader(index + 1, false);
 				}
 
 			default:
