@@ -14,63 +14,63 @@ enum abstract CalcOperation(Int) to Int {
 	**/
 	public static inline function from(value: Int): CalcOperation {
 		return switch value {
+			case CalcOperation.AddIntRCR: AddIntRCR;
+			case CalcOperation.AddIntRRR: AddIntRRR;
+			case CalcOperation.SubIntRCR: SubIntRCR;
+			case CalcOperation.SubIntCRR: SubIntCRR;
+			case CalcOperation.SubIntRRR: SubIntRRR;
+			case CalcOperation.MinusIntRR: MinusIntRR;
+			case CalcOperation.MultIntRCR: MultIntRCR;
+			case CalcOperation.MultIntRRR: MultIntRRR;
+			case CalcOperation.DivIntRCR: DivIntRCR;
+			case CalcOperation.DivIntCRR: DivIntCRR;
+			case CalcOperation.DivIntRRR: DivIntRRR;
+			case CalcOperation.ModIntRCR: ModIntRCR;
+			case CalcOperation.ModIntCRR: ModIntCRR;
+			case CalcOperation.ModIntRRR: ModIntRRR;
+
+			case CalcOperation.AddFloatRCR: AddFloatRCR;
+			case CalcOperation.AddFloatRRR: AddFloatRRR;
+			case CalcOperation.SubFloatRCR: SubFloatRCR;
+			case CalcOperation.SubFloatCRR: SubFloatCRR;
+			case CalcOperation.SubFloatRRR: SubFloatRRR;
+			case CalcOperation.MinusFloatRR: MinusFloatRR;
+			case CalcOperation.MultFloatRCR: MultFloatRCR;
+			case CalcOperation.MultFloatRRR: MultFloatRRR;
+			case CalcOperation.DivFloatRCR: DivFloatRCR;
+			case CalcOperation.DivFloatCRR: DivFloatCRR;
+			case CalcOperation.DivFloatRRR: DivFloatRRR;
+			case CalcOperation.ModFloatRCR: ModFloatRCR;
+			case CalcOperation.ModFloatCRR: ModFloatCRR;
+			case CalcOperation.ModFloatRRR: ModFloatRRR;
+
+			case CalcOperation.MinusVecRR: MinusVecRR;
+			case CalcOperation.MultVecRCR: MultVecRCR;
+			case CalcOperation.MultVecRRR: MultVecRRR;
+			case CalcOperation.DivVecRRR: DivVecRRR;
+
+			case CalcOperation.CastIntToFloatRR: CastIntToFloatRR;
+			case CalcOperation.CastCartesianRR: CastCartesianRR;
+			case CalcOperation.CastPolarRR: CastPolarRR;
+
+			case CalcOperation.RandomRatioR: RandomRatioR;
+			case CalcOperation.RandomFloatCR: RandomFloatCR;
+			case CalcOperation.RandomFloatRR: RandomFloatRR;
+			case CalcOperation.RandomFloatSignedCR: RandomFloatSignedCR;
+			case CalcOperation.RandomFloatSignedRR: RandomFloatSignedRR;
+			case CalcOperation.RandomIntCR: RandomIntCR;
+			case CalcOperation.RandomIntRR: RandomIntRR;
+			case CalcOperation.RandomIntSignedCR: RandomIntSignedCR;
+			case CalcOperation.RandomIntSignedRR: RandomIntSignedRR;
+			case CalcOperation.SinRR: SinRR;
+			case CalcOperation.CosRR: CosRR;
+
 			case CalcOperation.AddIntVCV: AddIntVCV;
-			case CalcOperation.AddIntVVV: AddIntVVV;
-			case CalcOperation.SubIntVCV: SubIntVCV;
-			case CalcOperation.SubIntCVV: SubIntCVV;
-			case CalcOperation.SubIntVVV: SubIntVVV;
-			case CalcOperation.MinusIntV: MinusIntV;
-			case CalcOperation.MultIntVCV: MultIntVCV;
-			case CalcOperation.MultIntVVV: MultIntVVV;
-			case CalcOperation.DivIntVCV: DivIntVCV;
-			case CalcOperation.DivIntCVV: DivIntCVV;
-			case CalcOperation.DivIntVVV: DivIntVVV;
-			case CalcOperation.ModIntVCV: ModIntVCV;
-			case CalcOperation.ModIntCVV: ModIntCVV;
-			case CalcOperation.ModIntVVV: ModIntVVV;
-
+			case CalcOperation.AddIntVRV: AddIntVRV;
+			case CalcOperation.IncrementVV: IncrementVV;
+			case CalcOperation.DecrementVV: DecrementVV;
 			case CalcOperation.AddFloatVCV: AddFloatVCV;
-			case CalcOperation.AddFloatVVV: AddFloatVVV;
-			case CalcOperation.SubFloatVCV: SubFloatVCV;
-			case CalcOperation.SubFloatCVV: SubFloatCVV;
-			case CalcOperation.SubFloatVVV: SubFloatVVV;
-			case CalcOperation.MinusFloatV: MinusFloatV;
-			case CalcOperation.MultFloatVCV: MultFloatVCV;
-			case CalcOperation.MultFloatVVV: MultFloatVVV;
-			case CalcOperation.DivFloatVCV: DivFloatVCV;
-			case CalcOperation.DivFloatCVV: DivFloatCVV;
-			case CalcOperation.DivFloatVVV: DivFloatVVV;
-			case CalcOperation.ModFloatVCV: ModFloatVCV;
-			case CalcOperation.ModFloatCVV: ModFloatCVV;
-			case CalcOperation.ModFloatVVV: ModFloatVVV;
-
-			case CalcOperation.MinusVecV: MinusVecV;
-			case CalcOperation.MultVecVCV: MultVecVCV;
-			case CalcOperation.MultVecVVV: MultVecVVV;
-			case CalcOperation.DivVecVVV: DivVecVVV;
-
-			case CalcOperation.CastIntToFloatVV: CastIntToFloatVV;
-			case CalcOperation.CastCartesianVV: CastCartesianVV;
-			case CalcOperation.CastPolarVV: CastPolarVV;
-
-			case CalcOperation.RandomRatioV: RandomRatioV;
-			case CalcOperation.RandomFloatCV: RandomFloatCV;
-			case CalcOperation.RandomFloatVV: RandomFloatVV;
-			case CalcOperation.RandomFloatSignedCV: RandomFloatSignedCV;
-			case CalcOperation.RandomFloatSignedVV: RandomFloatSignedVV;
-			case CalcOperation.RandomIntCV: RandomIntCV;
-			case CalcOperation.RandomIntVV: RandomIntVV;
-			case CalcOperation.RandomIntSignedCV: RandomIntSignedCV;
-			case CalcOperation.RandomIntSignedVV: RandomIntSignedVV;
-			case CalcOperation.Sin: Sin;
-			case CalcOperation.Cos: Cos;
-
-			case CalcOperation.AddIntLCL: AddIntLCL;
-			case CalcOperation.AddIntLVL: AddIntLVL;
-			case CalcOperation.IncrementL: IncrementL;
-			case CalcOperation.DecrementL: DecrementL;
-			case CalcOperation.AddFloatLCL: AddFloatLCL;
-			case CalcOperation.AddFloatLVL: AddFloatLVL;
+			case CalcOperation.AddFloatVRV: AddFloatVRV;
 
 			default: throw error(value);
 		}
@@ -79,282 +79,288 @@ enum abstract CalcOperation(Int) to Int {
 	// ---- calc values ----------------------------------------------
 
 	/**
-		Adds a given constant integer to the current volatile integer.
+		(int register) + (int immediate) -> (int register)
+	**/
+	final AddIntRCR;
+
+	/**
+		(int register buffer) + (int register) -> (int register)
+	**/
+	final AddIntRRR;
+
+	/**
+		(int register) - (int immediate) -> (int register)
+	**/
+	final SubIntRCR;
+
+	/**
+		(int immediate) - (int register) -> (int register)
+	**/
+	final SubIntCRR;
+
+	/**
+		(int register buffer) - (int register) -> (int register)
+	**/
+	final SubIntRRR;
+
+	/**
+		-(int register) -> (int register)
+	**/
+	final MinusIntRR;
+
+	/**
+		(int register) * (int immediate) -> (int register)
+	**/
+	final MultIntRCR;
+
+	/**
+		(int register buffer) * (int register) -> (int register)
+	**/
+	final MultIntRRR;
+
+	/**
+		(int register) / (int immediate) -> (int register)
+	**/
+	final DivIntRCR;
+
+	/**
+		(int immediate) / (int register) -> (int register)
+	**/
+	final DivIntCRR;
+
+	/**
+		(int register buffer) / (int register) -> (int register)
+	**/
+	final DivIntRRR;
+
+	/**
+		(int register) % (int immediate) -> (int register)
+	**/
+	final ModIntRCR;
+
+	/**
+		(int immediate) % (int register) -> (int register)
+	**/
+	final ModIntCRR;
+
+	/**
+		(int register buffer) / (int register) -> (int register)
+	**/
+	final ModIntRRR;
+
+	/**
+		(float register) + (float immediate) -> (float register)
+	**/
+	final AddFloatRCR;
+
+	/**
+		(float register buffer) + (float register) -> (float register)
+	**/
+	final AddFloatRRR;
+
+	/**
+		(float register) - (float immediate) -> (float register)
+	**/
+	final SubFloatRCR;
+
+	/**
+		(float immediate) + (float register) -> (float register)
+	**/
+	final SubFloatCRR;
+
+	/**
+		(float register buffer) - (float register) -> (float register)
+	**/
+	final SubFloatRRR;
+
+	/**
+		-(float register) -> (float register)
+	**/
+	final MinusFloatRR;
+
+	/**
+		(float register) * (float immediate) -> (float register)
+	**/
+	final MultFloatRCR;
+
+	/**
+		(float register buffer) * (float register) -> (float register)
+	**/
+	final MultFloatRRR;
+
+	/**
+		(float register) / (float immediate) -> (float register)
+	**/
+	final DivFloatRCR;
+
+	/**
+		(float immediate) / (float register) -> (float register)
+	**/
+	final DivFloatCRR;
+
+	/**
+		(float register buffer) / (float register) -> (float register)
+	**/
+	final DivFloatRRR;
+
+	/**
+		(float register) % (float immediate) -> (float register)
+	**/
+	final ModFloatRCR;
+
+	/**
+		(float immediate) % (float register) -> (float register)
+	**/
+	final ModFloatCRR;
+
+	/**
+		(float register buffer) % (float register) -> (float register)
+	**/
+	final ModFloatRRR;
+
+	/**
+		-(vec register) -> (vec register)
+	**/
+	final MinusVecRR;
+
+	/**
+		(vec register) * (float immediate) -> (vec register)
+	**/
+	final MultVecRCR;
+
+	/**
+		(vec register) * (float register) -> (vec register)
+	**/
+	final MultVecRRR;
+
+	/**
+		(vec register) * (float register) -> (vec register)
+	**/
+	final DivVecRRR;
+
+	/**
+		cast (int register) -> (float register)
+	**/
+	final CastIntToFloatRR;
+
+	/**
+		(float register buffer), (float register) as (x, y) -> (vec register)
+	**/
+	final CastCartesianRR;
+
+	/**
+		(float register buffer), (float register) as (r, θ) -> (vec register)
+	**/
+	final CastPolarRR;
+
+	/**
+		Random value in range `[0, 1)` -> (float register)
+	**/
+	final RandomRatioR;
+
+	/**
+		Random value in range `[0, c)` -> (float register)
+
+		(c: float immediate)
+	**/
+	final RandomFloatCR;
+
+	/**
+		Random value in range `[0, r)` -> (float register)
+
+		(r: float register)
+	**/
+	final RandomFloatRR;
+
+	/**
+		Random value in range `[-c, c)` -> (float register)
+
+		(c: float immediate)
+	**/
+	final RandomFloatSignedCR;
+
+	/**
+		Random value in range `[-r, r)` -> (float register)
+
+		(r: float register)
+	**/
+	final RandomFloatSignedRR;
+
+	/**
+		Random value in range `[0, c)` -> (int register)
+
+		(c: int immediate)
+	**/
+	final RandomIntCR;
+
+	/**
+		Random value in range `[0, r)` -> (int register)
+
+		(r: int register)
+	**/
+	final RandomIntRR;
+
+	/**
+		Random value in range `[-c, c)` -> (int register)
+
+		(c: int immediate)
+	**/
+	final RandomIntSignedCR;
+
+	/**
+		Random value in range `[-r, r)` -> (int register)
+
+		(r: int register)
+	**/
+	final RandomIntSignedRR;
+
+	/**
+		sin(float register) -> (float register)
+	**/
+	final SinRR;
+
+	/**
+		cos(float register) -> (float register)
+	**/
+	final CosRR;
+
+	/**
+		(int var) + (2nd, int immediate) -> (int var)
+
+		where the variable address is specified by (1st, int immediate)
 	**/
 	final AddIntVCV;
 
 	/**
-		Adds the last saved volatile integer to the current volatile integer.
+		(int var) + (int register) -> (int var)
+
+		where the variable address is specified by (int immediate)
 	**/
-	final AddIntVVV;
+	final AddIntVRV;
 
 	/**
-		Subtracts a given constant integer from the current volatile integer.
+		++(int var)
 	**/
-	final SubIntVCV;
+	final IncrementVV;
 
 	/**
-		Subtracts the current volatile integer from a given constant integer and assigns it to the volatile integer.
+		--(int var)
 	**/
-	final SubIntCVV;
+	final DecrementVV;
 
 	/**
-		Subtracts the current volatile integer from the last saved volatile integer and assigns it to the volatile integer.
-	**/
-	final SubIntVVV;
+		(float var) + (2nd, float immediate) -> (float var)
 
-	/**
-		Changes the sign of the current volatile integer.
-	**/
-	final MinusIntV;
-
-	/**
-		Multiplies the current volatile integer by a given constant integer.
-	**/
-	final MultIntVCV;
-
-	/**
-		Multiplies the last saved volatile integer and the current volatile integer, and reassigns it to the volatile integer.
-	**/
-	final MultIntVVV;
-
-	/**
-		Divides the current volatile integer by a given constant integer.
-	**/
-	final DivIntVCV;
-
-	/**
-		Divides a given constant integer by the current volatile integer and reassigns it to the volatile integer.
-	**/
-	final DivIntCVV;
-
-	/**
-		Divides the last saved volatile integer by the current volatile integer, and reassigns it to the volatile integer.
-	**/
-	final DivIntVVV;
-
-	/**
-		Divides the current volatile integer by a given constant integer and assigns the modulo to the volatile integer.
-	**/
-	final ModIntVCV;
-
-	/**
-		Divides a given constant integer by the current volatile integer and assigns the modulo to the volatile integer.
-	**/
-	final ModIntCVV;
-
-	/**
-		Divides the last saved volatile integer by the current volatile integer, and assigns the modulo to the volatile integer.
-	**/
-	final ModIntVVV;
-
-	/**
-		Adds a given constant float to the current volatile float.
+		where the variable address is specified by (1st, int immediate)
 	**/
 	final AddFloatVCV;
 
 	/**
-		Adds the last saved volatile float to the current volatile float.
-	**/
-	final AddFloatVVV;
+		(float var) + (float register) -> (float var)
 
-	/**
-		Subtracts a given constant float from the current volatile float.
+		where the variable address is specified by (int immediate)
 	**/
-	final SubFloatVCV;
-
-	/**
-		Subtracts the current volatile float from a given constant float and assigns it to the volatile float.
-	**/
-	final SubFloatCVV;
-
-	/**
-		Subtracts the current volatile float from the last saved volatile float and assigns it to the volatile float.
-	**/
-	final SubFloatVVV;
-
-	/**
-		Changes the sign of the current volatile float.
-	**/
-	final MinusFloatV;
-
-	/**
-		Multiplies the current volatile float by a given constant float.
-	**/
-	final MultFloatVCV;
-
-	/**
-		Multiplies the last saved volatile float and the current volatile float, and reassigns it to the volatile float.
-	**/
-	final MultFloatVVV;
-
-	/**
-		Divides the current volatile float by a given constant float.
-	**/
-	final DivFloatVCV;
-
-	/**
-		Divides a given constant float by the current volatile float and reassigns it to the volatile float.
-	**/
-	final DivFloatCVV;
-
-	/**
-		Divides the last saved volatile float by the current volatile float, and reassigns it to the volatile float.
-	**/
-	final DivFloatVVV;
-
-	/**
-		Divides the current volatile float by a given constant float and assigns the modulo to the volatile float.
-	**/
-	final ModFloatVCV;
-
-	/**
-		Divides a given constant float by the current volatile float and assigns the modulo to the volatile float.
-	**/
-	final ModFloatCVV;
-
-	/**
-		Divides the last saved volatile float by the current volatile float, and assigns the modulo to the volatile float.
-	**/
-	final ModFloatVVV;
-
-	/**
-		Changes the sign of the current volatile vector.
-	**/
-	final MinusVecV;
-
-	/**
-		Multiplicates the current volatile vector by a given constant float.
-	**/
-	final MultVecVCV;
-
-	/**
-		Multiplicates the current volatile vector by the current volatile float.
-	**/
-	final MultVecVVV;
-
-	/**
-		Divides the current volatile vector by the current volatile float.
-	**/
-	final DivVecVVV;
-
-	/**
-		Casts the current volatile integer to a float and assigns it to the volatile float.
-	**/
-	final CastIntToFloatVV;
-
-	/**
-		Interprets the last saved volatile float as `x` and the current volatile float as `y`,
-		and assigns them to the volatile vector.
-	**/
-	final CastCartesianVV;
-
-	/**
-		Interprets the last saved volatile float as `length` and the current volatile float as `angle`,
-		and assigns their cartesian representation to the volatile vector.
-	**/
-	final CastPolarVV;
-
-	/**
-		Assigns a random value in rante `[0, 1)` to the volatile float.
-	**/
-	final RandomRatioV;
-
-	/**
-		Generates a random float from `0` up to (but not including) the given constant float
-		and assigns it to the volatile float.
-	**/
-	final RandomFloatCV;
-
-	/**
-		Generates a random float from `0` up to (but not including) the current volatile float
-		and assigns it to the volatile float.
-	**/
-	final RandomFloatVV;
-
-	/**
-		Generates a random float, positive or negative, of which the absolute value varies
-		from `0` up to (but not including) the given constant float.
-		Then assigns it to the volatile float.
-	**/
-	final RandomFloatSignedCV;
-
-	/**
-		Generates a random float, positive or negative, of which the absolute value varies
-		from `0` up to (but not including) the current volatile float.
-		Then assigns it to the volatile float.
-	**/
-	final RandomFloatSignedVV;
-
-	/**
-		Generates a random integer from `0` up to (but not including) the given constant integer
-		and assigns it to the volatile integer.
-	**/
-	final RandomIntCV;
-
-	/**
-		Generates a random integer from `0` up to (but not including) the current volatile integer
-		and assigns it to the volatile integer.
-	**/
-	final RandomIntVV;
-
-	/**
-		Generates a random integer, positive or negative, of which the absolute value varies
-		from `0` up to (but not including) the given constant integer.
-		Then assigns it to the volatile integer.
-	**/
-	final RandomIntSignedCV;
-
-	/**
-		Generates a random integer, positive or negative, of which the absolute value varies
-		from `0` up to (but not including) the current volatile integer.
-		Then assigns it to the volatile integer.
-	**/
-	final RandomIntSignedVV;
-
-	/**
-		Applies the trigonometric sine function to the volatile float.
-	**/
-	final Sin;
-
-	/**
-		Applies the trigonometric cosine function to the volatile float.
-	**/
-	final Cos;
-
-	/**
-		Adds the second constant integer to the local variable
-		(of which the address is specified by the first constant integer).
-	**/
-	final AddIntLCL;
-
-	/**
-		Adds the current volatile integer to the local variable
-		(of which the address is specified by a given constant integer).
-	**/
-	final AddIntLVL;
-
-	/**
-		Increments the local variable of which the address is specified by the first constant integer.
-	**/
-	final IncrementL;
-
-	/**
-		Decrements the local variable of which the address is specified by the first constant integer.
-	**/
-	final DecrementL;
-
-	/**
-		Adds a given constant float to the local variable
-		(of which the address is specified by a given constant integer).
-	**/
-	final AddFloatLCL;
-
-	/**
-		Adds the current volatile float to the local variable
-		(of which the address is specified by a given constant integer).
-	**/
-	final AddFloatLVL;
+	final AddFloatVRV;
 
 	public extern inline function int(): Int
 		return this;
@@ -366,63 +372,63 @@ class CalcOperationExtension {
 	**/
 	public static inline function toString(code: CalcOperation): String {
 		return switch code {
+			case AddIntRCR: "add_int_rcr";
+			case AddIntRRR: "add_int_rrr";
+			case SubIntRCR: "sub_int_rcr";
+			case SubIntCRR: "sub_int_crr";
+			case SubIntRRR: "sub_int_rrr";
+			case MinusIntRR: "minus_int_rr";
+			case MultIntRCR: "mult_int_rcr";
+			case MultIntRRR: "mult_int_rrr";
+			case ModIntRCR: "mod_int_rcr";
+			case ModIntCRR: "mod_int_crr";
+			case ModIntRRR: "mod_int_rrr";
+			case DivIntRCR: "div_int_rcr";
+			case DivIntCRR: "div_int_crr";
+			case DivIntRRR: "div_int_rrr";
+
+			case AddFloatRCR: "add_float_rcr";
+			case AddFloatRRR: "add_float_rrr";
+			case SubFloatRCR: "sub_float_rcr";
+			case SubFloatCRR: "sub_float_crr";
+			case SubFloatRRR: "sub_float_rrr";
+			case MinusFloatRR: "minus_float_rr";
+			case MultFloatRCR: "mult_float_rcr";
+			case MultFloatRRR: "mult_float_rrr";
+			case ModFloatRCR: "mod_float_rcr";
+			case ModFloatCRR: "mod_float_crr";
+			case ModFloatRRR: "mod_float_rrr";
+			case DivFloatCRR: "div_float_crr";
+			case DivFloatRCR: "div_float_rcr";
+			case DivFloatRRR: "div_float_rrr";
+
+			case MinusVecRR: "minus_vec_rr";
+			case MultVecRCR: "mult_vec_rcr";
+			case MultVecRRR: "mult_vec_rrr";
+			case DivVecRRR: "div_vec_rrr";
+
+			case CastIntToFloatRR: "cast_int_to_float_rr";
+			case CastCartesianRR: "cast_cartesian_rr";
+			case CastPolarRR: "cast_polar_rr";
+
+			case RandomRatioR: "random_ratio_r";
+			case RandomFloatCR: "random_float_cr";
+			case RandomFloatRR: "random_float_rr";
+			case RandomFloatSignedCR: "random_float_signed_cr";
+			case RandomFloatSignedRR: "random_float_signed_rr";
+			case RandomIntCR: "random_int_cr";
+			case RandomIntRR: "random_int_rr";
+			case RandomIntSignedCR: "random_int_signed_cr";
+			case RandomIntSignedRR: "random_int_signed_rr";
+			case CosRR: "cos_rr";
+			case SinRR: "sin_rr";
+
 			case AddIntVCV: "add_int_vcv";
-			case AddIntVVV: "add_int_vvv";
-			case SubIntVCV: "sub_int_vcv";
-			case SubIntCVV: "sub_int_cvv";
-			case SubIntVVV: "sub_int_vvv";
-			case MinusIntV: "minus_int_v";
-			case MultIntVCV: "mult_int_vcv";
-			case MultIntVVV: "mult_int_vvv";
-			case ModIntVCV: "mod_int_vcv";
-			case ModIntCVV: "mod_int_cvv";
-			case ModIntVVV: "mod_int_vvv";
-			case DivIntVCV: "div_int_vcv";
-			case DivIntCVV: "div_int_cvv";
-			case DivIntVVV: "div_int_vvv";
-
+			case AddIntVRV: "add_int_vrv";
+			case IncrementVV: "increment_vv";
+			case DecrementVV: "decrement_vv";
 			case AddFloatVCV: "add_float_vcv";
-			case AddFloatVVV: "add_float_vvv";
-			case SubFloatVCV: "sub_float_vcv";
-			case SubFloatCVV: "sub_float_cvv";
-			case SubFloatVVV: "sub_float_vvv";
-			case MinusFloatV: "minus_float_v";
-			case MultFloatVCV: "mult_float_vcv";
-			case MultFloatVVV: "mult_float_vvv";
-			case ModFloatVCV: "mod_float_vcv";
-			case ModFloatCVV: "mod_float_cvv";
-			case ModFloatVVV: "mod_float_vvv";
-			case DivFloatCVV: "div_float_cvv";
-			case DivFloatVCV: "div_float_vcv";
-			case DivFloatVVV: "div_float_vvv";
-
-			case MinusVecV: "minus_vec_v";
-			case MultVecVCV: "mult_vec_vcv";
-			case MultVecVVV: "mult_vec_vvv";
-			case DivVecVVV: "div_vec_vvv";
-
-			case CastIntToFloatVV: "cast_int_to_float_vv";
-			case CastCartesianVV: "cast_cartesian_vv";
-			case CastPolarVV: "cast_polar_vv";
-
-			case RandomRatioV: "random_ratio_v";
-			case RandomFloatCV: "random_float_cv";
-			case RandomFloatVV: "random_float_vv";
-			case RandomFloatSignedCV: "random_float_signed_cv";
-			case RandomFloatSignedVV: "random_float_signed_vv";
-			case RandomIntCV: "random_int_cv";
-			case RandomIntVV: "random_int_vv";
-			case RandomIntSignedCV: "random_int_signed_cv";
-			case RandomIntSignedVV: "random_int_signed_vv";
-			case Cos: "cos";
-			case Sin: "sin";
-
-			case AddIntLCL: "add_int_lcl";
-			case AddIntLVL: "add_int_lvl";
-			case IncrementL: "increment_l";
-			case DecrementL: "decrement_l";
-			case AddFloatLCL: "add_float_lcl";
-			case AddFloatLVL: "add_float_lvl";
+			case AddFloatVRV: "add_float_vrv";
 		}
 	}
 }

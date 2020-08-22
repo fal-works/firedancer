@@ -58,20 +58,20 @@ class InstructionExtension {
 			switch input {
 			case Int(operand):
 				switch operand {
-				case Imm(value): [op(LoadIntCV), value];
-				case Var(address): [op(LoadIntLV), address];
+				case Imm(value): [op(LoadIntCR), value];
+				case Var(address): [op(LoadIntVR), address];
 				default: throw unsupported();
 				}
 			case Float(operand):
 				switch operand {
-				case Imm(value): [op(LoadFloatCV), value];
-				case Var(address): [op(LoadFloatLV), address];
+				case Imm(value): [op(LoadFloatCR), value];
+				case Var(address): [op(LoadFloatVR), address];
 				default: throw unsupported();
 				}
 			case Vec(operand):
 				switch operand {
 				case Imm(x, y): [
-						op(LoadVecCV),
+						op(LoadVecCR),
 						x,
 						y
 					];
@@ -82,8 +82,8 @@ class InstructionExtension {
 
 		case Save(type):
 			switch type {
-			case Int: op(SaveIntV);
-			case Float: op(SaveFloatV);
+			case Int: op(SaveIntR);
+			case Float: op(SaveFloatR);
 			case Vec: throw unsupported();
 			}
 		case Store(input, address):
@@ -91,21 +91,21 @@ class InstructionExtension {
 			case Int(operand):
 				switch operand {
 				case Imm(value): [
-						op(StoreIntCL),
+						op(StoreIntCV),
 						address,
 						value
 					];
-				case Reg: [op(StoreIntVL), address];
+				case Reg: [op(StoreIntRV), address];
 				default: throw unsupported();
 				}
 			case Float(operand):
 				switch operand {
 				case Imm(value): [
-						op(StoreFloatCL),
+						op(StoreFloatCV),
 						address,
 						value
 					];
-				case Reg: [op(StoreFloatVL), address];
+				case Reg: [op(StoreFloatRV), address];
 				default: throw unsupported();
 				}
 
@@ -119,18 +119,18 @@ class InstructionExtension {
 			case Int(operand):
 				switch operand {
 				case Imm(value): [op(PushIntC), value];
-				case Reg: op(PushIntV);
+				case Reg: op(PushIntR);
 				default: throw unsupported();
 				}
 			case Float(operand):
 				switch operand {
 				case Imm(value): [op(PushFloatC), value];
-				case Reg: op(PushFloatV);
+				case Reg: op(PushFloatR);
 				default: throw unsupported();
 				}
 			case Vec(operand):
 				switch operand {
-				case Reg: op(PushVecV);
+				case Reg: op(PushVecR);
 				default: throw unsupported();
 				}
 			default: throw unsupported();
@@ -173,9 +173,9 @@ class InstructionExtension {
 			// ---- other ---------------------------------------------------
 
 		case GlobalEvent:
-			op(GlobalEvent);
+			op(GlobalEventR);
 		case LocalEvent:
-			op(LocalEvent);
+			op(LocalEventR);
 		case Debug(debugCode):
 			[op(Debug), debugCode];
 
@@ -187,22 +187,22 @@ class InstructionExtension {
 				switch a {
 				case Reg:
 					switch b {
-					case Imm(bVal): [op(AddIntVCV), bVal];
+					case Imm(bVal): [op(AddIntRCR), bVal];
 					default: throw unsupported();
 					}
 				case RegBuf:
 					switch b {
-					case Reg: op(AddIntVVV);
+					case Reg: op(AddIntRRR);
 					default: throw unsupported();
 					}
 				case Var(address):
 					switch b {
 					case Imm(bVal): [
-							op(AddIntLCL),
+							op(AddIntVCV),
 							address,
 							bVal
 						];
-					case Reg: [op(AddIntLVL), address];
+					case Reg: [op(AddIntVRV), address];
 					default: throw unsupported();
 					}
 				default: throw unsupported();
@@ -211,22 +211,22 @@ class InstructionExtension {
 				switch a {
 				case Reg:
 					switch b {
-					case Imm(bVal): [op(AddFloatVCV), bVal];
+					case Imm(bVal): [op(AddFloatRCR), bVal];
 					default: throw unsupported();
 					}
 				case RegBuf:
 					switch b {
-					case Reg: op(AddFloatVVV);
+					case Reg: op(AddFloatRRR);
 					default: throw unsupported();
 					}
 				case Var(address):
 					switch b {
 					case Imm(bVal): [
-							op(AddFloatLCL),
+							op(AddFloatVCV),
 							address,
 							bVal
 						];
-					case Reg: [op(AddFloatLVL), address];
+					case Reg: [op(AddFloatVRV), address];
 					default: throw unsupported();
 					}
 				default: throw unsupported();
@@ -239,17 +239,17 @@ class InstructionExtension {
 				switch a {
 				case Imm(aVal):
 					switch b {
-					case Reg: [op(SubIntCVV), aVal];
+					case Reg: [op(SubIntCRR), aVal];
 					default: throw unsupported();
 					}
 				case Reg:
 					switch b {
-					case Imm(bVal): [op(SubIntVCV), bVal];
+					case Imm(bVal): [op(SubIntRCR), bVal];
 					default: throw unsupported();
 					}
 				case RegBuf:
 					switch b {
-					case Reg: op(SubIntVVV);
+					case Reg: op(SubIntRRR);
 					default: throw unsupported();
 					}
 				default: throw unsupported();
@@ -258,17 +258,17 @@ class InstructionExtension {
 				switch a {
 				case Imm(aVal):
 					switch b {
-					case Reg: [op(SubFloatCVV), aVal];
+					case Reg: [op(SubFloatCRR), aVal];
 					default: throw unsupported();
 					}
 				case Reg:
 					switch b {
-					case Imm(bVal): [op(SubFloatVCV), bVal];
+					case Imm(bVal): [op(SubFloatRCR), bVal];
 					default: throw unsupported();
 					}
 				case RegBuf:
 					switch b {
-					case Reg: op(SubFloatVVV);
+					case Reg: op(SubFloatRRR);
 					default: throw unsupported();
 					}
 				default: throw unsupported();
@@ -279,17 +279,17 @@ class InstructionExtension {
 			switch input {
 			case Int(operand):
 				switch operand {
-				case Reg: op(MinusIntV);
+				case Reg: op(MinusIntRR);
 				default: throw unsupported();
 				}
 			case Float(operand):
 				switch operand {
-				case Reg: op(MinusFloatV);
+				case Reg: op(MinusFloatRR);
 				default: throw unsupported();
 				}
 			case Vec(operand):
 				switch operand {
-				case Reg: op(MinusVecV);
+				case Reg: op(MinusVecRR);
 				default: throw unsupported();
 				}
 			default: throw unsupported();
@@ -303,7 +303,7 @@ class InstructionExtension {
 					switch inputB {
 					case Int(operandB):
 						switch operandB {
-						case Imm(bVal): [op(MultIntVCV), bVal];
+						case Imm(bVal): [op(MultIntRCR), bVal];
 						default: throw unsupported();
 						}
 					default: throw unsupported();
@@ -312,7 +312,7 @@ class InstructionExtension {
 					switch inputB {
 					case Int(operandB):
 						switch operandB {
-						case Reg: op(MultIntVVV);
+						case Reg: op(MultIntRRR);
 						default: throw unsupported();
 						}
 					default: throw unsupported();
@@ -325,7 +325,7 @@ class InstructionExtension {
 					switch inputB {
 					case Float(operandB):
 						switch operandB {
-						case Imm(bVal): [op(MultFloatVCV), bVal];
+						case Imm(bVal): [op(MultFloatRCR), bVal];
 						default: throw unsupported();
 						}
 					default: throw unsupported();
@@ -334,7 +334,7 @@ class InstructionExtension {
 					switch inputB {
 					case Float(operandB):
 						switch operandB {
-						case Reg: op(MultFloatVVV);
+						case Reg: op(MultFloatRRR);
 						default: throw unsupported();
 						}
 					default: throw unsupported();
@@ -347,8 +347,8 @@ class InstructionExtension {
 					switch inputB {
 					case Float(operandB):
 						switch operandB {
-						case Imm(bVal): [op(MultVecVCV), bVal];
-						case Reg: op(MultVecVVV);
+						case Imm(bVal): [op(MultVecRCR), bVal];
+						case Reg: op(MultVecRRR);
 						default: throw unsupported();
 						}
 					default: throw unsupported();
@@ -366,7 +366,7 @@ class InstructionExtension {
 					switch inputB {
 					case Int(operandB):
 						switch operandB {
-						case Reg: [op(DivIntCVV), aVal];
+						case Reg: [op(DivIntCRR), aVal];
 						default: throw unsupported();
 						}
 					default: throw unsupported();
@@ -375,7 +375,7 @@ class InstructionExtension {
 					switch inputB {
 					case Int(operandB):
 						switch operandB {
-						case Imm(bVal): [op(DivIntVCV), bVal];
+						case Imm(bVal): [op(DivIntRCR), bVal];
 						default: throw unsupported();
 						}
 					default: throw unsupported();
@@ -384,7 +384,7 @@ class InstructionExtension {
 					switch inputB {
 					case Int(operandB):
 						switch operandB {
-						case Reg: op(DivIntVVV);
+						case Reg: op(DivIntRRR);
 						default: throw unsupported();
 						}
 					default: throw unsupported();
@@ -397,7 +397,7 @@ class InstructionExtension {
 					switch inputB {
 					case Int(operandB):
 						switch operandB {
-						case Reg: [op(DivFloatCVV), aVal];
+						case Reg: [op(DivFloatCRR), aVal];
 						default: throw unsupported();
 						}
 					default: throw unsupported();
@@ -406,7 +406,7 @@ class InstructionExtension {
 					switch inputB {
 					case Float(operandB):
 						switch operandB {
-						case Imm(bVal): [op(DivFloatVCV), bVal];
+						case Imm(bVal): [op(DivFloatRCR), bVal];
 						default: throw unsupported();
 						}
 					default: throw unsupported();
@@ -415,7 +415,7 @@ class InstructionExtension {
 					switch inputB {
 					case Float(operandB):
 						switch operandB {
-						case Reg: op(DivFloatVVV);
+						case Reg: op(DivFloatRRR);
 						default: throw unsupported();
 						}
 					default: throw unsupported();
@@ -428,7 +428,7 @@ class InstructionExtension {
 					switch inputB {
 					case Float(operandB):
 						switch operandB {
-						case Reg: op(DivVecVVV);
+						case Reg: op(DivVecRRR);
 						default: throw unsupported();
 						}
 					default: throw unsupported();
@@ -446,7 +446,7 @@ class InstructionExtension {
 					switch inputB {
 					case Int(operandB):
 						switch operandB {
-						case Reg: [op(ModIntCVV), aVal];
+						case Reg: [op(ModIntCRR), aVal];
 						default: throw unsupported();
 						}
 					default: throw unsupported();
@@ -455,7 +455,7 @@ class InstructionExtension {
 					switch inputB {
 					case Int(operandB):
 						switch operandB {
-						case Imm(bVal): [op(ModIntVCV), bVal];
+						case Imm(bVal): [op(ModIntRCR), bVal];
 						default: throw unsupported();
 						}
 					default: throw unsupported();
@@ -464,7 +464,7 @@ class InstructionExtension {
 					switch inputB {
 					case Int(operandB):
 						switch operandB {
-						case Reg: op(ModIntVVV);
+						case Reg: op(ModIntRRR);
 						default: throw unsupported();
 						}
 					default: throw unsupported();
@@ -477,7 +477,7 @@ class InstructionExtension {
 					switch inputB {
 					case Int(operandB):
 						switch operandB {
-						case Reg: [op(ModFloatCVV), aVal];
+						case Reg: [op(ModFloatCRR), aVal];
 						default: throw unsupported();
 						}
 					default: throw unsupported();
@@ -486,7 +486,7 @@ class InstructionExtension {
 					switch inputB {
 					case Float(operandB):
 						switch operandB {
-						case Imm(bVal): [op(ModFloatVCV), bVal];
+						case Imm(bVal): [op(ModFloatRCR), bVal];
 						default: throw unsupported();
 						}
 					default: throw unsupported();
@@ -495,7 +495,7 @@ class InstructionExtension {
 					switch inputB {
 					case Float(operandB):
 						switch operandB {
-						case Reg: op(ModFloatVVV);
+						case Reg: op(ModFloatRRR);
 						default: throw unsupported();
 						}
 					default: throw unsupported();
@@ -506,26 +506,26 @@ class InstructionExtension {
 			}
 
 		case CastIntToFloat:
-			op(CastIntToFloatVV);
+			op(CastIntToFloatRR);
 		case CastCartesian:
-			op(CastCartesianVV);
+			op(CastCartesianRR);
 		case CastPolar:
-			op(CastPolarVV);
+			op(CastPolarRR);
 
 		case RandomRatio:
-			op(RandomRatioV);
+			op(RandomRatioR);
 		case Random(max):
 			switch max {
 			case Int(operand):
 				switch operand {
-				case Imm(value): [op(RandomIntCV), value];
-				case Reg: op(RandomIntVV);
+				case Imm(value): [op(RandomIntCR), value];
+				case Reg: op(RandomIntRR);
 				default: throw unsupported();
 				}
 			case Float(operand):
 				switch operand {
-				case Imm(value): [op(RandomFloatCV), value];
-				case Reg: op(RandomFloatVV);
+				case Imm(value): [op(RandomFloatCR), value];
+				case Reg: op(RandomFloatRR);
 				default: throw unsupported();
 				}
 			default: throw unsupported();
@@ -534,39 +534,39 @@ class InstructionExtension {
 			switch maxMagnitude {
 			case Int(operand):
 				switch operand {
-				case Imm(value): [op(RandomIntSignedCV), value];
-				case Reg: op(RandomIntSignedVV);
+				case Imm(value): [op(RandomIntSignedCR), value];
+				case Reg: op(RandomIntSignedRR);
 				default: throw unsupported();
 				}
 			case Float(operand):
 				switch operand {
-				case Imm(value): [op(RandomFloatSignedCV), value];
-				case Reg: op(RandomFloatSignedVV);
+				case Imm(value): [op(RandomFloatSignedCR), value];
+				case Reg: op(RandomFloatSignedRR);
 				default: throw unsupported();
 				}
 			default: throw unsupported();
 			}
 
 		case Sin:
-			op(Sin);
+			op(SinRR);
 		case Cos:
-			op(Cos);
+			op(CosRR);
 
-		case IncrementL(address):
-			[op(IncrementL), address];
-		case DecrementL(address):
-			[op(DecrementL), address];
+		case IncrementVV(address):
+			[op(IncrementVV), address];
+		case DecrementVV(address):
+			[op(DecrementVV), address];
 
 			// ---- read actor data
 
-		case LoadTargetPositionV:
-			op(LoadTargetPositionV);
-		case LoadTargetXV:
-			op(LoadTargetXV);
-		case LoadTargetYV:
-			op(LoadTargetYV);
-		case LoadBearingToTargetV:
-			op(LoadBearingToTargetV);
+		case LoadTargetPositionR:
+			op(LoadTargetPositionR);
+		case LoadTargetXR:
+			op(LoadTargetXR);
+		case LoadTargetYR:
+			op(LoadTargetYR);
+		case LoadBearingToTargetR:
+			op(LoadBearingToTargetR);
 
 		case CalcRelative(attrType, cmpType, input):
 			switch input {
@@ -575,10 +575,10 @@ class InstructionExtension {
 				switch operand {
 				case Imm(x, y):
 					final opcode:Opcode = switch attrType {
-					case Position: CalcRelativePositionCV;
-					case Velocity: CalcRelativeVelocityCV;
-					case ShotPosition: CalcRelativeShotPositionCV;
-					case ShotVelocity: CalcRelativeShotVelocityCV;
+					case Position: CalcRelativePositionCR;
+					case Velocity: CalcRelativeVelocityCR;
+					case ShotPosition: CalcRelativeShotPositionCR;
+					case ShotVelocity: CalcRelativeShotVelocityCR;
 					};
 					[
 						op(opcode),
@@ -587,10 +587,10 @@ class InstructionExtension {
 					];
 				case Reg:
 					final opcode:Opcode = switch attrType {
-					case Position: CalcRelativePositionVV;
-					case Velocity: CalcRelativeVelocityVV;
-					case ShotPosition: CalcRelativeShotPositionVV;
-					case ShotVelocity: CalcRelativeShotVelocityVV;
+					case Position: CalcRelativePositionRR;
+					case Velocity: CalcRelativeVelocityRR;
+					case ShotPosition: CalcRelativeShotPositionRR;
+					case ShotVelocity: CalcRelativeShotVelocityRR;
 					};
 					op(opcode);
 				default: throw unsupported();
@@ -602,17 +602,17 @@ class InstructionExtension {
 					case Vector: throw unsupported();
 					case Length:
 						switch attrType {
-						case Position: CalcRelativeDistanceCV;
-						case Velocity: CalcRelativeSpeedCV;
-						case ShotPosition: CalcRelativeShotDistanceCV;
-						case ShotVelocity: CalcRelativeShotSpeedCV;
+						case Position: CalcRelativeDistanceCR;
+						case Velocity: CalcRelativeSpeedCR;
+						case ShotPosition: CalcRelativeShotDistanceCR;
+						case ShotVelocity: CalcRelativeShotSpeedCR;
 						}
 					case Angle:
 						switch attrType {
-						case Position: CalcRelativeBearingCV;
-						case Velocity: CalcRelativeDirectionCV;
-						case ShotPosition: CalcRelativeShotBearingCV;
-						case ShotVelocity: CalcRelativeShotDirectionCV;
+						case Position: CalcRelativeBearingCR;
+						case Velocity: CalcRelativeDirectionCR;
+						case ShotPosition: CalcRelativeShotBearingCR;
+						case ShotVelocity: CalcRelativeShotDirectionCR;
 						}
 					};
 					[op(opcode), value];
@@ -621,17 +621,17 @@ class InstructionExtension {
 					case Vector: throw unsupported();
 					case Length:
 						switch attrType {
-						case Position: CalcRelativeDistanceVV;
-						case Velocity: CalcRelativeSpeedVV;
-						case ShotPosition: CalcRelativeShotDistanceVV;
-						case ShotVelocity: CalcRelativeShotSpeedVV;
+						case Position: CalcRelativeDistanceRR;
+						case Velocity: CalcRelativeSpeedRR;
+						case ShotPosition: CalcRelativeShotDistanceRR;
+						case ShotVelocity: CalcRelativeShotSpeedRR;
 						}
 					case Angle:
 						switch attrType {
-						case Position: CalcRelativeBearingVV;
-						case Velocity: CalcRelativeDirectionVV;
-						case ShotPosition: CalcRelativeShotBearingVV;
-						case ShotVelocity: CalcRelativeShotDirectionVV;
+						case Position: CalcRelativeBearingRR;
+						case Velocity: CalcRelativeDirectionRR;
+						case ShotPosition: CalcRelativeShotBearingRR;
+						case ShotVelocity: CalcRelativeShotDirectionRR;
 						}
 					};
 					op(opcode);
@@ -661,10 +661,10 @@ class InstructionExtension {
 					];
 				case Reg:
 					final opcode:Opcode = switch attrType {
-					case Position: SetPositionV;
-					case Velocity: SetVelocityV;
-					case ShotPosition: SetShotPositionV;
-					case ShotVelocity: SetShotVelocityV;
+					case Position: SetPositionR;
+					case Velocity: SetVelocityR;
+					case ShotPosition: SetShotPositionR;
+					case ShotVelocity: SetShotVelocityR;
 					};
 					op(opcode);
 				default: throw unsupported();
@@ -695,17 +695,17 @@ class InstructionExtension {
 					case Vector: throw unsupported();
 					case Length:
 						switch attrType {
-						case Position: SetDistanceV;
-						case Velocity: SetSpeedV;
-						case ShotPosition: SetShotDistanceV;
-						case ShotVelocity: SetShotSpeedV;
+						case Position: SetDistanceR;
+						case Velocity: SetSpeedR;
+						case ShotPosition: SetShotDistanceR;
+						case ShotVelocity: SetShotSpeedR;
 						}
 					case Angle:
 						switch attrType {
-						case Position: SetBearingV;
-						case Velocity: SetDirectionV;
-						case ShotPosition: SetShotBearingV;
-						case ShotVelocity: SetShotDirectionV;
+						case Position: SetBearingR;
+						case Velocity: SetDirectionR;
+						case ShotPosition: SetShotBearingR;
+						case ShotVelocity: SetShotDirectionR;
 						}
 					};
 					op(opcode);
@@ -733,10 +733,10 @@ class InstructionExtension {
 					];
 				case Reg:
 					final opcode:Opcode = switch attrType {
-					case Position: AddPositionV;
-					case Velocity: AddVelocityV;
-					case ShotPosition: AddShotPositionV;
-					case ShotVelocity: AddShotVelocityV;
+					case Position: AddPositionR;
+					case Velocity: AddVelocityR;
+					case ShotPosition: AddShotPositionR;
+					case ShotVelocity: AddShotVelocityR;
 					};
 					op(opcode);
 				case Stack:
@@ -775,17 +775,17 @@ class InstructionExtension {
 					case Vector: throw unsupported();
 					case Length:
 						switch attrType {
-						case Position: AddDistanceV;
-						case Velocity: AddSpeedV;
-						case ShotPosition: AddShotDistanceV;
-						case ShotVelocity: AddShotSpeedV;
+						case Position: AddDistanceR;
+						case Velocity: AddSpeedR;
+						case ShotPosition: AddShotDistanceR;
+						case ShotVelocity: AddShotSpeedR;
 						}
 					case Angle:
 						switch attrType {
-						case Position: AddBearingV;
-						case Velocity: AddDirectionV;
-						case ShotPosition: AddShotBearingV;
-						case ShotVelocity: AddShotDirectionV;
+						case Position: AddBearingR;
+						case Velocity: AddDirectionR;
+						case ShotPosition: AddShotBearingR;
+						case ShotVelocity: AddShotDirectionR;
 						}
 					};
 					op(opcode);
@@ -966,22 +966,22 @@ class InstructionExtension {
 		case Cos:
 			'cos rf -> rf';
 
-		case IncrementL(address):
+		case IncrementVV(address):
 			final inOutStr = varToString(address, Int);
 			'increment $inOutStr -> $inOutStr';
-		case DecrementL(address):
+		case DecrementVV(address):
 			final inOutStr = varToString(address, Int);
 			'decrement $inOutStr -> $inOutStr';
 
 			// ---- read actor data
 
-		case LoadTargetPositionV:
+		case LoadTargetPositionR:
 			'load target position ->v';
-		case LoadTargetXV:
+		case LoadTargetXR:
 			'load target x ->v';
-		case LoadTargetYV:
+		case LoadTargetYR:
 			'load target y ->v';
-		case LoadBearingToTargetV:
+		case LoadBearingToTargetR:
 			'load bearing to target ->v';
 
 		case CalcRelative(attrType, cmpType, input):
@@ -1062,15 +1062,15 @@ class InstructionExtension {
 		case Sin: UInt.zero;
 		case Cos: UInt.zero;
 
-		case IncrementL(address): LEN32;
-		case DecrementL(address): LEN32;
+		case IncrementVV(address): LEN32;
+		case DecrementVV(address): LEN32;
 
 			// ---- read actor data ------------------------------------------
 
-		case LoadTargetPositionV: UInt.zero;
-		case LoadTargetXV: UInt.zero;
-		case LoadTargetYV: UInt.zero;
-		case LoadBearingToTargetV: UInt.zero;
+		case LoadTargetPositionR: UInt.zero;
+		case LoadTargetXR: UInt.zero;
+		case LoadTargetYR: UInt.zero;
+		case LoadBearingToTargetR: UInt.zero;
 
 		case CalcRelative(_, _, input): input.bytecodeLength();
 
@@ -1174,10 +1174,10 @@ class InstructionExtension {
 		case Sin: regType == Float;
 		case Cos: regType == Float;
 
-		case LoadTargetPositionV: regType == Vec;
-		case LoadTargetXV: regType == Float;
-		case LoadTargetYV: regType == Float;
-		case LoadBearingToTargetV: regType == Float;
+		case LoadTargetPositionR: regType == Vec;
+		case LoadTargetXR: regType == Float;
+		case LoadTargetYR: regType == Float;
+		case LoadBearingToTargetR: regType == Float;
 
 		case CalcRelative(_, _, input): input.getType() == Float;
 

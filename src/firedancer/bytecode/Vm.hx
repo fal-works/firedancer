@@ -129,38 +129,38 @@ class Vm {
 								updatePositionAndVelocity();
 								return endCode;
 
-							case LoadIntCV:
+							case LoadIntCR:
 								reg.int = scan.int();
-							case LoadFloatCV:
+							case LoadFloatCR:
 								reg.float = scan.float();
-							case LoadVecCV:
+							case LoadVecCR:
 								reg.setVec(scan.float(), scan.float());
-							case SaveIntV:
+							case SaveIntR:
 								reg.saveInt();
-							case SaveFloatV:
+							case SaveFloatR:
 								reg.saveFloat();
-							case LoadIntLV:
+							case LoadIntVR:
 								reg.int = mem.getLocalInt(scan.int());
-							case LoadFloatLV:
+							case LoadFloatVR:
 								reg.float = mem.getLocalFloat(scan.int());
-							case StoreIntCL:
+							case StoreIntCV:
 								mem.setLocalInt(scan.int(), scan.int());
-							case StoreIntVL:
+							case StoreIntRV:
 								mem.setLocalInt(scan.int(), reg.int);
-							case StoreFloatCL:
+							case StoreFloatCV:
 								mem.setLocalFloat(scan.int(), scan.float());
-							case StoreFloatVL:
+							case StoreFloatRV:
 								mem.setLocalFloat(scan.int(), reg.float);
 
 							case PushIntC:
 								mem.pushInt(scan.int());
-							case PushIntV:
+							case PushIntR:
 								mem.pushInt(reg.int);
 							case PushFloatC:
 								mem.pushFloat(scan.float());
-							case PushFloatV:
+							case PushFloatR:
 								mem.pushFloat(reg.float);
-							case PushVecV:
+							case PushVecR:
 								mem.pushVec(reg.vecX, reg.vecY);
 							case PopInt:
 								reg.int = mem.popInt();
@@ -223,9 +223,9 @@ class Vm {
 									if (arg.bindPosition) Maybe.from(thisPositionRef) else Maybe.none()
 								);
 
-							case GlobalEvent:
+							case GlobalEventR:
 								eventHandler.onGlobalEvent(reg.int);
-							case LocalEvent:
+							case LocalEventR:
 								eventHandler.onLocalEvent(
 									reg.int,
 									position.x,
@@ -250,115 +250,115 @@ class Vm {
 
 					case Calc:
 						switch opcode.op {
-							case AddIntVCV:
+							case AddIntRCR:
 								reg.int = reg.int + scan.int();
-							case AddIntVVV:
+							case AddIntRRR:
 								reg.int = reg.intBuf + reg.int;
-							case SubIntVCV:
+							case SubIntRCR:
 								reg.int = reg.int - scan.int();
-							case SubIntCVV:
+							case SubIntCRR:
 								reg.int = scan.int() - reg.int;
-							case SubIntVVV:
+							case SubIntRRR:
 								reg.int = reg.intBuf - reg.int;
-							case MinusIntV:
+							case MinusIntRR:
 								reg.int = -reg.int;
-							case MultIntVCV:
+							case MultIntRCR:
 								reg.int = reg.int * scan.int();
-							case MultIntVVV:
+							case MultIntRRR:
 								reg.int = reg.intBuf * reg.int;
-							case DivIntVCV:
+							case DivIntRCR:
 								reg.int = Ints.divide(reg.int, scan.int());
-							case DivIntCVV:
+							case DivIntCRR:
 								reg.int = Ints.divide(scan.int(), reg.int);
-							case DivIntVVV:
+							case DivIntRRR:
 								reg.int = Ints.divide(reg.intBuf, reg.int);
-							case ModIntVCV:
+							case ModIntRCR:
 								reg.int = reg.int % scan.int();
-							case ModIntCVV:
+							case ModIntCRR:
 								reg.int = scan.int() % reg.int;
-							case ModIntVVV:
+							case ModIntRRR:
 								reg.int = reg.intBuf % reg.int;
 
-							case AddFloatVCV:
+							case AddFloatRCR:
 								reg.float = reg.float + scan.float();
-							case AddFloatVVV:
+							case AddFloatRRR:
 								reg.float = reg.floatBuf + reg.float;
-							case SubFloatVCV:
+							case SubFloatRCR:
 								reg.float = reg.float - scan.float();
-							case SubFloatCVV:
+							case SubFloatCRR:
 								reg.float = scan.float() - reg.float;
-							case SubFloatVVV:
+							case SubFloatRRR:
 								reg.float = reg.floatBuf - reg.float;
-							case MinusFloatV:
+							case MinusFloatRR:
 								reg.float = -reg.float;
-							case MultFloatVCV:
+							case MultFloatRCR:
 								reg.float = reg.float * scan.float();
-							case MultFloatVVV:
+							case MultFloatRRR:
 								reg.float = reg.floatBuf * reg.float;
-							case DivFloatVCV:
+							case DivFloatRCR:
 								reg.float = reg.float / scan.float();
-							case DivFloatCVV:
+							case DivFloatCRR:
 								reg.float = scan.float() / reg.float;
-							case DivFloatVVV:
+							case DivFloatRRR:
 								reg.float = reg.floatBuf / reg.float;
-							case ModFloatVCV:
+							case ModFloatRCR:
 								reg.float = reg.float % scan.float();
-							case ModFloatCVV:
+							case ModFloatCRR:
 								reg.float = scan.float() % reg.float;
-							case ModFloatVVV:
+							case ModFloatRRR:
 								reg.float = reg.floatBuf % reg.float;
 
-							case MinusVecV:
+							case MinusVecRR:
 								reg.setVec(-reg.vecX, -reg.vecY);
-							case MultVecVCV:
+							case MultVecRCR:
 								final multiplier = scan.float();
 								reg.setVec(reg.vecX * multiplier, reg.vecY * multiplier);
-							case MultVecVVV:
+							case MultVecRRR:
 								reg.setVec(reg.vecX * reg.float, reg.vecY * reg.float);
-							case DivVecVVV:
+							case DivVecRRR:
 								reg.setVec(reg.vecX / reg.float, reg.vecY / reg.float);
-							case CastIntToFloatVV:
+							case CastIntToFloatRR:
 								reg.float = reg.int;
-							case CastCartesianVV:
+							case CastCartesianRR:
 								reg.setVec(reg.floatBuf, reg.float);
-							case CastPolarVV:
+							case CastPolarRR:
 								final vec = Geometry.toVec(reg.floatBuf, reg.float);
 								reg.setVec(vec.x, vec.y);
 
-							case RandomRatioV:
+							case RandomRatioR:
 								reg.float = Random.random();
-							case RandomFloatCV:
+							case RandomFloatCR:
 								reg.float = Random.float(scan.float());
-							case RandomFloatVV:
+							case RandomFloatRR:
 								reg.float = Random.float(reg.float);
-							case RandomFloatSignedCV:
+							case RandomFloatSignedCR:
 								reg.float = Random.signed(scan.float());
-							case RandomFloatSignedVV:
+							case RandomFloatSignedRR:
 								reg.float = Random.signed(reg.float);
-							case RandomIntCV:
+							case RandomIntCR:
 								reg.int = Random.int(scan.int());
-							case RandomIntVV:
+							case RandomIntRR:
 								reg.int = Random.int(reg.int);
-							case RandomIntSignedCV:
+							case RandomIntSignedCR:
 								reg.int = Random.signedInt(scan.int());
-							case RandomIntSignedVV:
+							case RandomIntSignedRR:
 								reg.int = Random.signedInt(reg.int);
-							case Sin:
+							case SinRR:
 								reg.float = Geometry.sin(reg.float);
-							case Cos:
+							case CosRR:
 								reg.float = Geometry.cos(reg.float);
 
-							case AddIntLCL:
+							case AddIntVCV:
 								mem.addLocalInt(scan.int(), scan.int());
-							case AddIntLVL:
+							case AddIntVRV:
 								mem.addLocalInt(scan.int(), reg.int);
-							case IncrementL:
+							case IncrementVV:
 								mem.addLocalInt(scan.int(), 1);
-							case DecrementL:
+							case DecrementVV:
 								mem.addLocalInt(scan.int(), -1);
-							case AddFloatLCL:
+							case AddFloatVCV:
 								mem.addLocalFloat(scan.int(), scan.float());
-							case AddFloatLVL:
+							case AddFloatVRV:
 								mem.addLocalFloat(scan.int(), reg.float);
 
 							#if debug
@@ -369,90 +369,90 @@ class Vm {
 
 					case Read:
 						switch opcode.op {
-							case LoadTargetPositionV:
+							case LoadTargetPositionR:
 								reg.setVec(targetPositionRef.x, targetPositionRef.y);
-							case LoadTargetXV:
+							case LoadTargetXR:
 								reg.float = targetPositionRef.x;
-							case LoadTargetYV:
+							case LoadTargetYR:
 								reg.float = targetPositionRef.y;
-							case LoadBearingToTargetV:
+							case LoadBearingToTargetR:
 								reg.float = Geometry.getAngle(
 									targetPositionRef.x - position.x,
 									targetPositionRef.y - position.y
 								);
 
-							case CalcRelativePositionCV:
+							case CalcRelativePositionCR:
 								reg.setVec(scan.float() - position.x, scan.float() - position.y);
-							case CalcRelativeVelocityCV:
+							case CalcRelativeVelocityCR:
 								reg.setVec(scan.float() - velocity.x, scan.float() - velocity.y);
-							case CalcRelativePositionVV:
+							case CalcRelativePositionRR:
 								reg.setVec(reg.vecX - position.x, reg.vecY - position.y);
-							case CalcRelativeVelocityVV:
+							case CalcRelativeVelocityRR:
 								reg.setVec(reg.vecX - velocity.x, reg.vecY - velocity.y);
-							case CalcRelativeDistanceCV:
+							case CalcRelativeDistanceCR:
 								reg.float = scan.float() - position.getDistance();
-							case CalcRelativeBearingCV:
+							case CalcRelativeBearingCR:
 								reg.float = Geometry.getAngleDifference(
 									position.getBearing(),
 									scan.float()
 								);
-							case CalcRelativeSpeedCV:
+							case CalcRelativeSpeedCR:
 								reg.float = scan.float() - velocity.getSpeed();
-							case CalcRelativeDirectionCV:
+							case CalcRelativeDirectionCR:
 								reg.float = Geometry.getAngleDifference(
 									velocity.getDirection(),
 									scan.float()
 								);
-							case CalcRelativeDistanceVV:
+							case CalcRelativeDistanceRR:
 								reg.float = reg.float - position.getDistance();
-							case CalcRelativeBearingVV:
+							case CalcRelativeBearingRR:
 								reg.float = Geometry.getAngleDifference(position.getBearing(), reg.float);
-							case CalcRelativeSpeedVV:
+							case CalcRelativeSpeedRR:
 								reg.float = reg.float - velocity.getSpeed();
-							case CalcRelativeDirectionVV:
+							case CalcRelativeDirectionRR:
 								reg.float = Geometry.getAngleDifference(
 									velocity.getDirection(),
 									reg.float
 								);
 
-							case CalcRelativeShotPositionCV:
+							case CalcRelativeShotPositionCR:
 								reg.setVec(
 									scan.float() - thread.shotX,
 									scan.float() - thread.shotY
 								);
-							case CalcRelativeShotVelocityCV:
+							case CalcRelativeShotVelocityCR:
 								reg.setVec(
 									scan.float() - thread.shotVx,
 									scan.float() - thread.shotVy
 								);
-							case CalcRelativeShotPositionVV:
+							case CalcRelativeShotPositionRR:
 								reg.setVec(reg.vecX - thread.shotX, reg.vecY - thread.shotY);
-							case CalcRelativeShotVelocityVV:
+							case CalcRelativeShotVelocityRR:
 								reg.setVec(reg.vecX - thread.shotVx, reg.vecY - thread.shotVy);
-							case CalcRelativeShotDistanceCV:
+							case CalcRelativeShotDistanceCR:
 								reg.float = scan.float() - thread.getShotDistance();
-							case CalcRelativeShotBearingCV:
+							case CalcRelativeShotBearingCR:
 								reg.float = Geometry.getAngleDifference(
 									thread.getShotBearing(),
 									scan.float()
 								);
-							case CalcRelativeShotSpeedCV:
+							case CalcRelativeShotSpeedCR:
 								reg.float = scan.float() - thread.getShotSpeed();
-							case CalcRelativeShotDirectionCV:
+							case CalcRelativeShotDirectionCR:
 								reg.float = Geometry.getAngleDifference(
 									thread.getShotDirection(),
 									scan.float()
 								);
-							case CalcRelativeShotDistanceVV:
+							case CalcRelativeShotDistanceRR:
 								reg.float = reg.float - thread.getShotDistance();
-							case CalcRelativeShotBearingVV:
+							case CalcRelativeShotBearingRR:
 								reg.float = Geometry.getAngleDifference(
 									thread.getShotBearing(),
 									reg.float
 								);
-							case CalcRelativeShotSpeedVV:
+							case CalcRelativeShotSpeedRR:
 								reg.float = reg.float - thread.getShotSpeed();
-							case CalcRelativeShotDirectionVV:
+							case CalcRelativeShotDirectionRR:
 								reg.float = Geometry.getAngleDifference(
 									thread.getShotDirection(),
 									reg.float
@@ -474,13 +474,13 @@ class Vm {
 								velocity.set(scan.float(), scan.float());
 							case AddVelocityC:
 								velocity.add(scan.float(), scan.float());
-							case SetPositionV:
+							case SetPositionR:
 								position.set(reg.vecX, reg.vecY);
-							case AddPositionV:
+							case AddPositionR:
 								position.add(reg.vecX, reg.vecY);
-							case SetVelocityV:
+							case SetVelocityR:
 								velocity.set(reg.vecX, reg.vecY);
-							case AddVelocityV:
+							case AddVelocityR:
 								velocity.add(reg.vecX, reg.vecY);
 							case AddPositionS:
 								final vec = mem.peekVecSkipped(0);
@@ -492,9 +492,9 @@ class Vm {
 								position.setDistance(scan.float());
 							case AddDistanceC:
 								position.addDistance(scan.float());
-							case SetDistanceV:
+							case SetDistanceR:
 								position.setDistance(reg.float);
-							case AddDistanceV:
+							case AddDistanceR:
 								position.addDistance(reg.float);
 							case AddDistanceS:
 								position.addDistance(mem.peekFloat());
@@ -502,9 +502,9 @@ class Vm {
 								position.setBearing(scan.float());
 							case AddBearingC:
 								position.addBearing(scan.float());
-							case SetBearingV:
+							case SetBearingR:
 								position.setBearing(reg.float);
-							case AddBearingV:
+							case AddBearingR:
 								position.addBearing(reg.float);
 							case AddBearingS:
 								position.addBearing(mem.peekFloat());
@@ -512,9 +512,9 @@ class Vm {
 								velocity.setSpeed(scan.float());
 							case AddSpeedC:
 								velocity.addSpeed(scan.float());
-							case SetSpeedV:
+							case SetSpeedR:
 								velocity.setSpeed(reg.float);
-							case AddSpeedV:
+							case AddSpeedR:
 								velocity.addSpeed(reg.float);
 							case AddSpeedS:
 								velocity.addSpeed(mem.peekFloat());
@@ -522,9 +522,9 @@ class Vm {
 								velocity.setDirection(scan.float());
 							case AddDirectionC:
 								velocity.addDirection(scan.float());
-							case SetDirectionV:
+							case SetDirectionR:
 								velocity.setDirection(reg.float);
-							case AddDirectionV:
+							case AddDirectionR:
 								velocity.addDirection(reg.float);
 							case AddDirectionS:
 								velocity.addDirection(mem.peekFloat());
@@ -536,13 +536,13 @@ class Vm {
 								thread.setShotVelocity(scan.float(), scan.float());
 							case AddShotVelocityC:
 								thread.addShotVelocity(scan.float(), scan.float());
-							case SetShotPositionV:
+							case SetShotPositionR:
 								thread.setShotPosition(reg.vecX, reg.vecY);
-							case AddShotPositionV:
+							case AddShotPositionR:
 								thread.addShotPosition(reg.vecX, reg.vecY);
-							case SetShotVelocityV:
+							case SetShotVelocityR:
 								thread.setShotVelocity(reg.vecX, reg.vecY);
-							case AddShotVelocityV:
+							case AddShotVelocityR:
 								thread.addShotVelocity(reg.vecX, reg.vecY);
 							case AddShotPositionS:
 								final vec = mem.peekVecSkipped(0);
@@ -554,9 +554,9 @@ class Vm {
 								thread.setShotDistance(scan.float());
 							case AddShotDistanceC:
 								thread.addShotDistance(scan.float());
-							case SetShotDistanceV:
+							case SetShotDistanceR:
 								thread.setShotDistance(reg.float);
-							case AddShotDistanceV:
+							case AddShotDistanceR:
 								thread.addShotDistance(reg.float);
 							case AddShotDistanceS:
 								thread.addShotDistance(mem.peekFloat());
@@ -564,9 +564,9 @@ class Vm {
 								thread.setShotBearing(scan.float());
 							case AddShotBearingC:
 								thread.addShotBearing(scan.float());
-							case SetShotBearingV:
+							case SetShotBearingR:
 								thread.setShotBearing(reg.float);
-							case AddShotBearingV:
+							case AddShotBearingR:
 								thread.addShotBearing(reg.float);
 							case AddShotBearingS:
 								thread.addShotBearing(mem.peekFloat());
@@ -574,9 +574,9 @@ class Vm {
 								thread.setShotSpeed(scan.float());
 							case AddShotSpeedC:
 								thread.addShotSpeed(scan.float());
-							case SetShotSpeedV:
+							case SetShotSpeedR:
 								thread.setShotSpeed(reg.float);
-							case AddShotSpeedV:
+							case AddShotSpeedR:
 								thread.addShotSpeed(reg.float);
 							case AddShotSpeedS:
 								thread.addShotSpeed(mem.peekFloat());
@@ -584,9 +584,9 @@ class Vm {
 								thread.setShotDirection(scan.float());
 							case AddShotDirectionC:
 								thread.addShotDirection(scan.float());
-							case SetShotDirectionV:
+							case SetShotDirectionR:
 								thread.setShotDirection(reg.float);
-							case AddShotDirectionV:
+							case AddShotDirectionR:
 								thread.addShotDirection(reg.float);
 							case AddShotDirectionS:
 								thread.addShotDirection(mem.peekFloat());

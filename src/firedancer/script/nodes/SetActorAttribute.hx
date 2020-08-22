@@ -132,11 +132,11 @@ class SetActorAttributeLinear extends AstNode {
 
 		inline function getDivChange(isVec: Bool): AssemblyCode {
 			return {
-				final divVVV: Instruction = Div(isVec ? Vec(Reg) : Float(RegBuf), Float(Reg));
+				final divRRR: Instruction = Div(isVec ? Vec(Reg) : Float(RegBuf), Float(Reg));
 				final code: AssemblyCode = isVec ? [] : [Save(Float)];
 				final loadFramesAsFloat = (frames : FloatExpression).loadToVolatile(context);
 				code.pushFromArray(loadFramesAsFloat);
-				code.push(divVVV);
+				code.push(divRRR);
 				code;
 			};
 		}
@@ -159,8 +159,8 @@ class SetActorAttributeLinear extends AstNode {
 
 				addFromVolatile = SetVector(attribute, Vector, Vec(Reg));
 
-				final calcRelativeVV: Instruction = CalcRelative(attribute, Vector, Vec(Reg));
-				calcRelative = [vec.loadToVolatile(context), [calcRelativeVV]].flatten();
+				final calcRelativeRR: Instruction = CalcRelative(attribute, Vector, Vec(Reg));
+				calcRelative = [vec.loadToVolatile(context), [calcRelativeRR]].flatten();
 
 			case SetLength(length):
 				divChange = getDivChange(false);
@@ -170,9 +170,9 @@ class SetActorAttributeLinear extends AstNode {
 
 				addFromVolatile = AddVector(attribute, Length, Float(Reg));
 
-				final calcRelativeVV: Instruction = CalcRelative(attribute, Length, Float(Reg));
+				final calcRelativeRR: Instruction = CalcRelative(attribute, Length, Float(Reg));
 				calcRelative = length.loadToVolatile(context);
-				calcRelative.push(calcRelativeVV);
+				calcRelative.push(calcRelativeRR);
 
 			case SetAngle(angle):
 				divChange = getDivChange(false);
@@ -182,9 +182,9 @@ class SetActorAttributeLinear extends AstNode {
 
 				addFromVolatile = AddVector(attribute, Angle, Float(Reg));
 
-				final calcRelativeVV:Instruction = CalcRelative(attribute, Angle, Float(Reg));
+				final calcRelativeRR:Instruction = CalcRelative(attribute, Angle, Float(Reg));
 				calcRelative = angle.loadToVolatile(context);
-				calcRelative.push(calcRelativeVV);
+				calcRelative.push(calcRelativeRR);
 		}
 
 		final prepare: AssemblyCode = calcRelative.concat(divChange).concat([pushChange]);

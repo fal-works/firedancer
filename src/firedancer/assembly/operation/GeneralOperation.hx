@@ -23,23 +23,23 @@ enum abstract GeneralOperation(Int) to Int {
 			case GeneralOperation.AwaitThread: AwaitThread;
 			case GeneralOperation.End: End;
 
-			case GeneralOperation.LoadIntCV: LoadIntCV;
-			case GeneralOperation.LoadFloatCV: LoadFloatCV;
-			case GeneralOperation.LoadVecCV: LoadVecCV;
-			case GeneralOperation.SaveIntV: SaveIntV;
-			case GeneralOperation.SaveFloatV: SaveFloatV;
-			case GeneralOperation.LoadIntLV: LoadIntLV;
-			case GeneralOperation.LoadFloatLV: LoadFloatLV;
-			case GeneralOperation.StoreIntCL: StoreIntCL;
-			case GeneralOperation.StoreIntVL: StoreIntVL;
-			case GeneralOperation.StoreFloatCL: StoreFloatCL;
-			case GeneralOperation.StoreFloatVL: StoreFloatVL;
+			case GeneralOperation.LoadIntCR: LoadIntCR;
+			case GeneralOperation.LoadFloatCR: LoadFloatCR;
+			case GeneralOperation.LoadVecCR: LoadVecCR;
+			case GeneralOperation.SaveIntR: SaveIntR;
+			case GeneralOperation.SaveFloatR: SaveFloatR;
+			case GeneralOperation.LoadIntVR: LoadIntVR;
+			case GeneralOperation.LoadFloatVR: LoadFloatVR;
+			case GeneralOperation.StoreIntCV: StoreIntCV;
+			case GeneralOperation.StoreIntRV: StoreIntRV;
+			case GeneralOperation.StoreFloatCV: StoreFloatCV;
+			case GeneralOperation.StoreFloatRV: StoreFloatRV;
 
 			case GeneralOperation.PushIntC: PushIntC;
-			case GeneralOperation.PushIntV: PushIntV;
+			case GeneralOperation.PushIntR: PushIntR;
 			case GeneralOperation.PushFloatC: PushFloatC;
-			case GeneralOperation.PushFloatV: PushFloatV;
-			case GeneralOperation.PushVecV: PushVecV;
+			case GeneralOperation.PushFloatR: PushFloatR;
+			case GeneralOperation.PushVecR: PushVecR;
 			case GeneralOperation.PopInt: PopInt;
 			case GeneralOperation.PopFloat: PopFloat;
 			case GeneralOperation.PeekFloat: PeekFloat;
@@ -52,8 +52,8 @@ enum abstract GeneralOperation(Int) to Int {
 			case GeneralOperation.FireSimpleWithCode: FireSimpleWithCode;
 			case GeneralOperation.FireComplexWithCode: FireComplexWithCode;
 
-			case GeneralOperation.GlobalEvent: GlobalEvent;
-			case GeneralOperation.LocalEvent: LocalEvent;
+			case GeneralOperation.GlobalEventR: GlobalEventR;
+			case GeneralOperation.LocalEventR: LocalEventR;
 
 			case GeneralOperation.Debug: Debug;
 
@@ -77,7 +77,7 @@ enum abstract GeneralOperation(Int) to Int {
 	final CountDownBreak;
 
 	/**
-		Adds the current program counter to a given constant value.
+		Adds the current program counter to an immediate value.
 	**/
 	final Goto;
 
@@ -85,17 +85,17 @@ enum abstract GeneralOperation(Int) to Int {
 		Peeks the top integer (which should be the remaining loop count) from the stack and checks the value.
 		- If `1` or more, decrements the loop counter at the stack top and goes to next.
 		- If `0` or less, drops the loop counter from the stack and
-			sets the current program counter to a given constant value.
+			sets the current program counter to an immediate value.
 	**/
 	final CountDownGoto;
 
 	/**
-		Activates a new thread with program ID specified by a given constant integer.
+		Activates a new thread with program ID specified by an immediate integer.
 	**/
 	final UseThread;
 
 	/**
-		Activates a new thread with program ID specified by a given constant integer,
+		Activates a new thread with program ID specified by an immediate integer,
 		then pushes the thread ID to the stack.
 	**/
 	final UseThreadS;
@@ -110,129 +110,137 @@ enum abstract GeneralOperation(Int) to Int {
 	final AwaitThread;
 
 	/**
-		Ends running program and returns an end code specified by a given constant integer.
+		Ends running program and returns an end code specified by an immediate integer.
 	**/
 	final End;
 
 	// ---- load values -------------------------------------------------
 
 	/**
-		Assigns a given constant integer to the current volatile integer.
+		(int immediate) -> (int register)
 	**/
-	final LoadIntCV;
+	final LoadIntCR;
 
 	/**
-		Assigns a given constant float to the current volatile float.
+		(float immediate) -> (float register)
 	**/
-	final LoadFloatCV;
+	final LoadFloatCR;
 
 	/**
-		Assigns given constant float values to the current volatile vector.
+		(vec immediate) -> (vec register)
 	**/
-	final LoadVecCV;
+	final LoadVecCR;
 
 	/**
-		Saves the current volatile integer.
+		(int register) -> (int register buffer)
 	**/
-	final SaveIntV;
+	final SaveIntR;
 
 	/**
-		Saves the current volatile float.
+		(float register) -> (float register buffer)
 	**/
-	final SaveFloatV;
+	final SaveFloatR;
 
 	/**
-		Assigns the local variable value (of which the address is specified
-		by a given constant integer) to the volatile integer.
+		(int var) -> (int register)
+
+		where the variable address is specified by (int immediate)
 	**/
-	final LoadIntLV;
+	final LoadIntVR;
 
 	/**
-		Assigns the local variable value (of which the address is specified
-		by a given constant integer) to the volatile float.
+		(float var) -> (float register)
+
+		where the variable address is specified by (int immediate)
 	**/
-	final LoadFloatLV;
+	final LoadFloatVR;
 
 	/**
-		Assigns the second constant integer to the local variable
-		(of which the address is specified by the first constant integer).
+		(2nd, int immediate) -> (int var)
+
+		where the variable address is specified by (1st, int immediate)
 	**/
-	final StoreIntCL;
+	final StoreIntCV;
 
 	/**
-		Assigns the current volatile integer to the local variable
-		(of which the address is specified by a given constant integer).
+		(int register) -> (int var)
+
+		where the variable address is specified by (int immediate)
 	**/
-	final StoreIntVL;
+	final StoreIntRV;
 
 	/**
-		Assigns a given constant float to the local variable
-		(of which the address is specified by a given constant integer).
+		(2nd, float immediate) -> (float var)
+
+		where the variable address is specified by (1st, int immediate)
 	**/
-	final StoreFloatCL;
+	final StoreFloatCV;
 
 	/**
-		Assigns the current volatile float to the local variable
-		(of which the address is specified by a given constant integer).
+		(float register) -> (float var)
+
+		where the variable address is specified by (int immediate)
 	**/
-	final StoreFloatVL;
+	final StoreFloatRV;
 
 	// ---- read/write stack ----------------------------------------------
 
 	/**
-		Pushes a given constant integer to the stack top.
+		Push (int immediate) -> (stack)
 	**/
 	final PushIntC;
 
 	/**
-		Pushes the current volatile integer to the stack top.
+		Push (int register) -> (stack)
 	**/
-	final PushIntV;
+	final PushIntR;
 
 	/**
-		Pushes a given constant float to the stack top.
+		Push (float immediate) -> (stack)
 	**/
 	final PushFloatC;
 
 	/**
-		Pushes the current volatile float to the stack top.
+		Push (float register) -> (stack)
 	**/
-	final PushFloatV;
+	final PushFloatR;
 
 	/**
-		Pushes the current volatile vector to the stack top.
+		Push (vec register) -> (stack)
 	**/
-	final PushVecV;
+	final PushVecR;
 
 	/**
-		Pops an integer from the stack top and assigns it to the volatile integer.
+		Pop (stack) -> (int register)
 	**/
 	final PopInt;
 
 	/**
-		Pops a float from the stack top and assigns it to the volatile float.
+		Pop (stack) -> (float register)
 	**/
 	final PopFloat;
 
 	/**
-		Reads a float at the stack top (skipping a given constant bytes from the top)
-		and assigns it to the volatile float.
+		Peek (stack) -> (float register)
+
+		skipping (int immediate) bytes from the stack top
 	**/
 	final PeekFloat;
 
 	/**
-		Drops float from the stack top.
+		Drop float from (stack)
 	**/
 	final DropFloat;
 
 	/**
-		Reads a vector at the stack top (skipping a given constant bytes from the top)
-		and assigns it to the volatile vector.
+		Peek (stack) -> (vec register)
+
+		skipping (int immediate) bytes from the stack top
 	**/
 	final PeekVec;
 
 	/**
-		Drops vector from the stack top.
+		Drop vec from (stack)
 	**/
 	final DropVec;
 
@@ -248,7 +256,7 @@ enum abstract GeneralOperation(Int) to Int {
 		Emits a new actor with a default type.
 
 		Argument:
-		- (int) `FireArgument` value
+		- (int immediate) `FireArgument` value
 	**/
 	final FireComplex;
 
@@ -257,7 +265,7 @@ enum abstract GeneralOperation(Int) to Int {
 		without binding the position.
 
 		Argument:
-		- (int) Fire code
+		- (int immediate) Fire code
 	**/
 	final FireSimpleWithCode;
 
@@ -265,8 +273,8 @@ enum abstract GeneralOperation(Int) to Int {
 		Emits a new actor with a specified type.
 
 		Arguments:
-		1. (int) `FireArgument` value
-		2. (int) Fire code
+		1. (int immediate) `FireArgument` value
+		2. (int immediate) Fire code
 	**/
 	final FireComplexWithCode;
 
@@ -274,18 +282,18 @@ enum abstract GeneralOperation(Int) to Int {
 
 	/**
 		Invokes a global event with an user-defined code
-		specified by the current volatile integer.
+		specified by (int register).
 	**/
-	final GlobalEvent;
+	final GlobalEventR;
 
 	/**
 		Invokes a global event with an user-defined code
-		specified by the current volatile integer.
+		specified by (int register).
 	**/
-	final LocalEvent;
+	final LocalEventR;
 
 	/**
-		Runs debug process specified by a given constant integer.
+		Runs debug process specified by (immediate integer).
 	**/
 	final Debug;
 
@@ -308,23 +316,23 @@ class GeneralOperationExtension {
 			case AwaitThread: "await_thread";
 			case End: "end";
 
-			case LoadIntCV: "load_int_cv";
-			case LoadFloatCV: "load_float_cv";
-			case LoadVecCV: "load_vec_cv";
-			case SaveIntV: "save_int_v";
-			case SaveFloatV: "save_float_v";
-			case LoadIntLV: "load_int_lv";
-			case LoadFloatLV: "load_float_lv";
-			case StoreIntCL: "store_int_cl";
-			case StoreIntVL: "store_int_vl";
-			case StoreFloatCL: "store_float_cl";
-			case StoreFloatVL: "store_float_vl";
+			case LoadIntCR: "load_int_cr";
+			case LoadFloatCR: "load_float_cr";
+			case LoadVecCR: "load_vec_cr";
+			case SaveIntR: "save_int_r";
+			case SaveFloatR: "save_float_r";
+			case LoadIntVR: "load_int_vr";
+			case LoadFloatVR: "load_float_vr";
+			case StoreIntCV: "store_int_cv";
+			case StoreIntRV: "store_int_rv";
+			case StoreFloatCV: "store_float_cv";
+			case StoreFloatRV: "store_float_rv";
 
 			case PushIntC: "push_int_c";
-			case PushIntV: "push_int_v";
+			case PushIntR: "push_int_r";
 			case PushFloatC: "push_float_c";
-			case PushFloatV: "push_float_v";
-			case PushVecV: "push_vec_v";
+			case PushFloatR: "push_float_r";
+			case PushVecR: "push_Vec_r";
 			case PopInt: "pop_int";
 			case PopFloat: "pop_float";
 			case PeekFloat: "peek_float";
@@ -337,8 +345,8 @@ class GeneralOperationExtension {
 			case FireSimpleWithCode: "fire_simple_with_type";
 			case FireComplexWithCode: "fire_complex_with_type";
 
-			case GlobalEvent: "global_event";
-			case LocalEvent: "local_event";
+			case GlobalEventR: "global_event";
+			case LocalEventR: "local_event";
 
 			case Debug: "debug";
 		}

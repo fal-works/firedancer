@@ -47,7 +47,7 @@ class DeclareLocalVariable extends AstNode {
 		inline function getAddress(valueType: ValueType): UInt
 			return context.localVariables.push(this.name, valueType);
 
-		final storeVL: Instruction = switch initialValue.toEnum() {
+		final storeRL: Instruction = switch initialValue.toEnum() {
 			case IntExpr(_):
 				Store(Int(Reg), getAddress(Int));
 			case FloatExpr(_) | AngleExpr(_):
@@ -59,7 +59,7 @@ class DeclareLocalVariable extends AstNode {
 		return {
 			[
 				initialValue.loadToVolatile(context),
-				[storeVL]
+				[storeRL]
 			].flatten();
 		}
 	}

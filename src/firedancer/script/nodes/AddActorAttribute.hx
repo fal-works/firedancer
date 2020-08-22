@@ -69,11 +69,11 @@ class AddActorAttributeLinear extends AstNode implements ripper.Data {
 		final frames = this.frames;
 
 		inline function getDivChange(isVec: Bool): AssemblyCode {
-			final divVVV: Instruction = Div(isVec ? Vec(Reg) : Float(RegBuf), Float(Reg));
+			final divRRR: Instruction = Div(isVec ? Vec(Reg) : Float(RegBuf), Float(Reg));
 			final code: AssemblyCode = isVec ? [] : [Save(Float)];
 			final loadFramesAsFloat = (frames : FloatExpression).loadToVolatile(context);
 			code.pushFromArray(loadFramesAsFloat);
-			code.push(divVVV);
+			code.push(divRRR);
 			return code;
 		}
 

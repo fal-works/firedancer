@@ -9,7 +9,7 @@ abstract IntLocalVariableExpression(String) {
 		this = name;
 
 	@:to public function toString(): String
-		return 'IntVar($this)';
+		return 'IntRar($this)';
 
 	@:to function toIntExpression(): IntExpression {
 		return IntExpression.fromEnum(IntLikeExpressionEnum.Runtime(Custom(context -> {

@@ -50,13 +50,13 @@ enum Instruction {
 	RandomSigned(maxMagnitude: Operand);
 	Sin;
 	Cos;
-	IncrementL(address: UInt);
-	DecrementL(address: UInt);
+	IncrementVV(address: UInt);
+	DecrementVV(address: UInt);
 	// ---- read actor data ------------------------------------------
-	LoadTargetPositionV;
-	LoadTargetXV;
-	LoadTargetYV;
-	LoadBearingToTargetV;
+	LoadTargetPositionR;
+	LoadTargetXR;
+	LoadTargetYR;
+	LoadBearingToTargetR;
 	CalcRelative(
 		attrType: ActorAttributeType,
 		cmpType: ActorAttributeComponentType,

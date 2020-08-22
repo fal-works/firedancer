@@ -279,7 +279,7 @@ class LocalVariableTable {
 			default: throw "Cannot increment local variable that is not an integer.";
 		}
 
-		return [IncrementL(address)];
+		return [IncrementVV(address)];
 	}
 
 	/**
@@ -293,6 +293,6 @@ class LocalVariableTable {
 			default: throw "Cannot decrement local variable that is not an integer.";
 		}
 
-		return [DecrementL(address)];
+		return [DecrementVV(address)];
 	}
 }
