@@ -47,8 +47,8 @@ class AddActorAttribute extends AstNode implements ripper.Data {
 			case ShotVelocity:
 				switch operation {
 					case AddVector(e): e.use(c, AddVector(ShotVelocity, Vector, Vec(Reg)));
-					case AddLength(e): e.use(c, AddVector(Velocity, Length, Float(Reg)));
-					case AddAngle(e): e.use(c, AddVector(Velocity, Angle, Float(Reg)));
+					case AddLength(e): e.use(c, AddVector(ShotVelocity, Length, Float(Reg)));
+					case AddAngle(e): e.use(c, AddVector(ShotVelocity, Angle, Float(Reg)));
 				}
 		}
 	}
