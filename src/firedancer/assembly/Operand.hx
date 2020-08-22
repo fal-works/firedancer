@@ -344,7 +344,7 @@ class OperandPairExtension {
 			case Int(maybeIntImm):
 				switch maybeIntImm {
 				case Imm(value):
-					// do not replace A if B is a buffer register
+					// do not replace A if B is a buffer register (vice versa)
 					if (a.isReg()) switch b {
 					case RegBuf: null;
 					default: Int(maybeIntImm, b);
@@ -363,7 +363,7 @@ class OperandPairExtension {
 			case Float(maybeFloatImm):
 				switch maybeFloatImm {
 				case Imm(value):
-					// do not replace A if B is a buffer register
+					// do not replace A if B is a buffer register (vice versa)
 					if (a.isReg()) switch b {
 					case RegBuf: null;
 					default: Float(maybeFloatImm, b);
