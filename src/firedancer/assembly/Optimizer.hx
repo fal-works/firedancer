@@ -272,6 +272,12 @@ class Optimizer {
 			optimizedAny = optimizedAny || optimizedCur;
 		}
 
+		curIntReg.tryEliminateFrom(code, code.length);
+		curFloatReg.tryEliminateFrom(code, code.length);
+		curVecReg.tryEliminateFrom(code, code.length);
+		curIntRegBuf.tryEliminateFrom(code, code.length);
+		curFloatRegBuf.tryEliminateFrom(code, code.length);
+
 		optimizedAny = code.removeAll(inst -> inst == None) || optimizedAny;
 
 		return optimizedAny;
