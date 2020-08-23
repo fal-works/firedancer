@@ -85,24 +85,24 @@ class Optimizer {
 			}
 
 			inline function tryPropagateConstantAll(): Bool {
-				return if (tryPropagateConstant(curIntReg.maybeImm, Reg)) {
+				return if (tryPropagateConstant(curIntReg.getMaybeImm(), Reg)) {
 					true;
-				} else if (tryPropagateConstant(curFloatReg.maybeImm, Reg)) {
+				} else if (tryPropagateConstant(curFloatReg.getMaybeImm(), Reg)) {
 					true;
-				} else if (tryPropagateConstant(curVecReg.maybeImm, Reg)) {
+				} else if (tryPropagateConstant(curVecReg.getMaybeImm(), Reg)) {
 					true;
-				} else if (tryPropagateConstant(curIntRegBuf.maybeImm, RegBuf)) {
+				} else if (tryPropagateConstant(curIntRegBuf.getMaybeImm(), RegBuf)) {
 					true;
-				} else if (tryPropagateConstant(curFloatRegBuf.maybeImm, RegBuf)) {
+				} else if (tryPropagateConstant(curFloatRegBuf.getMaybeImm(), RegBuf)) {
 					true;
 				} else if (tryPropagateConstantBinop(
-					curIntRegBuf.maybeImm,
-					curIntReg.maybeImm
+					curIntRegBuf.getMaybeImm(),
+					curIntReg.getMaybeImm()
 				)) {
 					true;
 				} else if (tryPropagateConstantBinop(
-					curFloatRegBuf.maybeImm,
-					curFloatReg.maybeImm
+					curFloatRegBuf.getMaybeImm(),
+					curFloatReg.getMaybeImm()
 				)) {
 					true;
 				} else {
@@ -130,15 +130,21 @@ class Optimizer {
 			}
 
 			inline function tryReplaceUnnecessaryCalcAll(): Bool {
-				return if (tryReplaceUnnecessaryCalc(curIntReg.maybeImm, Reg)) {
+				return if (tryReplaceUnnecessaryCalc(curIntReg.getMaybeImm(), Reg)) {
 					true;
-				} else if (tryReplaceUnnecessaryCalc(curFloatReg.maybeImm, Reg)) {
+				} else if (tryReplaceUnnecessaryCalc(curFloatReg.getMaybeImm(), Reg)) {
 					true;
-				} else if (tryReplaceUnnecessaryCalc(curVecReg.maybeImm, Reg)) {
+				} else if (tryReplaceUnnecessaryCalc(curVecReg.getMaybeImm(), Reg)) {
 					true;
-				} else if (tryReplaceUnnecessaryCalc(curIntRegBuf.maybeImm, RegBuf)) {
+				} else if (tryReplaceUnnecessaryCalc(
+					curIntRegBuf.getMaybeImm(),
+					RegBuf
+				)) {
 					true;
-				} else if (tryReplaceUnnecessaryCalc(curFloatRegBuf.maybeImm, RegBuf)) {
+				} else if (tryReplaceUnnecessaryCalc(
+					curFloatRegBuf.getMaybeImm(),
+					RegBuf
+				)) {
 					true;
 				} else {
 					false;
@@ -302,21 +308,26 @@ private class RegContent {
 
 	public static function from(operand: Operand, loadedIndex: UInt): RegContent {
 		return {
-			maybeImm: switch operand.getKind() {
-			case Imm: operand;
-			default: null;
-			},
+			operand: operand,
 			loadedIndex: loadedIndex
 		};
 	}
 
-	public final maybeImm: Maybe<Operand> = Maybe.none();
+	public final operand: Maybe<Operand> = Maybe.none();
 	public final loadedIndex: MaybeUInt;
 	public var maybeRead: Bool = false;
 
-	public function new(?maybeImm: Operand, loadedIndex: MaybeUInt) {
-		this.maybeImm = Maybe.from(maybeImm);
+	public function new(?operand: Operand, loadedIndex: MaybeUInt) {
+		this.operand = Maybe.from(operand);
 		this.loadedIndex = loadedIndex;
+	}
+
+	public function getMaybeImm(): Maybe<Operand> {
+		final operand = this.operand;
+		return if (operand.isSome()) switch operand.unwrap().getKind() {
+		case Imm: operand;
+		default: Maybe.none();
+		} else Maybe.none();
 	}
 
 	public function tryEliminateFrom(code: AssemblyCode, currentIndex: UInt): Bool {
