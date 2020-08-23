@@ -1,6 +1,6 @@
 package firedancer.assembly;
 
-import haxe.macro.Expr.Case;
+import firedancer.assembly.OperandKind;
 
 class Optimizer {
 	public static function optimize(code: AssemblyCode): AssemblyCode {
@@ -22,6 +22,7 @@ class Optimizer {
 	/**
 		- Try constant folding.
 		- Replace `Pop` with `Load` if the stack top is an immediate and never read before `Pop`.
+		- Eliminate or pre-calculate unnecessary calculations (e.g. eliminate `+ 0`, replace `* 0` with loading `0`)
 	**/
 	public static function tryOptimize(code: AssemblyCode): Maybe<AssemblyCode> {
 		if (code.length <= UInt.one) return Maybe.none();
@@ -45,7 +46,6 @@ class Optimizer {
 		while (i < code.length) {
 			var curInst = code[i];
 			var optimizedCur = false;
-			var removedCur = false;
 
 			switch curInst {
 			case Load(loaded):
@@ -71,8 +71,8 @@ class Optimizer {
 				}
 				var nextRegReaderIndex = findNextRegReader(i + 1);
 				if (nextRegReaderIndex.isNone()) {
-					code.removeAt(i);
-					optimizedCur = removedCur = true;
+					code[i] = None;
+					optimizedCur = true;
 				}
 
 			case Save(saved):
@@ -98,21 +98,19 @@ class Optimizer {
 				}
 				var nextRegBufReaderIndex = findNextRegBufReader(i + 1);
 				if (nextRegBufReaderIndex.isNone()) {
-					code.removeAt(i);
-					optimizedCur = removedCur = true;
+					code[i] = None;
+					optimizedCur = true;
 				}
 
 			case Push(input):
 				curStacked.push({ operand: input, pushInstIndex: i });
 			case Pop(_):
-				final stackTop = curStacked.getLast();
+				final stackTop = curStacked.pop().unwrap();
 				if (!stackTop.mayBeRead && stackTop.operand.getKind() == Imm) {
 					code[i] = Load(stackTop.operand);
-					code.removeAt(stackTop.pushInstIndex);
+					code[stackTop.pushInstIndex] = None;
 					optimizedCur = true;
-					--i;
 				}
-				curStacked.pop();
 			case Drop(_):
 				curStacked.pop();
 			case Peek(_, _):
@@ -203,10 +201,40 @@ class Optimizer {
 				}
 			}
 
-			if (!removedCur) {
-				curInst = code[i];
-				tryFoldConstantAll();
+			inline function tryEliminate(
+				mightBeImm: Maybe<Operand>,
+				regOrRegBuf: RegOrRegBuf
+			): Bool {
+				var result = false;
+				if (mightBeImm.isSome()) {
+					final maybeImm = mightBeImm.unwrap();
+					final optimizedInst = curInst.tryReplaceUnnecessaryCalculation(maybeImm, regOrRegBuf);
+					if (optimizedInst.isSome()) {
+						code[i] = optimizedInst.unwrap();
+						result = optimizedCur = true;
+					}
+				}
+				return result;
 			}
+
+			inline function tryEliminateAll(): Bool {
+				return if (tryEliminate(curIntImmInReg, Reg)) {
+					true;
+				} else if (tryEliminate(curFloatImmInReg, Reg)) {
+					true;
+				} else if (tryEliminate(curVecImmInReg, Reg)) {
+					true;
+				} else if (tryEliminate(curIntImmInRegBuf, RegBuf)) {
+					true;
+				} else if (tryEliminate(curFloatImmInRegBuf, RegBuf)) {
+					true;
+				} else {
+					false;
+				}
+			}
+
+			curInst = code[i];
+			if (!tryFoldConstantAll()) tryEliminateAll();
 
 			// update current registers
 			curInst = code[i];
@@ -266,9 +294,11 @@ class Optimizer {
 				}
 			}
 
-			if (!optimizedCur) ++i;
+			++i;
 			optimizedAny = optimizedAny || optimizedCur;
 		}
+
+		optimizedAny = code.removeAll(inst -> inst == None) || optimizedAny;
 
 		return optimizedAny ? Maybe.from(code) : Maybe.none();
 	}

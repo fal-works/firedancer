@@ -11,6 +11,7 @@ import firedancer.assembly.operation.CalcOperation;
 import firedancer.assembly.operation.ReadOperation;
 import firedancer.assembly.operation.WriteOperation;
 import firedancer.assembly.OperandTools.*;
+import firedancer.assembly.OperandKind;
 
 class InstructionExtension {
 	static function unsupported(): String
@@ -60,12 +61,16 @@ class InstructionExtension {
 			case Int(operand):
 				switch operand {
 				case Imm(value): [op(LoadIntCR), value];
+				case Reg: [];
+				case RegBuf: op(LoadIntBR);
 				case Var(address): [op(LoadIntVR), address];
 				default: throw unsupported();
 				}
 			case Float(operand):
 				switch operand {
 				case Imm(value): [op(LoadFloatCR), value];
+				case Reg: [];
+				case RegBuf: op(LoadFloatBR);
 				case Var(address): [op(LoadFloatVR), address];
 				default: throw unsupported();
 				}
@@ -76,6 +81,7 @@ class InstructionExtension {
 						x,
 						y
 					];
+				case Reg: [];
 				default: throw unsupported();
 				}
 			default: throw unsupported();
@@ -825,7 +831,7 @@ class InstructionExtension {
 			}
 
 		case None:
-			throw unsupported();
+			op(NoOperation);
 		}
 	}
 
@@ -1633,6 +1639,252 @@ class InstructionExtension {
 		default: null;
 		}
 
+		return Maybe.from(newInst);
+	}
+
+	public static function tryReplaceUnnecessaryCalculation(
+		inst: Instruction,
+		maybeImm: Operand,
+		regOrRegBuf: RegOrRegBuf
+	): Maybe<Instruction> {
+		inline function loadZero(type: ValueType): Instruction {
+			return Load(switch type {
+				case Int: Int(Imm(0));
+				case Float: Float(Imm(0.0));
+				case Vec: Vec(Imm(0.0, 0.0));
+			});
+		}
+
+		final newInst: Null<Instruction> = switch inst {
+		case Minus(input):
+			if (input.isZero()) {
+				switch input {
+				case Int(_): Load(Int(Imm(0)));
+				case Float(_): Load(Float(Imm(0.0)));
+				case Vec(_): Load(Vec(Imm(0.0, 0.0)));
+				case Null: null;
+				}
+			} else {
+				inline function tryMinusImm(): Null<Instruction> {
+					return switch maybeImm {
+					case Int(operand):
+						switch operand {
+						case Imm(value): Load(Int(Imm(-value)));
+						default: null;
+						}
+					case Float(operand):
+						switch operand {
+						case Imm(value): Load(Float(Imm(-value)));
+						default: null;
+						}
+					case Vec(operand):
+						switch operand {
+						case Imm(x, y): Load(Vec(Imm(-x, -y)));
+						default: null;
+						}
+					default: null;
+					}
+				}
+				switch regOrRegBuf {
+				case Reg: if (input.isReg()) tryMinusImm() else null;
+				case RegBuf: if (input.isRegBuf()) tryMinusImm() else null;
+				}
+			};
+
+		case Add(nextOperands):
+			switch nextOperands {
+			case Int(a, b):
+				if (a.isZero()) {
+					Load(Int(b));
+				} else if (b.isZero()) {
+					Load(Int(a));
+				} else if (maybeImm.isZero()) {
+					switch regOrRegBuf {
+					case Reg:
+						if (a.isReg()) Load(Int(b)) else if (b.isReg()) Load(Int(a)) else null;
+					case RegBuf:
+						if (a.isRegBuf()) Load(Int(b)) else if (b.isRegBuf()) Load(Int(a)) else null;
+					}
+				} else null;
+			case Float(a, b):
+				if (a.isZero()) {
+					Load(Float(b));
+				} else if (b.isZero()) {
+					Load(Float(a));
+				} else if (maybeImm.isZero()) {
+					switch regOrRegBuf {
+					case Reg:
+						if (a.isReg()) Load(Float(b)) else if (b.isReg()) Load(Float(a)) else null;
+					case RegBuf:
+						if (a.isRegBuf()) Load(Float(b)) else if (b.isRegBuf()) Load(Float(a)) else
+							null;
+					}
+				} else null;
+			case Vec(a, b):
+				if (a.isZero()) {
+					Load(Vec(b));
+				} else if (b.isZero()) {
+					Load(Vec(a));
+				} else if (maybeImm.isZero()) {
+					switch regOrRegBuf {
+					case Reg:
+						if (a.isReg()) Load(Vec(b)) else if (b.isReg()) Load(Vec(a)) else null;
+					case RegBuf: null;
+					}
+				} else null;
+			}
+
+		case Sub(nextOperands):
+			switch nextOperands {
+			case Int(a, b):
+				inline function minusB(): Instruction {
+					return switch b {
+					case Imm(value): Load(Int(Imm(-value)));
+					case Reg: Minus(Int(b));
+					default: null;
+					};
+				}
+				if (a.isZero()) {
+					minusB();
+				} else if (b.isZero()) {
+					Load(Int(a));
+				} else if (maybeImm.isZero()) {
+					switch regOrRegBuf {
+					case Reg:
+						if (a.isReg()) minusB() else if (b.isReg()) Load(Int(a)) else null;
+					case RegBuf:
+						if (a.isRegBuf()) minusB() else if (b.isRegBuf()) Load(Int(a)) else null;
+					}
+				} else null;
+			case Float(a, b):
+				inline function minusB(): Instruction {
+					return switch b {
+					case Imm(value): Load(Float(Imm(-value)));
+					case Reg: Minus(Float(b));
+					default: null;
+					};
+				}
+				if (a.isZero()) {
+					minusB();
+				} else if (b.isZero()) {
+					Load(Float(a));
+				} else if (maybeImm.isZero()) {
+					switch regOrRegBuf {
+					case Reg:
+						if (a.isReg()) minusB() else if (b.isReg()) Load(Float(a)) else null;
+					case RegBuf:
+						if (a.isRegBuf()) minusB() else if (b.isRegBuf()) Load(Float(a)) else null;
+					}
+				} else null;
+			case Vec(a, b):
+				inline function minusB(): Instruction {
+					return switch b {
+					case Imm(x, y): Load(Vec(Imm(-x, -y)));
+					case Reg: Minus(Vec(b));
+					default: null;
+					};
+				}
+				if (a.isZero()) {
+					minusB();
+				} else if (b.isZero()) {
+					Load(Vec(a));
+				} else if (maybeImm.isZero()) {
+					switch regOrRegBuf {
+					case Reg:
+						if (a.isReg()) minusB() else if (b.isReg()) Load(Vec(a)) else null;
+					default: null;
+					}
+				} else null;
+			}
+
+		case Mult(inputA, inputB):
+			final type = inputA.getType();
+			if (inputA.isZero() || inputB.isZero()) {
+				loadZero(type);
+			} else if (inputA.isOne()) {
+				null;
+			} else if (inputB.isOne()) {
+				None;
+			} else if (maybeImm.isZero()) {
+				switch regOrRegBuf {
+					case Reg:
+						if (inputA.isReg() || (inputA.isRegBuf() && inputB.isReg())) loadZero(type) else null;
+					case RegBuf:
+						if (inputA.isRegBuf() || (inputA.isReg() && inputB.isRegBuf())) loadZero(type) else null;
+				}
+			} else if (maybeImm.isOne()) {
+				switch regOrRegBuf {
+					case Reg:
+						if (inputB.isReg()) {
+							if (inputA.isReg()) None else Load(inputA);
+						} else null;
+					case RegBuf:
+						if (inputB.isRegBuf()) {
+							if (inputA.isReg()) None else Load(inputA);
+						} else null;
+				}
+			} else {
+				null;
+			}
+
+		case Div(inputA, inputB):
+			final type = inputA.getType();
+			if (inputA.isZero()) {
+				loadZero(type);
+			} else if (inputA.isOne()) {
+				null;
+			} else if (inputB.isOne()) {
+				None;
+			} else if (maybeImm.isZero()) {
+				switch regOrRegBuf {
+					case Reg:
+						if (inputA.isReg()) loadZero(type) else null;
+					case RegBuf:
+						if (inputA.isRegBuf()) loadZero(type) else null;
+				}
+			} else if (maybeImm.isOne()) {
+				switch regOrRegBuf {
+					case Reg:
+						if (inputB.isReg()) {
+							if (inputA.isReg()) None else Load(inputA);
+						} else null;
+					case RegBuf:
+						if (inputB.isRegBuf()) {
+							if (inputA.isReg()) None else Load(inputA);
+						} else null;
+				}
+			} else {
+				null;
+			}
+
+		case Mod(inputA, inputB):
+			final type = inputA.getType();
+			if (inputA.isZero()) {
+				loadZero(type);
+			} else if (maybeImm.isZero()) {
+				switch regOrRegBuf {
+					case Reg:
+						if (inputA.isReg()) loadZero(type) else null;
+					case RegBuf:
+						if (inputA.isRegBuf()) loadZero(type) else null;
+				}
+			} else {
+				null;
+			}
+
+		case AddVector(attrType, cmpType, input):
+			if (input.isZero()) None;
+			else if (maybeImm.isZero()) switch regOrRegBuf {
+				case Reg:
+					if (input.isReg()) None else null;
+				case RegBuf:
+					if (input.isRegBuf()) None else null;
+			} else {
+				null;
+			}
+
+		default: null;
+		}
 		return Maybe.from(newInst);
 	}
 }

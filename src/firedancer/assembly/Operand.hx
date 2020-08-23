@@ -1,5 +1,6 @@
 package firedancer.assembly;
 
+import reckoner.Numeric;
 import firedancer.bytecode.internal.Constants.*;
 import firedancer.assembly.OperandTools.*;
 
@@ -267,6 +268,29 @@ class OperandExtension {
 
 		return Maybe.from(newOperand);
 	}
+
+	/**
+		@return `true` if `this` is (nearly) an immediate value `0`.
+	**/
+	public static function isZero(_this: Operand): Bool {
+		return switch _this {
+		case Int(operand): operand.isZero();
+		case Float(operand): operand.isZero();
+		case Vec(operand): operand.isZero();
+		default: false;
+		}
+	}
+
+	/**
+		@return `true` if `this` is (nearly) an immediate value `1`. Always `false` if `Vec`.
+	**/
+	public static function isOne(_this: Operand): Bool {
+		return switch _this {
+		case Int(operand): operand.isOne();
+		case Float(operand): operand.isOne();
+		default: false;
+		}
+	}
 }
 
 @:using(firedancer.assembly.Operand.OperandPairExtension)
@@ -426,6 +450,20 @@ class IntOperandExtension {
 		default: false;
 		}
 	}
+
+	public static function isZero(_this: IntOperand): Bool {
+		return switch _this {
+		case Imm(value): value == 0;
+		default: false;
+		}
+	}
+
+	public static function isOne(_this: IntOperand): Bool {
+		return switch _this {
+		case Imm(value): value == 1;
+		default: false;
+		}
+	}
 }
 
 @:using(firedancer.assembly.Operand.FloatOperandExtension)
@@ -469,6 +507,20 @@ class FloatOperandExtension {
 		default: false;
 		}
 	}
+
+	public static function isZero(_this: FloatOperand): Bool {
+		return switch _this {
+		case Imm(value): Numeric.nearlyEqual(value, 0.0);
+		default: false;
+		}
+	}
+
+	public static function isOne(_this: FloatOperand): Bool {
+		return switch _this {
+		case Imm(value): Numeric.nearlyEqual(value, 1.0);
+		default: false;
+		}
+	}
 }
 
 @:using(firedancer.assembly.Operand.VecOperandExtension)
@@ -500,13 +552,14 @@ class VecOperandExtension {
 		default: false;
 		}
 	}
-}
 
-private enum abstract OperandKind(Int) {
-	final Null;
-	final Imm;
-	final Reg;
-	final RegBuf;
-	final Stack;
-	final Var;
+	public static function isZero(_this: VecOperand): Bool {
+		return switch _this {
+		case Imm(x, y): Numeric.nearlyEqual(
+				x,
+				0.0
+			) && Numeric.nearlyEqual(y, 0.0);
+		default: false;
+		}
+	}
 }

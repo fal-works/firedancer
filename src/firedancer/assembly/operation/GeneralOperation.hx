@@ -114,6 +114,11 @@ enum abstract GeneralOperation(Int) to Int {
 	**/
 	final End;
 
+	/**
+		Does nothing.
+	**/
+	final NoOperation;
+
 	// ---- load values -------------------------------------------------
 
 	/**
@@ -122,9 +127,19 @@ enum abstract GeneralOperation(Int) to Int {
 	final LoadIntCR;
 
 	/**
+		(int register buffer) -> (int register)
+	**/
+	final LoadIntBR;
+
+	/**
 		(float immediate) -> (float register)
 	**/
 	final LoadFloatCR;
+
+	/**
+		(float register buffer) -> (float register)
+	**/
+	final LoadFloatBR;
 
 	/**
 		(vec immediate) -> (vec register)
@@ -325,9 +340,12 @@ class GeneralOperationExtension {
 			case UseThreadS: "use_thread_s";
 			case AwaitThread: "await_thread";
 			case End: "end";
+			case NoOperation: "no_operation";
 
 			case LoadIntCR: "load_int_cr";
+			case LoadIntBR: "load_int_vr";
 			case LoadFloatCR: "load_float_cr";
+			case LoadFloatBR: "load_float_br";
 			case LoadVecCR: "load_vec_cr";
 			case SaveIntC: "save_int_c";
 			case SaveIntR: "save_int_r";

@@ -128,11 +128,17 @@ class Vm {
 								threads.deactivateAll();
 								updatePositionAndVelocity();
 								return endCode;
+							case NoOperation:
+								// Does nothing
 
 							case LoadIntCR:
 								reg.int = scan.int();
+							case LoadIntBR:
+								reg.int = reg.intBuf;
 							case LoadFloatCR:
 								reg.float = scan.float();
+							case LoadFloatBR:
+								reg.float = reg.floatBuf;
 							case LoadVecCR:
 								reg.setVec(scan.float(), scan.float());
 							case SaveIntC:
