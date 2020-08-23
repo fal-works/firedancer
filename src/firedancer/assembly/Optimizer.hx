@@ -3,6 +3,11 @@ package firedancer.assembly;
 import firedancer.assembly.OperandKind;
 
 class Optimizer {
+	/**
+		The maximum wait count that can be unrolled.
+	**/
+	static extern inline final waitUnrollThreshold = 32;
+
 	public static function optimize(code: AssemblyCode): AssemblyCode {
 		#if !firedancer_no_optimization
 		var cnt = 0;
@@ -13,6 +18,7 @@ class Optimizer {
 			var optimized = false;
 			optimized = tryOptimizeCalc(code) || optimized;
 			optimized = tryOptimizeStack(code) || optimized;
+			optimized = tryOptimizeWait(code) || optimized;
 			if (!optimized) break;
 
 			if (1024 < ++cnt) throw "Detected infinite loop in the optimization process.";
@@ -350,6 +356,39 @@ class Optimizer {
 		}
 
 		optimizedAny = code.removeAll(inst -> inst == None) || optimizedAny;
+
+		return optimizedAny;
+	}
+
+	/**
+		Unrolls the consecutive pair of `Push`/`CountDownBreak`.
+	**/
+	public static function tryOptimizeWait(code: AssemblyCode): Bool {
+		var optimizedAny = false;
+
+		var i = UInt.one;
+		while (i < code.length) {
+			switch code[i] {
+			case CountDownBreak:
+				switch code[i - 1] {
+				case Push(input):
+					final constWaitCount = input.tryGetIntImm();
+					if (constWaitCount.isSome()) {
+						final waitCount = constWaitCount.unwrap();
+						if (waitCount <= waitUnrollThreshold) {
+							code[i - 1] = None;
+							code[i] = None;
+							for (k in 0...waitCount) code.insert(i, Break);
+							optimizedAny = true;
+							i += waitCount;
+						}
+					}
+				default:
+				}
+			default:
+			}
+			++i;
+		}
 
 		return optimizedAny;
 	}
