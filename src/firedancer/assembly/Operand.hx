@@ -216,7 +216,7 @@ class OperandExtension {
 
 	/**
 		Returns `maybeImm` if:
-		- `this` is a register, and
+		- `this` is `Reg`, and
 		- `maybeImm` is an immediate with the same type as `this`.
 	**/
 	public static function tryReplaceRegWithImm(
@@ -264,6 +264,48 @@ class OperandExtension {
 				}
 			default: null;
 			}
+		}
+
+		return Maybe.from(newOperand);
+	}
+
+	/**
+		Returns `maybeImm` if:
+		- `this` is `RegBuf`, and
+		- `maybeImm` is an immediate with the same type as `this`.
+	**/
+	public static function tryReplaceRegBufWithImm(
+		_this: Operand,
+		maybeImm: Operand
+	): Maybe<Operand> {
+		final newOperand: Null<Operand> = switch _this {
+		case Int(thisOperand):
+			switch thisOperand {
+			case RegBuf:
+				switch maybeImm {
+				case Int(maybeIntImm):
+					switch maybeIntImm {
+					case Imm(_): maybeImm;
+					default: null;
+					}
+				default: null;
+				}
+			default: null;
+			}
+		case Float(thisOperand):
+			switch thisOperand {
+			case RegBuf:
+				switch maybeImm {
+				case Float(maybeIntImm):
+					switch maybeIntImm {
+					case Imm(_): maybeImm;
+					default: null;
+					}
+				default: null;
+				}
+			default: null;
+			}
+		default: null;
 		}
 
 		return Maybe.from(newOperand);
@@ -355,8 +397,8 @@ class OperandPairExtension {
 	}
 
 	/**
-		If `this` takes a register as an input and `maybeImm` is an immediate with the same type,
-		returns a new operand with the register operand replaced by `maybeImm`.
+		If `this` takes `Reg` as an input and `maybeImm` is an immediate with the same type,
+		returns a new operand with `Reg` replaced by `maybeImm`.
 	**/
 	public static function tryReplaceRegWithImm(
 		_this: OperandPair,
@@ -396,6 +438,46 @@ class OperandPairExtension {
 					case RegBuf: null;
 					default: Float(a, maybeFloatImm);
 					}
+					else null;
+				default: null;
+				}
+			default: null;
+			}
+		case Vec(a, b): null;
+		default: null;
+		}
+
+		return Maybe.from(newPair);
+	}
+
+	/**
+		If `this` takes `RegBuf` as an input and `maybeImm` is an immediate with the same type,
+		returns a new operand with `RegBuf` replaced by `maybeImm`.
+	**/
+	public static function tryReplaceRegBufWithImm(
+		_this: OperandPair,
+		maybeImm: Operand
+	): Maybe<OperandPair> {
+		final newPair: Null<OperandPair> = switch _this {
+		case Int(a, b):
+			switch maybeImm {
+			case Int(maybeIntImm):
+				switch maybeIntImm {
+				case Imm(value):
+					if (a.isRegBuf()) Int(maybeIntImm, b);
+					else if (b.isRegBuf()) Int(a, maybeIntImm);
+					else null;
+				default: null;
+				}
+			default: null;
+			}
+		case Float(a, b):
+			switch maybeImm {
+			case Float(maybeFloatImm):
+				switch maybeFloatImm {
+				case Imm(value):
+					if (a.isRegBuf()) Float(maybeFloatImm, b);
+					else if (b.isRegBuf()) Float(a, maybeFloatImm);
 					else null;
 				default: null;
 				}

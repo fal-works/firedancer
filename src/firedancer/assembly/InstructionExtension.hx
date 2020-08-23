@@ -202,6 +202,11 @@ class InstructionExtension {
 			switch input {
 			case Int(a, b):
 				switch a {
+				case Imm(aVal):
+					switch b {
+					case Reg: [op(AddIntRCR), aVal]; // commutative
+					default: throw unsupported();
+					}
 				case Reg:
 					switch b {
 					case Imm(bVal): [op(AddIntRCR), bVal];
@@ -226,6 +231,11 @@ class InstructionExtension {
 				}
 			case Float(a, b):
 				switch a {
+				case Imm(aVal):
+					switch b {
+					case Reg: [op(AddFloatRCR), aVal]; // commutative
+					default: throw unsupported();
+					}
 				case Reg:
 					switch b {
 					case Imm(bVal): [op(AddFloatRCR), bVal];
@@ -316,6 +326,15 @@ class InstructionExtension {
 			switch inputA {
 			case Int(operandA):
 				switch operandA {
+				case Imm(aVal):
+					switch inputB {
+					case Int(operandB):
+						switch operandB {
+						case Reg: [op(MultIntRCR), aVal]; // commutative
+						default: throw unsupported();
+						}
+					default: throw unsupported();
+					}
 				case Reg:
 					switch inputB {
 					case Int(operandB):
@@ -338,6 +357,15 @@ class InstructionExtension {
 				}
 			case Float(operandA):
 				switch operandA {
+				case Imm(aVal):
+					switch inputB {
+					case Float(operandB):
+						switch operandB {
+						case Reg: [op(MultFloatRCR), aVal]; // commutative
+						default: throw unsupported();
+						}
+					default: throw unsupported();
+					}
 				case Reg:
 					switch inputB {
 					case Float(operandB):
@@ -914,24 +942,28 @@ class InstructionExtension {
 			case Int(a, b):
 				switch a {
 				case Var(_): a.toString();
-				case Reg: a.toString();
-				case RegBuf: b.toString();
-				default: throw unsupported();
+				default: DataRegisterSpecifier.Ri.toString();
 				}
 			case Float(a, b):
 				switch a {
 				case Var(_): a.toString();
-				case Reg: a.toString();
-				case RegBuf: b.toString();
-				default: throw unsupported();
+				default: DataRegisterSpecifier.Rf.toString();
 				}
 			default: throw unsupported();
 			};
 			'add ${input.toString()} -> $outputStr';
 		case Sub(input):
 			final outputStr = switch input {
-			case Int(a, b): a.toString();
-			case Float(a, b): a.toString();
+			case Int(a, b):
+				switch a {
+				case Var(_): a.toString();
+				default: DataRegisterSpecifier.Ri.toString();
+				}
+			case Float(a, b):
+				switch a {
+				case Var(_): a.toString();
+				default: DataRegisterSpecifier.Rf.toString();
+				}
 			default: throw unsupported();
 			};
 			'sub ${input.toString()} -> $outputStr';
@@ -1354,6 +1386,59 @@ class InstructionExtension {
 		return Maybe.from(newInst);
 	}
 
+	public static function tryReplaceRegBufWithImm(
+		inst: Instruction,
+		maybeImm: Operand
+	): Maybe<Instruction> {
+		final newInst: Null<Instruction> = switch inst {
+		case Load(input):
+			final newInput = input.tryReplaceRegBufWithImm(maybeImm);
+			if (newInput.isSome()) Load(newInput.unwrap()) else null;
+
+		case Add(nextOperands):
+			final newNextOperands = nextOperands.tryReplaceRegBufWithImm(maybeImm);
+			if (newNextOperands.isSome()) Add(newNextOperands.unwrap()) else null;
+
+		case Sub(nextOperands):
+			final newNextOperands = nextOperands.tryReplaceRegBufWithImm(maybeImm);
+			if (newNextOperands.isSome()) Sub(newNextOperands.unwrap()) else null;
+
+		case Mult(inputA, inputB):
+			final newInputA = inputA.tryReplaceRegBufWithImm(maybeImm);
+			if (newInputA.isSome()) {
+				Instruction.Mult(newInputA.unwrap(), inputB);
+			} else if (!inputA.isRegBuf()) {
+				final newInputB = inputB.tryReplaceRegBufWithImm(maybeImm);
+				if (newInputB.isSome()) Instruction.Mult(inputA, newInputB.unwrap());
+				else null;
+			} else null;
+
+		case Div(inputA, inputB):
+			final newInputA = inputA.tryReplaceRegBufWithImm(maybeImm);
+			if (newInputA.isSome()) {
+				Instruction.Div(newInputA.unwrap(), inputB);
+			} else if (!inputA.isRegBuf()) {
+				final newInputB = inputB.tryReplaceRegBufWithImm(maybeImm);
+				if (newInputB.isSome()) Instruction.Div(inputA, newInputB.unwrap())
+				else null;
+			} else null;
+
+		case Mod(inputA, inputB):
+			final newInputA = inputA.tryReplaceRegBufWithImm(maybeImm);
+			if (newInputA.isSome()) {
+				Instruction.Mod(newInputA.unwrap(), inputB);
+			} else {
+				final newInputB = inputB.tryReplaceRegBufWithImm(maybeImm);
+				if (newInputB.isSome()) Instruction.Mod(inputA, newInputB.unwrap())
+				else null;
+			}
+
+		default: null;
+		}
+
+		return Maybe.from(newInst);
+	}
+
 	public static function tryReplaceRegBufAndRegWithImm(
 		inst: Instruction,
 		maybeImmA: Operand,
@@ -1642,186 +1727,471 @@ class InstructionExtension {
 		return Maybe.from(newInst);
 	}
 
-	public static function tryReplaceUnnecessaryCalculation(
-		inst: Instruction,
-		maybeImm: Operand,
-		regOrRegBuf: RegOrRegBuf
-	): Maybe<Instruction> {
+	public static function tryFoldConstants(inst: Instruction): Maybe<Instruction> {
 		inline function loadZero(type: ValueType): Instruction {
 			return Load(switch type {
-				case Int: Int(Imm(0));
-				case Float: Float(Imm(0.0));
-				case Vec: Vec(Imm(0.0, 0.0));
+			case Int: Int(Imm(0));
+			case Float: Float(Imm(0.0));
+			case Vec: Vec(Imm(0.0, 0.0));
 			});
 		}
 
 		final newInst: Null<Instruction> = switch inst {
 		case Minus(input):
-			if (input.isZero()) {
-				switch input {
-				case Int(_): Load(Int(Imm(0)));
-				case Float(_): Load(Float(Imm(0.0)));
-				case Vec(_): Load(Vec(Imm(0.0, 0.0)));
-				case Null: null;
+			switch input {
+			case Int(operand):
+				switch operand {
+				case Imm(value): Load(Int(Imm(-value)));
+				default: null;
 				}
-			} else {
-				inline function tryMinusImm(): Null<Instruction> {
-					return switch maybeImm {
-					case Int(operand):
-						switch operand {
-						case Imm(value): Load(Int(Imm(-value)));
-						default: null;
+			case Float(operand):
+				switch operand {
+				case Imm(value): Load(Float(Imm(-value)));
+				default: null;
+				}
+			case Vec(operand):
+				switch operand {
+				case Imm(x, y): Load(Vec(Imm(-x, -y)));
+				default: null;
+				}
+			default: null;
+			}
+
+		case Add(nextOperands):
+			switch nextOperands {
+			case Int(a, b):
+				switch a {
+				case Imm(aVal):
+					switch b {
+					case Imm(bVal): Load(Int(Imm(aVal + bVal)));
+					default: if (aVal == 0) Load(Int(b)) else null;
+					}
+				default:
+					switch b {
+					case Imm(bVal): if (bVal == 0) Load(Int(a)) else null;
+					default: null;
+					}
+				};
+			case Float(a, b):
+				switch a {
+				case Imm(aVal):
+					switch b {
+					case Imm(bVal): Load(Float(Imm(aVal + bVal)));
+					default: if (aVal == 0.0) Load(Float(b)) else null;
+					}
+				default:
+					switch b {
+					case Imm(bVal): if (bVal == 0.0) Load(Float(a)) else null;
+					default: null;
+					}
+				};
+			case Vec(a, b):
+				switch a {
+				case Imm(ax, ay):
+					switch b {
+					case Imm(bx, by): Load(Vec(Imm(ax + bx, ay + by)));
+					default: if (ax == 0.0 && ay == 0.0) Load(Vec(b)) else null;
+					}
+				default:
+					switch b {
+					case Imm(bx, by):
+						if (bx == 0.0 && by == 0.0) Load(Vec(a)) else null;
+					default: null;
+					}
+				};
+			}
+
+		case Sub(nextOperands):
+			switch nextOperands {
+			case Int(a, b):
+				switch a {
+				case Imm(aVal):
+					switch b {
+					case Imm(bVal): Load(Int(Imm(aVal - bVal)));
+					default: if (aVal == 0) Minus(Int(b)) else null;
+					}
+				default:
+					switch b {
+					case Imm(bVal): if (bVal == 0) Load(Int(a)) else null;
+					default: null;
+					}
+				};
+			case Float(a, b):
+				switch a {
+				case Imm(aVal):
+					switch b {
+					case Imm(bVal): Load(Float(Imm(aVal - bVal)));
+					default: if (aVal == 0.0) Minus(Float(b)) else null;
+					}
+				default:
+					switch b {
+					case Imm(bVal): if (bVal == 0) Load(Float(a)) else null;
+					default: null;
+					}
+				};
+			case Vec(a, b):
+				switch a {
+				case Imm(ax, ay):
+					switch b {
+					case Imm(bx, by): Load(Vec(Imm(ax - bx, ay - by)));
+					default: if (ax == 0.0 && ay == 0.0) Minus(Vec(b)) else null;
+					}
+				default:
+					switch b {
+					case Imm(bx, by):
+						if (bx == 0.0 && by == 0.0) Load(Vec(a)) else null;
+					default: null;
+					}
+				};
+			}
+
+		case Mult(inputA, inputB):
+			switch inputA {
+			case Int(operandA):
+				switch operandA {
+				case Imm(aVal):
+					switch inputB {
+					case Int(operandB):
+						switch operandB {
+						case Imm(bVal): Load(Int(Imm(aVal * bVal)));
+						default:
+							if (aVal == 0) {
+								loadZero(Int);
+							} else if (aVal == 1) {
+								Load(Int(operandB));
+							} else null;
 						}
-					case Float(operand):
-						switch operand {
-						case Imm(value): Load(Float(Imm(-value)));
-						default: null;
-						}
-					case Vec(operand):
-						switch operand {
-						case Imm(x, y): Load(Vec(Imm(-x, -y)));
+					default: null;
+					}
+				default:
+					switch inputB {
+					case Int(operandB):
+						switch operandB {
+						case Imm(bVal):
+							if (bVal == 0) {
+								loadZero(Int);
+							} else if (bVal == 1) {
+								Load(Int(operandA));
+							} else null;
 						default: null;
 						}
 					default: null;
 					}
 				}
-				switch regOrRegBuf {
-				case Reg: if (input.isReg()) tryMinusImm() else null;
-				case RegBuf: if (input.isRegBuf()) tryMinusImm() else null;
+			case Float(operandA):
+				switch operandA {
+				case Imm(aVal):
+					switch inputB {
+					case Float(operandB):
+						switch operandB {
+						case Imm(bVal): Load(Float(Imm(aVal * bVal)));
+						default:
+							if (aVal == 0.0) {
+								loadZero(Float);
+							} else if (aVal == 1.0) {
+								Load(Float(operandB));
+							} else null;
+						}
+					default: null;
+					}
+				default:
+					switch inputB {
+					case Float(operandB):
+						switch operandB {
+						case Imm(bVal):
+							if (bVal == 0.0) {
+								loadZero(Float);
+							} else if (bVal == 1.0) {
+								Load(Float(operandA));
+							} else null;
+						default: null;
+						}
+					default: null;
+					}
 				}
-			};
+			case Vec(operandA):
+				switch operandA {
+				case Imm(ax, ay):
+					switch inputB {
+					case Float(operandB):
+						switch operandB {
+						case Imm(bVal): Load(Vec(Imm(ax * bVal, ay * bVal)));
+						default: if (ax == 0.0 && ay == 0.0) loadZero(Vec) else null;
+						}
+					default: null;
+					}
+				default:
+					switch inputB {
+					case Float(operandB):
+						switch operandB {
+						case Imm(bVal):
+							if (bVal == 0.0) {
+								loadZero(Float);
+							} else if (bVal == 1.0) {
+								Load(Vec(operandA));
+							} else null;
+						default: null;
+						}
+					default: null;
+					}
+				}
+			default: null;
+			}
+
+		case Div(inputA, inputB):
+			switch inputA {
+			case Int(operandA):
+				switch operandA {
+				case Imm(aVal):
+					switch inputB {
+					case Int(operandB):
+						switch operandB {
+						case Imm(bVal): Load(Int(Imm(Ints.divide(aVal, bVal))));
+						default: if (aVal == 0) loadZero(Int) else null;
+						}
+					default: null;
+					}
+				default:
+					switch inputB {
+					case Int(operandB):
+						switch operandB {
+						case Imm(bVal): if (bVal == 1) Load(Int(operandA)) else null;
+						default: null;
+						}
+					default: null;
+					}
+				}
+			case Float(operandA):
+				switch operandA {
+				case Imm(aVal):
+					switch inputB {
+					case Float(operandB):
+						switch operandB {
+						case Imm(bVal): Load(Float(Imm(aVal / bVal)));
+						default: if (aVal == 0.0) loadZero(Float) else null;
+						}
+					default: null;
+					}
+				default:
+					switch inputB {
+					case Float(operandB):
+						switch operandB {
+						case Imm(bVal): if (bVal == 1.0) Load(Float(operandA)) else null;
+						default: null;
+						}
+					default: null;
+					}
+				}
+			case Vec(operandA):
+				switch operandA {
+				case Imm(ax, ay):
+					switch inputB {
+					case Float(operandB):
+						switch operandB {
+						case Imm(bVal): Load(Vec(Imm(ax / bVal, ay / bVal)));
+						default: if (ax == 0.0 && ay == 0.0) loadZero(Vec) else null;
+						}
+					default: null;
+					}
+				default:
+					switch inputB {
+					case Float(operandB):
+						switch operandB {
+						case Imm(bVal): if (bVal == 1.0) Load(Vec(operandA)) else null;
+						default: null;
+						}
+					default: null;
+					}
+				}
+			default: null;
+			}
+
+		case Mod(inputA, inputB):
+			switch inputA {
+			case Int(operandA):
+				switch operandA {
+				case Imm(aVal):
+					switch inputB {
+					case Int(operandB):
+						switch operandB {
+						case Imm(bVal): Load(Int(Imm(aVal % bVal)));
+						default: if (aVal == 0) loadZero(Int) else null;
+						}
+					default: null;
+					}
+				default: null;
+				}
+			case Float(operandA):
+				switch operandA {
+				case Imm(aVal):
+					switch inputB {
+					case Float(operandB):
+						switch operandB {
+						case Imm(bVal): Load(Float(Imm(aVal % bVal)));
+						default: if (aVal == 0.0) loadZero(Float) else null;
+						}
+					default: null;
+					}
+				default: null;
+				}
+			default: null;
+			}
+
+		case AddVector(attrType, cmpType, input):
+			if (input.isZero()) None else null;
+
+		default: null;
+		}
+		return Maybe.from(newInst);
+	}
+
+	/**
+		@param maybeImm Operand that is currently assigned to `Reg` or `RegBuf`.
+		@param regOrRegBuf The kind of the operand to be replaced with `maybeImm` if it is an immediate.
+	**/
+	public static function tryReplaceUnnecessaryCalculation(
+		inst: Instruction,
+		maybeImm: Operand,
+		regOrRegBuf: OperandKind
+	): Maybe<Instruction> {
+		inline function loadZero(type: ValueType): Instruction {
+			return Load(switch type {
+			case Int: Int(Imm(0));
+			case Float: Float(Imm(0.0));
+			case Vec: Vec(Imm(0.0, 0.0));
+			});
+		}
+
+		final newInst: Null<Instruction> = switch inst {
+		case Minus(input):
+			inline function tryMinusImm(): Null<Instruction> {
+				return switch maybeImm {
+				case Int(operand):
+					switch operand {
+					case Imm(value): Load(Int(Imm(-value)));
+					default: null;
+					}
+				case Float(operand):
+					switch operand {
+					case Imm(value): Load(Float(Imm(-value)));
+					default: null;
+					}
+				case Vec(operand):
+					switch operand {
+					case Imm(x, y): Load(Vec(Imm(-x, -y)));
+					default: null;
+					}
+				default: null;
+				}
+			}
+			switch regOrRegBuf {
+			case Reg: if (input.isReg()) tryMinusImm() else null;
+			case RegBuf: if (input.isRegBuf()) tryMinusImm() else null;
+			default: null;
+			}
 
 		case Add(nextOperands):
 			switch nextOperands {
 			case Int(a, b):
-				if (a.isZero()) {
-					Load(Int(b));
-				} else if (b.isZero()) {
-					Load(Int(a));
-				} else if (maybeImm.isZero()) {
+				if (maybeImm.isZero()) {
 					switch regOrRegBuf {
 					case Reg:
 						if (a.isReg()) Load(Int(b)) else if (b.isReg()) Load(Int(a)) else null;
 					case RegBuf:
 						if (a.isRegBuf()) Load(Int(b)) else if (b.isRegBuf()) Load(Int(a)) else null;
-					}
-				} else null;
+					default: null;
+					};
+				} else {
+					null;
+				};
 			case Float(a, b):
-				if (a.isZero()) {
-					Load(Float(b));
-				} else if (b.isZero()) {
-					Load(Float(a));
-				} else if (maybeImm.isZero()) {
+				if (maybeImm.isZero()) {
 					switch regOrRegBuf {
 					case Reg:
 						if (a.isReg()) Load(Float(b)) else if (b.isReg()) Load(Float(a)) else null;
 					case RegBuf:
 						if (a.isRegBuf()) Load(Float(b)) else if (b.isRegBuf()) Load(Float(a)) else
 							null;
-					}
-				} else null;
+					default: null;
+					};
+				} else {
+					null;
+				};
 			case Vec(a, b):
-				if (a.isZero()) {
-					Load(Vec(b));
-				} else if (b.isZero()) {
-					Load(Vec(a));
-				} else if (maybeImm.isZero()) {
+				if (maybeImm.isZero()) {
 					switch regOrRegBuf {
 					case Reg:
 						if (a.isReg()) Load(Vec(b)) else if (b.isReg()) Load(Vec(a)) else null;
 					case RegBuf: null;
+					default: null;
 					}
-				} else null;
+				} else {
+					null;
+				}
 			}
 
 		case Sub(nextOperands):
 			switch nextOperands {
 			case Int(a, b):
-				inline function minusB(): Instruction {
-					return switch b {
-					case Imm(value): Load(Int(Imm(-value)));
-					case Reg: Minus(Int(b));
-					default: null;
-					};
-				}
-				if (a.isZero()) {
-					minusB();
-				} else if (b.isZero()) {
-					Load(Int(a));
-				} else if (maybeImm.isZero()) {
+				if (maybeImm.isZero()) {
 					switch regOrRegBuf {
 					case Reg:
-						if (a.isReg()) minusB() else if (b.isReg()) Load(Int(a)) else null;
+						if (a.isReg()) Minus(Int(b)) else if (b.isReg()) Load(Int(a)) else null;
 					case RegBuf:
-						if (a.isRegBuf()) minusB() else if (b.isRegBuf()) Load(Int(a)) else null;
+						if (a.isRegBuf()) Minus(Int(b)) else if (b.isRegBuf()) Load(Int(a)) else null;
+					default: null;
 					}
-				} else null;
+				} else {
+					null;
+				}
 			case Float(a, b):
-				inline function minusB(): Instruction {
-					return switch b {
-					case Imm(value): Load(Float(Imm(-value)));
-					case Reg: Minus(Float(b));
-					default: null;
-					};
-				}
-				if (a.isZero()) {
-					minusB();
-				} else if (b.isZero()) {
-					Load(Float(a));
-				} else if (maybeImm.isZero()) {
+				if (maybeImm.isZero()) {
 					switch regOrRegBuf {
 					case Reg:
-						if (a.isReg()) minusB() else if (b.isReg()) Load(Float(a)) else null;
+						if (a.isReg()) Minus(Float(b)) else if (b.isReg()) Load(Float(a)) else null;
 					case RegBuf:
-						if (a.isRegBuf()) minusB() else if (b.isRegBuf()) Load(Float(a)) else null;
-					}
-				} else null;
-			case Vec(a, b):
-				inline function minusB(): Instruction {
-					return switch b {
-					case Imm(x, y): Load(Vec(Imm(-x, -y)));
-					case Reg: Minus(Vec(b));
+						if (a.isRegBuf()) Minus(Float(b)) else if (b.isRegBuf()) Load(Float(a)) else
+							null;
 					default: null;
-					};
+					}
+				} else {
+					null;
 				}
-				if (a.isZero()) {
-					minusB();
-				} else if (b.isZero()) {
-					Load(Vec(a));
-				} else if (maybeImm.isZero()) {
+			case Vec(a, b):
+				if (maybeImm.isZero()) {
 					switch regOrRegBuf {
 					case Reg:
-						if (a.isReg()) minusB() else if (b.isReg()) Load(Vec(a)) else null;
+						if (a.isReg()) Minus(Vec(b)) else if (b.isReg()) Load(Vec(a)) else null;
 					default: null;
 					}
-				} else null;
+				} else {
+					null;
+				}
 			}
 
 		case Mult(inputA, inputB):
 			final type = inputA.getType();
-			if (inputA.isZero() || inputB.isZero()) {
-				loadZero(type);
-			} else if (inputA.isOne()) {
-				null;
-			} else if (inputB.isOne()) {
-				None;
-			} else if (maybeImm.isZero()) {
+			if (maybeImm.isZero()) {
 				switch regOrRegBuf {
-					case Reg:
-						if (inputA.isReg() || (inputA.isRegBuf() && inputB.isReg())) loadZero(type) else null;
-					case RegBuf:
-						if (inputA.isRegBuf() || (inputA.isReg() && inputB.isRegBuf())) loadZero(type) else null;
+				case Reg:
+					if (inputA.isReg() || (inputA.isRegBuf() && inputB.isReg()))
+						loadZero(type) else null;
+				case RegBuf:
+					if (inputA.isRegBuf() || (inputA.isReg() && inputB.isRegBuf()))
+						loadZero(type) else null;
+				default: null;
 				}
 			} else if (maybeImm.isOne()) {
 				switch regOrRegBuf {
-					case Reg:
-						if (inputB.isReg()) {
-							if (inputA.isReg()) None else Load(inputA);
-						} else null;
-					case RegBuf:
-						if (inputB.isRegBuf()) {
-							if (inputA.isReg()) None else Load(inputA);
-						} else null;
+				case Reg:
+					if (inputB.isReg()) {
+						if (inputA.isReg()) None else Load(inputA);
+					} else null;
+				case RegBuf:
+					if (inputB.isRegBuf()) {
+						if (inputA.isReg()) None else Load(inputA);
+					} else null;
+				default: null;
 				}
 			} else {
 				null;
@@ -1829,29 +2199,25 @@ class InstructionExtension {
 
 		case Div(inputA, inputB):
 			final type = inputA.getType();
-			if (inputA.isZero()) {
-				loadZero(type);
-			} else if (inputA.isOne()) {
-				null;
-			} else if (inputB.isOne()) {
-				None;
-			} else if (maybeImm.isZero()) {
+			if (maybeImm.isZero()) {
 				switch regOrRegBuf {
-					case Reg:
-						if (inputA.isReg()) loadZero(type) else null;
-					case RegBuf:
-						if (inputA.isRegBuf()) loadZero(type) else null;
+				case Reg:
+					if (inputA.isReg()) loadZero(type) else null;
+				case RegBuf:
+					if (inputA.isRegBuf()) loadZero(type) else null;
+				default: null;
 				}
 			} else if (maybeImm.isOne()) {
 				switch regOrRegBuf {
-					case Reg:
-						if (inputB.isReg()) {
-							if (inputA.isReg()) None else Load(inputA);
-						} else null;
-					case RegBuf:
-						if (inputB.isRegBuf()) {
-							if (inputA.isReg()) None else Load(inputA);
-						} else null;
+				case Reg:
+					if (inputB.isReg()) {
+						if (inputA.isReg()) None else Load(inputA);
+					} else null;
+				case RegBuf:
+					if (inputB.isRegBuf()) {
+						if (inputA.isReg()) None else Load(inputA);
+					} else null;
+				default: null;
 				}
 			} else {
 				null;
@@ -1859,26 +2225,25 @@ class InstructionExtension {
 
 		case Mod(inputA, inputB):
 			final type = inputA.getType();
-			if (inputA.isZero()) {
-				loadZero(type);
-			} else if (maybeImm.isZero()) {
+			if (maybeImm.isZero()) {
 				switch regOrRegBuf {
-					case Reg:
-						if (inputA.isReg()) loadZero(type) else null;
-					case RegBuf:
-						if (inputA.isRegBuf()) loadZero(type) else null;
+				case Reg:
+					if (inputA.isReg()) loadZero(type) else null;
+				case RegBuf:
+					if (inputA.isRegBuf()) loadZero(type) else null;
+				default: null;
 				}
 			} else {
 				null;
 			}
 
 		case AddVector(attrType, cmpType, input):
-			if (input.isZero()) None;
-			else if (maybeImm.isZero()) switch regOrRegBuf {
-				case Reg:
-					if (input.isReg()) None else null;
-				case RegBuf:
-					if (input.isRegBuf()) None else null;
+			if (maybeImm.isZero()) switch regOrRegBuf {
+			case Reg:
+				if (input.isReg()) None else null;
+			case RegBuf:
+				if (input.isRegBuf()) None else null;
+			default: null;
 			} else {
 				null;
 			}
