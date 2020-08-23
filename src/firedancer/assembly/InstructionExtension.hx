@@ -1218,15 +1218,11 @@ class InstructionExtension {
 		case Div(inputA, inputB): inputA.tryGetRegBufType() == regType || inputB.tryGetRegBufType() == regType;
 		case Mod(inputA, inputB): inputA.tryGetRegBufType() == regType || inputB.tryGetRegBufType() == regType;
 
-		case CastIntToFloat: regType == Int;
 		case CastCartesian: regType == Float;
 		case CastPolar: regType == Float;
 
 		case Random(max): max.tryGetRegBufType() == regType;
 		case RandomSigned(maxMagnitude): maxMagnitude.tryGetRegBufType() == regType;
-
-		case Sin: regType == Float;
-		case Cos: regType == Float;
 
 		case CalcRelative(_, _, input): input.tryGetRegBufType() == regType;
 

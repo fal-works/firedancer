@@ -24,83 +24,24 @@ class Optimizer {
 
 	/**
 		- Try constant folding and propagating.
-		- Eliminate or pre-calculate unnecessary calculations (e.g. eliminate `+ 0`, replace `* 0` with loading `0`)
+		- Eliminate or pre-calculate unnecessary calculations (e.g. eliminate `+ 0`, replace `* 0` with loading `0`).
+		- Eliminate instructions that load/save any values that are never read.
 	**/
 	public static function tryOptimizeCalc(code: AssemblyCode): Bool {
 		if (code.length <= UInt.one) return false;
 
 		var optimizedAny = false;
 
-		var curIntImmInReg: Maybe<Operand> = Maybe.none();
-		var curFloatImmInReg: Maybe<Operand> = Maybe.none();
-		var curVecImmInReg: Maybe<Operand> = Maybe.none();
-		var curIntImmInRegBuf: Maybe<Operand> = Maybe.none();
-		var curFloatImmInRegBuf: Maybe<Operand> = Maybe.none();
+		var curIntReg = RegContent.createNull();
+		var curFloatReg = RegContent.createNull();
+		var curVecReg = RegContent.createNull();
+		var curIntRegBuf = RegContent.createNull();
+		var curFloatRegBuf = RegContent.createNull();
 
 		var i = UInt.zero;
 		while (i < code.length) {
 			var curInst = code[i];
 			var optimizedCur = false;
-
-			switch curInst {
-			case Load(loaded):
-				inline function findNextRegReader(startIndex: UInt): MaybeUInt {
-					final nextWriter = code.indexOfFirstIn(
-						inst -> inst.tryGetWriteRegType() == loaded.getType(),
-						startIndex,
-						code.length
-					);
-					final nextReader = code.indexOfFirstIn(
-						inst -> inst.readsReg(loaded.getType()),
-						startIndex,
-						code.length
-					);
-
-					return if (nextReader.isNone()) {
-						MaybeUInt.none;
-					} else if (nextWriter.isNone() || nextReader.unwrap() <= nextWriter.unwrap()) {
-						nextReader;
-					} else {
-						MaybeUInt.none;
-					}
-				}
-				var nextRegReaderIndex = findNextRegReader(i + 1);
-				if (nextRegReaderIndex.isNone()) {
-					code[i] = None;
-					optimizedCur = true;
-				}
-
-			case Save(saved):
-				inline function findNextRegBufReader(startIndex: UInt): MaybeUInt {
-					final nextWriter = code.indexOfFirstIn(
-						inst -> inst.tryGetWriteRegBufType() == saved.getType(),
-						startIndex,
-						code.length
-					);
-					final nextReader = code.indexOfFirstIn(
-						inst -> inst.readsRegBuf(saved.getType()),
-						startIndex,
-						code.length
-					);
-
-					return if (nextReader.isNone()) {
-						MaybeUInt.none;
-					} else if (nextWriter.isNone() || nextReader.unwrap() <= nextWriter.unwrap()) {
-						nextReader;
-					} else {
-						MaybeUInt.none;
-					}
-				}
-				var nextRegBufReaderIndex = findNextRegBufReader(i + 1);
-				if (nextRegBufReaderIndex.isNone()) {
-					code[i] = None;
-					optimizedCur = true;
-				}
-
-			default:
-			}
-
-			// Sys.println('inst: ${code[i].toString()}');
 
 			inline function tryPropagateConstant(
 				mightBeImm: Maybe<Operand>,
@@ -144,24 +85,24 @@ class Optimizer {
 			}
 
 			inline function tryPropagateConstantAll(): Bool {
-				return if (tryPropagateConstant(curIntImmInReg, Reg)) {
+				return if (tryPropagateConstant(curIntReg.maybeImm, Reg)) {
 					true;
-				} else if (tryPropagateConstant(curFloatImmInReg, Reg)) {
+				} else if (tryPropagateConstant(curFloatReg.maybeImm, Reg)) {
 					true;
-				} else if (tryPropagateConstant(curVecImmInReg, Reg)) {
+				} else if (tryPropagateConstant(curVecReg.maybeImm, Reg)) {
 					true;
-				} else if (tryPropagateConstant(curIntImmInRegBuf, RegBuf)) {
+				} else if (tryPropagateConstant(curIntRegBuf.maybeImm, RegBuf)) {
 					true;
-				} else if (tryPropagateConstant(curFloatImmInRegBuf, RegBuf)) {
+				} else if (tryPropagateConstant(curFloatRegBuf.maybeImm, RegBuf)) {
 					true;
 				} else if (tryPropagateConstantBinop(
-					curIntImmInRegBuf,
-					curIntImmInReg
+					curIntRegBuf.maybeImm,
+					curIntReg.maybeImm
 				)) {
 					true;
 				} else if (tryPropagateConstantBinop(
-					curFloatImmInRegBuf,
-					curFloatImmInReg
+					curFloatRegBuf.maybeImm,
+					curFloatReg.maybeImm
 				)) {
 					true;
 				} else {
@@ -169,7 +110,7 @@ class Optimizer {
 				}
 			}
 
-			inline function tryEliminate(
+			inline function tryReplaceUnnecessaryCalc(
 				mightBeImm: Maybe<Operand>,
 				regOrRegBuf: OperandKind
 			): Bool {
@@ -188,16 +129,16 @@ class Optimizer {
 				return result;
 			}
 
-			inline function tryEliminateAll(): Bool {
-				return if (tryEliminate(curIntImmInReg, Reg)) {
+			inline function tryReplaceUnnecessaryCalcAll(): Bool {
+				return if (tryReplaceUnnecessaryCalc(curIntReg.maybeImm, Reg)) {
 					true;
-				} else if (tryEliminate(curFloatImmInReg, Reg)) {
+				} else if (tryReplaceUnnecessaryCalc(curFloatReg.maybeImm, Reg)) {
 					true;
-				} else if (tryEliminate(curVecImmInReg, Reg)) {
+				} else if (tryReplaceUnnecessaryCalc(curVecReg.maybeImm, Reg)) {
 					true;
-				} else if (tryEliminate(curIntImmInRegBuf, RegBuf)) {
+				} else if (tryReplaceUnnecessaryCalc(curIntRegBuf.maybeImm, RegBuf)) {
 					true;
-				} else if (tryEliminate(curFloatImmInRegBuf, RegBuf)) {
+				} else if (tryReplaceUnnecessaryCalc(curFloatRegBuf.maybeImm, RegBuf)) {
 					true;
 				} else {
 					false;
@@ -205,7 +146,7 @@ class Optimizer {
 			}
 
 			curInst = code[i];
-			if (!tryPropagateConstantAll()) tryEliminateAll();
+			if (!tryPropagateConstantAll()) tryReplaceUnnecessaryCalcAll();
 
 			curInst = code[i];
 			final folded = curInst.tryFoldConstants();
@@ -216,33 +157,38 @@ class Optimizer {
 
 			// update current registers
 			curInst = code[i];
+			if (curInst.readsReg(Int)) curIntReg.maybeRead = true;
+			if (curInst.readsReg(Float)) curFloatReg.maybeRead = true;
+			if (curInst.readsReg(Vec)) curVecReg.maybeRead = true;
+			if (curInst.readsRegBuf(Int)) curIntRegBuf.maybeRead = true;
+			if (curInst.readsRegBuf(Float)) curFloatRegBuf.maybeRead = true;
 			final writeRegType = curInst.tryGetWriteRegType();
 			if (writeRegType.isSome()) {
 				switch curInst {
 				case Load(loaded):
 					switch loaded {
-					case Int(operand):
-						curIntImmInReg = Maybe.from(switch operand {
-						case Imm(_): loaded;
-						default: null;
-						});
-					case Float(operand):
-						curFloatImmInReg = Maybe.from(switch operand {
-						case Imm(_): loaded;
-						default: null;
-						});
-					case Vec(operand):
-						curVecImmInReg = Maybe.from(switch operand {
-						case Imm(_): loaded;
-						default: null;
-						});
+					case Int(_):
+						curIntReg.tryEliminateFrom(code, i);
+						curIntReg = RegContent.from(loaded, i);
+					case Float(_):
+						curFloatReg.tryEliminateFrom(code, i);
+						curFloatReg = RegContent.from(loaded, i);
+					case Vec(_):
+						curVecReg.tryEliminateFrom(code, i);
+						curVecReg = RegContent.from(loaded, i);
 					default:
 					}
 				default:
 					switch writeRegType.unwrap() {
-					case Int: curIntImmInReg = Maybe.none();
-					case Float: curFloatImmInReg = Maybe.none();
-					case Vec: curVecImmInReg = Maybe.none();
+					case Int:
+						curIntReg.tryEliminateFrom(code, i);
+						curIntReg = { loadedIndex: i };
+					case Float:
+						curFloatReg.tryEliminateFrom(code, i);
+						curFloatReg = { loadedIndex: i };
+					case Vec:
+						curVecReg.tryEliminateFrom(code, i);
+						curVecReg = { loadedIndex: i };
 					}
 				}
 			}
@@ -251,22 +197,22 @@ class Optimizer {
 				switch curInst {
 				case Save(saved):
 					switch saved {
-					case Int(operand):
-						curIntImmInRegBuf = Maybe.from(switch operand {
-						case Imm(_): saved;
-						default: null;
-						});
-					case Float(operand):
-						curFloatImmInRegBuf = Maybe.from(switch operand {
-						case Imm(_): saved;
-						default: null;
-						});
+					case Int(_):
+						curIntRegBuf.tryEliminateFrom(code, i);
+						curIntRegBuf = RegContent.from(saved, i);
+					case Float(_):
+						curFloatRegBuf.tryEliminateFrom(code, i);
+						curFloatRegBuf = RegContent.from(saved, i);
 					default:
 					}
 				default:
 					switch writeRegBufType.unwrap() {
-					case Int: curIntImmInRegBuf = Maybe.none();
-					case Float: curFloatImmInRegBuf = Maybe.none();
+					case Int:
+						curIntRegBuf.tryEliminateFrom(code, i);
+						curIntRegBuf = { loadedIndex: i };
+					case Float:
+						curFloatRegBuf.tryEliminateFrom(code, i);
+						curFloatRegBuf = { loadedIndex: i };
 					default:
 					}
 				}
@@ -294,7 +240,7 @@ class Optimizer {
 
 		inline function peeksStack() {
 			final stackTop = curStacked.getLastSafe();
-			if (stackTop.isSome()) stackTop.unwrap().mayBeRead = true;
+			if (stackTop.isSome()) stackTop.unwrap().maybeRead = true;
 		}
 
 		var i = UInt.zero;
@@ -303,12 +249,12 @@ class Optimizer {
 
 			switch curInst {
 			case Push(input):
-				curStacked.push({ operand: input, pushInstIndex: i });
+				curStacked.push({ operand: input, pushedIndex: i });
 			case Pop(_):
 				final stackTop = curStacked.pop().unwrap();
-				if (!stackTop.mayBeRead && stackTop.operand.getKind() == Imm) {
+				if (!stackTop.maybeRead && stackTop.operand.getKind() == Imm) {
 					code[i] = Load(stackTop.operand);
-					code[stackTop.pushInstIndex] = None;
+					code[stackTop.pushedIndex] = None;
 					optimizedAny = true;
 				}
 			case Drop(_):
@@ -323,7 +269,7 @@ class Optimizer {
 				switch output {
 				case Int(operand):
 					switch operand {
-					case Stack: curStacked.push({ operand: output, pushInstIndex: i });
+					case Stack: curStacked.push({ operand: output, pushedIndex: i });
 					default:
 					}
 				default:
@@ -350,8 +296,44 @@ class Optimizer {
 }
 
 @:structInit
+private class RegContent {
+	public static function createNull(): RegContent
+		return { loadedIndex: MaybeUInt.none };
+
+	public static function from(operand: Operand, loadedIndex: UInt): RegContent {
+		return {
+			maybeImm: switch operand.getKind() {
+			case Imm: operand;
+			default: null;
+			},
+			loadedIndex: loadedIndex
+		};
+	}
+
+	public final maybeImm: Maybe<Operand> = Maybe.none();
+	public final loadedIndex: MaybeUInt;
+	public var maybeRead: Bool = false;
+
+	public function new(?maybeImm: Operand, loadedIndex: MaybeUInt) {
+		this.maybeImm = Maybe.from(maybeImm);
+		this.loadedIndex = loadedIndex;
+	}
+
+	public function tryEliminateFrom(code: AssemblyCode, currentIndex: UInt): Bool {
+		if (this.maybeRead) return false;
+
+		final loadedIndex = this.loadedIndex;
+		if (loadedIndex.isNone()) return false;
+		if (loadedIndex.unwrap() == currentIndex) return false;
+
+		code[loadedIndex.unwrap()] = None;
+		return true;
+	}
+}
+
+@:structInit
 private class StackElement {
 	public final operand: Operand;
-	public final pushInstIndex: UInt;
-	public var mayBeRead: Bool = false;
+	public final pushedIndex: UInt;
+	public var maybeRead: Bool = false;
 }
