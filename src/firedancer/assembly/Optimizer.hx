@@ -37,11 +37,51 @@ class Optimizer {
 		var curVecReg = RegContent.createNull();
 		var curIntRegBuf = RegContent.createNull();
 		var curFloatRegBuf = RegContent.createNull();
+		var justSyncedIntReg = false;
+		var justSyncedFloatReg = false;
 
 		var i = UInt.zero;
 		while (i < code.length) {
 			var curInst = code[i];
 			var optimizedCur = false;
+
+			switch curInst {
+			case Load(input):
+				switch input {
+				case Int(operand):
+					switch operand {
+					case Reg: code[i] = None;
+					case RegBuf: if (justSyncedIntReg) code[i] = None;
+					default:
+					}
+				case Float(operand):
+					switch operand {
+					case Reg: code[i] = None;
+					case RegBuf: if (justSyncedFloatReg) code[i] = None;
+					default:
+					}
+				default:
+				}
+
+			case Save(input):
+				switch input {
+				case Int(operand):
+					switch operand {
+					case Reg: if (justSyncedIntReg) code[i] = None;
+					case RegBuf: code[i] = None;
+					default:
+					}
+				case Float(operand):
+					switch operand {
+					case Reg: if (justSyncedFloatReg) code[i] = None;
+					case RegBuf: code[i] = None;
+					default:
+					}
+				default:
+				}
+
+			default:
+			}
 
 			inline function tryPropagateConstant(
 				mightBeImm: Maybe<Operand>,
@@ -170,57 +210,61 @@ class Optimizer {
 			if (curInst.readsRegBuf(Float)) curFloatRegBuf.maybeRead = true;
 			final writeRegType = curInst.tryGetWriteRegType();
 			if (writeRegType.isSome()) {
-				switch curInst {
-				case Load(loaded):
-					switch loaded {
-					case Int(_):
-						curIntReg.tryEliminateFrom(code, i);
-						curIntReg = RegContent.from(loaded, i);
-					case Float(_):
-						curFloatReg.tryEliminateFrom(code, i);
-						curFloatReg = RegContent.from(loaded, i);
-					case Vec(_):
-						curVecReg.tryEliminateFrom(code, i);
-						curVecReg = RegContent.from(loaded, i);
+				switch writeRegType.unwrap() {
+				case Int:
+					curIntReg.tryEliminateFrom(code, i);
+					switch curInst {
+					case Load(loaded):
+						curIntReg = { loadedIndex: i, operand: loaded };
+						justSyncedIntReg = loaded.isRegBuf();
 					default:
-					}
-				default:
-					switch writeRegType.unwrap() {
-					case Int:
-						curIntReg.tryEliminateFrom(code, i);
 						curIntReg = { loadedIndex: i };
-					case Float:
-						curFloatReg.tryEliminateFrom(code, i);
+						justSyncedIntReg = false;
+					}
+				case Float:
+					curFloatReg.tryEliminateFrom(code, i);
+					switch curInst {
+					case Load(loaded):
+						curFloatReg = { loadedIndex: i, operand: loaded };
+						justSyncedFloatReg = loaded.isRegBuf();
+					default:
 						curFloatReg = { loadedIndex: i };
-					case Vec:
-						curVecReg.tryEliminateFrom(code, i);
+						justSyncedFloatReg = false;
+					}
+				case Vec:
+					curVecReg.tryEliminateFrom(code, i);
+					switch curInst {
+					case Load(loaded):
+						curVecReg = { loadedIndex: i, operand: loaded };
+					default:
 						curVecReg = { loadedIndex: i };
 					}
 				}
 			}
 			final writeRegBufType = curInst.tryGetWriteRegBufType();
 			if (writeRegBufType.isSome()) {
-				switch curInst {
-				case Save(saved):
-					switch saved {
-					case Int(_):
-						curIntRegBuf.tryEliminateFrom(code, i);
-						curIntRegBuf = RegContent.from(saved, i);
-					case Float(_):
-						curFloatRegBuf.tryEliminateFrom(code, i);
-						curFloatRegBuf = RegContent.from(saved, i);
+				switch writeRegBufType.unwrap() {
+				case Int:
+					curIntRegBuf.tryEliminateFrom(code, i);
+					switch curInst {
+					case Save(saved):
+						curIntRegBuf = { loadedIndex: i, operand: saved };
+						justSyncedIntReg = saved.isReg();
 					default:
+						curIntRegBuf = { loadedIndex: i };
+						justSyncedIntReg = false;
+					}
+				case Float:
+					curFloatRegBuf.tryEliminateFrom(code, i);
+					switch curInst {
+					case Save(saved):
+						curFloatRegBuf = { loadedIndex: i, operand: saved };
+						justSyncedFloatReg = saved.isReg();
+					default:
+						curFloatRegBuf = { loadedIndex: i };
+						justSyncedFloatReg = false;
 					}
 				default:
-					switch writeRegBufType.unwrap() {
-					case Int:
-						curIntRegBuf.tryEliminateFrom(code, i);
-						curIntRegBuf = { loadedIndex: i };
-					case Float:
-						curFloatRegBuf.tryEliminateFrom(code, i);
-						curFloatRegBuf = { loadedIndex: i };
-					default:
-					}
 				}
 			}
 
@@ -305,13 +349,6 @@ class Optimizer {
 private class RegContent {
 	public static function createNull(): RegContent
 		return { loadedIndex: MaybeUInt.none };
-
-	public static function from(operand: Operand, loadedIndex: UInt): RegContent {
-		return {
-			operand: operand,
-			loadedIndex: loadedIndex
-		};
-	}
 
 	public final operand: Maybe<Operand> = Maybe.none();
 	public final loadedIndex: MaybeUInt;
