@@ -278,7 +278,7 @@ class Optimizer {
 	}
 
 	/**
-		- Replaces `Push`/`Pop` with `None`/`Load` if the pushed value is an immediate and never read before `Pop`.
+		- Replaces unnecessary `Push`/`Pop` with `None`/`Load`.
 		- Replaces instructions that peeks from the stack if the last pushed value is an immediate.
 	**/
 	public static function tryOptimizeStack(code: AssemblyCode): Bool {
@@ -302,10 +302,14 @@ class Optimizer {
 				curStacked.push({ operand: input, pushedIndex: i });
 			case Pop(_):
 				final stackTop = curStacked.pop().unwrap();
-				if (!stackTop.maybeRead && stackTop.operand.getKind() == Imm) {
-					code[i] = Load(stackTop.operand);
-					code[stackTop.pushedIndex] = None;
-					optimizedAny = true;
+				if (!stackTop.maybeRead) {
+					// replace if the pushed value is never read before `Pop` ...
+					if (stackTop.operand.getKind() == Imm || stackTop.pushedIndex == i - 1) {
+						// ... and is either an immediate or pushed just before the current `Pop` (which means that the value is not changed).
+						code[i] = Load(stackTop.operand);
+						code[stackTop.pushedIndex] = None;
+						optimizedAny = true;
+					}
 				}
 			case Drop(_):
 				curStacked.pop();
