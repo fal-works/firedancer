@@ -2,7 +2,6 @@ package firedancer.script.expression;
 
 import firedancer.assembly.Instruction;
 import firedancer.assembly.AssemblyCode;
-import firedancer.assembly.Immediate;
 import firedancer.script.expression.subtypes.FloatLikeConstant;
 import firedancer.script.expression.subtypes.FloatLikeRuntimeExpression;
 
@@ -60,11 +59,6 @@ class FloatLikeExpressionData implements ExpressionData {
 			case Runtime(expression):
 				Maybe.none();
 		}
-	}
-
-	public function tryMakeImmediate(): Maybe<Immediate> {
-		final constant = tryGetConstant();
-		return if (constant.isSome()) Maybe.from(Float(constant.unwrap())) else Maybe.none();
 	}
 
 	public function unaryOperation(

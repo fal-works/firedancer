@@ -1,7 +1,6 @@
 package firedancer.bytecode.types;
 
 import haxe.Int32;
-import firedancer.assembly.Immediate;
 
 /**
 	Argument value for firing opcodes.
@@ -37,9 +36,6 @@ abstract FireArgument(Int32) from Int32 {
 		The ID number of the `Program` to be run by the actor being fired.
 	**/
 	public var programId(get, never): UInt;
-
-	@:to extern inline function toImmediate(): Immediate
-		return Int(this);
 
 	public inline function int(): Int
 		return this;

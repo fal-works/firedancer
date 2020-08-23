@@ -3,7 +3,6 @@ package firedancer.script.expression;
 import sneaker.exception.NotOverriddenException;
 import firedancer.types.Azimuth;
 import firedancer.assembly.AssemblyCode;
-import firedancer.assembly.Immediate;
 import firedancer.assembly.Instruction;
 
 /**
@@ -18,14 +17,6 @@ class VecExpressionData implements ExpressionData {
 
 	public function tryGetConstant(): Maybe<{x: Float, y: Float }>
 		throw new NotOverriddenException();
-
-	public function tryMakeImmediate(): Maybe<Immediate> {
-		final constant = tryGetConstant();
-		return if (constant.isSome()) {
-			final val = constant.unwrap();
-			Maybe.from(Vec(val.x, val.y));
-		} else Maybe.none();
-	}
 
 	public function divide(divisor: FloatExpression): VecExpressionData
 		throw new NotOverriddenException();

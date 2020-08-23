@@ -1,7 +1,6 @@
 package firedancer.script.expression;
 
 import firedancer.assembly.Instruction;
-import firedancer.assembly.Immediate;
 import firedancer.assembly.AssemblyCode;
 
 abstract GenericExpression(Data) from Data {
@@ -82,15 +81,6 @@ abstract GenericExpression(Data) from Data {
 			case FloatExpr(expr): expr.use(context, instruction);
 			case AngleExpr(expr): expr.use(context, instruction);
 			case VecExpr(expr): expr.use(context, instruction);
-		}
-	}
-
-	public function tryMakeImmediate(): Maybe<Immediate> {
-		return switch this {
-			case IntExpr(expr): expr.tryMakeImmediate();
-			case FloatExpr(expr): expr.tryMakeImmediate();
-			case AngleExpr(expr): expr.tryMakeImmediate();
-			case VecExpr(expr): expr.tryMakeImmediate();
 		}
 	}
 

@@ -1,11 +1,7 @@
 package firedancer.script.expression;
 
-import firedancer.assembly.Opcode;
-import firedancer.assembly.operation.GeneralOperation;
-import firedancer.assembly.operation.CalcOperation;
 import firedancer.assembly.Instruction;
 import firedancer.assembly.AssemblyCode;
-import firedancer.assembly.Immediate;
 import firedancer.script.expression.FloatLikeExpressionData;
 import firedancer.script.expression.subtypes.IntLikeRuntimeExpression;
 import firedancer.script.expression.subtypes.IntLikeConstant;
@@ -61,11 +57,6 @@ class IntLikeExpressionData implements ExpressionData {
 		case Runtime(expression):
 			Maybe.none();
 		}
-	}
-
-	public function tryMakeImmediate(): Maybe<Immediate> {
-		final constant = tryGetConstant();
-		return if (constant.isSome()) Maybe.from(Int(constant.unwrap())) else Maybe.none();
 	}
 
 	public function unaryOperation(instruction: Instruction): IntLikeExpressionData {

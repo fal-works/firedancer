@@ -2,7 +2,6 @@ package firedancer.script.expression.subtypes;
 
 import reckoner.Geometry.DEGREES_TO_RADIANS;
 import firedancer.types.Angle;
-import firedancer.assembly.Immediate;
 import firedancer.common.Geometry;
 
 /**
@@ -94,12 +93,6 @@ class FloatLikeConstantData {
 	**/
 	public function toImmediateValue(): Float
 		return factor * value;
-
-	/**
-		Converts `this` to `Immediate`.
-	**/
-	public function toImmediate(): Immediate
-		return Float(toImmediateValue());
 
 	public function toString(): String
 		return '{v:$value,f:$factor}';
