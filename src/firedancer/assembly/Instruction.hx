@@ -4,6 +4,8 @@ import firedancer.assembly.Operand;
 import firedancer.assembly.types.*;
 
 @:using(firedancer.assembly.InstructionExtension)
+@:using(firedancer.assembly.InstructionOptimizer)
+@:using(firedancer.assembly.InstructionAssembler)
 enum Instruction {
 	// ---- control flow --------------------------------------------------------
 	Break;
