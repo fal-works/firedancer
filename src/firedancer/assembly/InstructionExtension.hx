@@ -596,20 +596,20 @@ class InstructionExtension {
 		case Cos:
 			op(CosRR);
 
-		case IncrementVV(address):
+		case Increment(address):
 			[op(IncrementVV), address];
-		case DecrementVV(address):
+		case Decrement(address):
 			[op(DecrementVV), address];
 
 			// ---- read actor data
 
-		case LoadTargetPositionR:
+		case LoadTargetPosition:
 			op(LoadTargetPositionR);
-		case LoadTargetXR:
+		case LoadTargetX:
 			op(LoadTargetXR);
-		case LoadTargetYR:
+		case LoadTargetY:
 			op(LoadTargetYR);
-		case LoadBearingToTargetR:
+		case LoadBearingToTarget:
 			op(LoadBearingToTargetR);
 
 		case CalcRelative(input, prop):
@@ -890,23 +890,23 @@ class InstructionExtension {
 		case Cos:
 			'cos rf -> rf';
 
-		case IncrementVV(address):
+		case Increment(address):
 			final inOutStr = varToString(address, Int);
 			'increment $inOutStr -> $inOutStr';
-		case DecrementVV(address):
+		case Decrement(address):
 			final inOutStr = varToString(address, Int);
 			'decrement $inOutStr -> $inOutStr';
 
 			// ---- read actor data
 
-		case LoadTargetPositionR:
-			'load target position ->v';
-		case LoadTargetXR:
-			'load target x ->v';
-		case LoadTargetYR:
-			'load target y ->v';
-		case LoadBearingToTargetR:
-			'load bearing to target ->v';
+		case LoadTargetPosition:
+			'load target position -> rvec';
+		case LoadTargetX:
+			'load target x -> rf';
+		case LoadTargetY:
+			'load target y -> rf';
+		case LoadBearingToTarget:
+			'load bearing to target -> rf';
 
 		case CalcRelative(input, prop):
 			'calc relative ${input.toString()} -> ${prop.toString()}';
@@ -983,15 +983,15 @@ class InstructionExtension {
 		case Sin: UInt.zero;
 		case Cos: UInt.zero;
 
-		case IncrementVV(address): LEN32;
-		case DecrementVV(address): LEN32;
+		case Increment(address): LEN32;
+		case Decrement(address): LEN32;
 
 			// ---- read actor data ------------------------------------------
 
-		case LoadTargetPositionR: UInt.zero;
-		case LoadTargetXR: UInt.zero;
-		case LoadTargetYR: UInt.zero;
-		case LoadBearingToTargetR: UInt.zero;
+		case LoadTargetPosition: UInt.zero;
+		case LoadTargetX: UInt.zero;
+		case LoadTargetY: UInt.zero;
+		case LoadBearingToTarget: UInt.zero;
 
 		case CalcRelative(input, prop): input.bytecodeLength();
 
@@ -1104,10 +1104,10 @@ class InstructionExtension {
 		case Sin: ValueType.Float;
 		case Cos: ValueType.Float;
 
-		case LoadTargetPositionR: ValueType.Vec;
-		case LoadTargetXR: ValueType.Float;
-		case LoadTargetYR: ValueType.Float;
-		case LoadBearingToTargetR: ValueType.Float;
+		case LoadTargetPosition: ValueType.Vec;
+		case LoadTargetX: ValueType.Float;
+		case LoadTargetY: ValueType.Float;
+		case LoadBearingToTarget: ValueType.Float;
 
 		case CalcRelative(input, _): input.getType();
 
