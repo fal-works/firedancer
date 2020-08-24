@@ -30,8 +30,7 @@ enum Instruction {
 	FireSimpleWithCode(fireCode: Int);
 	FireComplexWithCode(fireArgument: FireArgument, fireCode: Int);
 	// ---- other general -------------------------------------------------------
-	GlobalEvent;
-	LocalEvent;
+	Event(eventType: EventType);
 	Debug(debugCode: Int);
 	// ---- calc values ---------------------------------------------------------
 	Add(input: OperandPair);
@@ -40,7 +39,7 @@ enum Instruction {
 	Mult(inputA: Operand, inputB: Operand);
 	Div(inputA: Operand, inputB: Operand);
 	Mod(inputA: Operand, inputB: Operand);
-	Cast(type: CastOperationType);
+	Cast(castType: CastOperationType);
 	RandomRatio;
 	Random(max: Operand);
 	RandomSigned(maxMagnitude: Operand);

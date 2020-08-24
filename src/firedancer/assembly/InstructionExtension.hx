@@ -188,10 +188,12 @@ class InstructionExtension {
 
 			// ---- other ---------------------------------------------------
 
-		case GlobalEvent:
-			op(GlobalEventR);
-		case LocalEvent:
-			op(LocalEventR);
+		case Event(eventType):
+			switch eventType {
+				case Global: op(GlobalEventR);
+				case Local: op(LocalEventR);
+			}
+
 		case Debug(debugCode):
 			[op(Debug), debugCode];
 
@@ -754,10 +756,8 @@ class InstructionExtension {
 
 			// ---- other ---------------------------------------------------
 
-		case GlobalEvent:
-			'event global ri -> n';
-		case LocalEvent:
-			'event local ri -> n';
+		case Event(eventType):
+			'event ${eventType.toString()} ri -> n';
 		case Debug(debugCode):
 			'debug ${itoa(debugCode)} -> n';
 
@@ -909,8 +909,7 @@ class InstructionExtension {
 
 			// ---- other ---------------------------------------------------
 
-		case GlobalEvent: UInt.zero;
-		case LocalEvent: UInt.zero;
+		case Event(_): UInt.zero;
 		case Debug(debugCode): LEN32;
 
 			// ---- calc values ---------------------------------------------
@@ -959,6 +958,8 @@ class InstructionExtension {
 		case Save(input): input.tryGetRegType() == regType;
 		case Store(input, _): input.tryGetRegType() == regType;
 		case Push(input): input.tryGetRegType() == regType;
+
+		case Event(_): regType == Int;
 
 		case Add(input): input.tryGetRegType() == regType;
 		case Sub(input): input.tryGetRegType() == regType;
