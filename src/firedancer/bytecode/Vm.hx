@@ -410,10 +410,10 @@ class Vm {
 								reg.float = targetPositionRef.x;
 							case LoadTargetYR:
 								reg.float = targetPositionRef.y;
-							case LoadBearingToTargetR:
+							case LoadAngleToTargetR:
 								reg.float = Geometry.getAngle(
-									targetPositionRef.x - position.x,
-									targetPositionRef.y - position.y
+									targetPositionRef.x - (position.getAbsoluteX() + thread.shotX),
+									targetPositionRef.y - (position.getAbsoluteY() + thread.shotY)
 								);
 
 							case GetDiffPositionCR:

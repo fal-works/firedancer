@@ -631,7 +631,7 @@ class InstructionExtension {
 			case Position: op(LoadTargetPositionR);
 			case X: op(LoadTargetXR);
 			case Y: op(LoadTargetYR);
-			case AngleFromShotPosition: op(LoadBearingToTargetR);
+			case AngleFromShotPosition: op(LoadAngleToTargetR);
 			}
 
 			// ---- write actor data -----------------------------------------

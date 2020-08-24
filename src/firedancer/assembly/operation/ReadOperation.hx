@@ -29,7 +29,7 @@ enum abstract ReadOperation(Int) to Int {
 		case ReadOperation.LoadTargetPositionR: LoadTargetPositionR;
 		case ReadOperation.LoadTargetXR: LoadTargetXR;
 		case ReadOperation.LoadTargetYR: LoadTargetYR;
-		case ReadOperation.LoadBearingToTargetR: LoadBearingToTargetR;
+		case ReadOperation.LoadAngleToTargetR: LoadAngleToTargetR;
 		case ReadOperation.GetDiffPositionCR: GetDiffPositionCR;
 		case ReadOperation.GetDiffVelocityCR: GetDiffVelocityCR;
 		case ReadOperation.GetDiffPositionRR: GetDiffPositionRR;
@@ -136,9 +136,9 @@ enum abstract ReadOperation(Int) to Int {
 	final LoadTargetYR;
 
 	/**
-		(bearing from actor to target) -> (float register)
+		(angle from shot position to target) -> (float register)
 	**/
-	final LoadBearingToTargetR;
+	final LoadAngleToTargetR;
 
 	/**
 		(vec immediate) - (position) ->  (vec register)
@@ -285,7 +285,7 @@ class ReadOperationExtension {
 		case LoadTargetPositionR: "load_target_position_r";
 		case LoadTargetXR: "load_target_x_r";
 		case LoadTargetYR: "load_target_y_r";
-		case LoadBearingToTargetR: "load_bearing_to_target_r";
+		case LoadAngleToTargetR: "load_bearing_to_target_r";
 		case GetDiffPositionCR: "calc_rel_position_cr";
 		case GetDiffVelocityCR: "calc_rel_velocity_cr";
 		case GetDiffPositionRR: "calc_rel_position_rr";
