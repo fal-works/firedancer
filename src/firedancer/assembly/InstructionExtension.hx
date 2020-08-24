@@ -692,67 +692,18 @@ class InstructionExtension {
 				if (prop.component != Vector) throw unsupported();
 				switch operand {
 				case Imm(x, y):
-					final opcode:Opcode = switch prop.type {
-					case Position: SetPositionC;
-					case Velocity: SetVelocityC;
-					case ShotPosition: SetShotPositionC;
-					case ShotVelocity: SetShotVelocityC;
-					};
 					[
-						op(opcode),
+						op(prop.getWriteOpcode(Set, Imm)),
 						x,
 						y
 					];
-				case Reg:
-					final opcode:Opcode = switch prop.type {
-					case Position: SetPositionR;
-					case Velocity: SetVelocityR;
-					case ShotPosition: SetShotPositionR;
-					case ShotVelocity: SetShotVelocityR;
-					};
-					op(opcode);
+				case Reg: op(prop.getWriteOpcode(Set, Reg));
 				default: throw unsupported();
 				}
 			case Float(operand):
 				switch operand {
-				case Imm(value):
-					final opcode:Opcode = switch prop.component {
-					case Vector: throw unsupported();
-					case Length:
-						switch prop.type {
-						case Position: SetDistanceC;
-						case Velocity: SetSpeedC;
-						case ShotPosition: SetShotDistanceC;
-						case ShotVelocity: SetShotSpeedC;
-						}
-					case Angle:
-						switch prop.type {
-						case Position: SetBearingC;
-						case Velocity: SetDirectionC;
-						case ShotPosition: SetShotBearingC;
-						case ShotVelocity: SetShotDirectionC;
-						}
-					};
-					[op(opcode), value];
-				case Reg:
-					final opcode:Opcode = switch prop.component {
-					case Vector: throw unsupported();
-					case Length:
-						switch prop.type {
-						case Position: SetDistanceR;
-						case Velocity: SetSpeedR;
-						case ShotPosition: SetShotDistanceR;
-						case ShotVelocity: SetShotSpeedR;
-						}
-					case Angle:
-						switch prop.type {
-						case Position: SetBearingR;
-						case Velocity: SetDirectionR;
-						case ShotPosition: SetShotBearingR;
-						case ShotVelocity: SetShotDirectionR;
-						}
-					};
-					op(opcode);
+				case Imm(value): [op(prop.getWriteOpcode(Set, Imm)), value];
+				case Reg: op(prop.getWriteOpcode(Set, Reg));
 				default: throw unsupported();
 				}
 			default: throw unsupported();
@@ -764,94 +715,20 @@ class InstructionExtension {
 				if (prop.component != Vector) throw unsupported();
 				switch operand {
 				case Imm(x, y):
-					final opcode:Opcode = switch prop.type {
-					case Position: AddPositionC;
-					case Velocity: AddVelocityC;
-					case ShotPosition: AddShotPositionC;
-					case ShotVelocity: AddShotVelocityC;
-					};
 					[
-						op(opcode),
+						op(prop.getWriteOpcode(Add, Imm)),
 						x,
 						y
 					];
-				case Reg:
-					final opcode:Opcode = switch prop.type {
-					case Position: AddPositionR;
-					case Velocity: AddVelocityR;
-					case ShotPosition: AddShotPositionR;
-					case ShotVelocity: AddShotVelocityR;
-					};
-					op(opcode);
-				case Stack:
-					final opcode:Opcode = switch prop.type {
-					case Position: AddPositionS;
-					case Velocity: AddVelocityS;
-					case ShotPosition: AddShotPositionS;
-					case ShotVelocity: AddShotVelocityS;
-					};
-					op(opcode);
+				case Reg: op(prop.getWriteOpcode(Add, Reg));
+				case Stack: op(prop.getWriteOpcode(Add, Stack));
 				default: throw unsupported();
 				}
 			case Float(operand):
 				switch operand {
-				case Imm(value):
-					final opcode:Opcode = switch prop.component {
-					case Vector: throw unsupported();
-					case Length:
-						switch prop.type {
-						case Position: AddDistanceC;
-						case Velocity: AddSpeedC;
-						case ShotPosition: AddShotDistanceC;
-						case ShotVelocity: AddShotSpeedC;
-						}
-					case Angle:
-						switch prop.type {
-						case Position: AddBearingC;
-						case Velocity: AddDirectionC;
-						case ShotPosition: AddShotBearingC;
-						case ShotVelocity: AddShotDirectionC;
-						}
-					};
-					[op(opcode), value];
-				case Reg:
-					final opcode:Opcode = switch prop.component {
-					case Vector: throw unsupported();
-					case Length:
-						switch prop.type {
-						case Position: AddDistanceR;
-						case Velocity: AddSpeedR;
-						case ShotPosition: AddShotDistanceR;
-						case ShotVelocity: AddShotSpeedR;
-						}
-					case Angle:
-						switch prop.type {
-						case Position: AddBearingR;
-						case Velocity: AddDirectionR;
-						case ShotPosition: AddShotBearingR;
-						case ShotVelocity: AddShotDirectionR;
-						}
-					};
-					op(opcode);
-				case Stack:
-					final opcode:Opcode = switch prop.component {
-					case Vector: throw unsupported();
-					case Length:
-						switch prop.type {
-						case Position: AddDistanceS;
-						case Velocity: AddSpeedS;
-						case ShotPosition: AddShotDistanceS;
-						case ShotVelocity: AddShotSpeedS;
-						}
-					case Angle:
-						switch prop.type {
-						case Position: AddBearingS;
-						case Velocity: AddDirectionS;
-						case ShotPosition: AddShotBearingS;
-						case ShotVelocity: AddShotDirectionS;
-						}
-					};
-					op(opcode);
+				case Imm(value): [op(prop.getWriteOpcode(Add, Imm)), value];
+				case Reg: op(prop.getWriteOpcode(Add, Reg));
+				case Stack: op(prop.getWriteOpcode(Add, Stack));
 				default: throw unsupported();
 				}
 			default: throw unsupported();

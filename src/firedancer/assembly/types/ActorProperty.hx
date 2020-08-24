@@ -1,6 +1,7 @@
 package firedancer.assembly.types;
 
 @:structInit
+@:using(firedancer.assembly.types.ActorPropertyExtension)
 class ActorProperty {
 	public static function create(
 		type: ActorPropertyType,

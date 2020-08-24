@@ -23,25 +23,25 @@ abstract Opcode(Int) {
 	/**
 		Converts `GeneralOperation` to `Opcode`.
 	**/
-	@:from static inline function general(code: GeneralOperation): Opcode
+	@:from public static inline function general(code: GeneralOperation): Opcode
 		return from(General, code);
 
 	/**
 		Converts `CalcOperation` to `Opcode`.
 	**/
-	@:from static inline function calc(code: CalcOperation): Opcode
+	@:from public static inline function calc(code: CalcOperation): Opcode
 		return from(Calc, code);
 
 	/**
 		Converts `ReadOperation` to `Opcode`.
 	**/
-	@:from static inline function read(code: ReadOperation): Opcode
+	@:from public static inline function read(code: ReadOperation): Opcode
 		return from(Read, code);
 
 	/**
 		Converts `WriteOperation` to `Opcode`.
 	**/
-	@:from static inline function write(code: WriteOperation): Opcode
+	@:from public static inline function write(code: WriteOperation): Opcode
 		return from(Write, code);
 
 	/**
