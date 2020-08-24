@@ -12,7 +12,11 @@ class Builder {
 	/**
 		Creates a code instance that repeats `body` in runtime.
 	**/
-	public static function constructLoop(context: CompileContext, pushLoopCount: AssemblyCode, body: AssemblyCode) {
+	public static function constructLoop(
+		context: CompileContext,
+		pushLoopCount: AssemblyCode,
+		body: AssemblyCode
+	) {
 		final nextLabelIdStack = context.nextLabelIdStack;
 		var nextLabelId = nextLabelIdStack.pop().unwrap();
 		final startLabelId = nextLabelId++;
@@ -24,10 +28,7 @@ class Builder {
 		prepareLoop.push(Label(startLabelId));
 		prepareLoop.push(CountDownGotoLabel(endLabelId));
 
-		final closeLoop: AssemblyCode = [
-			GotoLabel(startLabelId),
-			Label(endLabelId)
-		];
+		final closeLoop: AssemblyCode = [GotoLabel(startLabelId), Label(endLabelId)];
 
 		return [
 			prepareLoop,
@@ -41,7 +42,11 @@ class Builder {
 
 		Use `constructLoop()` to avoid evaluating `count` and provide the preparation code instead.
 	**/
-	public static function loop(context: CompileContext, body: AssemblyCode, count: IntExpression): AssemblyCode {
+	public static function loop(
+		context: CompileContext,
+		body: AssemblyCode,
+		count: IntExpression
+	): AssemblyCode {
 		final pushLoopCount: AssemblyCode = count.loadToVolatile(context);
 		pushLoopCount.push(Push(Int(Reg)));
 
@@ -66,16 +71,16 @@ class Builder {
 		fireCode: Int = 0
 	): Instruction {
 		return if (fireArgument.isNone()) {
-			switch fireCode {
-				case 0: FireSimple;
-				default: FireSimpleWithCode(fireCode);
-			}
+			Fire(switch fireCode {
+			case 0: Simple;
+			default: SimpleWithCode(fireCode);
+			});
 		} else {
 			final arg = fireArgument.unwrap();
-			switch fireCode {
-				case 0: FireComplex(arg);
-				default: FireComplexWithCode(arg, fireCode);
-			}
+			Fire(switch fireCode {
+			case 0: Complex(arg);
+			default: ComplexWithCode(arg, fireCode);
+			});
 		}
 	}
 }

@@ -1,7 +1,6 @@
 package firedancer.assembly;
 
 import firedancer.assembly.Operand;
-import firedancer.bytecode.types.FireArgument;
 import firedancer.assembly.types.*;
 
 @:using(firedancer.assembly.InstructionExtension)
@@ -25,10 +24,7 @@ enum Instruction {
 	Peek(type: ValueType, bytesToSkip: Int);
 	Drop(type: ValueType);
 	// ---- fire ----------------------------------------------------------------
-	FireSimple;
-	FireComplex(fireArgument: FireArgument);
-	FireSimpleWithCode(fireCode: Int);
-	FireComplexWithCode(fireArgument: FireArgument, fireCode: Int);
+	Fire(fireType: FireType);
 	// ---- other general -------------------------------------------------------
 	Event(eventType: EventType);
 	Debug(debugCode: Int);

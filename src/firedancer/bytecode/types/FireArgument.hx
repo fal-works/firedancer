@@ -6,7 +6,6 @@ import haxe.Int32;
 	Argument value for firing opcodes.
 **/
 abstract FireArgument(Int32) from Int32 {
-
 	/**
 		10000000 00000000 00000000 00000000
 	**/
@@ -39,6 +38,12 @@ abstract FireArgument(Int32) from Int32 {
 
 	public inline function int(): Int
 		return this;
+
+	public function toString(): String {
+		var s = 'program $programId';
+		if (bindPosition) s += " bind";
+		return s;
+	}
 
 	extern inline function get_bindPosition(): Bool {
 		return (this & bindPositionBitMask) != 0;

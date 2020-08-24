@@ -173,18 +173,17 @@ class InstructionExtension {
 
 			// ---- fire ---------------------------------------------------
 
-		case FireSimple:
-			op(FireSimple);
-		case FireComplex(fireArgument):
-			[op(FireComplex), fireArgument.int()];
-		case FireSimpleWithCode(fireCode):
-			[op(FireSimpleWithCode), fireCode];
-		case FireComplexWithCode(fireArgument, fireCode):
-			[
-				op(FireComplexWithCode),
-				fireArgument.int(),
-				fireCode
-			];
+		case Fire(fireType):
+			switch fireType {
+				case Simple: op(FireSimple);
+				case Complex(fireArgument): [op(FireComplex), fireArgument.int()];
+				case SimpleWithCode(fireCode): [op(FireSimpleWithCode), fireCode];
+				case ComplexWithCode(fireArgument, fireCode): [
+					op(FireComplexWithCode),
+					fireArgument.int(),
+					fireCode
+				];
+			}
 
 			// ---- other ---------------------------------------------------
 
@@ -745,14 +744,7 @@ class InstructionExtension {
 
 			// ---- fire ---------------------------------------------------
 
-		case FireSimple:
-			'fire simple';
-		case FireComplex(fireArgument):
-			'fire complex ${itoa(fireArgument.int())}';
-		case FireSimpleWithCode(fireCode):
-			'fire simple with code ${itoa(fireCode)}';
-		case FireComplexWithCode(fireArgument, fireCode):
-			'fire complex with code ${itoa(fireArgument.int())} ${itoa(fireCode)}';
+		case Fire(fireType): fireType.toString();
 
 			// ---- other ---------------------------------------------------
 
@@ -902,10 +894,7 @@ class InstructionExtension {
 
 			// ---- fire ---------------------------------------------------
 
-		case FireSimple: UInt.zero;
-		case FireComplex(fireArgument): LEN32;
-		case FireSimpleWithCode(fireCode): LEN32;
-		case FireComplexWithCode(fireArgument, fireCode): LEN32 + LEN32;
+		case Fire(fireType): fireType.bytecodeLength();
 
 			// ---- other ---------------------------------------------------
 
