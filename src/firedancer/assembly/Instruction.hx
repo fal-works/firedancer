@@ -1,6 +1,5 @@
 package firedancer.assembly;
 
-import firedancer.assembly.DataRegisterSpecifier;
 import firedancer.assembly.Operand;
 import firedancer.bytecode.types.FireArgument;
 import firedancer.assembly.types.ActorProperty;
@@ -56,18 +55,9 @@ enum Instruction {
 	LoadTargetXR;
 	LoadTargetYR;
 	LoadBearingToTargetR;
-	CalcRelative(
-		input: Operand,
-		property: ActorProperty
-	);
+	CalcRelative(input: Operand, property: ActorProperty);
 	// ---- write actor data ------------------------------------------
-	SetVector(
-		input: Operand,
-		property: ActorProperty
-	);
-	AddVector(
-		input: Operand,
-		property: ActorProperty
-	);
+	SetVector(input: Operand, property: ActorProperty);
+	AddVector(input: Operand, property: ActorProperty);
 	None;
 }
