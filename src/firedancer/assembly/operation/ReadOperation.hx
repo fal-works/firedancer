@@ -14,6 +14,18 @@ enum abstract ReadOperation(Int) to Int {
 	**/
 	public static inline function from(value: Int): ReadOperation {
 		return switch value {
+		case ReadOperation.LoadPositionR: LoadPositionR;
+		case ReadOperation.LoadDistanceR: LoadDistanceR;
+		case ReadOperation.LoadBearingR: LoadBearingR;
+		case ReadOperation.LoadVelocityR: LoadVelocityR;
+		case ReadOperation.LoadSpeedR: LoadSpeedR;
+		case ReadOperation.LoadDirectionR: LoadDirectionR;
+		case ReadOperation.LoadShotPositionR: LoadShotPositionR;
+		case ReadOperation.LoadShotDistanceR: LoadShotDistanceR;
+		case ReadOperation.LoadShotBearingR: LoadShotBearingR;
+		case ReadOperation.LoadShotVelocityR: LoadShotVelocityR;
+		case ReadOperation.LoadShotSpeedR: LoadShotSpeedR;
+		case ReadOperation.LoadShotDirectionR: LoadShotDirectionR;
 		case ReadOperation.LoadTargetPositionR: LoadTargetPositionR;
 		case ReadOperation.LoadTargetXR: LoadTargetXR;
 		case ReadOperation.LoadTargetYR: LoadTargetYR;
@@ -47,6 +59,66 @@ enum abstract ReadOperation(Int) to Int {
 	}
 
 	// ---- read actor data
+
+	/**
+		(position) -> (vec register)
+	**/
+	final LoadPositionR;
+
+	/**
+		(distance) -> (float register)
+	**/
+	final LoadDistanceR;
+
+	/**
+		(bearing) -> (float register)
+	**/
+	final LoadBearingR;
+
+	/**
+		(velocity) -> (vec register)
+	**/
+	final LoadVelocityR;
+
+	/**
+		(speed) -> (float register)
+	**/
+	final LoadSpeedR;
+
+	/**
+		(direction) -> (float register)
+	**/
+	final LoadDirectionR;
+
+	/**
+		(shot position) -> (vec register)
+	**/
+	final LoadShotPositionR;
+
+	/**
+		(shot distance) -> (float register)
+	**/
+	final LoadShotDistanceR;
+
+	/**
+		(shot bearing) -> (float register)
+	**/
+	final LoadShotBearingR;
+
+	/**
+		(shot velocity) -> (vec register)
+	**/
+	final LoadShotVelocityR;
+
+	/**
+		(shot speed) -> (float register)
+	**/
+	final LoadShotSpeedR;
+
+	/**
+		(shot direction) -> (float register)
+	**/
+	final LoadShotDirectionR;
 
 	/**
 		(target position) -> (vec register)
@@ -198,6 +270,18 @@ class ReadOperationExtension {
 	**/
 	public static inline function toString(code: ReadOperation): String {
 		return switch code {
+		case LoadPositionR: "load_position_r";
+		case LoadDistanceR: "load_distance_r";
+		case LoadBearingR: "load_bearing_r";
+		case LoadVelocityR: "load_velocity_r";
+		case LoadSpeedR: "load_speed_r";
+		case LoadDirectionR: "load_direction_r";
+		case LoadShotPositionR: "load_shot_position_r";
+		case LoadShotDistanceR: "load_shot_distance_r";
+		case LoadShotBearingR: "load_shot_bearing_r";
+		case LoadShotVelocityR: "load_shot_velocity_r";
+		case LoadShotSpeedR: "load_shot_speed_r";
+		case LoadShotDirectionR: "load_shot_direction_r";
 		case LoadTargetPositionR: "load_target_position_r";
 		case LoadTargetXR: "load_target_x_r";
 		case LoadTargetYR: "load_target_y_r";

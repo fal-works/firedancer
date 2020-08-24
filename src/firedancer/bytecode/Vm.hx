@@ -379,6 +379,31 @@ class Vm {
 
 					case Read:
 						switch opcode.op {
+							case LoadPositionR:
+								reg.setVec(position.x, position.y);
+							case LoadDistanceR:
+								reg.float = position.getDistance();
+							case LoadBearingR:
+								reg.float = position.getBearing();
+							case LoadVelocityR:
+								reg.setVec(velocity.x, velocity.y);
+							case LoadSpeedR:
+								reg.float = velocity.getSpeed();
+							case LoadDirectionR:
+								reg.float = velocity.getDirection();
+							case LoadShotPositionR:
+								reg.setVec(thread.shotX, thread.shotY);
+							case LoadShotDistanceR:
+								reg.float = thread.getShotDistance();
+							case LoadShotBearingR:
+								reg.float = thread.getShotBearing();
+							case LoadShotVelocityR:
+								reg.setVec(thread.shotVx, thread.shotVy);
+							case LoadShotSpeedR:
+								reg.float = thread.getShotSpeed();
+							case LoadShotDirectionR:
+								reg.float = thread.getShotDirection();
+
 							case LoadTargetPositionR:
 								reg.setVec(targetPositionRef.x, targetPositionRef.y);
 							case LoadTargetXR:
