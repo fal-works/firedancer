@@ -14,7 +14,7 @@ abstract AngleLocalVariableExpression(String) {
 			final code = variable.loadToVolatile();
 			switch variable.type {
 				case Int:
-					code.push(CastIntToFloat);
+					code.push(Cast(IntToFloat));
 					code.push(Mult(Float(RegBuf), Float(Imm(AngleExpression.constantFactor))));
 				case Float:
 				case Vec: throw "Cannot cast vector to float.";

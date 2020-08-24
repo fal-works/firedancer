@@ -108,7 +108,7 @@ class IntLikeExpressionData implements ExpressionData {
 	function toFloatLikeExpressionData(constantFactor: Float): FloatLikeExpressionData {
 		final loadAsFloat: (context: CompileContext) -> AssemblyCode = context -> [
 			this.loadToVolatile(context),
-			[CastIntToFloat],
+			[Cast(IntToFloat)],
 			if (constantFactor == 1.0) [] else {
 				[Mult(Float(Reg), Float(Imm(constantFactor)))];
 			}

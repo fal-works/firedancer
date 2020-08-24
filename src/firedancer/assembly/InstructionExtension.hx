@@ -549,12 +549,12 @@ class InstructionExtension {
 			default: throw unsupported();
 			}
 
-		case CastIntToFloat:
-			op(CastIntToFloatRR);
-		case CastCartesian:
-			op(CastCartesianRR);
-		case CastPolar:
-			op(CastPolarRR);
+		case Cast(type):
+			switch type {
+			case IntToFloat: op(CastIntToFloatRR);
+			case CartesianToVec: op(CastCartesianRR);
+			case PolarToVec: op(CastPolarRR);
+			}
 
 		case RandomRatio:
 			op(RandomRatioR);
@@ -821,12 +821,16 @@ class InstructionExtension {
 			};
 			'mod ${inputA.toString()}, ${inputB.toString()} -> $outputStr';
 
-		case CastIntToFloat:
-			'cast ri -> rf';
-		case CastCartesian:
-			'cast cartesian rfb, rf -> rvec';
-		case CastPolar:
-			'cast polar rfb, rf -> rvec';
+		case Cast(type):
+			final outputStr = DataRegisterSpecifier.get(type.getOutputType()).toString();
+			switch type {
+			case IntToFloat:
+				'cast ri -> $outputStr';
+			case CartesianToVec:
+				'cast cartesian rfb, rf -> $outputStr';
+			case PolarToVec:
+				'cast polar rfb, rf -> $outputStr';
+			}
 
 		case RandomRatio:
 			'random ratio n -> rf';
@@ -918,9 +922,7 @@ class InstructionExtension {
 		case Div(inputA, inputB): inputA.bytecodeLength() + inputB.bytecodeLength();
 		case Mod(inputA, inputB): inputA.bytecodeLength() + inputB.bytecodeLength();
 
-		case CastIntToFloat: UInt.zero;
-		case CastCartesian: UInt.zero;
-		case CastPolar: UInt.zero;
+		case Cast(_): UInt.zero;
 
 		case RandomRatio: UInt.zero;
 		case Random(max): max.bytecodeLength();
@@ -965,9 +967,10 @@ class InstructionExtension {
 		case Div(inputA, inputB): inputA.tryGetRegType() == regType || inputB.tryGetRegType() == regType;
 		case Mod(inputA, inputB): inputA.tryGetRegType() == regType || inputB.tryGetRegType() == regType;
 
-		case CastIntToFloat: regType == Int;
-		case CastCartesian: regType == Float;
-		case CastPolar: regType == Float;
+		case Cast(type): switch type {
+			case IntToFloat: regType == Int;
+			case CartesianToVec | PolarToVec: regType == Float;
+			}
 
 		case Random(max): max.tryGetRegType() == regType;
 		case RandomSigned(maxMagnitude): maxMagnitude.tryGetRegType() == regType;
@@ -1001,8 +1004,10 @@ class InstructionExtension {
 		case Div(inputA, inputB): inputA.tryGetRegBufType() == regType || inputB.tryGetRegBufType() == regType;
 		case Mod(inputA, inputB): inputA.tryGetRegBufType() == regType || inputB.tryGetRegBufType() == regType;
 
-		case CastCartesian: regType == Float;
-		case CastPolar: regType == Float;
+		case Cast(type): switch type {
+			case CartesianToVec | PolarToVec: regType == Float;
+			default: false;
+			}
 
 		case Random(max): max.tryGetRegBufType() == regType;
 		case RandomSigned(maxMagnitude): maxMagnitude.tryGetRegBufType() == regType;
@@ -1035,9 +1040,7 @@ class InstructionExtension {
 		case Mod(inputA, _):
 			inputA.tryGetRegType().coalesce(inputA.tryGetRegBufType()).nullable();
 
-		case CastIntToFloat: ValueType.Float;
-		case CastCartesian: ValueType.Vec;
-		case CastPolar: ValueType.Vec;
+		case Cast(castType): castType.getOutputType();
 
 		case RandomRatio: ValueType.Float;
 		case Random(max): max.getType();
@@ -1126,12 +1129,16 @@ class InstructionExtension {
 				else null;
 			}
 
-		case CastIntToFloat:
-			switch maybeImm {
-			case Int(operand):
-				switch operand {
-				case Imm(value):
-					Load(Float(Imm((value : Float))));
+		case Cast(type):
+			switch type {
+			case IntToFloat:
+				switch maybeImm {
+				case Int(operand):
+					switch operand {
+					case Imm(value):
+						Load(Float(Imm((value : Float))));
+					default: null;
+					}
 				default: null;
 				}
 			default: null;
@@ -1393,36 +1400,39 @@ class InstructionExtension {
 			default: null;
 			}
 
-		case CastCartesian:
-			switch maybeImmA {
-			case Float(operandA):
-				switch operandA {
-				case Imm(x):
-					switch maybeImmB {
-					case Float(operandB):
-						switch operandB {
-						case Imm(y):
-							Load(Vec(Imm(x, y)));
+		case Cast(type):
+			switch type {
+			case CartesianToVec:
+				switch maybeImmA {
+				case Float(operandA):
+					switch operandA {
+					case Imm(x):
+						switch maybeImmB {
+						case Float(operandB):
+							switch operandB {
+							case Imm(y):
+								Load(Vec(Imm(x, y)));
+							default: null;
+							}
 						default: null;
 						}
 					default: null;
 					}
 				default: null;
 				}
-			default: null;
-			}
-
-		case CastPolar:
-			switch maybeImmA {
-			case Float(operandA):
-				switch operandA {
-				case Imm(length):
-					switch maybeImmB {
-					case Float(operandB):
-						switch operandB {
-						case Imm(angle):
-							final vec = Azimuth.fromRadians(angle).toVec2D(length);
-							Load(Vec(Imm(vec.x, vec.y)));
+			case PolarToVec:
+				switch maybeImmA {
+				case Float(operandA):
+					switch operandA {
+					case Imm(length):
+						switch maybeImmB {
+						case Float(operandB):
+							switch operandB {
+							case Imm(angle):
+								final vec = Azimuth.fromRadians(angle).toVec2D(length);
+								Load(Vec(Imm(vec.x, vec.y)));
+							default: null;
+							}
 						default: null;
 						}
 					default: null;

@@ -147,7 +147,7 @@ class CartesianVecExpressionData extends VecExpressionData {
 			[
 				Save(Float(Reg)),
 				Pop(Float),
-				CastCartesian
+				Cast(CartesianToVec)
 			]
 		].flatten();
 
@@ -239,7 +239,7 @@ class PolarVecExpressionData extends VecExpressionData {
 			[
 				Save(Float(Reg)),
 				Pop(Float),
-				CastPolar
+				Cast(PolarToVec)
 			]
 		].flatten();
 

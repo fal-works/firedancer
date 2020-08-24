@@ -2,8 +2,7 @@ package firedancer.assembly;
 
 import firedancer.assembly.Operand;
 import firedancer.bytecode.types.FireArgument;
-import firedancer.assembly.types.ActorProperty;
-import firedancer.assembly.types.TargetProperty;
+import firedancer.assembly.types.*;
 
 @:using(firedancer.assembly.InstructionExtension)
 enum Instruction {
@@ -41,9 +40,7 @@ enum Instruction {
 	Mult(inputA: Operand, inputB: Operand);
 	Div(inputA: Operand, inputB: Operand);
 	Mod(inputA: Operand, inputB: Operand);
-	CastIntToFloat;
-	CastCartesian;
-	CastPolar;
+	Cast(type: CastOperationType);
 	RandomRatio;
 	Random(max: Operand);
 	RandomSigned(maxMagnitude: Operand);
