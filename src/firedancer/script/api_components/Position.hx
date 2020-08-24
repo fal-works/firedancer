@@ -24,7 +24,7 @@ class Position {
 	**/
 	public inline function add(distance: FloatExpression, bearing: AngleExpression) {
 		final vec: VecExpression = { length: distance, angle: bearing };
-		return new AddActorAttribute(Position, AddVector(vec));
+		return new AddActorProperty(Position, AddVector(vec));
 	}
 }
 
@@ -47,7 +47,7 @@ class CartesianPosition {
 	**/
 	public inline function add(x: FloatExpression, y: FloatExpression) {
 		final vec: VecExpression = { x: x, y: y };
-		return new AddActorAttribute(Position, AddVector(vec));
+		return new AddActorProperty(Position, AddVector(vec));
 	}
 }
 
@@ -61,14 +61,14 @@ class Distance {
 		Sets the length of position vector to `value`.
 	**/
 	public inline function set(value: FloatExpression) {
-		return new SetActorAttribute(Position, SetLength(value));
+		return new SetActorProperty(Position, SetLength(value));
 	}
 
 	/**
 		Adds `value` to the length of position vector.
 	**/
 	public inline function add(value: FloatExpression) {
-		return new AddActorAttribute(Position, AddLength(value));
+		return new AddActorProperty(Position, AddLength(value));
 	}
 }
 
@@ -82,13 +82,13 @@ class Bearing {
 		Sets the angle of position vector to `value`.
 	**/
 	public inline function set(value: AngleExpression) {
-		return new SetActorAttribute(Position, SetAngle(value));
+		return new SetActorProperty(Position, SetAngle(value));
 	}
 
 	/**
 		Adds `value` to the angle of position vector.
 	**/
 	public inline function add(value: AngleExpression) {
-		return new AddActorAttribute(Position, AddAngle(value));
+		return new AddActorProperty(Position, AddAngle(value));
 	}
 }

@@ -1,63 +1,64 @@
 package firedancer.script.nodes;
 
-import firedancer.types.ActorAttributeType;
 import firedancer.assembly.Instruction;
 import firedancer.assembly.AssemblyCode;
+import firedancer.assembly.types.ActorProperty.create as prop;
+import firedancer.assembly.types.ActorPropertyType;
 import firedancer.bytecode.internal.Constants.LEN32;
 import firedancer.script.expression.*;
 
 /**
-	Operates actor's attribute (e.g. position).
+	Operates actor's property (e.g. position).
 **/
 @:ripper_verified
-class AddActorAttribute extends AstNode implements ripper.Data {
-	final attribute: ActorAttributeType;
-	final operation: ActorAttributeAddOperation;
+class AddActorProperty extends AstNode implements ripper.Data {
+	final propType: ActorPropertyType;
+	final operation: ActorPropertyAddOperation;
 
 	/**
 		Performs this operation gradually in `frames`.
 	**/
 	public inline function frames(frames: IntExpression)
-		return new AddActorAttributeLinear(attribute, operation, frames);
+		return new AddActorPropertyLinear(propType, operation, frames);
 
 	override public inline function containsWait(): Bool
 		return false;
 
 	override public function toAssembly(context: CompileContext): AssemblyCode {
 		final c = context;
-		return switch attribute {
+		return switch propType {
 			case Position:
 				switch operation {
-					case AddVector(e): e.use(c, AddVector(Position, Vector, Vec(Reg)));
-					case AddLength(e): e.use(c, AddVector(Position, Length, Float(Reg)));
-					case AddAngle(e): e.use(c, AddVector(Position, Angle, Float(Reg)));
+					case AddVector(e): e.use(c, AddVector(Vec(Reg), prop(Position, Vector)));
+					case AddLength(e): e.use(c, AddVector(Float(Reg), prop(Position, Length)));
+					case AddAngle(e): e.use(c, AddVector(Float(Reg), prop(Position, Angle)));
 				}
 			case Velocity:
 				switch operation {
-					case AddVector(e): e.use(c, AddVector(Velocity, Vector, Vec(Reg)));
-					case AddLength(e): e.use(c, AddVector(Velocity, Length, Float(Reg)));
-					case AddAngle(e): e.use(c, AddVector(Velocity, Angle, Float(Reg)));
+					case AddVector(e): e.use(c, AddVector(Vec(Reg), prop(Velocity, Vector)));
+					case AddLength(e): e.use(c, AddVector(Float(Reg), prop(Velocity, Length)));
+					case AddAngle(e): e.use(c, AddVector(Float(Reg), prop(Velocity, Angle)));
 				}
 			case ShotPosition:
 				switch operation {
-					case AddVector(e): e.use(c, AddVector(ShotPosition, Vector, Vec(Reg)));
-					case AddLength(e): e.use(c, AddVector(ShotPosition, Length, Float(Reg)));
-					case AddAngle(e): e.use(c, AddVector(ShotPosition, Angle, Float(Reg)));
+					case AddVector(e): e.use(c, AddVector(Vec(Reg), prop(ShotPosition, Vector)));
+					case AddLength(e): e.use(c, AddVector(Float(Reg), prop(ShotPosition, Length)));
+					case AddAngle(e): e.use(c, AddVector(Float(Reg), prop(ShotPosition, Angle)));
 				}
 			case ShotVelocity:
 				switch operation {
-					case AddVector(e): e.use(c, AddVector(ShotVelocity, Vector, Vec(Reg)));
-					case AddLength(e): e.use(c, AddVector(ShotVelocity, Length, Float(Reg)));
-					case AddAngle(e): e.use(c, AddVector(ShotVelocity, Angle, Float(Reg)));
+					case AddVector(e): e.use(c, AddVector(Vec(Reg), prop(ShotVelocity, Vector)));
+					case AddLength(e): e.use(c, AddVector(Float(Reg), prop(ShotVelocity, Length)));
+					case AddAngle(e): e.use(c, AddVector(Float(Reg), prop(ShotVelocity, Angle)));
 				}
 		}
 	}
 }
 
 @:ripper_verified
-class AddActorAttributeLinear extends AstNode implements ripper.Data {
-	final attribute: ActorAttributeType;
-	final operation: ActorAttributeAddOperation;
+class AddActorPropertyLinear extends AstNode implements ripper.Data {
+	final propType: ActorPropertyType;
+	final operation: ActorPropertyAddOperation;
 	final frames: IntExpression;
 
 	override public inline function containsWait(): Bool {
@@ -90,7 +91,7 @@ class AddActorAttributeLinear extends AstNode implements ripper.Data {
 				divChange = getDivChange(true);
 				pushChange = Push(Vec(Reg));
 				peekChange = Peek(Vec, LEN32); // skip the loop counter
-				addFromVolatile = AddVector(attribute, Vector, Vec(Reg));
+				addFromVolatile = AddVector(Vec(Reg), prop(propType, Vector));
 				dropChange = Drop(Vec);
 
 			case AddLength(length):
@@ -98,7 +99,7 @@ class AddActorAttributeLinear extends AstNode implements ripper.Data {
 				divChange = getDivChange(false);
 				pushChange = Push(Float(Reg));
 				peekChange = Peek(Float, LEN32); // skip the loop counter
-				addFromVolatile = AddVector(attribute, Length, Float(Reg));
+				addFromVolatile = AddVector(Float(Reg), prop(propType, Length));
 				dropChange = Drop(Float);
 
 			case AddAngle(angle):
@@ -106,7 +107,7 @@ class AddActorAttributeLinear extends AstNode implements ripper.Data {
 				divChange = getDivChange(false);
 				pushChange = Push(Float(Reg));
 				peekChange = Peek(Float, LEN32); // skip the loop counter
-				addFromVolatile = AddVector(attribute, Angle, Float(Reg));
+				addFromVolatile = AddVector(Float(Reg), prop(propType, Angle));
 				dropChange = Drop(Float);
 		}
 
@@ -132,10 +133,10 @@ class AddActorAttributeLinear extends AstNode implements ripper.Data {
 }
 
 /**
-	Represents an operation on actor's attribute.
+	Represents an operation on actor's property.
 **/
-@:using(firedancer.script.nodes.AddActorAttribute.ActorAttributeAddOperationExtension)
-enum ActorAttributeAddOperation {
+@:using(firedancer.script.nodes.AddActorProperty.ActorPropertyAddOperationExtension)
+enum ActorPropertyAddOperation {
 	AddVector(arg: VecExpression);
 	// AddX(arg: FloatExpression);
 	// AddY(arg: FloatExpression);
@@ -143,12 +144,12 @@ enum ActorAttributeAddOperation {
 	AddAngle(arg: AngleExpression);
 }
 
-class ActorAttributeAddOperationExtension {
+class ActorPropertyAddOperationExtension {
 	/**
 		Divides the value to be added by `divisor`.
 	**/
 	public static function divide(
-		addOperation: ActorAttributeAddOperation,
+		addOperation: ActorPropertyAddOperation,
 		divisor: IntExpression
 	) {
 		return switch addOperation {

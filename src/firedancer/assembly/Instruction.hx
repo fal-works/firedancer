@@ -3,8 +3,7 @@ package firedancer.assembly;
 import firedancer.assembly.DataRegisterSpecifier;
 import firedancer.assembly.Operand;
 import firedancer.bytecode.types.FireArgument;
-import firedancer.types.ActorAttributeType;
-import firedancer.types.ActorAttributeComponentType;
+import firedancer.assembly.types.ActorProperty;
 
 @:using(firedancer.assembly.InstructionExtension)
 enum Instruction {
@@ -58,20 +57,17 @@ enum Instruction {
 	LoadTargetYR;
 	LoadBearingToTargetR;
 	CalcRelative(
-		attrType: ActorAttributeType,
-		cmpType: ActorAttributeComponentType,
-		input: Operand
+		input: Operand,
+		property: ActorProperty
 	);
 	// ---- write actor data ------------------------------------------
 	SetVector(
-		attrType: ActorAttributeType,
-		cmpType: ActorAttributeComponentType,
-		input: Operand
+		input: Operand,
+		property: ActorProperty
 	);
 	AddVector(
-		attrType: ActorAttributeType,
-		cmpType: ActorAttributeComponentType,
-		input: Operand
+		input: Operand,
+		property: ActorProperty
 	);
 	None;
 }

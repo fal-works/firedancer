@@ -24,7 +24,7 @@ class ShotPosition {
 	**/
 	public inline function add(distance: FloatExpression, bearing: AngleExpression) {
 		final vec: VecExpression = { length: distance, angle: bearing };
-		return new AddActorAttribute(ShotPosition, AddVector(vec));
+		return new AddActorProperty(ShotPosition, AddVector(vec));
 	}
 }
 
@@ -47,7 +47,7 @@ class CartesianShotPosition {
 	**/
 	public inline function add(x: FloatExpression, y: FloatExpression) {
 		final vec: VecExpression = { x: x, y: y };
-		return new AddActorAttribute(ShotPosition, AddVector(vec));
+		return new AddActorProperty(ShotPosition, AddVector(vec));
 	}
 }
 
@@ -61,14 +61,14 @@ class ShotDistance {
 		Sets the length of shot position vector to `value`.
 	**/
 	public inline function set(value: FloatExpression) {
-		return new SetActorAttribute(ShotPosition, SetLength(value));
+		return new SetActorProperty(ShotPosition, SetLength(value));
 	}
 
 	/**
 		Adds `value` to the length of shot position vector.
 	**/
 	public inline function add(value: FloatExpression) {
-		return new AddActorAttribute(ShotPosition, AddLength(value));
+		return new AddActorProperty(ShotPosition, AddLength(value));
 	}
 }
 
@@ -82,13 +82,13 @@ class ShotBearing {
 		Sets the angle of shot position vector to `value`.
 	**/
 	public inline function set(value: AngleExpression) {
-		return new SetActorAttribute(ShotPosition, SetAngle(value));
+		return new SetActorProperty(ShotPosition, SetAngle(value));
 	}
 
 	/**
 		Adds `value` to the angle of shot position vector.
 	**/
 	public inline function add(value: AngleExpression) {
-		return new AddActorAttribute(ShotPosition, AddAngle(value));
+		return new AddActorProperty(ShotPosition, AddAngle(value));
 	}
 }

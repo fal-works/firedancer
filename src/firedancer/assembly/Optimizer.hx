@@ -342,7 +342,7 @@ class Optimizer {
 				}
 			case AwaitThread:
 				curStacked.pop();
-			case AddVector(_, _, input):
+			case AddVector(input, _):
 				if (input.isStack()) peeksStack();
 
 			default:

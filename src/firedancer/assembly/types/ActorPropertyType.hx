@@ -1,16 +1,16 @@
-package firedancer.types;
+package firedancer.assembly.types;
 
 /**
-	Type of actor's attribute to be operated.
+	Type of actor's property to be operated.
 **/
-enum abstract ActorAttributeType(Int) {
+enum abstract ActorPropertyType(Int) {
 	final Position;
 	final Velocity;
 	final ShotPosition;
 	final ShotVelocity;
 
 	public function toString(): String {
-		return switch (cast this: ActorAttributeType) {
+		return switch (cast this: ActorPropertyType) {
 			case Position: "position";
 			case Velocity: "velocity";
 			case ShotPosition: "shot_position";

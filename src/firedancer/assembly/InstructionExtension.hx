@@ -1,8 +1,6 @@
 package firedancer.assembly;
 
 import firedancer.types.Azimuth;
-import firedancer.types.ActorAttributeType;
-import firedancer.types.ActorAttributeComponentType;
 import firedancer.bytecode.Word;
 import firedancer.bytecode.WordArray;
 import firedancer.bytecode.internal.Constants.*;
@@ -10,6 +8,7 @@ import firedancer.assembly.operation.GeneralOperation;
 import firedancer.assembly.operation.CalcOperation;
 import firedancer.assembly.operation.ReadOperation;
 import firedancer.assembly.operation.WriteOperation;
+import firedancer.assembly.types.ActorProperty;
 import firedancer.assembly.OperandTools.*;
 import firedancer.assembly.OperandKind;
 
@@ -613,13 +612,13 @@ class InstructionExtension {
 		case LoadBearingToTargetR:
 			op(LoadBearingToTargetR);
 
-		case CalcRelative(attrType, cmpType, input):
+		case CalcRelative(input, prop):
 			switch input {
 			case Vec(operand):
-				if (cmpType != Vector) throw unsupported();
+				if (prop.component != Vector) throw unsupported();
 				switch operand {
 				case Imm(x, y):
-					final opcode:Opcode = switch attrType {
+					final opcode:Opcode = switch prop.type {
 					case Position: CalcRelativePositionCR;
 					case Velocity: CalcRelativeVelocityCR;
 					case ShotPosition: CalcRelativeShotPositionCR;
@@ -631,7 +630,7 @@ class InstructionExtension {
 						y
 					];
 				case Reg:
-					final opcode:Opcode = switch attrType {
+					final opcode:Opcode = switch prop.type {
 					case Position: CalcRelativePositionRR;
 					case Velocity: CalcRelativeVelocityRR;
 					case ShotPosition: CalcRelativeShotPositionRR;
@@ -643,17 +642,17 @@ class InstructionExtension {
 			case Float(operand):
 				switch operand {
 				case Imm(value):
-					final opcode:Opcode = switch cmpType {
+					final opcode:Opcode = switch prop.component {
 					case Vector: throw unsupported();
 					case Length:
-						switch attrType {
+						switch prop.type {
 						case Position: CalcRelativeDistanceCR;
 						case Velocity: CalcRelativeSpeedCR;
 						case ShotPosition: CalcRelativeShotDistanceCR;
 						case ShotVelocity: CalcRelativeShotSpeedCR;
 						}
 					case Angle:
-						switch attrType {
+						switch prop.type {
 						case Position: CalcRelativeBearingCR;
 						case Velocity: CalcRelativeDirectionCR;
 						case ShotPosition: CalcRelativeShotBearingCR;
@@ -662,17 +661,17 @@ class InstructionExtension {
 					};
 					[op(opcode), value];
 				case Reg:
-					final opcode:Opcode = switch cmpType {
+					final opcode:Opcode = switch prop.component {
 					case Vector: throw unsupported();
 					case Length:
-						switch attrType {
+						switch prop.type {
 						case Position: CalcRelativeDistanceRR;
 						case Velocity: CalcRelativeSpeedRR;
 						case ShotPosition: CalcRelativeShotDistanceRR;
 						case ShotVelocity: CalcRelativeShotSpeedRR;
 						}
 					case Angle:
-						switch attrType {
+						switch prop.type {
 						case Position: CalcRelativeBearingRR;
 						case Velocity: CalcRelativeDirectionRR;
 						case ShotPosition: CalcRelativeShotBearingRR;
@@ -687,13 +686,13 @@ class InstructionExtension {
 
 			// ---- write actor data -----------------------------------------
 
-		case SetVector(attrType, cmpType, input):
+		case SetVector(input, prop):
 			switch input {
 			case Vec(operand):
-				if (cmpType != Vector) throw unsupported();
+				if (prop.component != Vector) throw unsupported();
 				switch operand {
 				case Imm(x, y):
-					final opcode:Opcode = switch attrType {
+					final opcode:Opcode = switch prop.type {
 					case Position: SetPositionC;
 					case Velocity: SetVelocityC;
 					case ShotPosition: SetShotPositionC;
@@ -705,7 +704,7 @@ class InstructionExtension {
 						y
 					];
 				case Reg:
-					final opcode:Opcode = switch attrType {
+					final opcode:Opcode = switch prop.type {
 					case Position: SetPositionR;
 					case Velocity: SetVelocityR;
 					case ShotPosition: SetShotPositionR;
@@ -717,17 +716,17 @@ class InstructionExtension {
 			case Float(operand):
 				switch operand {
 				case Imm(value):
-					final opcode:Opcode = switch cmpType {
+					final opcode:Opcode = switch prop.component {
 					case Vector: throw unsupported();
 					case Length:
-						switch attrType {
+						switch prop.type {
 						case Position: SetDistanceC;
 						case Velocity: SetSpeedC;
 						case ShotPosition: SetShotDistanceC;
 						case ShotVelocity: SetShotSpeedC;
 						}
 					case Angle:
-						switch attrType {
+						switch prop.type {
 						case Position: SetBearingC;
 						case Velocity: SetDirectionC;
 						case ShotPosition: SetShotBearingC;
@@ -736,17 +735,17 @@ class InstructionExtension {
 					};
 					[op(opcode), value];
 				case Reg:
-					final opcode:Opcode = switch cmpType {
+					final opcode:Opcode = switch prop.component {
 					case Vector: throw unsupported();
 					case Length:
-						switch attrType {
+						switch prop.type {
 						case Position: SetDistanceR;
 						case Velocity: SetSpeedR;
 						case ShotPosition: SetShotDistanceR;
 						case ShotVelocity: SetShotSpeedR;
 						}
 					case Angle:
-						switch attrType {
+						switch prop.type {
 						case Position: SetBearingR;
 						case Velocity: SetDirectionR;
 						case ShotPosition: SetShotBearingR;
@@ -759,13 +758,13 @@ class InstructionExtension {
 			default: throw unsupported();
 			}
 
-		case AddVector(attrType, cmpType, input):
+		case AddVector(input, prop):
 			switch input {
 			case Vec(operand):
-				if (cmpType != Vector) throw unsupported();
+				if (prop.component != Vector) throw unsupported();
 				switch operand {
 				case Imm(x, y):
-					final opcode:Opcode = switch attrType {
+					final opcode:Opcode = switch prop.type {
 					case Position: AddPositionC;
 					case Velocity: AddVelocityC;
 					case ShotPosition: AddShotPositionC;
@@ -777,7 +776,7 @@ class InstructionExtension {
 						y
 					];
 				case Reg:
-					final opcode:Opcode = switch attrType {
+					final opcode:Opcode = switch prop.type {
 					case Position: AddPositionR;
 					case Velocity: AddVelocityR;
 					case ShotPosition: AddShotPositionR;
@@ -785,7 +784,7 @@ class InstructionExtension {
 					};
 					op(opcode);
 				case Stack:
-					final opcode:Opcode = switch attrType {
+					final opcode:Opcode = switch prop.type {
 					case Position: AddPositionS;
 					case Velocity: AddVelocityS;
 					case ShotPosition: AddShotPositionS;
@@ -797,17 +796,17 @@ class InstructionExtension {
 			case Float(operand):
 				switch operand {
 				case Imm(value):
-					final opcode:Opcode = switch cmpType {
+					final opcode:Opcode = switch prop.component {
 					case Vector: throw unsupported();
 					case Length:
-						switch attrType {
+						switch prop.type {
 						case Position: AddDistanceC;
 						case Velocity: AddSpeedC;
 						case ShotPosition: AddShotDistanceC;
 						case ShotVelocity: AddShotSpeedC;
 						}
 					case Angle:
-						switch attrType {
+						switch prop.type {
 						case Position: AddBearingC;
 						case Velocity: AddDirectionC;
 						case ShotPosition: AddShotBearingC;
@@ -816,17 +815,17 @@ class InstructionExtension {
 					};
 					[op(opcode), value];
 				case Reg:
-					final opcode:Opcode = switch cmpType {
+					final opcode:Opcode = switch prop.component {
 					case Vector: throw unsupported();
 					case Length:
-						switch attrType {
+						switch prop.type {
 						case Position: AddDistanceR;
 						case Velocity: AddSpeedR;
 						case ShotPosition: AddShotDistanceR;
 						case ShotVelocity: AddShotSpeedR;
 						}
 					case Angle:
-						switch attrType {
+						switch prop.type {
 						case Position: AddBearingR;
 						case Velocity: AddDirectionR;
 						case ShotPosition: AddShotBearingR;
@@ -835,17 +834,17 @@ class InstructionExtension {
 					};
 					op(opcode);
 				case Stack:
-					final opcode:Opcode = switch cmpType {
+					final opcode:Opcode = switch prop.component {
 					case Vector: throw unsupported();
 					case Length:
-						switch attrType {
+						switch prop.type {
 						case Position: AddDistanceS;
 						case Velocity: AddSpeedS;
 						case ShotPosition: AddShotDistanceS;
 						case ShotVelocity: AddShotSpeedS;
 						}
 					case Angle:
-						switch attrType {
+						switch prop.type {
 						case Position: AddBearingS;
 						case Velocity: AddDirectionS;
 						case ShotPosition: AddShotBearingS;
@@ -1032,18 +1031,15 @@ class InstructionExtension {
 		case LoadBearingToTargetR:
 			'load bearing to target ->v';
 
-		case CalcRelative(attrType, cmpType, input):
-			final output = actorAttributeToString(attrType, cmpType);
-			'calc relative ${input.toString()} -> $output';
+		case CalcRelative(input, prop):
+			'calc relative ${input.toString()} -> ${prop.toString()}';
 
 			// ---- write actor data -----------------------------------------
 
-		case SetVector(attrType, cmpType, input):
-			final output = actorAttributeToString(attrType, cmpType);
-			'set ${input.toString()} -> $output';
-		case AddVector(attrType, cmpType, input):
-			final output = actorAttributeToString(attrType, cmpType);
-			'add ${input.toString()} -> $output';
+		case SetVector(input, prop):
+			'set ${input.toString()} -> ${prop.toString()}';
+		case AddVector(input, prop):
+			'add ${input.toString()} -> ${prop.toString()}';
 
 			// ----
 
@@ -1120,48 +1116,16 @@ class InstructionExtension {
 		case LoadTargetYR: UInt.zero;
 		case LoadBearingToTargetR: UInt.zero;
 
-		case CalcRelative(_, _, input): input.bytecodeLength();
+		case CalcRelative(input, prop): input.bytecodeLength();
 
 			// ---- write actor data -----------------------------------------
 
-		case SetVector(_, _, input): input.bytecodeLength();
-		case AddVector(_, _, input): input.bytecodeLength();
+		case SetVector(input, prop): input.bytecodeLength();
+		case AddVector(input, prop): input.bytecodeLength();
 
 			// ----
 
 		case None: UInt.zero;
-		}
-	}
-
-	static function actorAttributeToString(
-		attrType: ActorAttributeType,
-		cmpType: ActorAttributeComponentType
-	) {
-		return switch attrType {
-		case Position:
-			switch cmpType {
-			case Vector: "position";
-			case Length: "distance";
-			case Angle: "bearing";
-			}
-		case Velocity:
-			switch cmpType {
-			case Vector: "velocity";
-			case Length: "speed";
-			case Angle: "direction";
-			}
-		case ShotPosition:
-			switch cmpType {
-			case Vector: "shot_position";
-			case Length: "shot_distance";
-			case Angle: "shot_bearing";
-			}
-		case ShotVelocity:
-			switch cmpType {
-			case Vector: "shot_velocity";
-			case Length: "shot_speed";
-			case Angle: "shot_direction";
-			}
 		}
 	}
 
@@ -1192,10 +1156,10 @@ class InstructionExtension {
 		case Sin: regType == Float;
 		case Cos: regType == Float;
 
-		case CalcRelative(_, _, input): input.tryGetRegType() == regType;
+		case CalcRelative(input, prop): input.tryGetRegType() == regType;
 
-		case SetVector(_, _, input): input.tryGetRegType() == regType;
-		case AddVector(_, _, input): input.tryGetRegType() == regType;
+		case SetVector(input, prop): input.tryGetRegType() == regType;
+		case AddVector(input, prop): input.tryGetRegType() == regType;
 
 		default: false;
 		}
@@ -1224,10 +1188,10 @@ class InstructionExtension {
 		case Random(max): max.tryGetRegBufType() == regType;
 		case RandomSigned(maxMagnitude): maxMagnitude.tryGetRegBufType() == regType;
 
-		case CalcRelative(_, _, input): input.tryGetRegBufType() == regType;
+		case CalcRelative(input, prop): input.tryGetRegBufType() == regType;
 
-		case SetVector(_, _, input): input.tryGetRegBufType() == regType;
-		case AddVector(_, _, input): input.tryGetRegBufType() == regType;
+		case SetVector(input, prop): input.tryGetRegBufType() == regType;
+		case AddVector(input, prop): input.tryGetRegBufType() == regType;
 
 		default: false;
 		}
@@ -1268,7 +1232,7 @@ class InstructionExtension {
 		case LoadTargetYR: ValueType.Float;
 		case LoadBearingToTargetR: ValueType.Float;
 
-		case CalcRelative(_, _, input): input.getType();
+		case CalcRelative(input, _): input.getType();
 
 		default: null;
 		});
@@ -1358,22 +1322,22 @@ class InstructionExtension {
 			default: null;
 			}
 
-		case CalcRelative(attrType, cmpType, input):
+		case CalcRelative(input, prop):
 			final newInput = input.tryReplaceRegWithImm(maybeImm);
 			if (newInput.isSome()) {
-				CalcRelative(attrType, cmpType, newInput.unwrap());
+				CalcRelative(newInput.unwrap(), prop);
 			} else null;
 
-		case SetVector(attrType, cmpType, input):
+		case SetVector(input, prop):
 			final newInput = input.tryReplaceRegWithImm(maybeImm);
 			if (newInput.isSome()) {
-				SetVector(attrType, cmpType, newInput.unwrap());
+				SetVector(newInput.unwrap(), prop);
 			} else null;
 
-		case AddVector(attrType, cmpType, input):
+		case AddVector(input, prop):
 			final newInput = input.tryReplaceRegWithImm(maybeImm);
 			if (newInput.isSome()) {
-				AddVector(attrType, cmpType, newInput.unwrap());
+				AddVector(newInput.unwrap(), prop);
 			} else null;
 
 		default: null;
@@ -1686,7 +1650,7 @@ class InstructionExtension {
 				}
 			}
 
-		case AddVector(attrType, cmpType, input):
+		case AddVector(input, prop):
 			switch input {
 			case Vec(operand):
 				switch operand {
@@ -1694,7 +1658,7 @@ class InstructionExtension {
 					switch maybeImm {
 					case Vec(maybeImmOperand):
 						switch maybeImmOperand {
-						case Imm(_, _): AddVector(attrType, cmpType, maybeImm);
+						case Imm(_, _): AddVector(maybeImm, prop);
 						default: null;
 						}
 					default: null;
@@ -1707,7 +1671,7 @@ class InstructionExtension {
 					switch maybeImm {
 					case Float(maybeImmOperand):
 						switch maybeImmOperand {
-						case Imm(_): AddVector(attrType, cmpType, maybeImm);
+						case Imm(_): AddVector(maybeImm, prop);
 						default: null;
 						}
 					default: null;
@@ -2033,7 +1997,7 @@ class InstructionExtension {
 			default: null;
 			}
 
-		case AddVector(attrType, cmpType, input):
+		case AddVector(input, _):
 			if (input.isZero()) None else null;
 
 		default: null;
@@ -2233,7 +2197,7 @@ class InstructionExtension {
 				null;
 			}
 
-		case AddVector(attrType, cmpType, input):
+		case AddVector(input, _):
 			if (maybeImm.isZero()) switch regOrRegBuf {
 			case Reg:
 				if (input.isReg()) None else null;

@@ -24,7 +24,7 @@ class ShotVelocity {
 	**/
 	public inline function add(speed: FloatExpression, direction: AngleExpression) {
 		final vec: VecExpression = { length: speed, angle: direction };
-		return new AddActorAttribute(ShotVelocity, AddVector(vec));
+		return new AddActorProperty(ShotVelocity, AddVector(vec));
 	}
 }
 
@@ -47,7 +47,7 @@ class CartesianShotVelocity {
 	**/
 	public inline function add(vx: FloatExpression, vy: FloatExpression) {
 		final vec: VecExpression = { x: vx, y: vy };
-		return new AddActorAttribute(ShotVelocity, AddVector(vec));
+		return new AddActorProperty(ShotVelocity, AddVector(vec));
 	}
 }
 
@@ -61,14 +61,14 @@ class ShotSpeed {
 		Sets the length of shot velocity vector to `value`.
 	**/
 	public inline function set(value: FloatExpression) {
-		return new SetActorAttribute(ShotVelocity, SetLength(value));
+		return new SetActorProperty(ShotVelocity, SetLength(value));
 	}
 
 	/**
 		Adds `value` to the length of shot velocity vector.
 	**/
 	public inline function add(value: FloatExpression) {
-		return new AddActorAttribute(ShotVelocity, AddLength(value));
+		return new AddActorProperty(ShotVelocity, AddLength(value));
 	}
 }
 
@@ -82,13 +82,13 @@ class ShotDirection {
 		Sets the angle of shot velocity vector to `value`.
 	**/
 	public inline function set(value: AngleExpression) {
-		return new SetActorAttribute(ShotVelocity, SetAngle(value));
+		return new SetActorProperty(ShotVelocity, SetAngle(value));
 	}
 
 	/**
 		Adds `value` to the angle of shot velocity vector.
 	**/
 	public inline function add(value: AngleExpression) {
-		return new AddActorAttribute(ShotVelocity, AddAngle(value));
+		return new AddActorProperty(ShotVelocity, AddAngle(value));
 	}
 }
