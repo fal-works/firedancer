@@ -686,7 +686,7 @@ class InstructionExtension {
 
 			// ---- write actor data -----------------------------------------
 
-		case SetVector(input, prop):
+		case Set(input, prop):
 			switch input {
 			case Vec(operand):
 				if (prop.component != Vector) throw unsupported();
@@ -709,7 +709,7 @@ class InstructionExtension {
 			default: throw unsupported();
 			}
 
-		case AddVector(input, prop):
+		case Increase(input, prop):
 			switch input {
 			case Vec(operand):
 				if (prop.component != Vector) throw unsupported();
@@ -913,10 +913,10 @@ class InstructionExtension {
 
 			// ---- write actor data -----------------------------------------
 
-		case SetVector(input, prop):
+		case Set(input, prop):
 			'set ${input.toString()} -> ${prop.toString()}';
-		case AddVector(input, prop):
-			'add ${input.toString()} -> ${prop.toString()}';
+		case Increase(input, prop):
+			'increase ${input.toString()} -> ${prop.toString()}';
 
 			// ----
 
@@ -997,8 +997,8 @@ class InstructionExtension {
 
 			// ---- write actor data -----------------------------------------
 
-		case SetVector(input, prop): input.bytecodeLength();
-		case AddVector(input, prop): input.bytecodeLength();
+		case Set(input, prop): input.bytecodeLength();
+		case Increase(input, prop): input.bytecodeLength();
 
 			// ----
 
@@ -1035,8 +1035,8 @@ class InstructionExtension {
 
 		case CalcRelative(input, prop): input.tryGetRegType() == regType;
 
-		case SetVector(input, prop): input.tryGetRegType() == regType;
-		case AddVector(input, prop): input.tryGetRegType() == regType;
+		case Set(input, prop): input.tryGetRegType() == regType;
+		case Increase(input, prop): input.tryGetRegType() == regType;
 
 		default: false;
 		}
@@ -1067,8 +1067,8 @@ class InstructionExtension {
 
 		case CalcRelative(input, prop): input.tryGetRegBufType() == regType;
 
-		case SetVector(input, prop): input.tryGetRegBufType() == regType;
-		case AddVector(input, prop): input.tryGetRegBufType() == regType;
+		case Set(input, prop): input.tryGetRegBufType() == regType;
+		case Increase(input, prop): input.tryGetRegBufType() == regType;
 
 		default: false;
 		}
@@ -1205,16 +1205,16 @@ class InstructionExtension {
 				CalcRelative(newInput.unwrap(), prop);
 			} else null;
 
-		case SetVector(input, prop):
+		case Set(input, prop):
 			final newInput = input.tryReplaceRegWithImm(maybeImm);
 			if (newInput.isSome()) {
-				SetVector(newInput.unwrap(), prop);
+				Set(newInput.unwrap(), prop);
 			} else null;
 
-		case AddVector(input, prop):
+		case Increase(input, prop):
 			final newInput = input.tryReplaceRegWithImm(maybeImm);
 			if (newInput.isSome()) {
-				AddVector(newInput.unwrap(), prop);
+				Increase(newInput.unwrap(), prop);
 			} else null;
 
 		default: null;
@@ -1527,7 +1527,7 @@ class InstructionExtension {
 				}
 			}
 
-		case AddVector(input, prop):
+		case Increase(input, prop):
 			switch input {
 			case Vec(operand):
 				switch operand {
@@ -1535,7 +1535,7 @@ class InstructionExtension {
 					switch maybeImm {
 					case Vec(maybeImmOperand):
 						switch maybeImmOperand {
-						case Imm(_, _): AddVector(maybeImm, prop);
+						case Imm(_, _): Increase(maybeImm, prop);
 						default: null;
 						}
 					default: null;
@@ -1548,7 +1548,7 @@ class InstructionExtension {
 					switch maybeImm {
 					case Float(maybeImmOperand):
 						switch maybeImmOperand {
-						case Imm(_): AddVector(maybeImm, prop);
+						case Imm(_): Increase(maybeImm, prop);
 						default: null;
 						}
 					default: null;
@@ -1874,7 +1874,7 @@ class InstructionExtension {
 			default: null;
 			}
 
-		case AddVector(input, _):
+		case Increase(input, _):
 			if (input.isZero()) None else null;
 
 		default: null;
@@ -2074,7 +2074,7 @@ class InstructionExtension {
 				null;
 			}
 
-		case AddVector(input, _):
+		case Increase(input, _):
 			if (maybeImm.isZero()) switch regOrRegBuf {
 			case Reg:
 				if (input.isReg()) None else null;

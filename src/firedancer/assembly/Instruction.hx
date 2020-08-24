@@ -6,7 +6,7 @@ import firedancer.assembly.types.ActorProperty;
 
 @:using(firedancer.assembly.InstructionExtension)
 enum Instruction {
-	// ---- control flow --------------------------------------------
+	// ---- control flow --------------------------------------------------------
 	Break;
 	CountDownBreak;
 	Label(labelId: UInt);
@@ -15,25 +15,25 @@ enum Instruction {
 	UseThread(programId: UInt, output: Operand);
 	AwaitThread;
 	End(endCode: Int);
-	// ---- move values ---------------------------------------------
+	// ---- move values ---------------------------------------------------------
 	Load(input: Operand);
 	Save(input: Operand);
 	Store(input: Operand, address: UInt);
-	// ---- read/write stack ----------------------------------------
+	// ---- read/write stack ----------------------------------------------------
 	Push(input: Operand);
 	Pop(type: ValueType);
 	Peek(type: ValueType, bytesToSkip: Int);
 	Drop(type: ValueType);
-	// ---- fire ----------------------------------------------------
+	// ---- fire ----------------------------------------------------------------
 	FireSimple;
 	FireComplex(fireArgument: FireArgument);
 	FireSimpleWithCode(fireCode: Int);
 	FireComplexWithCode(fireArgument: FireArgument, fireCode: Int);
-	// ---- other ----------------------------------------------------
+	// ---- other general -------------------------------------------------------
 	GlobalEvent;
 	LocalEvent;
 	Debug(debugCode: Int);
-	// ---- calc values ----------------------------------------------
+	// ---- calc values ---------------------------------------------------------
 	Add(input: OperandPair);
 	Sub(input: OperandPair);
 	Minus(input: Operand);
@@ -50,14 +50,15 @@ enum Instruction {
 	Cos;
 	IncrementVV(address: UInt);
 	DecrementVV(address: UInt);
-	// ---- read actor data ------------------------------------------
+	// ---- read actor data -----------------------------------------------------
 	LoadTargetPositionR;
 	LoadTargetXR;
 	LoadTargetYR;
 	LoadBearingToTargetR;
 	CalcRelative(input: Operand, property: ActorProperty);
-	// ---- write actor data ------------------------------------------
-	SetVector(input: Operand, property: ActorProperty);
-	AddVector(input: Operand, property: ActorProperty);
+	// ---- write actor data ----------------------------------------------------
+	Set(input: Operand, property: ActorProperty);
+	Increase(input: Operand, property: ActorProperty);
+	// ---- none ----------------------------------------------------------------
 	None;
 }

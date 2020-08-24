@@ -32,33 +32,33 @@ class SetActorProperty extends AstNode implements ripper.Data {
 				switch operation {
 					case SetVector(e, mat):
 						if (mat != null) e = e.transform(mat);
-						e.use(c, SetVector(Vec(Reg), prop(Position, Vector)));
-					case SetLength(e): e.use(c, SetVector(Float(Reg), prop(Position, Length)));
-					case SetAngle(e): e.use(c, SetVector(Float(Reg), prop(Position, Angle)));
+						e.use(c, Set(Vec(Reg), prop(Position, Vector)));
+					case SetLength(e): e.use(c, Set(Float(Reg), prop(Position, Length)));
+					case SetAngle(e): e.use(c, Set(Float(Reg), prop(Position, Angle)));
 				}
 			case Velocity:
 				switch operation {
 					case SetVector(e, mat):
 						if (mat != null) e = e.transform(mat);
-						e.use(c, SetVector(Vec(Reg), prop(Velocity, Vector)));
-					case SetLength(e): e.use(c, SetVector(Vec(Reg), prop(Velocity, Length)));
-					case SetAngle(e): e.use(c, SetVector(Vec(Reg), prop(Velocity, Angle)));
+						e.use(c, Set(Vec(Reg), prop(Velocity, Vector)));
+					case SetLength(e): e.use(c, Set(Vec(Reg), prop(Velocity, Length)));
+					case SetAngle(e): e.use(c, Set(Vec(Reg), prop(Velocity, Angle)));
 				}
 			case ShotPosition:
 				switch operation {
 					case SetVector(e, mat):
 						if (mat != null) e = e.transform(mat);
-						e.use(c, SetVector(Vec(Reg), prop(ShotPosition, Vector)));
-					case SetLength(e): e.use(c, SetVector(Float(Reg), prop(ShotPosition, Length)));
-					case SetAngle(e): e.use(c, SetVector(Float(Reg), prop(ShotPosition, Angle)));
+						e.use(c, Set(Vec(Reg), prop(ShotPosition, Vector)));
+					case SetLength(e): e.use(c, Set(Float(Reg), prop(ShotPosition, Length)));
+					case SetAngle(e): e.use(c, Set(Float(Reg), prop(ShotPosition, Angle)));
 				}
 			case ShotVelocity:
 				switch operation {
 					case SetVector(e, mat):
 						if (mat != null) e = e.transform(mat);
-						e.use(c, SetVector(Vec(Reg), prop(ShotVelocity, Vector)));
-					case SetLength(e): e.use(c, SetVector(Vec(Reg), prop(ShotVelocity, Length)));
-					case SetAngle(e): e.use(c, SetVector(Vec(Reg), prop(ShotVelocity, Angle)));
+						e.use(c, Set(Vec(Reg), prop(ShotVelocity, Vector)));
+					case SetLength(e): e.use(c, Set(Vec(Reg), prop(ShotVelocity, Length)));
+					case SetAngle(e): e.use(c, Set(Vec(Reg), prop(ShotVelocity, Angle)));
 				}
 		}
 	}
@@ -158,7 +158,7 @@ class SetActorPropertyLinear extends AstNode {
 				peekChange = Peek(Vec, LEN32); // skip the loop counter
 				dropChange = Drop(Vec);
 
-				addFromVolatile = SetVector(Vec(Reg), prop(propType, Vector));
+				addFromVolatile = Set(Vec(Reg), prop(propType, Vector));
 
 				final calcRelativeRR: Instruction = CalcRelative(Vec(Reg), prop(propType, Vector));
 				calcRelative = [vec.loadToVolatile(context), [calcRelativeRR]].flatten();
@@ -169,7 +169,7 @@ class SetActorPropertyLinear extends AstNode {
 				peekChange = Peek(Float, LEN32); // skip the loop counter
 				dropChange = Drop(Float);
 
-				addFromVolatile = AddVector(Float(Reg), prop(propType, Length));
+				addFromVolatile = Increase(Float(Reg), prop(propType, Length));
 
 				final calcRelativeRR: Instruction = CalcRelative(Float(Reg), prop(propType, Length));
 				calcRelative = length.loadToVolatile(context);
@@ -181,7 +181,7 @@ class SetActorPropertyLinear extends AstNode {
 				peekChange = Peek(Float, LEN32); // skip the loop counter
 				dropChange = Drop(Float);
 
-				addFromVolatile = AddVector(Float(Reg), prop(propType, Angle));
+				addFromVolatile = Increase(Float(Reg), prop(propType, Angle));
 
 				final calcRelativeRR:Instruction = CalcRelative(Float(Reg), prop(propType, Angle));
 				calcRelative = angle.loadToVolatile(context);

@@ -29,27 +29,27 @@ class AddActorProperty extends AstNode implements ripper.Data {
 		return switch propType {
 			case Position:
 				switch operation {
-					case AddVector(e): e.use(c, AddVector(Vec(Reg), prop(Position, Vector)));
-					case AddLength(e): e.use(c, AddVector(Float(Reg), prop(Position, Length)));
-					case AddAngle(e): e.use(c, AddVector(Float(Reg), prop(Position, Angle)));
+					case AddVector(e): e.use(c, Increase(Vec(Reg), prop(Position, Vector)));
+					case AddLength(e): e.use(c, Increase(Float(Reg), prop(Position, Length)));
+					case AddAngle(e): e.use(c, Increase(Float(Reg), prop(Position, Angle)));
 				}
 			case Velocity:
 				switch operation {
-					case AddVector(e): e.use(c, AddVector(Vec(Reg), prop(Velocity, Vector)));
-					case AddLength(e): e.use(c, AddVector(Float(Reg), prop(Velocity, Length)));
-					case AddAngle(e): e.use(c, AddVector(Float(Reg), prop(Velocity, Angle)));
+					case AddVector(e): e.use(c, Increase(Vec(Reg), prop(Velocity, Vector)));
+					case AddLength(e): e.use(c, Increase(Float(Reg), prop(Velocity, Length)));
+					case AddAngle(e): e.use(c, Increase(Float(Reg), prop(Velocity, Angle)));
 				}
 			case ShotPosition:
 				switch operation {
-					case AddVector(e): e.use(c, AddVector(Vec(Reg), prop(ShotPosition, Vector)));
-					case AddLength(e): e.use(c, AddVector(Float(Reg), prop(ShotPosition, Length)));
-					case AddAngle(e): e.use(c, AddVector(Float(Reg), prop(ShotPosition, Angle)));
+					case AddVector(e): e.use(c, Increase(Vec(Reg), prop(ShotPosition, Vector)));
+					case AddLength(e): e.use(c, Increase(Float(Reg), prop(ShotPosition, Length)));
+					case AddAngle(e): e.use(c, Increase(Float(Reg), prop(ShotPosition, Angle)));
 				}
 			case ShotVelocity:
 				switch operation {
-					case AddVector(e): e.use(c, AddVector(Vec(Reg), prop(ShotVelocity, Vector)));
-					case AddLength(e): e.use(c, AddVector(Float(Reg), prop(ShotVelocity, Length)));
-					case AddAngle(e): e.use(c, AddVector(Float(Reg), prop(ShotVelocity, Angle)));
+					case AddVector(e): e.use(c, Increase(Vec(Reg), prop(ShotVelocity, Vector)));
+					case AddLength(e): e.use(c, Increase(Float(Reg), prop(ShotVelocity, Length)));
+					case AddAngle(e): e.use(c, Increase(Float(Reg), prop(ShotVelocity, Angle)));
 				}
 		}
 	}
@@ -91,7 +91,7 @@ class AddActorPropertyLinear extends AstNode implements ripper.Data {
 				divChange = getDivChange(true);
 				pushChange = Push(Vec(Reg));
 				peekChange = Peek(Vec, LEN32); // skip the loop counter
-				addFromVolatile = AddVector(Vec(Reg), prop(propType, Vector));
+				addFromVolatile = Increase(Vec(Reg), prop(propType, Vector));
 				dropChange = Drop(Vec);
 
 			case AddLength(length):
@@ -99,7 +99,7 @@ class AddActorPropertyLinear extends AstNode implements ripper.Data {
 				divChange = getDivChange(false);
 				pushChange = Push(Float(Reg));
 				peekChange = Peek(Float, LEN32); // skip the loop counter
-				addFromVolatile = AddVector(Float(Reg), prop(propType, Length));
+				addFromVolatile = Increase(Float(Reg), prop(propType, Length));
 				dropChange = Drop(Float);
 
 			case AddAngle(angle):
@@ -107,7 +107,7 @@ class AddActorPropertyLinear extends AstNode implements ripper.Data {
 				divChange = getDivChange(false);
 				pushChange = Push(Float(Reg));
 				peekChange = Peek(Float, LEN32); // skip the loop counter
-				addFromVolatile = AddVector(Float(Reg), prop(propType, Angle));
+				addFromVolatile = Increase(Float(Reg), prop(propType, Angle));
 				dropChange = Drop(Float);
 		}
 
