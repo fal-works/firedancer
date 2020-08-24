@@ -612,17 +612,17 @@ class InstructionExtension {
 		case LoadBearingToTarget:
 			op(LoadBearingToTargetR);
 
-		case CalcRelative(input, prop):
+		case GetDiff(input, prop):
 			switch input {
 			case Vec(operand):
 				if (prop.component != Vector) throw unsupported();
 				switch operand {
 				case Imm(x, y):
 					final opcode:Opcode = switch prop.type {
-					case Position: CalcRelativePositionCR;
-					case Velocity: CalcRelativeVelocityCR;
-					case ShotPosition: CalcRelativeShotPositionCR;
-					case ShotVelocity: CalcRelativeShotVelocityCR;
+					case Position: GetDiffPositionCR;
+					case Velocity: GetDiffVelocityCR;
+					case ShotPosition: GetDiffShotPositionCR;
+					case ShotVelocity: GetDiffShotVelocityCR;
 					};
 					[
 						op(opcode),
@@ -631,10 +631,10 @@ class InstructionExtension {
 					];
 				case Reg:
 					final opcode:Opcode = switch prop.type {
-					case Position: CalcRelativePositionRR;
-					case Velocity: CalcRelativeVelocityRR;
-					case ShotPosition: CalcRelativeShotPositionRR;
-					case ShotVelocity: CalcRelativeShotVelocityRR;
+					case Position: GetDiffPositionRR;
+					case Velocity: GetDiffVelocityRR;
+					case ShotPosition: GetDiffShotPositionRR;
+					case ShotVelocity: GetDiffShotVelocityRR;
 					};
 					op(opcode);
 				default: throw unsupported();
@@ -646,17 +646,17 @@ class InstructionExtension {
 					case Vector: throw unsupported();
 					case Length:
 						switch prop.type {
-						case Position: CalcRelativeDistanceCR;
-						case Velocity: CalcRelativeSpeedCR;
-						case ShotPosition: CalcRelativeShotDistanceCR;
-						case ShotVelocity: CalcRelativeShotSpeedCR;
+						case Position: GetDiffDistanceCR;
+						case Velocity: GetDiffSpeedCR;
+						case ShotPosition: GetDiffShotDistanceCR;
+						case ShotVelocity: GetDiffShotSpeedCR;
 						}
 					case Angle:
 						switch prop.type {
-						case Position: CalcRelativeBearingCR;
-						case Velocity: CalcRelativeDirectionCR;
-						case ShotPosition: CalcRelativeShotBearingCR;
-						case ShotVelocity: CalcRelativeShotDirectionCR;
+						case Position: GetDiffBearingCR;
+						case Velocity: GetDiffDirectionCR;
+						case ShotPosition: GetDiffShotBearingCR;
+						case ShotVelocity: GetDiffShotDirectionCR;
 						}
 					};
 					[op(opcode), value];
@@ -665,17 +665,17 @@ class InstructionExtension {
 					case Vector: throw unsupported();
 					case Length:
 						switch prop.type {
-						case Position: CalcRelativeDistanceRR;
-						case Velocity: CalcRelativeSpeedRR;
-						case ShotPosition: CalcRelativeShotDistanceRR;
-						case ShotVelocity: CalcRelativeShotSpeedRR;
+						case Position: GetDiffDistanceRR;
+						case Velocity: GetDiffSpeedRR;
+						case ShotPosition: GetDiffShotDistanceRR;
+						case ShotVelocity: GetDiffShotSpeedRR;
 						}
 					case Angle:
 						switch prop.type {
-						case Position: CalcRelativeBearingRR;
-						case Velocity: CalcRelativeDirectionRR;
-						case ShotPosition: CalcRelativeShotBearingRR;
-						case ShotVelocity: CalcRelativeShotDirectionRR;
+						case Position: GetDiffBearingRR;
+						case Velocity: GetDiffDirectionRR;
+						case ShotPosition: GetDiffShotBearingRR;
+						case ShotVelocity: GetDiffShotDirectionRR;
 						}
 					};
 					op(opcode);
@@ -908,8 +908,9 @@ class InstructionExtension {
 		case LoadBearingToTarget:
 			'load bearing to target -> rf';
 
-		case CalcRelative(input, prop):
-			'calc relative ${input.toString()} -> ${prop.toString()}';
+		case GetDiff(input, prop):
+			final outputStr = DataRegisterSpecifier.get(input.getType());
+			'get diff ${input.toString()}, ${prop.toString()} -> $outputStr';
 
 			// ---- write actor data -----------------------------------------
 
@@ -993,7 +994,7 @@ class InstructionExtension {
 		case LoadTargetY: UInt.zero;
 		case LoadBearingToTarget: UInt.zero;
 
-		case CalcRelative(input, prop): input.bytecodeLength();
+		case GetDiff(input, prop): input.bytecodeLength();
 
 			// ---- write actor data -----------------------------------------
 
@@ -1033,7 +1034,7 @@ class InstructionExtension {
 		case Sin: regType == Float;
 		case Cos: regType == Float;
 
-		case CalcRelative(input, prop): input.tryGetRegType() == regType;
+		case GetDiff(input, prop): input.tryGetRegType() == regType;
 
 		case Set(input, prop): input.tryGetRegType() == regType;
 		case Increase(input, prop): input.tryGetRegType() == regType;
@@ -1065,7 +1066,7 @@ class InstructionExtension {
 		case Random(max): max.tryGetRegBufType() == regType;
 		case RandomSigned(maxMagnitude): maxMagnitude.tryGetRegBufType() == regType;
 
-		case CalcRelative(input, prop): input.tryGetRegBufType() == regType;
+		case GetDiff(input, prop): input.tryGetRegBufType() == regType;
 
 		case Set(input, prop): input.tryGetRegBufType() == regType;
 		case Increase(input, prop): input.tryGetRegBufType() == regType;
@@ -1109,7 +1110,7 @@ class InstructionExtension {
 		case LoadTargetY: ValueType.Float;
 		case LoadBearingToTarget: ValueType.Float;
 
-		case CalcRelative(input, _): input.getType();
+		case GetDiff(input, _): input.getType();
 
 		default: null;
 		});
@@ -1199,10 +1200,10 @@ class InstructionExtension {
 			default: null;
 			}
 
-		case CalcRelative(input, prop):
+		case GetDiff(input, prop):
 			final newInput = input.tryReplaceRegWithImm(maybeImm);
 			if (newInput.isSome()) {
-				CalcRelative(newInput.unwrap(), prop);
+				GetDiff(newInput.unwrap(), prop);
 			} else null;
 
 		case Set(input, prop):

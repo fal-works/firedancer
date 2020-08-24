@@ -142,7 +142,7 @@ class SetActorPropertyLinear extends AstNode {
 			};
 		}
 
-		var calcRelative: AssemblyCode; // Calculate total change (before the loop)
+		var getDiff: AssemblyCode; // Calculate total change (before the loop)
 		var divChange: AssemblyCode; // Get change rate (before the loop)
 		var pushChange: Instruction; // Push change rate (before the loop)
 		var peekChange: Instruction; // Peek change rate (in the loop)
@@ -160,8 +160,8 @@ class SetActorPropertyLinear extends AstNode {
 
 				addFromVolatile = Set(Vec(Reg), prop(propType, Vector));
 
-				final calcRelativeRR: Instruction = CalcRelative(Vec(Reg), prop(propType, Vector));
-				calcRelative = [vec.loadToVolatile(context), [calcRelativeRR]].flatten();
+				final getDiffRR: Instruction = GetDiff(Vec(Reg), prop(propType, Vector));
+				getDiff = [vec.loadToVolatile(context), [getDiffRR]].flatten();
 
 			case SetLength(length):
 				divChange = getDivChange(false);
@@ -171,9 +171,9 @@ class SetActorPropertyLinear extends AstNode {
 
 				addFromVolatile = Increase(Float(Reg), prop(propType, Length));
 
-				final calcRelativeRR: Instruction = CalcRelative(Float(Reg), prop(propType, Length));
-				calcRelative = length.loadToVolatile(context);
-				calcRelative.push(calcRelativeRR);
+				final getDiffRR: Instruction = GetDiff(Float(Reg), prop(propType, Length));
+				getDiff = length.loadToVolatile(context);
+				getDiff.push(getDiffRR);
 
 			case SetAngle(angle):
 				divChange = getDivChange(false);
@@ -183,12 +183,12 @@ class SetActorPropertyLinear extends AstNode {
 
 				addFromVolatile = Increase(Float(Reg), prop(propType, Angle));
 
-				final calcRelativeRR:Instruction = CalcRelative(Float(Reg), prop(propType, Angle));
-				calcRelative = angle.loadToVolatile(context);
-				calcRelative.push(calcRelativeRR);
+				final getDiffRR:Instruction = GetDiff(Float(Reg), prop(propType, Angle));
+				getDiff = angle.loadToVolatile(context);
+				getDiff.push(getDiffRR);
 		}
 
-		final prepare: AssemblyCode = calcRelative.concat(divChange).concat([pushChange]);
+		final prepare: AssemblyCode = getDiff.concat(divChange).concat([pushChange]);
 
 		final body: AssemblyCode = [
 			Break,

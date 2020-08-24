@@ -55,7 +55,7 @@ enum Instruction {
 	LoadTargetX;
 	LoadTargetY;
 	LoadBearingToTarget;
-	CalcRelative(input: Operand, property: ActorProperty);
+	GetDiff(input: Operand, property: ActorProperty);
 	// ---- write actor data ----------------------------------------------------
 	Set(input: Operand, property: ActorProperty);
 	Increase(input: Operand, property: ActorProperty);

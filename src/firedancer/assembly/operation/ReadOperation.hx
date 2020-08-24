@@ -30,30 +30,30 @@ enum abstract ReadOperation(Int) to Int {
 		case ReadOperation.LoadTargetXR: LoadTargetXR;
 		case ReadOperation.LoadTargetYR: LoadTargetYR;
 		case ReadOperation.LoadBearingToTargetR: LoadBearingToTargetR;
-		case ReadOperation.CalcRelativePositionCR: CalcRelativePositionCR;
-		case ReadOperation.CalcRelativeVelocityCR: CalcRelativeVelocityCR;
-		case ReadOperation.CalcRelativePositionRR: CalcRelativePositionRR;
-		case ReadOperation.CalcRelativeVelocityRR: CalcRelativeVelocityRR;
-		case ReadOperation.CalcRelativeDistanceCR: CalcRelativeDistanceCR;
-		case ReadOperation.CalcRelativeBearingCR: CalcRelativeBearingCR;
-		case ReadOperation.CalcRelativeSpeedCR: CalcRelativeSpeedCR;
-		case ReadOperation.CalcRelativeDirectionCR: CalcRelativeDirectionCR;
-		case ReadOperation.CalcRelativeDistanceRR: CalcRelativeDistanceRR;
-		case ReadOperation.CalcRelativeBearingRR: CalcRelativeBearingRR;
-		case ReadOperation.CalcRelativeSpeedRR: CalcRelativeSpeedRR;
-		case ReadOperation.CalcRelativeDirectionRR: CalcRelativeDirectionRR;
-		case ReadOperation.CalcRelativeShotPositionCR: CalcRelativeShotPositionCR;
-		case ReadOperation.CalcRelativeShotVelocityCR: CalcRelativeShotVelocityCR;
-		case ReadOperation.CalcRelativeShotPositionRR: CalcRelativeShotPositionRR;
-		case ReadOperation.CalcRelativeShotVelocityRR: CalcRelativeShotVelocityRR;
-		case ReadOperation.CalcRelativeShotDistanceCR: CalcRelativeShotDistanceCR;
-		case ReadOperation.CalcRelativeShotBearingCR: CalcRelativeShotBearingCR;
-		case ReadOperation.CalcRelativeShotSpeedCR: CalcRelativeShotSpeedCR;
-		case ReadOperation.CalcRelativeShotDirectionCR: CalcRelativeShotDirectionCR;
-		case ReadOperation.CalcRelativeShotDistanceRR: CalcRelativeShotDistanceRR;
-		case ReadOperation.CalcRelativeShotBearingRR: CalcRelativeShotBearingRR;
-		case ReadOperation.CalcRelativeShotSpeedRR: CalcRelativeShotSpeedRR;
-		case ReadOperation.CalcRelativeShotDirectionRR: CalcRelativeShotDirectionRR;
+		case ReadOperation.GetDiffPositionCR: GetDiffPositionCR;
+		case ReadOperation.GetDiffVelocityCR: GetDiffVelocityCR;
+		case ReadOperation.GetDiffPositionRR: GetDiffPositionRR;
+		case ReadOperation.GetDiffVelocityRR: GetDiffVelocityRR;
+		case ReadOperation.GetDiffDistanceCR: GetDiffDistanceCR;
+		case ReadOperation.GetDiffBearingCR: GetDiffBearingCR;
+		case ReadOperation.GetDiffSpeedCR: GetDiffSpeedCR;
+		case ReadOperation.GetDiffDirectionCR: GetDiffDirectionCR;
+		case ReadOperation.GetDiffDistanceRR: GetDiffDistanceRR;
+		case ReadOperation.GetDiffBearingRR: GetDiffBearingRR;
+		case ReadOperation.GetDiffSpeedRR: GetDiffSpeedRR;
+		case ReadOperation.GetDiffDirectionRR: GetDiffDirectionRR;
+		case ReadOperation.GetDiffShotPositionCR: GetDiffShotPositionCR;
+		case ReadOperation.GetDiffShotVelocityCR: GetDiffShotVelocityCR;
+		case ReadOperation.GetDiffShotPositionRR: GetDiffShotPositionRR;
+		case ReadOperation.GetDiffShotVelocityRR: GetDiffShotVelocityRR;
+		case ReadOperation.GetDiffShotDistanceCR: GetDiffShotDistanceCR;
+		case ReadOperation.GetDiffShotBearingCR: GetDiffShotBearingCR;
+		case ReadOperation.GetDiffShotSpeedCR: GetDiffShotSpeedCR;
+		case ReadOperation.GetDiffShotDirectionCR: GetDiffShotDirectionCR;
+		case ReadOperation.GetDiffShotDistanceRR: GetDiffShotDistanceRR;
+		case ReadOperation.GetDiffShotBearingRR: GetDiffShotBearingRR;
+		case ReadOperation.GetDiffShotSpeedRR: GetDiffShotSpeedRR;
+		case ReadOperation.GetDiffShotDirectionRR: GetDiffShotDirectionRR;
 		default: throw error(value);
 		}
 	}
@@ -143,122 +143,122 @@ enum abstract ReadOperation(Int) to Int {
 	/**
 		(vec immediate) - (position) ->  (vec register)
 	**/
-	final CalcRelativePositionCR;
+	final GetDiffPositionCR;
 
 	/**
 		(vec immediate) - (velocity) -> (vec register)
 	**/
-	final CalcRelativeVelocityCR;
+	final GetDiffVelocityCR;
 
 	/**
 		(vec register) - (position) -> (vec register)
 	**/
-	final CalcRelativePositionRR;
+	final GetDiffPositionRR;
 
 	/**
 		(vec register) - (velocity) -> (vec register)
 	**/
-	final CalcRelativeVelocityRR;
+	final GetDiffVelocityRR;
 
 	/**
 		(float immediate) - (distance) -> (float register)
 	**/
-	final CalcRelativeDistanceCR;
+	final GetDiffDistanceCR;
 
 	/**
 		(float immediate) - (bearing) -> (float register)
 	**/
-	final CalcRelativeBearingCR;
+	final GetDiffBearingCR;
 
 	/**
 		(float immediate) - (speed) -> (float register)
 	**/
-	final CalcRelativeSpeedCR;
+	final GetDiffSpeedCR;
 
 	/**
 		(float immediate) - (direction) -> (float register)
 	**/
-	final CalcRelativeDirectionCR;
+	final GetDiffDirectionCR;
 
 	/**
 		(float register) - (distance) -> (float register)
 	**/
-	final CalcRelativeDistanceRR;
+	final GetDiffDistanceRR;
 
 	/**
 		(float register) - (bearing) -> (float register)
 	**/
-	final CalcRelativeBearingRR;
+	final GetDiffBearingRR;
 
 	/**
 		(float register) - (speed) -> (float register)
 	**/
-	final CalcRelativeSpeedRR;
+	final GetDiffSpeedRR;
 
 	/**
 		(float register) - (direction) -> (float register)
 	**/
-	final CalcRelativeDirectionRR;
+	final GetDiffDirectionRR;
 
 	/**
 		(vec immediate) - (shot position) -> (vec register)
 	**/
-	final CalcRelativeShotPositionCR;
+	final GetDiffShotPositionCR;
 
 	/**
 		(vec immediate) - (shot velocity) -> (vec register)
 	**/
-	final CalcRelativeShotVelocityCR;
+	final GetDiffShotVelocityCR;
 
 	/**
 		(vec register) - (shot position) -> (vec register)
 	**/
-	final CalcRelativeShotPositionRR;
+	final GetDiffShotPositionRR;
 
 	/**
 		(vec register) - (shot velocity) -> (vec register)
 	**/
-	final CalcRelativeShotVelocityRR;
+	final GetDiffShotVelocityRR;
 
 	/**
 		(float immediate) - (shot distance) -> (float register)
 	**/
-	final CalcRelativeShotDistanceCR;
+	final GetDiffShotDistanceCR;
 
 	/**
 		(float immediate) - (shot bearing) -> (float register)
 	**/
-	final CalcRelativeShotBearingCR;
+	final GetDiffShotBearingCR;
 
 	/**
 		(float immediate) - (shot speed) -> (float register)
 	**/
-	final CalcRelativeShotSpeedCR;
+	final GetDiffShotSpeedCR;
 
 	/**
 		(float immediate) - (shot direction) -> (float register)
 	**/
-	final CalcRelativeShotDirectionCR;
+	final GetDiffShotDirectionCR;
 
 	/**
 		(float register) - (shot distance) -> (float register)
 	**/
-	final CalcRelativeShotDistanceRR;
+	final GetDiffShotDistanceRR;
 
 	/**
 		(float register) - (shot bearing) -> (float register)
 	**/
-	final CalcRelativeShotBearingRR;
+	final GetDiffShotBearingRR;
 
 	/**
 		(float register) - (shot speed) -> (float register)
 	**/
-	final CalcRelativeShotSpeedRR;
+	final GetDiffShotSpeedRR;
 
 	/**
 		(float register) - (shot direction) -> (float register)
 	**/
-	final CalcRelativeShotDirectionRR;
+	final GetDiffShotDirectionRR;
 
 	public extern inline function int(): Int
 		return this;
@@ -286,30 +286,30 @@ class ReadOperationExtension {
 		case LoadTargetXR: "load_target_x_r";
 		case LoadTargetYR: "load_target_y_r";
 		case LoadBearingToTargetR: "load_bearing_to_target_r";
-		case CalcRelativePositionCR: "calc_rel_position_cr";
-		case CalcRelativeVelocityCR: "calc_rel_velocity_cr";
-		case CalcRelativePositionRR: "calc_rel_position_rr";
-		case CalcRelativeVelocityRR: "calc_rel_velocity_rr";
-		case CalcRelativeDistanceCR: "calc_rel_distance_cr";
-		case CalcRelativeBearingCR: "calc_rel_bearing_cr";
-		case CalcRelativeSpeedCR: "calc_rel_speed_cr";
-		case CalcRelativeDirectionCR: "calc_rel_direction_cr";
-		case CalcRelativeDistanceRR: "calc_rel_distance_rr";
-		case CalcRelativeBearingRR: "calc_rel_bearing_rr";
-		case CalcRelativeSpeedRR: "calc_rel_speed_rr";
-		case CalcRelativeDirectionRR: "calc_rel_direction_rr";
-		case CalcRelativeShotPositionCR: "calc_rel_shot_position_cr";
-		case CalcRelativeShotVelocityCR: "calc_rel_shot_velocity_cr";
-		case CalcRelativeShotPositionRR: "calc_rel_shot_position_rr";
-		case CalcRelativeShotVelocityRR: "calc_rel_shot_velocity_rr";
-		case CalcRelativeShotDistanceCR: "calc_rel_shot_distance_cr";
-		case CalcRelativeShotBearingCR: "calc_rel_shot_bearing_cr";
-		case CalcRelativeShotSpeedCR: "calc_rel_shot_speed_cr";
-		case CalcRelativeShotDirectionCR: "calc_rel_shot_direction_cr";
-		case CalcRelativeShotDistanceRR: "calc_rel_distance_rr";
-		case CalcRelativeShotBearingRR: "calc_rel_bearing_rr";
-		case CalcRelativeShotSpeedRR: "calc_rel_speed_rr";
-		case CalcRelativeShotDirectionRR: "calc_rel_direction_rr";
+		case GetDiffPositionCR: "calc_rel_position_cr";
+		case GetDiffVelocityCR: "calc_rel_velocity_cr";
+		case GetDiffPositionRR: "calc_rel_position_rr";
+		case GetDiffVelocityRR: "calc_rel_velocity_rr";
+		case GetDiffDistanceCR: "calc_rel_distance_cr";
+		case GetDiffBearingCR: "calc_rel_bearing_cr";
+		case GetDiffSpeedCR: "calc_rel_speed_cr";
+		case GetDiffDirectionCR: "calc_rel_direction_cr";
+		case GetDiffDistanceRR: "calc_rel_distance_rr";
+		case GetDiffBearingRR: "calc_rel_bearing_rr";
+		case GetDiffSpeedRR: "calc_rel_speed_rr";
+		case GetDiffDirectionRR: "calc_rel_direction_rr";
+		case GetDiffShotPositionCR: "calc_rel_shot_position_cr";
+		case GetDiffShotVelocityCR: "calc_rel_shot_velocity_cr";
+		case GetDiffShotPositionRR: "calc_rel_shot_position_rr";
+		case GetDiffShotVelocityRR: "calc_rel_shot_velocity_rr";
+		case GetDiffShotDistanceCR: "calc_rel_shot_distance_cr";
+		case GetDiffShotBearingCR: "calc_rel_shot_bearing_cr";
+		case GetDiffShotSpeedCR: "calc_rel_shot_speed_cr";
+		case GetDiffShotDirectionCR: "calc_rel_shot_direction_cr";
+		case GetDiffShotDistanceRR: "calc_rel_distance_rr";
+		case GetDiffShotBearingRR: "calc_rel_bearing_rr";
+		case GetDiffShotSpeedRR: "calc_rel_speed_rr";
+		case GetDiffShotDirectionRR: "calc_rel_direction_rr";
 		}
 	}
 }

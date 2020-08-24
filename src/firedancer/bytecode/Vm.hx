@@ -416,78 +416,78 @@ class Vm {
 									targetPositionRef.y - position.y
 								);
 
-							case CalcRelativePositionCR:
+							case GetDiffPositionCR:
 								reg.setVec(scan.float() - position.x, scan.float() - position.y);
-							case CalcRelativeVelocityCR:
+							case GetDiffVelocityCR:
 								reg.setVec(scan.float() - velocity.x, scan.float() - velocity.y);
-							case CalcRelativePositionRR:
+							case GetDiffPositionRR:
 								reg.setVec(reg.vecX - position.x, reg.vecY - position.y);
-							case CalcRelativeVelocityRR:
+							case GetDiffVelocityRR:
 								reg.setVec(reg.vecX - velocity.x, reg.vecY - velocity.y);
-							case CalcRelativeDistanceCR:
+							case GetDiffDistanceCR:
 								reg.float = scan.float() - position.getDistance();
-							case CalcRelativeBearingCR:
+							case GetDiffBearingCR:
 								reg.float = Geometry.getAngleDifference(
 									position.getBearing(),
 									scan.float()
 								);
-							case CalcRelativeSpeedCR:
+							case GetDiffSpeedCR:
 								reg.float = scan.float() - velocity.getSpeed();
-							case CalcRelativeDirectionCR:
+							case GetDiffDirectionCR:
 								reg.float = Geometry.getAngleDifference(
 									velocity.getDirection(),
 									scan.float()
 								);
-							case CalcRelativeDistanceRR:
+							case GetDiffDistanceRR:
 								reg.float = reg.float - position.getDistance();
-							case CalcRelativeBearingRR:
+							case GetDiffBearingRR:
 								reg.float = Geometry.getAngleDifference(position.getBearing(), reg.float);
-							case CalcRelativeSpeedRR:
+							case GetDiffSpeedRR:
 								reg.float = reg.float - velocity.getSpeed();
-							case CalcRelativeDirectionRR:
+							case GetDiffDirectionRR:
 								reg.float = Geometry.getAngleDifference(
 									velocity.getDirection(),
 									reg.float
 								);
 
-							case CalcRelativeShotPositionCR:
+							case GetDiffShotPositionCR:
 								reg.setVec(
 									scan.float() - thread.shotX,
 									scan.float() - thread.shotY
 								);
-							case CalcRelativeShotVelocityCR:
+							case GetDiffShotVelocityCR:
 								reg.setVec(
 									scan.float() - thread.shotVx,
 									scan.float() - thread.shotVy
 								);
-							case CalcRelativeShotPositionRR:
+							case GetDiffShotPositionRR:
 								reg.setVec(reg.vecX - thread.shotX, reg.vecY - thread.shotY);
-							case CalcRelativeShotVelocityRR:
+							case GetDiffShotVelocityRR:
 								reg.setVec(reg.vecX - thread.shotVx, reg.vecY - thread.shotVy);
-							case CalcRelativeShotDistanceCR:
+							case GetDiffShotDistanceCR:
 								reg.float = scan.float() - thread.getShotDistance();
-							case CalcRelativeShotBearingCR:
+							case GetDiffShotBearingCR:
 								reg.float = Geometry.getAngleDifference(
 									thread.getShotBearing(),
 									scan.float()
 								);
-							case CalcRelativeShotSpeedCR:
+							case GetDiffShotSpeedCR:
 								reg.float = scan.float() - thread.getShotSpeed();
-							case CalcRelativeShotDirectionCR:
+							case GetDiffShotDirectionCR:
 								reg.float = Geometry.getAngleDifference(
 									thread.getShotDirection(),
 									scan.float()
 								);
-							case CalcRelativeShotDistanceRR:
+							case GetDiffShotDistanceRR:
 								reg.float = reg.float - thread.getShotDistance();
-							case CalcRelativeShotBearingRR:
+							case GetDiffShotBearingRR:
 								reg.float = Geometry.getAngleDifference(
 									thread.getShotBearing(),
 									reg.float
 								);
-							case CalcRelativeShotSpeedRR:
+							case GetDiffShotSpeedRR:
 								reg.float = reg.float - thread.getShotSpeed();
-							case CalcRelativeShotDirectionRR:
+							case GetDiffShotDirectionRR:
 								reg.float = Geometry.getAngleDifference(
 									thread.getShotDirection(),
 									reg.float
