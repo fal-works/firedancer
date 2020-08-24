@@ -757,9 +757,9 @@ class InstructionExtension {
 		case Label(labelId):
 			'label ${itoa(labelId)}';
 		case GotoLabel(labelId):
-			'goto ${itoa(labelId)}';
+			'goto label ${itoa(labelId)}';
 		case CountDownGotoLabel(labelId):
-			'countdown goto ${itoa(labelId)}';
+			'countdown goto label ${itoa(labelId)}';
 		case UseThread(programId, output):
 			'use thread ${itoa(programId)} -> ${output.toString()}';
 		case AwaitThread:
@@ -805,9 +805,9 @@ class InstructionExtension {
 			// ---- other ---------------------------------------------------
 
 		case GlobalEvent:
-			'global event ri -> n';
+			'event global ri -> n';
 		case LocalEvent:
-			'local event ri -> n';
+			'event local ri -> n';
 		case Debug(debugCode):
 			'debug ${itoa(debugCode)} -> n';
 
@@ -874,7 +874,7 @@ class InstructionExtension {
 		case CastIntToFloat:
 			'cast ri -> rf';
 		case CastCartesian:
-			'cast caretsian rfb, rf -> rvec';
+			'cast cartesian rfb, rf -> rvec';
 		case CastPolar:
 			'cast polar rfb, rf -> rvec';
 
