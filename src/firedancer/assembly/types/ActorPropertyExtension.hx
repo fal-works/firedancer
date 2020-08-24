@@ -245,6 +245,98 @@ class ActorPropertyExtension {
 		});
 	}
 
+	public static function getDiffOpcode(
+		_this: ActorProperty,
+		inputKind: OperandKind
+	): Opcode {
+		return Opcode.read(switch _this.type {
+		case Position:
+			switch _this.component {
+			case Vector:
+				switch inputKind {
+				case Imm: GetDiffPositionCR;
+				case Reg: GetDiffPositionRR;
+				default: throw unsupported();
+				}
+			case Length:
+				switch inputKind {
+				case Imm: GetDiffDistanceCR;
+				case Reg: GetDiffDistanceRR;
+				default: throw unsupported();
+				}
+			case Angle:
+				switch inputKind {
+				case Imm: GetDiffBearingCR;
+				case Reg: GetDiffBearingRR;
+				default: throw unsupported();
+				}
+			}
+		case Velocity:
+			switch _this.component {
+			case Vector:
+				switch inputKind {
+				case Imm: GetDiffVelocityCR;
+				case Reg: GetDiffVelocityRR;
+				default: throw unsupported();
+				}
+			case Length:
+				switch inputKind {
+				case Imm: GetDiffSpeedCR;
+				case Reg: GetDiffSpeedRR;
+				default: throw unsupported();
+				}
+			case Angle:
+				switch inputKind {
+				case Imm: GetDiffDirectionCR;
+				case Reg: GetDiffDirectionRR;
+				default: throw unsupported();
+				}
+			}
+		case ShotPosition:
+			switch _this.component {
+			case Vector:
+				switch inputKind {
+				case Imm: GetDiffShotPositionCR;
+				case Reg: GetDiffShotPositionRR;
+				default: throw unsupported();
+				}
+			case Length:
+				switch inputKind {
+				case Imm: GetDiffShotDistanceCR;
+				case Reg: GetDiffShotDistanceRR;
+				default: throw unsupported();
+				}
+			case Angle:
+				switch inputKind {
+				case Imm: GetDiffShotBearingCR;
+				case Reg: GetDiffShotBearingRR;
+				default: throw unsupported();
+				}
+			}
+		case ShotVelocity:
+			switch _this.component {
+			case Vector:
+				switch inputKind {
+				case Imm: GetDiffShotVelocityCR;
+				case Reg: GetDiffShotVelocityRR;
+				default: throw unsupported();
+				}
+			case Length:
+				switch inputKind {
+				case Imm: GetDiffShotSpeedCR;
+				case Reg: GetDiffShotSpeedRR;
+				default: throw unsupported();
+				}
+			case Angle:
+				switch inputKind {
+				case Imm: GetDiffShotDirectionCR;
+				case Reg: GetDiffShotDirectionRR;
+				default: throw unsupported();
+				}
+			}
+		});
+	}
+
 	static function unsupported(): String
 		return "unsupported operation.";
 }

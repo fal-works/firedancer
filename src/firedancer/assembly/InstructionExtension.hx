@@ -618,67 +618,18 @@ class InstructionExtension {
 				if (prop.component != Vector) throw unsupported();
 				switch operand {
 				case Imm(x, y):
-					final opcode:Opcode = switch prop.type {
-					case Position: GetDiffPositionCR;
-					case Velocity: GetDiffVelocityCR;
-					case ShotPosition: GetDiffShotPositionCR;
-					case ShotVelocity: GetDiffShotVelocityCR;
-					};
 					[
-						op(opcode),
+						op(prop.getDiffOpcode(Imm)),
 						x,
 						y
 					];
-				case Reg:
-					final opcode:Opcode = switch prop.type {
-					case Position: GetDiffPositionRR;
-					case Velocity: GetDiffVelocityRR;
-					case ShotPosition: GetDiffShotPositionRR;
-					case ShotVelocity: GetDiffShotVelocityRR;
-					};
-					op(opcode);
+				case Reg: op(prop.getDiffOpcode(Reg));
 				default: throw unsupported();
 				}
 			case Float(operand):
 				switch operand {
-				case Imm(value):
-					final opcode:Opcode = switch prop.component {
-					case Vector: throw unsupported();
-					case Length:
-						switch prop.type {
-						case Position: GetDiffDistanceCR;
-						case Velocity: GetDiffSpeedCR;
-						case ShotPosition: GetDiffShotDistanceCR;
-						case ShotVelocity: GetDiffShotSpeedCR;
-						}
-					case Angle:
-						switch prop.type {
-						case Position: GetDiffBearingCR;
-						case Velocity: GetDiffDirectionCR;
-						case ShotPosition: GetDiffShotBearingCR;
-						case ShotVelocity: GetDiffShotDirectionCR;
-						}
-					};
-					[op(opcode), value];
-				case Reg:
-					final opcode:Opcode = switch prop.component {
-					case Vector: throw unsupported();
-					case Length:
-						switch prop.type {
-						case Position: GetDiffDistanceRR;
-						case Velocity: GetDiffSpeedRR;
-						case ShotPosition: GetDiffShotDistanceRR;
-						case ShotVelocity: GetDiffShotSpeedRR;
-						}
-					case Angle:
-						switch prop.type {
-						case Position: GetDiffBearingRR;
-						case Velocity: GetDiffDirectionRR;
-						case ShotPosition: GetDiffShotBearingRR;
-						case ShotVelocity: GetDiffShotDirectionRR;
-						}
-					};
-					op(opcode);
+				case Imm(value): [op(prop.getDiffOpcode(Imm)), value];
+				case Reg: op(prop.getDiffOpcode(Reg));
 				default: throw unsupported();
 				}
 			default: throw unsupported();
