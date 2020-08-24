@@ -3,7 +3,6 @@ package firedancer.assembly;
 import firedancer.bytecode.types.FireArgument;
 import firedancer.script.CompileContext;
 import firedancer.script.expression.IntExpression;
-import firedancer.assembly.operation.GeneralOperation;
 
 /**
 	Functions for creating `Instruction`/`AssemblyCode` instances.
