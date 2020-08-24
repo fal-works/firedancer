@@ -3,6 +3,7 @@ package firedancer.assembly;
 import firedancer.assembly.Operand;
 import firedancer.bytecode.types.FireArgument;
 import firedancer.assembly.types.ActorProperty;
+import firedancer.assembly.types.TargetProperty;
 
 @:using(firedancer.assembly.InstructionExtension)
 enum Instruction {
@@ -51,10 +52,7 @@ enum Instruction {
 	Increment(address: UInt);
 	Decrement(address: UInt);
 	// ---- read actor data -----------------------------------------------------
-	LoadTargetPosition;
-	LoadTargetX;
-	LoadTargetY;
-	LoadBearingToTarget;
+	GetTarget(prop: TargetProperty);
 	GetDiff(input: Operand, property: ActorProperty);
 	// ---- write actor data ----------------------------------------------------
 	Set(input: Operand, property: ActorProperty);

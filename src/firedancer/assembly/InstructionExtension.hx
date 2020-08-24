@@ -603,15 +603,6 @@ class InstructionExtension {
 
 			// ---- read actor data
 
-		case LoadTargetPosition:
-			op(LoadTargetPositionR);
-		case LoadTargetX:
-			op(LoadTargetXR);
-		case LoadTargetY:
-			op(LoadTargetYR);
-		case LoadBearingToTarget:
-			op(LoadBearingToTargetR);
-
 		case GetDiff(input, prop):
 			switch input {
 			case Vec(operand):
@@ -633,6 +624,14 @@ class InstructionExtension {
 				default: throw unsupported();
 				}
 			default: throw unsupported();
+			}
+
+		case GetTarget(prop):
+			switch prop {
+			case Position: op(LoadTargetPositionR);
+			case X: op(LoadTargetXR);
+			case Y: op(LoadTargetYR);
+			case AngleFromShotPosition: op(LoadBearingToTargetR);
 			}
 
 			// ---- write actor data -----------------------------------------
@@ -850,18 +849,13 @@ class InstructionExtension {
 
 			// ---- read actor data
 
-		case LoadTargetPosition:
-			'load target position -> rvec';
-		case LoadTargetX:
-			'load target x -> rf';
-		case LoadTargetY:
-			'load target y -> rf';
-		case LoadBearingToTarget:
-			'load bearing to target -> rf';
-
 		case GetDiff(input, prop):
 			final outputStr = DataRegisterSpecifier.get(input.getType());
 			'get diff ${input.toString()}, ${prop.toString()} -> $outputStr';
+
+		case GetTarget(prop):
+			final outputStr = DataRegisterSpecifier.get(prop.getType());
+			'get target_${prop.toString()} -> $outputStr';
 
 			// ---- write actor data -----------------------------------------
 
@@ -940,12 +934,8 @@ class InstructionExtension {
 
 			// ---- read actor data ------------------------------------------
 
-		case LoadTargetPosition: UInt.zero;
-		case LoadTargetX: UInt.zero;
-		case LoadTargetY: UInt.zero;
-		case LoadBearingToTarget: UInt.zero;
-
 		case GetDiff(input, prop): input.bytecodeLength();
+		case GetTarget(prop): UInt.zero;
 
 			// ---- write actor data -----------------------------------------
 
@@ -1056,12 +1046,8 @@ class InstructionExtension {
 		case Sin: ValueType.Float;
 		case Cos: ValueType.Float;
 
-		case LoadTargetPosition: ValueType.Vec;
-		case LoadTargetX: ValueType.Float;
-		case LoadTargetY: ValueType.Float;
-		case LoadBearingToTarget: ValueType.Float;
-
 		case GetDiff(input, _): input.getType();
+		case GetTarget(prop): prop.getType();
 
 		default: null;
 		});

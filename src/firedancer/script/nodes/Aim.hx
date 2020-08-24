@@ -22,11 +22,11 @@ class Aim extends AstNode implements ripper.Data {
 		return false;
 
 	override public function toAssembly(context: CompileContext): AssemblyCode {
-		final bearingToTarget = AngleExpression.fromEnum(Runtime(Variable(LoadBearingToTarget)));
+		final angleToTarget = AngleExpression.fromEnum(Runtime(Variable(GetTarget(AngleFromShotPosition))));
 		final node = new SetActorProperty(ShotVelocity, if (speed.isSome()) {
-			SetVector({ length: speed.unwrap(), angle: bearingToTarget });
+			SetVector({ length: speed.unwrap(), angle: angleToTarget });
 		} else {
-			SetAngle(bearingToTarget);
+			SetAngle(angleToTarget);
 		});
 
 		return node.toAssembly(context);
