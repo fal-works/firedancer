@@ -62,11 +62,16 @@ class Api {
 		return new Wait(frames);
 
 	/**
-		Repeats the given pattern.
-		Use `count()` to make a finite loop. Otherwise the loop runs endlessly.
+		Loops a given pattern endlessly.
 	**/
 	public static inline function loop(ast: Ast): Loop
 		return new Loop(ast);
+
+	/**
+		Repeats a given pattern `count` times.
+	**/
+	public static inline function rep(count: IntExpression, ast: Ast): Repeat
+		return new Repeat(ast, count);
 
 	/**
 		Emits a new actor with a pattern represented by the given `ast`.

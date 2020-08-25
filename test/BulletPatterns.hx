@@ -37,17 +37,17 @@ class BulletPatterns {
 
 		final fireBound = [
 			shot.position.set(5, 180),
-			loop([
-				loop([
+			rep(4, [
+				rep(12, [
 					fire(loop([
 						distance.add(4),
 						bearing.add(1),
 						wait(1)
 					])).bind(),
 					shot.bearing.add(30),
-				]).count(12),
+				]),
 				wait(30)
-			]).count(4),
+			]),
 			end(VANISH) // Here the origin of children is set to (0, 0)
 		];
 
@@ -116,10 +116,10 @@ class BulletPatterns {
 				5,
 				180 + random.int.signed(4) * 30
 			),
-			loop([
+			rep(random.int.between(1, 5), [
 				fire(),
 				wait(random.int.between(1, 5) * 4)
-			]).count(random.int.between(1, 5)),
+			]),
 			wait(16)
 		]);
 
@@ -144,20 +144,20 @@ class BulletPatterns {
 		final dumpTest = [
 			shot.velocity.set(5, 180),
 			cnt.let(),
-			loop([
+			rep(2, [
 				shot.direction.set(cnt * 20),
 				fire(),
 				debug(Dump),
 				wait(4),
 				cnt.increment()
-			]).count(2)
+			])
 		];
 
 		final bearingVar = angleVar("bearing");
 		final rotationVar = angleVar("rotation");
 
 		final transformTest = [
-			loop([
+			rep(24, [
 				fire([
 					bearingVar.let(),
 					rotationVar.let(),
@@ -171,12 +171,12 @@ class BulletPatterns {
 					])
 				]).bind(),
 				wait(6)
-			]).count(24)
+			])
 		];
 
 
 		final sinCosTest = [
-			loop([
+			rep(16, [
 				fire([
 					bearingVar.let(),
 					loop([
@@ -189,7 +189,7 @@ class BulletPatterns {
 					])
 				]).bind(),
 				wait(4)
-			]).count(16)
+			])
 		];
 
 		final testAst = test(sinCosTest); // Change this for testing
