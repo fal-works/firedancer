@@ -159,12 +159,16 @@ class InstructionExtension {
 
 			// ---- read actor data
 
+		case Get(prop):
+			final outputStr = DataRegisterSpecifier.get(prop.getValueType()).toString();
+			'get ${prop.toString()} -> $outputStr';
+
 		case GetDiff(input, prop):
-			final outputStr = DataRegisterSpecifier.get(input.getType());
+			final outputStr = DataRegisterSpecifier.get(input.getType()).toString();
 			'get diff ${input.toString()}, ${prop.toString()} -> $outputStr';
 
 		case GetTarget(prop):
-			final outputStr = DataRegisterSpecifier.get(prop.getType());
+			final outputStr = DataRegisterSpecifier.get(prop.getType()).toString();
 			'get target_${prop.toString()} -> $outputStr';
 
 			// ---- write actor data -----------------------------------------
@@ -238,6 +242,7 @@ class InstructionExtension {
 
 			// ---- read actor data ------------------------------------------
 
+		case Get(prop): UInt.zero;
 		case GetDiff(input, prop): input.bytecodeLength();
 		case GetTarget(prop): UInt.zero;
 
@@ -353,6 +358,7 @@ class InstructionExtension {
 		case Sin: ValueType.Float;
 		case Cos: ValueType.Float;
 
+		case Get(prop): prop.getValueType();
 		case GetDiff(input, _): input.getType();
 		case GetTarget(prop): prop.getType();
 

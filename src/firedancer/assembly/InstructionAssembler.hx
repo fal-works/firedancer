@@ -595,6 +595,9 @@ class InstructionAssembler {
 
 			// ---- read actor data
 
+		case Get(prop):
+			[op(prop.getReadOpcode())];
+
 		case GetDiff(input, prop):
 			switch input {
 			case Vec(operand):

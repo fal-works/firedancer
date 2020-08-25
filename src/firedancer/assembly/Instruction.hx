@@ -46,6 +46,7 @@ enum Instruction {
 	Increment(address: UInt);
 	Decrement(address: UInt);
 	// ---- read actor data -----------------------------------------------------
+	Get(property: ActorProperty);
 	GetTarget(prop: TargetProperty);
 	GetDiff(input: Operand, property: ActorProperty);
 	// ---- write actor data ----------------------------------------------------

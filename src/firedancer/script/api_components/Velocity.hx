@@ -3,13 +3,14 @@ package firedancer.script.api_components;
 /**
 	Provides features for operating actor's velocity.
 **/
-class Velocity {
+class Velocity extends ActorPropertyApiComponent {
 	/**
 		Provides functions for operating velocity in cartesian coordinates.
 	**/
 	public final cartesian = new CartesianVelocity();
 
-	public function new() {}
+	public function new()
+		super({ type: Velocity, component: Vector });
 
 	/**
 		Sets velocity to `(speed, direction)`.
@@ -54,8 +55,9 @@ class CartesianVelocity {
 /**
 	Provides functions for operating the length of actor's velocity vector.
 **/
-class Speed {
-	public function new() {}
+class Speed extends ActorPropertyApiComponent {
+	public function new()
+		super({ type: Velocity, component: Length });
 
 	/**
 		Sets the length of velocity vector to `value`.
@@ -75,8 +77,9 @@ class Speed {
 /**
 	Provides functions for operating the angle of actor's velocity vector.
 **/
-class Direction {
-	public function new() {}
+class Direction extends ActorPropertyApiComponent {
+	public function new()
+		super({ type: Velocity, component: Angle });
 
 	/**
 		Sets the angle of velocity vector to `value`.

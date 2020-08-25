@@ -187,7 +187,16 @@ class BulletPatterns {
 			])
 		];
 
-		final testAst = test(sinCosTest); // Change this for testing
+		final readActorProp = [
+			shot.velocity.set(4, 180),
+			loop([
+				fire(),
+				shot.velocity.set(shot.speed, 180 + random.angle.grouping(90)),
+				wait(4)
+			])
+		];
+
+		final testAst = test(readActorProp); // Change this for testing
 
 		this.programPackage = compile(["test" => testAst]);
 		this.testPattern = this.programPackage.getProgramByName("test");

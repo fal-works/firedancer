@@ -3,13 +3,14 @@ package firedancer.script.api_components;
 /**
 	Provides features for operating actor's shot position.
 **/
-class ShotPosition {
+class ShotPosition extends ActorPropertyApiComponent {
 	/**
 		Provides functions for operating shot position in cartesian coordinates.
 	**/
 	public final cartesian = new CartesianShotPosition();
 
-	public function new() {}
+	public function new()
+		super({ type: ShotPosition, component: Vector });
 
 	/**
 		Sets shot position to a vector of `(distance, bearing)`.
@@ -54,8 +55,9 @@ class CartesianShotPosition {
 /**
 	Provides functions for operating the length of actor's shot position vector.
 **/
-class ShotDistance {
-	public function new() {}
+class ShotDistance extends ActorPropertyApiComponent {
+	public function new()
+		super({ type: ShotPosition, component: Length });
 
 	/**
 		Sets the length of shot position vector to `value`.
@@ -75,8 +77,9 @@ class ShotDistance {
 /**
 	Provides functions for operating the angle of actor's shot position vector.
 **/
-class ShotBearing {
-	public function new() {}
+class ShotBearing extends ActorPropertyApiComponent {
+	public function new()
+		super({ type: ShotPosition, component: Angle });
 
 	/**
 		Sets the angle of shot position vector to `value`.

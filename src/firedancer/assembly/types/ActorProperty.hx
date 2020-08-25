@@ -13,8 +13,11 @@ class ActorProperty {
 	public final type: ActorPropertyType;
 	public final component: ActorPropertyComponent;
 
+	public inline function getValueType(): ValueType
+		return component.getValueType();
+
 	public function toString(): String {
-		return return switch type {
+		return switch type {
 		case Position:
 			switch component {
 			case Vector: "position";
