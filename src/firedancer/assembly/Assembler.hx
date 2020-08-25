@@ -13,11 +13,11 @@ class Assembler {
 		for (i in 0...code.length) {
 			final cur = code[i];
 			switch cur {
-				case Label(labelId):
-					labelAddressMap.set(labelId, lengthInBytes);
-				default:
-					instructions.push(cur);
-					lengthInBytes += cur.bytecodeLength();
+			case Label(labelId):
+				labelAddressMap.set(labelId, lengthInBytes);
+			default:
+				instructions.push(cur);
+				lengthInBytes += cur.bytecodeLength();
 			}
 		}
 

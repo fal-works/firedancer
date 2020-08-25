@@ -15,10 +15,7 @@ enum RuntimeExpressionEnum<C, E> {
 	/**
 		@param operand An expression to be operated.
 	**/
-	UnaryOperation(
-		instruction: Instruction,
-		operand: E
-	);
+	UnaryOperation(instruction: Instruction, operand: E);
 
 	/**
 		@param operandA The first expression to be operated.

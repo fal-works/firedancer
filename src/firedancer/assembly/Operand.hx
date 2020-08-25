@@ -464,9 +464,11 @@ class OperandPairExtension {
 			case Int(maybeIntImm):
 				switch maybeIntImm {
 				case Imm(value):
-					if (a.isRegBuf()) Int(maybeIntImm, b);
-					else if (b.isRegBuf()) Int(a, maybeIntImm);
-					else null;
+					if (a.isRegBuf()) {
+						Int(maybeIntImm, b);
+					} else if (b.isRegBuf()) {
+						Int(a, maybeIntImm);
+					} else null;
 				default: null;
 				}
 			default: null;
@@ -476,9 +478,11 @@ class OperandPairExtension {
 			case Float(maybeFloatImm):
 				switch maybeFloatImm {
 				case Imm(value):
-					if (a.isRegBuf()) Float(maybeFloatImm, b);
-					else if (b.isRegBuf()) Float(a, maybeFloatImm);
-					else null;
+					if (a.isRegBuf()) {
+						Float(maybeFloatImm, b);
+					} else if (b.isRegBuf()) {
+						Float(a, maybeFloatImm);
+					} else null;
 				default: null;
 				}
 			default: null;

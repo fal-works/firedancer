@@ -4,7 +4,7 @@ package firedancer.script.expression.subtypes;
 	Value that represents an int-like constant.
 **/
 @:notNull
-abstract IntLikeConstant(haxe.Int32) from Int from haxe.Int32{
+abstract IntLikeConstant(haxe.Int32) from Int from haxe.Int32 {
 	public inline function raw(): haxe.Int32
 		return this;
 

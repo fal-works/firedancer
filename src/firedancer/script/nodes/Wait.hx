@@ -25,7 +25,10 @@ class Wait extends AstNode implements ripper.Data {
 		final loopBody: AssemblyCode = injectionCode.concat([Break]);
 
 		if (injectionCode.length == 0)
-			return [frames.loadToVolatile(context), [Push(Int(Reg)), CountDownBreak]].flatten();
+			return [
+				frames.loadToVolatile(context),
+				[Push(Int(Reg)), CountDownBreak]
+			].flatten();
 
 		return loop(context, loopBody, frames);
 	}

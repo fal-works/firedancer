@@ -14,65 +14,65 @@ enum abstract CalcOperation(Int) to Int {
 	**/
 	public static inline function from(value: Int): CalcOperation {
 		return switch value {
-			case CalcOperation.AddIntRCR: AddIntRCR;
-			case CalcOperation.AddIntRRR: AddIntRRR;
-			case CalcOperation.SubIntRCR: SubIntRCR;
-			case CalcOperation.SubIntCRR: SubIntCRR;
-			case CalcOperation.SubIntRRR: SubIntRRR;
-			case CalcOperation.MinusIntRR: MinusIntRR;
-			case CalcOperation.MultIntRCR: MultIntRCR;
-			case CalcOperation.MultIntRRR: MultIntRRR;
-			case CalcOperation.DivIntRCR: DivIntRCR;
-			case CalcOperation.DivIntCRR: DivIntCRR;
-			case CalcOperation.DivIntRRR: DivIntRRR;
-			case CalcOperation.ModIntRCR: ModIntRCR;
-			case CalcOperation.ModIntCRR: ModIntCRR;
-			case CalcOperation.ModIntRRR: ModIntRRR;
+		case CalcOperation.AddIntRCR: AddIntRCR;
+		case CalcOperation.AddIntRRR: AddIntRRR;
+		case CalcOperation.SubIntRCR: SubIntRCR;
+		case CalcOperation.SubIntCRR: SubIntCRR;
+		case CalcOperation.SubIntRRR: SubIntRRR;
+		case CalcOperation.MinusIntRR: MinusIntRR;
+		case CalcOperation.MultIntRCR: MultIntRCR;
+		case CalcOperation.MultIntRRR: MultIntRRR;
+		case CalcOperation.DivIntRCR: DivIntRCR;
+		case CalcOperation.DivIntCRR: DivIntCRR;
+		case CalcOperation.DivIntRRR: DivIntRRR;
+		case CalcOperation.ModIntRCR: ModIntRCR;
+		case CalcOperation.ModIntCRR: ModIntCRR;
+		case CalcOperation.ModIntRRR: ModIntRRR;
 
-			case CalcOperation.AddFloatRCR: AddFloatRCR;
-			case CalcOperation.AddFloatRRR: AddFloatRRR;
-			case CalcOperation.SubFloatRCR: SubFloatRCR;
-			case CalcOperation.SubFloatCRR: SubFloatCRR;
-			case CalcOperation.SubFloatRRR: SubFloatRRR;
-			case CalcOperation.MinusFloatRR: MinusFloatRR;
-			case CalcOperation.MultFloatRCR: MultFloatRCR;
-			case CalcOperation.MultFloatRRR: MultFloatRRR;
-			case CalcOperation.DivFloatRCR: DivFloatRCR;
-			case CalcOperation.DivFloatCRR: DivFloatCRR;
-			case CalcOperation.DivFloatRRR: DivFloatRRR;
-			case CalcOperation.ModFloatRCR: ModFloatRCR;
-			case CalcOperation.ModFloatCRR: ModFloatCRR;
-			case CalcOperation.ModFloatRRR: ModFloatRRR;
+		case CalcOperation.AddFloatRCR: AddFloatRCR;
+		case CalcOperation.AddFloatRRR: AddFloatRRR;
+		case CalcOperation.SubFloatRCR: SubFloatRCR;
+		case CalcOperation.SubFloatCRR: SubFloatCRR;
+		case CalcOperation.SubFloatRRR: SubFloatRRR;
+		case CalcOperation.MinusFloatRR: MinusFloatRR;
+		case CalcOperation.MultFloatRCR: MultFloatRCR;
+		case CalcOperation.MultFloatRRR: MultFloatRRR;
+		case CalcOperation.DivFloatRCR: DivFloatRCR;
+		case CalcOperation.DivFloatCRR: DivFloatCRR;
+		case CalcOperation.DivFloatRRR: DivFloatRRR;
+		case CalcOperation.ModFloatRCR: ModFloatRCR;
+		case CalcOperation.ModFloatCRR: ModFloatCRR;
+		case CalcOperation.ModFloatRRR: ModFloatRRR;
 
-			case CalcOperation.MinusVecRR: MinusVecRR;
-			case CalcOperation.MultVecRCR: MultVecRCR;
-			case CalcOperation.MultVecRRR: MultVecRRR;
-			case CalcOperation.DivVecRRR: DivVecRRR;
+		case CalcOperation.MinusVecRR: MinusVecRR;
+		case CalcOperation.MultVecRCR: MultVecRCR;
+		case CalcOperation.MultVecRRR: MultVecRRR;
+		case CalcOperation.DivVecRRR: DivVecRRR;
 
-			case CalcOperation.CastIntToFloatRR: CastIntToFloatRR;
-			case CalcOperation.CastCartesianRR: CastCartesianRR;
-			case CalcOperation.CastPolarRR: CastPolarRR;
+		case CalcOperation.CastIntToFloatRR: CastIntToFloatRR;
+		case CalcOperation.CastCartesianRR: CastCartesianRR;
+		case CalcOperation.CastPolarRR: CastPolarRR;
 
-			case CalcOperation.RandomRatioR: RandomRatioR;
-			case CalcOperation.RandomFloatCR: RandomFloatCR;
-			case CalcOperation.RandomFloatRR: RandomFloatRR;
-			case CalcOperation.RandomFloatSignedCR: RandomFloatSignedCR;
-			case CalcOperation.RandomFloatSignedRR: RandomFloatSignedRR;
-			case CalcOperation.RandomIntCR: RandomIntCR;
-			case CalcOperation.RandomIntRR: RandomIntRR;
-			case CalcOperation.RandomIntSignedCR: RandomIntSignedCR;
-			case CalcOperation.RandomIntSignedRR: RandomIntSignedRR;
-			case CalcOperation.SinRR: SinRR;
-			case CalcOperation.CosRR: CosRR;
+		case CalcOperation.RandomRatioR: RandomRatioR;
+		case CalcOperation.RandomFloatCR: RandomFloatCR;
+		case CalcOperation.RandomFloatRR: RandomFloatRR;
+		case CalcOperation.RandomFloatSignedCR: RandomFloatSignedCR;
+		case CalcOperation.RandomFloatSignedRR: RandomFloatSignedRR;
+		case CalcOperation.RandomIntCR: RandomIntCR;
+		case CalcOperation.RandomIntRR: RandomIntRR;
+		case CalcOperation.RandomIntSignedCR: RandomIntSignedCR;
+		case CalcOperation.RandomIntSignedRR: RandomIntSignedRR;
+		case CalcOperation.SinRR: SinRR;
+		case CalcOperation.CosRR: CosRR;
 
-			case CalcOperation.AddIntVCV: AddIntVCV;
-			case CalcOperation.AddIntVRV: AddIntVRV;
-			case CalcOperation.IncrementVV: IncrementVV;
-			case CalcOperation.DecrementVV: DecrementVV;
-			case CalcOperation.AddFloatVCV: AddFloatVCV;
-			case CalcOperation.AddFloatVRV: AddFloatVRV;
+		case CalcOperation.AddIntVCV: AddIntVCV;
+		case CalcOperation.AddIntVRV: AddIntVRV;
+		case CalcOperation.IncrementVV: IncrementVV;
+		case CalcOperation.DecrementVV: DecrementVV;
+		case CalcOperation.AddFloatVCV: AddFloatVCV;
+		case CalcOperation.AddFloatVRV: AddFloatVRV;
 
-			default: throw error(value);
+		default: throw error(value);
 		}
 	}
 
@@ -372,63 +372,63 @@ class CalcOperationExtension {
 	**/
 	public static inline function toString(code: CalcOperation): String {
 		return switch code {
-			case AddIntRCR: "add_int_rcr";
-			case AddIntRRR: "add_int_rrr";
-			case SubIntRCR: "sub_int_rcr";
-			case SubIntCRR: "sub_int_crr";
-			case SubIntRRR: "sub_int_rrr";
-			case MinusIntRR: "minus_int_rr";
-			case MultIntRCR: "mult_int_rcr";
-			case MultIntRRR: "mult_int_rrr";
-			case ModIntRCR: "mod_int_rcr";
-			case ModIntCRR: "mod_int_crr";
-			case ModIntRRR: "mod_int_rrr";
-			case DivIntRCR: "div_int_rcr";
-			case DivIntCRR: "div_int_crr";
-			case DivIntRRR: "div_int_rrr";
+		case AddIntRCR: "add_int_rcr";
+		case AddIntRRR: "add_int_rrr";
+		case SubIntRCR: "sub_int_rcr";
+		case SubIntCRR: "sub_int_crr";
+		case SubIntRRR: "sub_int_rrr";
+		case MinusIntRR: "minus_int_rr";
+		case MultIntRCR: "mult_int_rcr";
+		case MultIntRRR: "mult_int_rrr";
+		case ModIntRCR: "mod_int_rcr";
+		case ModIntCRR: "mod_int_crr";
+		case ModIntRRR: "mod_int_rrr";
+		case DivIntRCR: "div_int_rcr";
+		case DivIntCRR: "div_int_crr";
+		case DivIntRRR: "div_int_rrr";
 
-			case AddFloatRCR: "add_float_rcr";
-			case AddFloatRRR: "add_float_rrr";
-			case SubFloatRCR: "sub_float_rcr";
-			case SubFloatCRR: "sub_float_crr";
-			case SubFloatRRR: "sub_float_rrr";
-			case MinusFloatRR: "minus_float_rr";
-			case MultFloatRCR: "mult_float_rcr";
-			case MultFloatRRR: "mult_float_rrr";
-			case ModFloatRCR: "mod_float_rcr";
-			case ModFloatCRR: "mod_float_crr";
-			case ModFloatRRR: "mod_float_rrr";
-			case DivFloatCRR: "div_float_crr";
-			case DivFloatRCR: "div_float_rcr";
-			case DivFloatRRR: "div_float_rrr";
+		case AddFloatRCR: "add_float_rcr";
+		case AddFloatRRR: "add_float_rrr";
+		case SubFloatRCR: "sub_float_rcr";
+		case SubFloatCRR: "sub_float_crr";
+		case SubFloatRRR: "sub_float_rrr";
+		case MinusFloatRR: "minus_float_rr";
+		case MultFloatRCR: "mult_float_rcr";
+		case MultFloatRRR: "mult_float_rrr";
+		case ModFloatRCR: "mod_float_rcr";
+		case ModFloatCRR: "mod_float_crr";
+		case ModFloatRRR: "mod_float_rrr";
+		case DivFloatCRR: "div_float_crr";
+		case DivFloatRCR: "div_float_rcr";
+		case DivFloatRRR: "div_float_rrr";
 
-			case MinusVecRR: "minus_vec_rr";
-			case MultVecRCR: "mult_vec_rcr";
-			case MultVecRRR: "mult_vec_rrr";
-			case DivVecRRR: "div_vec_rrr";
+		case MinusVecRR: "minus_vec_rr";
+		case MultVecRCR: "mult_vec_rcr";
+		case MultVecRRR: "mult_vec_rrr";
+		case DivVecRRR: "div_vec_rrr";
 
-			case CastIntToFloatRR: "cast_int_to_float_rr";
-			case CastCartesianRR: "cast_cartesian_rr";
-			case CastPolarRR: "cast_polar_rr";
+		case CastIntToFloatRR: "cast_int_to_float_rr";
+		case CastCartesianRR: "cast_cartesian_rr";
+		case CastPolarRR: "cast_polar_rr";
 
-			case RandomRatioR: "random_ratio_r";
-			case RandomFloatCR: "random_float_cr";
-			case RandomFloatRR: "random_float_rr";
-			case RandomFloatSignedCR: "random_float_signed_cr";
-			case RandomFloatSignedRR: "random_float_signed_rr";
-			case RandomIntCR: "random_int_cr";
-			case RandomIntRR: "random_int_rr";
-			case RandomIntSignedCR: "random_int_signed_cr";
-			case RandomIntSignedRR: "random_int_signed_rr";
-			case CosRR: "cos_rr";
-			case SinRR: "sin_rr";
+		case RandomRatioR: "random_ratio_r";
+		case RandomFloatCR: "random_float_cr";
+		case RandomFloatRR: "random_float_rr";
+		case RandomFloatSignedCR: "random_float_signed_cr";
+		case RandomFloatSignedRR: "random_float_signed_rr";
+		case RandomIntCR: "random_int_cr";
+		case RandomIntRR: "random_int_rr";
+		case RandomIntSignedCR: "random_int_signed_cr";
+		case RandomIntSignedRR: "random_int_signed_rr";
+		case CosRR: "cos_rr";
+		case SinRR: "sin_rr";
 
-			case AddIntVCV: "add_int_vcv";
-			case AddIntVRV: "add_int_vrv";
-			case IncrementVV: "increment_vv";
-			case DecrementVV: "decrement_vv";
-			case AddFloatVCV: "add_float_vcv";
-			case AddFloatVRV: "add_float_vrv";
+		case AddIntVCV: "add_int_vcv";
+		case AddIntVRV: "add_int_vrv";
+		case IncrementVV: "increment_vv";
+		case DecrementVV: "decrement_vv";
+		case AddFloatVCV: "add_float_vcv";
+		case AddFloatVRV: "add_float_vrv";
 		}
 	}
 }

@@ -14,50 +14,50 @@ enum abstract GeneralOperation(Int) to Int {
 	**/
 	public static inline function from(value: Int): GeneralOperation {
 		return switch value {
-			case GeneralOperation.Break: Break;
-			case GeneralOperation.CountDownBreak: CountDownBreak;
-			case GeneralOperation.Goto: Goto;
-			case GeneralOperation.CountDownGoto: CountDownGoto;
-			case GeneralOperation.UseThread: UseThread;
-			case GeneralOperation.UseThreadS: UseThreadS;
-			case GeneralOperation.AwaitThread: AwaitThread;
-			case GeneralOperation.End: End;
+		case GeneralOperation.Break: Break;
+		case GeneralOperation.CountDownBreak: CountDownBreak;
+		case GeneralOperation.Goto: Goto;
+		case GeneralOperation.CountDownGoto: CountDownGoto;
+		case GeneralOperation.UseThread: UseThread;
+		case GeneralOperation.UseThreadS: UseThreadS;
+		case GeneralOperation.AwaitThread: AwaitThread;
+		case GeneralOperation.End: End;
 
-			case GeneralOperation.LoadIntCR: LoadIntCR;
-			case GeneralOperation.LoadFloatCR: LoadFloatCR;
-			case GeneralOperation.LoadVecCR: LoadVecCR;
-			case GeneralOperation.SaveIntR: SaveIntR;
-			case GeneralOperation.SaveFloatR: SaveFloatR;
-			case GeneralOperation.LoadIntVR: LoadIntVR;
-			case GeneralOperation.LoadFloatVR: LoadFloatVR;
-			case GeneralOperation.StoreIntCV: StoreIntCV;
-			case GeneralOperation.StoreIntRV: StoreIntRV;
-			case GeneralOperation.StoreFloatCV: StoreFloatCV;
-			case GeneralOperation.StoreFloatRV: StoreFloatRV;
+		case GeneralOperation.LoadIntCR: LoadIntCR;
+		case GeneralOperation.LoadFloatCR: LoadFloatCR;
+		case GeneralOperation.LoadVecCR: LoadVecCR;
+		case GeneralOperation.SaveIntR: SaveIntR;
+		case GeneralOperation.SaveFloatR: SaveFloatR;
+		case GeneralOperation.LoadIntVR: LoadIntVR;
+		case GeneralOperation.LoadFloatVR: LoadFloatVR;
+		case GeneralOperation.StoreIntCV: StoreIntCV;
+		case GeneralOperation.StoreIntRV: StoreIntRV;
+		case GeneralOperation.StoreFloatCV: StoreFloatCV;
+		case GeneralOperation.StoreFloatRV: StoreFloatRV;
 
-			case GeneralOperation.PushIntC: PushIntC;
-			case GeneralOperation.PushIntR: PushIntR;
-			case GeneralOperation.PushFloatC: PushFloatC;
-			case GeneralOperation.PushFloatR: PushFloatR;
-			case GeneralOperation.PushVecR: PushVecR;
-			case GeneralOperation.PopInt: PopInt;
-			case GeneralOperation.PopFloat: PopFloat;
-			case GeneralOperation.PeekFloat: PeekFloat;
-			case GeneralOperation.DropFloat: DropFloat;
-			case GeneralOperation.PeekVec: PeekVec;
-			case GeneralOperation.DropVec: DropVec;
+		case GeneralOperation.PushIntC: PushIntC;
+		case GeneralOperation.PushIntR: PushIntR;
+		case GeneralOperation.PushFloatC: PushFloatC;
+		case GeneralOperation.PushFloatR: PushFloatR;
+		case GeneralOperation.PushVecR: PushVecR;
+		case GeneralOperation.PopInt: PopInt;
+		case GeneralOperation.PopFloat: PopFloat;
+		case GeneralOperation.PeekFloat: PeekFloat;
+		case GeneralOperation.DropFloat: DropFloat;
+		case GeneralOperation.PeekVec: PeekVec;
+		case GeneralOperation.DropVec: DropVec;
 
-			case GeneralOperation.FireSimple: FireSimple;
-			case GeneralOperation.FireComplex: FireComplex;
-			case GeneralOperation.FireSimpleWithCode: FireSimpleWithCode;
-			case GeneralOperation.FireComplexWithCode: FireComplexWithCode;
+		case GeneralOperation.FireSimple: FireSimple;
+		case GeneralOperation.FireComplex: FireComplex;
+		case GeneralOperation.FireSimpleWithCode: FireSimpleWithCode;
+		case GeneralOperation.FireComplexWithCode: FireComplexWithCode;
 
-			case GeneralOperation.GlobalEventR: GlobalEventR;
-			case GeneralOperation.LocalEventR: LocalEventR;
+		case GeneralOperation.GlobalEventR: GlobalEventR;
+		case GeneralOperation.LocalEventR: LocalEventR;
 
-			case GeneralOperation.Debug: Debug;
+		case GeneralOperation.Debug: Debug;
 
-			default: throw error(value);
+		default: throw error(value);
 		}
 	}
 
@@ -332,53 +332,53 @@ class GeneralOperationExtension {
 	**/
 	public static inline function toString(code: GeneralOperation): String {
 		return switch code {
-			case Break: "break";
-			case CountDownBreak: "count_down_break";
-			case Goto: "goto";
-			case CountDownGoto: "count_down_goto";
-			case UseThread: "use_thread";
-			case UseThreadS: "use_thread_s";
-			case AwaitThread: "await_thread";
-			case End: "end";
-			case NoOperation: "no_operation";
+		case Break: "break";
+		case CountDownBreak: "count_down_break";
+		case Goto: "goto";
+		case CountDownGoto: "count_down_goto";
+		case UseThread: "use_thread";
+		case UseThreadS: "use_thread_s";
+		case AwaitThread: "await_thread";
+		case End: "end";
+		case NoOperation: "no_operation";
 
-			case LoadIntCR: "load_int_cr";
-			case LoadIntBR: "load_int_vr";
-			case LoadFloatCR: "load_float_cr";
-			case LoadFloatBR: "load_float_br";
-			case LoadVecCR: "load_vec_cr";
-			case SaveIntC: "save_int_c";
-			case SaveIntR: "save_int_r";
-			case SaveFloatC: "save_float_c";
-			case SaveFloatR: "save_float_r";
-			case LoadIntVR: "load_int_vr";
-			case LoadFloatVR: "load_float_vr";
-			case StoreIntCV: "store_int_cv";
-			case StoreIntRV: "store_int_rv";
-			case StoreFloatCV: "store_float_cv";
-			case StoreFloatRV: "store_float_rv";
+		case LoadIntCR: "load_int_cr";
+		case LoadIntBR: "load_int_vr";
+		case LoadFloatCR: "load_float_cr";
+		case LoadFloatBR: "load_float_br";
+		case LoadVecCR: "load_vec_cr";
+		case SaveIntC: "save_int_c";
+		case SaveIntR: "save_int_r";
+		case SaveFloatC: "save_float_c";
+		case SaveFloatR: "save_float_r";
+		case LoadIntVR: "load_int_vr";
+		case LoadFloatVR: "load_float_vr";
+		case StoreIntCV: "store_int_cv";
+		case StoreIntRV: "store_int_rv";
+		case StoreFloatCV: "store_float_cv";
+		case StoreFloatRV: "store_float_rv";
 
-			case PushIntC: "push_int_c";
-			case PushIntR: "push_int_r";
-			case PushFloatC: "push_float_c";
-			case PushFloatR: "push_float_r";
-			case PushVecR: "push_Vec_r";
-			case PopInt: "pop_int";
-			case PopFloat: "pop_float";
-			case PeekFloat: "peek_float";
-			case DropFloat: "drop_float";
-			case PeekVec: "peek_vec";
-			case DropVec: "drop_vec";
+		case PushIntC: "push_int_c";
+		case PushIntR: "push_int_r";
+		case PushFloatC: "push_float_c";
+		case PushFloatR: "push_float_r";
+		case PushVecR: "push_Vec_r";
+		case PopInt: "pop_int";
+		case PopFloat: "pop_float";
+		case PeekFloat: "peek_float";
+		case DropFloat: "drop_float";
+		case PeekVec: "peek_vec";
+		case DropVec: "drop_vec";
 
-			case FireSimple: "fire_simple";
-			case FireComplex: "fire_complex";
-			case FireSimpleWithCode: "fire_simple_with_type";
-			case FireComplexWithCode: "fire_complex_with_type";
+		case FireSimple: "fire_simple";
+		case FireComplex: "fire_complex";
+		case FireSimpleWithCode: "fire_simple_with_type";
+		case FireComplexWithCode: "fire_complex_with_type";
 
-			case GlobalEventR: "global_event";
-			case LocalEventR: "local_event";
+		case GlobalEventR: "global_event";
+		case LocalEventR: "local_event";
 
-			case Debug: "debug";
+		case Debug: "debug";
 		}
 	}
 }

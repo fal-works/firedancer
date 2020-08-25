@@ -60,21 +60,29 @@ class IntLikeExpressionData implements ExpressionData {
 	}
 
 	public function unaryOperation(instruction: Instruction): IntLikeExpressionData {
-		return create(Runtime(IntLikeRuntimeExpressionEnum.UnaryOperation(
-			instruction,
-			this
-		)));
+		return create(
+			Runtime(
+				IntLikeRuntimeExpressionEnum.UnaryOperation(
+					instruction,
+					this
+				)
+			)
+		);
 	}
 
 	public function binaryOperation(
 		instruction: Instruction,
 		other: IntLikeExpressionData
 	): IntLikeExpressionData {
-		return create(Runtime(IntLikeRuntimeExpressionEnum.BinaryOperation(
-			instruction,
-			this,
-			other
-		)));
+		return create(
+			Runtime(
+				IntLikeRuntimeExpressionEnum.BinaryOperation(
+					instruction,
+					this,
+					other
+				)
+			)
+		);
 	}
 
 	public function unaryMinus(): IntLikeExpressionData

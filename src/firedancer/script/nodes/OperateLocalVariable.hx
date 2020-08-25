@@ -8,10 +8,14 @@ class OperateLocalVariable extends AstNode {
 	final operation: LocalVariableOperation;
 	final value: Maybe<GenericExpression>;
 
-	public function new(name: String, operation: LocalVariableOperation, ?value: GenericExpression) {
+	public function new(
+		name: String,
+		operation: LocalVariableOperation,
+		?value: GenericExpression
+	) {
 		switch operation {
-			case Set | Add: if (value == null) throw "Missing value to set/add.";
-			default:
+		case Set | Add: if (value == null) throw "Missing value to set/add.";
+		default:
 		}
 
 		this.name = name;
@@ -26,10 +30,10 @@ class OperateLocalVariable extends AstNode {
 		final variable = context.localVariables.get(this.name);
 
 		return switch this.operation {
-			case Set: variable.setValue(this.value.unwrap());
-			case Add: variable.addValue(this.value.unwrap());
-			case Increment: variable.increment();
-			case Decrement: variable.decrement();
+		case Set: variable.setValue(this.value.unwrap());
+		case Add: variable.addValue(this.value.unwrap());
+		case Increment: variable.increment();
+		case Decrement: variable.decrement();
 		}
 	}
 }

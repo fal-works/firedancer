@@ -28,9 +28,9 @@ abstract Word(WordEnum) from WordEnum {
 			return if (Floats.toInt(v) == v) '$v.0' else Std.string(v);
 
 		return switch this {
-			case OpcodeWord(code): OpcodeExtension.toString(code);
-			case IntWord(value): Std.string(value);
-			case FloatWord(value): ftoa(value);
+		case OpcodeWord(code): OpcodeExtension.toString(code);
+		case IntWord(value): Std.string(value);
+		case FloatWord(value): ftoa(value);
 		}
 	}
 }

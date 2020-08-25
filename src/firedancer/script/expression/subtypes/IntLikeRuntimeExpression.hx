@@ -14,14 +14,14 @@ abstract IntLikeRuntimeExpression(
 ) from IntLikeRuntimeExpressionEnum to IntLikeRuntimeExpressionEnum {
 	@:to public function toString(): String {
 		return switch this {
-			case Variable(loadV):
-				'Var(${loadV.toString()})';
-			case UnaryOperation(_, operand):
-				'UnOp(${operand.toString()})';
-			case BinaryOperation(_, operandA, operandB):
-				'BiOp(${operandA.toString()}, ${operandB.toString()})';
-			case Custom(_):
-				"Custom";
+		case Variable(loadV):
+			'Var(${loadV.toString()})';
+		case UnaryOperation(_, operand):
+			'UnOp(${operand.toString()})';
+		case BinaryOperation(_, operandA, operandB):
+			'BiOp(${operandA.toString()}, ${operandB.toString()})';
+		case Custom(_):
+			"Custom";
 		}
 	}
 
@@ -30,26 +30,26 @@ abstract IntLikeRuntimeExpression(
 	**/
 	public function loadToVolatile(context: CompileContext): AssemblyCode {
 		return switch this {
-			case Variable(loadV):
-				loadV;
+		case Variable(loadV):
+			loadV;
 
-			case UnaryOperation(instruction, operandExpr):
-				final code = operandExpr.loadToVolatile(context);
-				code.push(instruction);
-				code;
+		case UnaryOperation(instruction, operandExpr):
+			final code = operandExpr.loadToVolatile(context);
+			code.push(instruction);
+			code;
 
-			case BinaryOperation(instruction, operandExprA, operandExprB):
-				final code: AssemblyCode = [];
-				code.pushFromArray(operandExprB.loadToVolatile(context));
-				code.push(Push(Int(Reg)));
-				code.pushFromArray(operandExprA.loadToVolatile(context));
-				code.push(Save(Int(Reg)));
-				code.push(Pop(Int));
-				code.push(instruction);
-				code;
+		case BinaryOperation(instruction, operandExprA, operandExprB):
+			final code:AssemblyCode = [];
+			code.pushFromArray(operandExprB.loadToVolatile(context));
+			code.push(Push(Int(Reg)));
+			code.pushFromArray(operandExprA.loadToVolatile(context));
+			code.push(Save(Int(Reg)));
+			code.push(Pop(Int));
+			code.push(instruction);
+			code;
 
-			case Custom(loadToVolatile):
-				loadToVolatile(context);
+		case Custom(loadToVolatile):
+			loadToVolatile(context);
 		}
 	}
 

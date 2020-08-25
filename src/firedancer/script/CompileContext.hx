@@ -6,11 +6,8 @@ import firedancer.assembly.AssemblyCode;
 import firedancer.assembly.ValueType;
 import firedancer.assembly.Optimizer;
 import firedancer.assembly.Assembler;
-import firedancer.assembly.operation.CalcOperation;
-import firedancer.assembly.operation.GeneralOperation;
 import firedancer.bytecode.ProgramPackage;
 import firedancer.script.expression.GenericExpression;
-
 #if debug
 import sneaker.print.Printer.println;
 #end
@@ -221,9 +218,9 @@ class LocalVariableTable {
 	**/
 	public function loadToVolatile(): AssemblyCode {
 		return switch this.type {
-			case Int: [Load(Int(Var(address)))];
-			case Float: [Load(Float(Var(address)))];
-			case Vec: throw "Local variable of vector type is not supported.";
+		case Int: [Load(Int(Var(address)))];
+		case Float: [Load(Float(Var(address)))];
+		case Vec: throw "Local variable of vector type is not supported.";
 		};
 	}
 
@@ -234,12 +231,12 @@ class LocalVariableTable {
 	**/
 	public function setValue(value: GenericExpression): AssemblyCode {
 		final store: Instruction = switch this.type {
-			case Int:
-				Store(Int(Reg), address);
-			case Float:
-				Store(Float(Reg), address);
-			case Vec:
-				throw "Local variable of vector type is not supported.";
+		case Int:
+			Store(Int(Reg), address);
+		case Float:
+			Store(Float(Reg), address);
+		case Vec:
+			throw "Local variable of vector type is not supported.";
 		}
 
 		return [
@@ -252,15 +249,14 @@ class LocalVariableTable {
 		Creates an `AssemblyCode` that adds `value` to the local variable specified by `this`.
 	**/
 	public function addValue(value: GenericExpression): AssemblyCode {
-		final store:Instruction = switch this.type {
-			case Int:
-				Add(Int(Var(address), Reg));
-			case Float:
-				Add(Float(Var(address), Reg));
-			case Vec:
-				throw "Local variable of vector type is not supported.";
+		final store: Instruction = switch this.type {
+		case Int:
+			Add(Int(Var(address), Reg));
+		case Float:
+			Add(Float(Var(address), Reg));
+		case Vec:
+			throw "Local variable of vector type is not supported.";
 		}
-
 
 		return [
 			value.loadToVolatile(context),
@@ -275,8 +271,8 @@ class LocalVariableTable {
 	**/
 	public function increment(): AssemblyCode {
 		switch this.type {
-			case Int:
-			default: throw "Cannot increment local variable that is not an integer.";
+		case Int:
+		default: throw "Cannot increment local variable that is not an integer.";
 		}
 
 		return [Increment(address)];
@@ -289,8 +285,8 @@ class LocalVariableTable {
 	**/
 	public function decrement(): AssemblyCode {
 		switch this.type {
-			case Int:
-			default: throw "Cannot decrement local variable that is not an integer.";
+		case Int:
+		default: throw "Cannot decrement local variable that is not an integer.";
 		}
 
 		return [Decrement(address)];

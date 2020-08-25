@@ -13,9 +13,9 @@ abstract FloatLocalVariableExpression(String) {
 			final variable = context.localVariables.get(this);
 			final code = variable.loadToVolatile();
 			switch variable.type {
-				case Int: code.push(Cast(IntToFloat));
-				case Float:
-				case Vec: throw "Cannot cast vector to float.";
+			case Int: code.push(Cast(IntToFloat));
+			case Float:
+			case Vec: throw "Cannot cast vector to float.";
 			}
 			code;
 		})));

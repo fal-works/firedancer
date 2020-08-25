@@ -22,37 +22,37 @@ abstract GenericExpression(Data) from Data {
 
 	@:to function toIntExpr(): IntExpression {
 		return switch this {
-			case IntExpr(expr): expr;
-			case FloatExpr(_): throw "Cannot cast FloatExpression to IntExpression.";
-			case AngleExpr(_): throw "Cannot cast AngleExpression to IntExpression.";
-			case VecExpr(_): throw "Cannot cast VecExpression to IntExpression.";
+		case IntExpr(expr): expr;
+		case FloatExpr(_): throw "Cannot cast FloatExpression to IntExpression.";
+		case AngleExpr(_): throw "Cannot cast AngleExpression to IntExpression.";
+		case VecExpr(_): throw "Cannot cast VecExpression to IntExpression.";
 		}
 	}
 
 	@:to function toFloatExpr(): FloatExpression {
 		return switch this {
-			case IntExpr(expr): expr;
-			case FloatExpr(expr): expr;
-			case AngleExpr(_): throw "Cannot cast AngleExpression to FloatExpression.";
-			case VecExpr(_): throw "Cannot cast VecExpression to FloatExpression.";
+		case IntExpr(expr): expr;
+		case FloatExpr(expr): expr;
+		case AngleExpr(_): throw "Cannot cast AngleExpression to FloatExpression.";
+		case VecExpr(_): throw "Cannot cast VecExpression to FloatExpression.";
 		}
 	}
 
 	@:to function toAngleExpr(): AngleExpression {
 		return switch this {
-			case IntExpr(expr): expr;
-			case FloatExpr(_): throw "Cannot cast AngleExpression to FloatExpression.";
-			case AngleExpr(expr): expr;
-			case VecExpr(_): throw "Cannot cast VecExpression to AngleExpression.";
+		case IntExpr(expr): expr;
+		case FloatExpr(_): throw "Cannot cast AngleExpression to FloatExpression.";
+		case AngleExpr(expr): expr;
+		case VecExpr(_): throw "Cannot cast VecExpression to AngleExpression.";
 		}
 	}
 
 	@:to function toVecExpr(): VecExpression {
 		return switch this {
-			case IntExpr(_): throw "Cannot cast IntExpression to VecExpression.";
-			case FloatExpr(_): throw "Cannot cast FloatExpression to VecExpression.";
-			case AngleExpr(_): throw "Cannot cast AngleExpression to VecExpression.";
-			case VecExpr(expr): expr;
+		case IntExpr(_): throw "Cannot cast IntExpression to VecExpression.";
+		case FloatExpr(_): throw "Cannot cast FloatExpression to VecExpression.";
+		case AngleExpr(_): throw "Cannot cast AngleExpression to VecExpression.";
+		case VecExpr(expr): expr;
 		}
 	}
 
@@ -61,10 +61,10 @@ abstract GenericExpression(Data) from Data {
 	**/
 	public function loadToVolatile(context: CompileContext): AssemblyCode {
 		return switch this {
-			case IntExpr(expr): expr.loadToVolatile(context);
-			case FloatExpr(expr): expr.loadToVolatile(context);
-			case AngleExpr(expr): expr.loadToVolatile(context);
-			case VecExpr(expr): expr.loadToVolatile(context);
+		case IntExpr(expr): expr.loadToVolatile(context);
+		case FloatExpr(expr): expr.loadToVolatile(context);
+		case AngleExpr(expr): expr.loadToVolatile(context);
+		case VecExpr(expr): expr.loadToVolatile(context);
 		}
 	}
 
@@ -72,15 +72,12 @@ abstract GenericExpression(Data) from Data {
 		Creates an `AssemblyCode` that runs `instruction`
 		receiving `this` value as argument.
 	**/
-	public function use(
-		context: CompileContext,
-		instruction: Instruction
-	): AssemblyCode {
+	public function use(context: CompileContext, instruction: Instruction): AssemblyCode {
 		return switch this {
-			case IntExpr(expr): expr.use(context, instruction);
-			case FloatExpr(expr): expr.use(context, instruction);
-			case AngleExpr(expr): expr.use(context, instruction);
-			case VecExpr(expr): expr.use(context, instruction);
+		case IntExpr(expr): expr.use(context, instruction);
+		case FloatExpr(expr): expr.use(context, instruction);
+		case AngleExpr(expr): expr.use(context, instruction);
+		case VecExpr(expr): expr.use(context, instruction);
 		}
 	}
 

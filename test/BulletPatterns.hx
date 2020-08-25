@@ -62,12 +62,10 @@ class BulletPatterns {
 
 		final asyncTest = [
 			shot.velocity.set(5, 180),
-			async(
-				loop([
-					fire(),
-					wait(8)
-				])
-			),
+			async(loop([
+				fire(),
+				wait(8)
+			])),
 			loop([
 				fire(),
 				shot.direction.add(32),
@@ -162,9 +160,7 @@ class BulletPatterns {
 					bearingVar.let(),
 					rotationVar.let(),
 					loop([
-						position.set(150, bearingVar)
-							.rotate(rotationVar)
-							.scale(1.0, 0.3),
+						position.set(150, bearingVar).rotate(rotationVar).scale(1.0, 0.3),
 						wait(1),
 						bearingVar.add(4),
 						rotationVar.add(2)
@@ -173,7 +169,6 @@ class BulletPatterns {
 				wait(6)
 			])
 		];
-
 
 		final sinCosTest = [
 			rep(16, [

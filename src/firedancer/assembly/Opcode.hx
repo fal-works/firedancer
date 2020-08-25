@@ -47,10 +47,7 @@ abstract Opcode(Int) {
 	/**
 		Creates `Opcode` value from `category` and `operation`.
 	**/
-	static inline function from(
-		category: OperationCategory,
-		operation: Int
-	): Opcode {
+	static inline function from(category: OperationCategory, operation: Int): Opcode {
 		return new Opcode(category.int() << opBitCount | operation);
 	}
 

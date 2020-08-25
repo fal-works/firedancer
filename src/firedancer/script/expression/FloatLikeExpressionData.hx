@@ -34,10 +34,10 @@ class FloatLikeExpressionData implements ExpressionData {
 	**/
 	public function loadToVolatile(context: CompileContext): AssemblyCode {
 		return switch this.data {
-			case Constant(value):
-				Load(Float(Imm(value.toImmediateValue())));
-			case Runtime(expression):
-				expression.loadToVolatile(context);
+		case Constant(value):
+			Load(Float(Imm(value.toImmediateValue())));
+		case Runtime(expression):
+			expression.loadToVolatile(context);
 		}
 	}
 
@@ -54,31 +54,37 @@ class FloatLikeExpressionData implements ExpressionData {
 
 	public function tryGetConstant(): Maybe<Float> {
 		return switch this.data {
-			case Constant(value):
-				Maybe.from(value.toImmediateValue());
-			case Runtime(expression):
-				Maybe.none();
+		case Constant(value):
+			Maybe.from(value.toImmediateValue());
+		case Runtime(expression):
+			Maybe.none();
 		}
 	}
 
-	public function unaryOperation(
-		instruction: Instruction
-	): FloatLikeExpressionData {
-		return create(Runtime(FloatLikeRuntimeExpressionEnum.UnaryOperation(
-			instruction,
-			this
-		)));
+	public function unaryOperation(instruction: Instruction): FloatLikeExpressionData {
+		return create(
+			Runtime(
+				FloatLikeRuntimeExpressionEnum.UnaryOperation(
+					instruction,
+					this
+				)
+			)
+		);
 	}
 
 	public function binaryOperation(
 		instruction: Instruction,
 		other: FloatLikeExpressionData
 	): FloatLikeExpressionData {
-		return create(Runtime(FloatLikeRuntimeExpressionEnum.BinaryOperation(
-			instruction,
-			this,
-			other
-		)));
+		return create(
+			Runtime(
+				FloatLikeRuntimeExpressionEnum.BinaryOperation(
+					instruction,
+					this,
+					other
+				)
+			)
+		);
 	}
 
 	public function unaryMinus(): FloatLikeExpressionData
@@ -110,8 +116,8 @@ class FloatLikeExpressionData implements ExpressionData {
 
 	public function toString(): String {
 		return switch data {
-			case Constant(value): 'FloatC(${value.toString()})';
-			case Runtime(expression): 'FloatR(${expression.toString()})';
+		case Constant(value): 'FloatC(${value.toString()})';
+		case Runtime(expression): 'FloatR(${expression.toString()})';
 		}
 	}
 }

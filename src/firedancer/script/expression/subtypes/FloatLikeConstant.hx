@@ -6,7 +6,9 @@ import firedancer.types.Angle;
 	Value that represents a float-like constant.
 **/
 @:notNull @:forward
-abstract FloatLikeConstant(FloatLikeConstantData) from FloatLikeConstantData to FloatLikeConstantData {
+abstract FloatLikeConstant(
+	FloatLikeConstantData
+) from FloatLikeConstantData to FloatLikeConstantData {
 	/**
 		Casts `Float` to `FloatLikeConstant`.
 	**/

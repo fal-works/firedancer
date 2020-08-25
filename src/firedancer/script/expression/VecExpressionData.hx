@@ -35,13 +35,10 @@ class VecExpressionData implements ExpressionData {
 		receiving `this` value as argument.
 		@param instruction Any `Instruction` that uses the volatile vector.
 	**/
-	public function use(
-		context: CompileContext,
-		instruction: Instruction
-	): AssemblyCode {
-			final code = loadToVolatile(context);
-			code.push(instruction);
-			return code;
+	public function use(context: CompileContext, instruction: Instruction): AssemblyCode {
+		final code = loadToVolatile(context);
+		code.push(instruction);
+		return code;
 	}
 
 	public function toString(): String
@@ -52,6 +49,7 @@ class VecExpressionData implements ExpressionData {
 class CartesianVecExpressionData extends VecExpressionData {
 	public final x: FloatExpression;
 	public final y: FloatExpression;
+
 	final transformation: Maybe<Transformation> = Maybe.none();
 
 	public function new(

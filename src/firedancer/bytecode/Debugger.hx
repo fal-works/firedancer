@@ -10,7 +10,11 @@ class Debugger {
 	/**
 		Prints the current status of the VM.
 	**/
-	public static extern inline function dump(scanner: Scanner, mem: Memory, reg: DataRegisterFile): Void {
+	public static extern inline function dump(
+		scanner: Scanner,
+		mem: Memory,
+		reg: DataRegisterFile
+	): Void {
 		final buf = new StringBuffer();
 
 		buf.addLf("---- DUMP -------------------------------------\n");
@@ -63,7 +67,10 @@ class Debugger {
 		}
 	}
 
-	static extern inline function dumpDataRegisterFile(buf: StringBuffer, reg: DataRegisterFile): Void {
+	static extern inline function dumpDataRegisterFile(
+		buf: StringBuffer,
+		reg: DataRegisterFile
+	): Void {
 		buf.addLf("\n[data register file]");
 
 		buf.add("int:      ");

@@ -96,10 +96,10 @@
 					"conditions": [
 						{
 							"cond": "itemCount <= n",
-							"value": 2
+							"value": 3
 						}
 					],
-					"type": "noWrap"
+					"type": "keep"
 				},
 				{
 					"conditions": [
@@ -118,6 +118,15 @@
 				{
 					"conditions": [
 						{
+							"cond": "totalItemLength >= n",
+							"value": 60
+						}
+					],
+					"type": "onePerLine"
+				},
+				{
+					"conditions": [
+						{
 							"cond": "itemCount <= n",
 							"value": 1
 						}
@@ -127,11 +136,11 @@
 				{
 					"conditions": [
 						{
-							"cond": "totalItemLength >= n",
-							"value": 60
+							"cond": "itemCount <= n",
+							"value": 3
 						}
 					],
-					"type": "onePerLine"
+					"type": "keep"
 				},
 				{
 					"conditions": [

@@ -18,7 +18,10 @@ class Let {
 		Declares a new local float variable.
 		@param name
 	**/
-	public function float(name: String, initialValue: FloatExpression): DeclareLocalVariable {
+	public function float(
+		name: String,
+		initialValue: FloatExpression
+	): DeclareLocalVariable {
 		return DeclareLocalVariable.fromFloat(name, initialValue);
 	}
 
@@ -26,7 +29,10 @@ class Let {
 		Declares a new local angle variable.
 		@param name
 	**/
-	public function angle(name: String, initialValue: AngleExpression): DeclareLocalVariable {
+	public function angle(
+		name: String,
+		initialValue: AngleExpression
+	): DeclareLocalVariable {
 		return DeclareLocalVariable.fromAngle(name, initialValue);
 	}
 }

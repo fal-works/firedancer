@@ -27,30 +27,30 @@ class AddActorProperty extends AstNode implements ripper.Data {
 	override public function toAssembly(context: CompileContext): AssemblyCode {
 		final c = context;
 		return switch propType {
-			case Position:
-				switch operation {
-					case AddVector(e): e.use(c, Increase(Vec(Reg), prop(Position, Vector)));
-					case AddLength(e): e.use(c, Increase(Float(Reg), prop(Position, Length)));
-					case AddAngle(e): e.use(c, Increase(Float(Reg), prop(Position, Angle)));
-				}
-			case Velocity:
-				switch operation {
-					case AddVector(e): e.use(c, Increase(Vec(Reg), prop(Velocity, Vector)));
-					case AddLength(e): e.use(c, Increase(Float(Reg), prop(Velocity, Length)));
-					case AddAngle(e): e.use(c, Increase(Float(Reg), prop(Velocity, Angle)));
-				}
-			case ShotPosition:
-				switch operation {
-					case AddVector(e): e.use(c, Increase(Vec(Reg), prop(ShotPosition, Vector)));
-					case AddLength(e): e.use(c, Increase(Float(Reg), prop(ShotPosition, Length)));
-					case AddAngle(e): e.use(c, Increase(Float(Reg), prop(ShotPosition, Angle)));
-				}
-			case ShotVelocity:
-				switch operation {
-					case AddVector(e): e.use(c, Increase(Vec(Reg), prop(ShotVelocity, Vector)));
-					case AddLength(e): e.use(c, Increase(Float(Reg), prop(ShotVelocity, Length)));
-					case AddAngle(e): e.use(c, Increase(Float(Reg), prop(ShotVelocity, Angle)));
-				}
+		case Position:
+			switch operation {
+			case AddVector(e): e.use(c, Increase(Vec(Reg), prop(Position, Vector)));
+			case AddLength(e): e.use(c, Increase(Float(Reg), prop(Position, Length)));
+			case AddAngle(e): e.use(c, Increase(Float(Reg), prop(Position, Angle)));
+			}
+		case Velocity:
+			switch operation {
+			case AddVector(e): e.use(c, Increase(Vec(Reg), prop(Velocity, Vector)));
+			case AddLength(e): e.use(c, Increase(Float(Reg), prop(Velocity, Length)));
+			case AddAngle(e): e.use(c, Increase(Float(Reg), prop(Velocity, Angle)));
+			}
+		case ShotPosition:
+			switch operation {
+			case AddVector(e): e.use(c, Increase(Vec(Reg), prop(ShotPosition, Vector)));
+			case AddLength(e): e.use(c, Increase(Float(Reg), prop(ShotPosition, Length)));
+			case AddAngle(e): e.use(c, Increase(Float(Reg), prop(ShotPosition, Angle)));
+			}
+		case ShotVelocity:
+			switch operation {
+			case AddVector(e): e.use(c, Increase(Vec(Reg), prop(ShotVelocity, Vector)));
+			case AddLength(e): e.use(c, Increase(Float(Reg), prop(ShotVelocity, Length)));
+			case AddAngle(e): e.use(c, Increase(Float(Reg), prop(ShotVelocity, Angle)));
+			}
 		}
 	}
 }
@@ -86,29 +86,29 @@ class AddActorPropertyLinear extends AstNode implements ripper.Data {
 		var dropChange: Instruction; // Drop change rate (after the loop)
 
 		switch operation {
-			case AddVector(vec):
-				loadChange = vec.loadToVolatile(context);
-				divChange = getDivChange(true);
-				pushChange = Push(Vec(Reg));
-				peekChange = Peek(Vec, LEN32); // skip the loop counter
-				addFromVolatile = Increase(Vec(Reg), prop(propType, Vector));
-				dropChange = Drop(Vec);
+		case AddVector(vec):
+			loadChange = vec.loadToVolatile(context);
+			divChange = getDivChange(true);
+			pushChange = Push(Vec(Reg));
+			peekChange = Peek(Vec, LEN32); // skip the loop counter
+			addFromVolatile = Increase(Vec(Reg), prop(propType, Vector));
+			dropChange = Drop(Vec);
 
-			case AddLength(length):
-				loadChange = length.loadToVolatile(context);
-				divChange = getDivChange(false);
-				pushChange = Push(Float(Reg));
-				peekChange = Peek(Float, LEN32); // skip the loop counter
-				addFromVolatile = Increase(Float(Reg), prop(propType, Length));
-				dropChange = Drop(Float);
+		case AddLength(length):
+			loadChange = length.loadToVolatile(context);
+			divChange = getDivChange(false);
+			pushChange = Push(Float(Reg));
+			peekChange = Peek(Float, LEN32); // skip the loop counter
+			addFromVolatile = Increase(Float(Reg), prop(propType, Length));
+			dropChange = Drop(Float);
 
-			case AddAngle(angle):
-				loadChange = angle.loadToVolatile(context);
-				divChange = getDivChange(false);
-				pushChange = Push(Float(Reg));
-				peekChange = Peek(Float, LEN32); // skip the loop counter
-				addFromVolatile = Increase(Float(Reg), prop(propType, Angle));
-				dropChange = Drop(Float);
+		case AddAngle(angle):
+			loadChange = angle.loadToVolatile(context);
+			divChange = getDivChange(false);
+			pushChange = Push(Float(Reg));
+			peekChange = Peek(Float, LEN32); // skip the loop counter
+			addFromVolatile = Increase(Float(Reg), prop(propType, Angle));
+			dropChange = Drop(Float);
 		}
 
 		final prepare: AssemblyCode = loadChange.concat(divChange).concat([pushChange]);
@@ -153,10 +153,10 @@ class ActorPropertyAddOperationExtension {
 		divisor: IntExpression
 	) {
 		return switch addOperation {
-			case AddVector(arg): AddVector(arg / divisor);
-			case AddLength(arg): AddLength(arg / divisor);
-			case AddAngle(arg): AddAngle(arg / divisor);
-			default: throw "Unsupported operation.";
+		case AddVector(arg): AddVector(arg / divisor);
+		case AddLength(arg): AddLength(arg / divisor);
+		case AddAngle(arg): AddAngle(arg / divisor);
+		default: throw "Unsupported operation.";
 		}
 	}
 }

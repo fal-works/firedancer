@@ -166,10 +166,10 @@ class InstructionAssembler {
 
 		case Fire(fireType):
 			switch fireType {
-				case Simple: op(FireSimple);
-				case Complex(fireArgument): [op(FireComplex), fireArgument.int()];
-				case SimpleWithCode(fireCode): [op(FireSimpleWithCode), fireCode];
-				case ComplexWithCode(fireArgument, fireCode): [
+			case Simple: op(FireSimple);
+			case Complex(fireArgument): [op(FireComplex), fireArgument.int()];
+			case SimpleWithCode(fireCode): [op(FireSimpleWithCode), fireCode];
+			case ComplexWithCode(fireArgument, fireCode): [
 					op(FireComplexWithCode),
 					fireArgument.int(),
 					fireCode
@@ -180,8 +180,8 @@ class InstructionAssembler {
 
 		case Event(eventType):
 			switch eventType {
-				case Global: op(GlobalEventR);
-				case Local: op(LocalEventR);
+			case Global: op(GlobalEventR);
+			case Local: op(LocalEventR);
 			}
 
 		case Debug(debugCode):

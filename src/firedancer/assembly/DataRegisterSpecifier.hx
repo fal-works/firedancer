@@ -6,9 +6,9 @@ enum abstract DataRegisterSpecifier(Int) {
 	**/
 	public static function get(type: ValueType): DataRegisterSpecifier {
 		return switch type {
-			case Int: Ri;
-			case Float: Rf;
-			case Vec: Rvec;
+		case Int: Ri;
+		case Float: Rf;
+		case Vec: Rvec;
 		}
 	}
 
@@ -43,9 +43,9 @@ enum abstract DataRegisterSpecifier(Int) {
 	public function getType(): ValueType {
 		final reg: DataRegisterSpecifier = cast this;
 		return switch reg {
-			case Ri | Rib: Int;
-			case Rf | Rfb: Float;
-			case Rvec: Vec;
+		case Ri | Rib: Int;
+		case Rf | Rfb: Float;
+		case Rvec: Vec;
 		};
 	}
 
@@ -55,19 +55,19 @@ enum abstract DataRegisterSpecifier(Int) {
 	public function getBuffer(): DataRegisterSpecifier {
 		final reg: DataRegisterSpecifier = cast this;
 		return switch reg {
-			case Ri: Rib;
-			case Rf: Rfb;
-			default: throw 'Buffer is not available for ${reg.toString()}';
+		case Ri: Rib;
+		case Rf: Rfb;
+		default: throw 'Buffer is not available for ${reg.toString()}';
 		};
 	}
 
 	@:to public function toString(): String {
-		return switch (cast this: DataRegisterSpecifier) {
-			case Ri: "ri";
-			case Rib: "rib";
-			case Rf: "rf";
-			case Rfb: "rfb";
-			case Rvec: "rvec";
+		return switch (cast this : DataRegisterSpecifier) {
+		case Ri: "ri";
+		case Rib: "rib";
+		case Rf: "rf";
+		case Rfb: "rfb";
+		case Rvec: "rvec";
 		};
 	}
 }

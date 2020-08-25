@@ -31,9 +31,9 @@ abstract WordArray(Data) from Data to Data {
 		for (i in 0...this.length) {
 			final unit = this[i];
 			length += switch unit.toEnum() {
-				case OpcodeWord(_): Opcode.size;
-				case IntWord(_): LEN32;
-				case FloatWord(_): LEN64;
+			case OpcodeWord(_): Opcode.size;
+			case IntWord(_): LEN32;
+			case FloatWord(_): LEN64;
 			}
 		}
 
@@ -69,9 +69,9 @@ abstract WordArray(Data) from Data to Data {
 		for (i in 0...this.length) {
 			final unit = this[i];
 			switch unit.toEnum() {
-				case OpcodeWord(byte): addOpcode(byte);
-				case IntWord(v): addInt(v);
-				case FloatWord(v): addFloat(v);
+			case OpcodeWord(byte): addOpcode(byte);
+			case IntWord(v): addInt(v);
+			case FloatWord(v): addFloat(v);
 			}
 		}
 

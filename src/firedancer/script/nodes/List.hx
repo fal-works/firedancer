@@ -18,7 +18,6 @@ class List extends AstNode implements ripper.Data {
 	}
 
 	override public function toAssembly(context: CompileContext): AssemblyCode {
-
 		final codeList: Array<AssemblyCode> = [];
 		final nodes = this.nodes;
 		var everyFrameNodeCount = UInt.zero;
@@ -29,10 +28,10 @@ class List extends AstNode implements ripper.Data {
 			final node = nodes[i];
 
 			switch node.nodeType {
-				case EachFrame(astToBeInjected):
-					context.pushInjectionCode(astToBeInjected.toAssembly(context));
-					++everyFrameNodeCount;
-				default:
+			case EachFrame(astToBeInjected):
+				context.pushInjectionCode(astToBeInjected.toAssembly(context));
+				++everyFrameNodeCount;
+			default:
 			}
 
 			codeList.push(node.toAssembly(context));

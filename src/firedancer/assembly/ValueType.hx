@@ -13,18 +13,18 @@ enum abstract ValueType(Int) {
 	public var size(get, never): UInt;
 
 	public function toString(): String {
-		return switch (cast this: ValueType) {
-			case Int: "int";
-			case Float: "float";
-			case Vec: "vec";
+		return switch (cast this : ValueType) {
+		case Int: "int";
+		case Float: "float";
+		case Vec: "vec";
 		}
 	}
 
 	extern inline function get_size(): UInt {
-		return switch (cast this: ValueType) {
-			case Int: LEN32;
-			case Float: LEN64;
-			case Vec: LEN64 + LEN64;
+		return switch (cast this : ValueType) {
+		case Int: LEN32;
+		case Float: LEN64;
+		case Vec: LEN64 + LEN64;
 		}
 	}
 }

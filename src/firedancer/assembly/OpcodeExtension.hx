@@ -12,10 +12,10 @@ class OpcodeExtension {
 	**/
 	public static inline function toString(opcode: Opcode): String {
 		return switch opcode.category {
-			case General: GeneralOperation.from(opcode.op).toString();
-			case Calc: CalcOperation.from(opcode.op).toString();
-			case Read: ReadOperation.from(opcode.op).toString();
-			case Write: WriteOperation.from(opcode.op).toString();
+		case General: GeneralOperation.from(opcode.op).toString();
+		case Calc: CalcOperation.from(opcode.op).toString();
+		case Read: ReadOperation.from(opcode.op).toString();
+		case Write: WriteOperation.from(opcode.op).toString();
 		}
 	}
 }

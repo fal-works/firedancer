@@ -16,9 +16,9 @@ abstract IntLocalVariableExpression(String) {
 			final variable = context.localVariables.get(this);
 			final code = variable.loadToVolatile();
 			switch variable.type {
-				case Int:
-				case Float: throw "Cannot cast float to int.";
-				case Vec: throw "Cannot cast vector to int.";
+			case Int:
+			case Float: throw "Cannot cast float to int.";
+			case Vec: throw "Cannot cast vector to int.";
 			}
 			code;
 		})));
@@ -119,9 +119,9 @@ abstract IntLocalVariableExpression(String) {
 
 		if (constant.isSome()) {
 			switch constant.unwrap() {
-				case 1: return increment();
-				case -1: return decrement();
-				default:
+			case 1: return increment();
+			case -1: return decrement();
+			default:
 			}
 		}
 
