@@ -65,6 +65,9 @@ class Vm {
 		final reg = new DataRegisterFile();
 		final mem = new Memory(memoryCapacity);
 
+		var endCode = 0;
+		var deactivateAllThreads = false;
+
 		for (i in 0...threads.length) {
 			final thread = threads[i];
 			if (!thread.active) continue;
@@ -124,10 +127,9 @@ class Vm {
 							mem.dropInt();
 						}
 					case End:
-						final endCode = scan.int();
-						threads.deactivateAll();
-						updatePositionAndVelocity();
-						return endCode;
+						endCode = scan.int();
+						deactivateAllThreads = true;
+						break;
 					case NoOperation:
 						// Does nothing
 
@@ -639,8 +641,9 @@ class Vm {
 		}
 
 		updatePositionAndVelocity();
+		if (deactivateAllThreads) threads.deactivateAll();
 
-		return 0;
+		return endCode;
 	}
 
 	public static function dryRun(
