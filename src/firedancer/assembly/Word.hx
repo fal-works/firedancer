@@ -1,8 +1,8 @@
 package firedancer.assembly;
 
 import haxe.Int32;
-import firedancer.bytecode.Opcode;
-import firedancer.bytecode.OpcodeExtension;
+import firedancer.vm.Opcode;
+import firedancer.vm.OpcodeExtension;
 
 /**
 	Data unit in firedancer `Program`.

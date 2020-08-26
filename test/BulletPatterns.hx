@@ -1,5 +1,5 @@
-import firedancer.bytecode.Program;
-import firedancer.bytecode.ProgramPackage;
+import firedancer.vm.Program;
+import firedancer.vm.ProgramPackage;
 import firedancer.script.Api.*;
 import firedancer.script.Ast;
 import FdEndCode.*;

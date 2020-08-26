@@ -2,9 +2,9 @@ package firedancer.assembly;
 
 import haxe.Int32;
 import banker.binary.Bytes;
-import firedancer.bytecode.Program;
-import firedancer.bytecode.Opcode;
-import firedancer.bytecode.Constants.*;
+import firedancer.vm.Program;
+import firedancer.vm.Opcode;
+import firedancer.vm.Constants.*;
 import firedancer.assembly.Word.WordEnum;
 
 private typedef Data = Array<Word>;

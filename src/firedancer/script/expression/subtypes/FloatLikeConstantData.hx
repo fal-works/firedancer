@@ -1,8 +1,8 @@
 package firedancer.script.expression.subtypes;
 
 import reckoner.Geometry.DEGREES_TO_RADIANS;
+import firedancer.vm.Geometry;
 import firedancer.types.Angle;
-import firedancer.bytecode.Geometry;
 
 /**
 	The underlying type of `FloatLikeConstant`.

@@ -1,7 +1,7 @@
 package firedancer.script;
 
-import firedancer.bytecode.DebugCode;
-import firedancer.bytecode.ProgramPackage;
+import firedancer.vm.DebugCode;
+import firedancer.vm.ProgramPackage;
 import firedancer.script.nodes.*;
 import firedancer.script.api_components.Position;
 import firedancer.script.api_components.Velocity;

@@ -9,6 +9,7 @@
 
 -lib broker
 -lib reckoner
+-lib firedancer-vm
 -lib firedancer
 -lib heaps
 
@@ -17,3 +18,4 @@
 --debug
 -D broker_catch_disable
 -D firedancer_positionref_type=broker_BatchSprite
+# -D firedancer_no_optimization

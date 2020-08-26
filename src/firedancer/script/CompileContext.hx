@@ -1,12 +1,12 @@
 package firedancer.script;
 
 import banker.vector.Vector;
+import firedancer.vm.ProgramPackage;
 import firedancer.assembly.Instruction;
 import firedancer.assembly.AssemblyCode;
 import firedancer.assembly.ValueType;
 import firedancer.assembly.Optimizer;
 import firedancer.assembly.Assembler;
-import firedancer.bytecode.ProgramPackage;
 import firedancer.script.expression.GenericExpression;
 #if debug
 import sneaker.print.Printer.println;

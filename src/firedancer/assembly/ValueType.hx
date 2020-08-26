@@ -1,6 +1,6 @@
 package firedancer.assembly;
 
-import firedancer.bytecode.Constants.*;
+import firedancer.vm.Constants.*;
 
 enum abstract ValueType(Int) {
 	final Int;

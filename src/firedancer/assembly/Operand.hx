@@ -1,7 +1,7 @@
 package firedancer.assembly;
 
 import reckoner.Numeric;
-import firedancer.bytecode.Constants.*;
+import firedancer.vm.Constants.*;
 import firedancer.assembly.OperandTools.*;
 
 @:using(firedancer.assembly.Operand.OperandExtension)

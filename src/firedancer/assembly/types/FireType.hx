@@ -1,7 +1,7 @@
 package firedancer.assembly.types;
 
-import firedancer.bytecode.FireArgument;
-import firedancer.bytecode.Constants.*;
+import firedancer.vm.FireArgument;
+import firedancer.vm.Constants.*;
 
 @:using(firedancer.assembly.types.FireType.FireTypeExtension)
 enum FireType {

@@ -1,6 +1,6 @@
 package firedancer.assembly;
 
-import firedancer.bytecode.Program;
+import firedancer.vm.Program;
 
 class Assembler {
 	public static function assemble(code: AssemblyCode): Program {

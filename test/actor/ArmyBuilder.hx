@@ -1,6 +1,6 @@
 package actor;
 
-import firedancer.bytecode.ProgramPackage;
+import firedancer.vm.ProgramPackage;
 
 /**
 	Functions internally used in `Army.new()`.

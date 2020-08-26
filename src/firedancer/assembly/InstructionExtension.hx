@@ -1,7 +1,7 @@
 package firedancer.assembly;
 
-import firedancer.bytecode.Opcode;
-import firedancer.bytecode.Constants.*;
+import firedancer.vm.Opcode;
+import firedancer.vm.Constants.*;
 import firedancer.assembly.OperandTools.*;
 
 class InstructionExtension {

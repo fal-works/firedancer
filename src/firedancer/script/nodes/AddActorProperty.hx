@@ -1,10 +1,10 @@
 package firedancer.script.nodes;
 
+import firedancer.vm.Constants.IntSize;
 import firedancer.assembly.Instruction;
 import firedancer.assembly.AssemblyCode;
 import firedancer.assembly.types.ActorProperty.create as prop;
 import firedancer.assembly.types.ActorPropertyType;
-import firedancer.bytecode.Constants.IntSize;
 import firedancer.script.expression.*;
 
 /**

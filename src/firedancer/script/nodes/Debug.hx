@@ -1,6 +1,6 @@
 package firedancer.script.nodes;
 
-import firedancer.bytecode.DebugCode;
+import firedancer.vm.DebugCode;
 
 /**
 	Runs debug process specified by `debugCode`.

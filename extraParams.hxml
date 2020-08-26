@@ -1,7 +1,0 @@
-# Default parameters for haxelib
-
--lib sinker
--lib sneaker
--lib ripper
--lib banker
--lib reckoner

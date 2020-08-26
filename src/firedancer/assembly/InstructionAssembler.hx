@@ -1,9 +1,9 @@
 package firedancer.assembly;
 
-import firedancer.bytecode.Opcode;
-import firedancer.bytecode.operation.GeneralOperation;
-import firedancer.bytecode.operation.CalcOperation;
-import firedancer.bytecode.operation.ReadOperation;
+import firedancer.vm.Opcode;
+import firedancer.vm.operation.GeneralOperation;
+import firedancer.vm.operation.CalcOperation;
+import firedancer.vm.operation.ReadOperation;
 import firedancer.assembly.Word;
 
 class InstructionAssembler {

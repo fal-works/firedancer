@@ -1,12 +1,12 @@
-import firedancer.bytecode.ProgramPackage;
 import broker.object.Object;
 import broker.image.Tile;
 import broker.draw.DrawArea;
 import broker.draw.TileDraw;
 import broker.draw.BatchDraw;
 import reckoner.TmpVec2D;
+import firedancer.vm.ProgramPackage;
+import firedancer.vm.PositionRef;
 import firedancer.types.Azimuth;
-import firedancer.bytecode.PositionRef;
 import actor.*;
 
 class World {

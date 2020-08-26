@@ -1,6 +1,6 @@
 package firedancer.assembly.types;
 
-import firedancer.bytecode.Opcode;
+import firedancer.vm.Opcode;
 
 class ActorPropertyExtension {
 	public static function getReadOpcode(_this: ActorProperty): Opcode {
