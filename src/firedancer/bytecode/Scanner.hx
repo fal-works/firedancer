@@ -2,7 +2,7 @@ package firedancer.bytecode;
 
 import haxe.Int32;
 import firedancer.assembly.Opcode;
-import firedancer.bytecode.internal.Constants.*;
+import firedancer.bytecode.Constants.*;
 
 #if firedancer_verbose
 using firedancer.assembly.OpcodeExtension;
@@ -81,7 +81,7 @@ class Scanner {
 	**/
 	public extern inline function int(): Int32 {
 		final value = untyped $bgeti32(code, pc);
-		pc += LEN32;
+		pc += IntSize;
 		return value;
 	}
 
@@ -90,7 +90,7 @@ class Scanner {
 	**/
 	public extern inline function float(): Float {
 		final value = untyped $bgetf64(code, pc);
-		pc += LEN64;
+		pc += FloatSize;
 		return value;
 	}
 

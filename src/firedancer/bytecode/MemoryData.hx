@@ -2,7 +2,7 @@ package firedancer.bytecode;
 
 import banker.binary.ByteStackData;
 import banker.binary.BytesData;
-import firedancer.bytecode.internal.Constants.*;
+import firedancer.bytecode.Constants.*;
 
 /**
 	Virtual memory data.
@@ -36,17 +36,17 @@ abstract MemoryData(ByteStackData) from ByteStackData {
 @:notNull
 abstract LocalVariableData(BytesData) from BytesData {
 	public extern inline function getInt(capacity: UInt, address: UInt): Int
-		return this.getI32(capacity - address - LEN32);
+		return this.getI32(capacity - address - IntSize);
 
 	public extern inline function getFloat(capacity: UInt, address: UInt): Float
-		return this.getF64(capacity - address - LEN64);
+		return this.getF64(capacity - address - FloatSize);
 
 	public extern inline function setInt(
 		capacity: UInt,
 		address: UInt,
 		value: Int
 	): Void {
-		this.setI32(capacity - address - LEN32, value);
+		this.setI32(capacity - address - IntSize, value);
 	}
 
 	public extern inline function setFloat(
@@ -54,7 +54,7 @@ abstract LocalVariableData(BytesData) from BytesData {
 		address: UInt,
 		value: Float
 	): Void {
-		this.setF64(capacity - address - LEN64, value);
+		this.setF64(capacity - address - FloatSize, value);
 	}
 
 	public extern inline function addInt(
@@ -62,7 +62,7 @@ abstract LocalVariableData(BytesData) from BytesData {
 		address: UInt,
 		value: Int
 	): Void {
-		final pos = capacity - address - LEN32;
+		final pos = capacity - address - IntSize;
 		this.setI32(pos, this.getI32(pos) + value);
 	}
 
@@ -71,7 +71,7 @@ abstract LocalVariableData(BytesData) from BytesData {
 		address: UInt,
 		value: Float
 	): Void {
-		final pos = capacity - address - LEN64;
+		final pos = capacity - address - FloatSize;
 		this.setF64(pos, this.getF64(pos) + value);
 	}
 }

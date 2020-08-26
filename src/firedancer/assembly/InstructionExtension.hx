@@ -1,6 +1,6 @@
 package firedancer.assembly;
 
-import firedancer.bytecode.internal.Constants.*;
+import firedancer.bytecode.Constants.*;
 import firedancer.assembly.OperandTools.*;
 
 class InstructionExtension {
@@ -191,23 +191,23 @@ class InstructionExtension {
 		case Break: UInt.zero;
 		case CountDownBreak: UInt.zero;
 		case Label(labelId): throw "Label cannot be directly converted to bytecode.";
-		case GotoLabel(labelId): LEN32;
-		case CountDownGotoLabel(labelId): LEN32;
-		case UseThread(programId, output): LEN32 + output.bytecodeLength();
+		case GotoLabel(labelId): IntSize;
+		case CountDownGotoLabel(labelId): IntSize;
+		case UseThread(programId, output): IntSize + output.bytecodeLength();
 		case AwaitThread: UInt.zero;
-		case End(endCode): LEN32;
+		case End(endCode): IntSize;
 
 			// ---- load values ------------------------------------------------
 
 		case Load(input): input.bytecodeLength();
 		case Save(input): input.bytecodeLength();
-		case Store(input, address): input.bytecodeLength() + LEN32;
+		case Store(input, address): input.bytecodeLength() + IntSize;
 
 			// ---- read/write stack ---------------------------------------------
 
 		case Push(input): input.bytecodeLength();
 		case Pop(_): UInt.zero;
-		case Peek(_, bytesToSkip): LEN32;
+		case Peek(_, bytesToSkip): IntSize;
 		case Drop(_): UInt.zero;
 
 			// ---- fire ---------------------------------------------------
@@ -217,7 +217,7 @@ class InstructionExtension {
 			// ---- other ---------------------------------------------------
 
 		case Event(_): UInt.zero;
-		case Debug(debugCode): LEN32;
+		case Debug(debugCode): IntSize;
 
 			// ---- calc values ---------------------------------------------
 
@@ -237,8 +237,8 @@ class InstructionExtension {
 		case Sin: UInt.zero;
 		case Cos: UInt.zero;
 
-		case Increment(address): LEN32;
-		case Decrement(address): LEN32;
+		case Increment(address): IntSize;
+		case Decrement(address): IntSize;
 
 			// ---- read actor data ------------------------------------------
 

@@ -12,7 +12,7 @@ import firedancer.assembly.operation.GeneralOperation;
 import firedancer.assembly.operation.CalcOperation;
 import firedancer.assembly.operation.ReadOperation;
 import firedancer.assembly.operation.WriteOperation;
-import firedancer.bytecode.internal.Constants.*;
+import firedancer.bytecode.Constants.*;
 import firedancer.bytecode.types.FireArgument;
 import firedancer.common.Geometry;
 
@@ -103,7 +103,7 @@ class Vm {
 					case CountDownGoto:
 						if (0 < mem.peekInt()) {
 							mem.decrement();
-							scan.pc += LEN32; // skip the operand
+							scan.pc += IntSize; // skip the operand
 						} else {
 							mem.dropInt();
 							final address = scan.int();

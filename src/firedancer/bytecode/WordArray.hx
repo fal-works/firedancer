@@ -3,7 +3,7 @@ package firedancer.bytecode;
 import haxe.Int32;
 import banker.binary.Bytes;
 import firedancer.assembly.Opcode;
-import firedancer.bytecode.internal.Constants.*;
+import firedancer.bytecode.Constants.*;
 import firedancer.bytecode.Word.WordEnum;
 
 private typedef Data = Array<Word>;
@@ -32,8 +32,8 @@ abstract WordArray(Data) from Data to Data {
 			final unit = this[i];
 			length += switch unit.toEnum() {
 			case OpcodeWord(_): Opcode.size;
-			case IntWord(_): LEN32;
-			case FloatWord(_): LEN64;
+			case IntWord(_): IntSize;
+			case FloatWord(_): FloatSize;
 			}
 		}
 
@@ -58,12 +58,12 @@ abstract WordArray(Data) from Data to Data {
 
 		inline function addInt(v: Int32): Void {
 			data.setI32(pos, v);
-			pos += LEN32;
+			pos += IntSize;
 		}
 
 		inline function addFloat(v: Float): Void {
 			data.setF64(pos, v);
-			pos += LEN64;
+			pos += FloatSize;
 		}
 
 		for (i in 0...this.length) {

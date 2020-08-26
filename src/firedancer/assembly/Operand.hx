@@ -1,7 +1,7 @@
 package firedancer.assembly;
 
 import reckoner.Numeric;
-import firedancer.bytecode.internal.Constants.*;
+import firedancer.bytecode.Constants.*;
 import firedancer.assembly.OperandTools.*;
 
 @:using(firedancer.assembly.Operand.OperandExtension)
@@ -517,8 +517,8 @@ class IntOperandExtension {
 
 	public static function bytecodeLength(_this: IntOperand): UInt {
 		return switch _this {
-		case Imm(_): LEN32;
-		case Var(_): LEN32;
+		case Imm(_): IntSize;
+		case Var(_): IntSize;
 		default: UInt.zero;
 		}
 	}
@@ -574,8 +574,8 @@ class FloatOperandExtension {
 
 	public static function bytecodeLength(_this: FloatOperand): UInt {
 		return switch _this {
-		case Imm(_): LEN64;
-		case Var(_): LEN32;
+		case Imm(_): FloatSize;
+		case Var(_): IntSize;
 		default: UInt.zero;
 		}
 	}
@@ -627,7 +627,7 @@ class VecOperandExtension {
 
 	public static function bytecodeLength(_this: VecOperand): UInt {
 		return switch _this {
-		case Imm(_): LEN64 + LEN64;
+		case Imm(_): VecSize;
 		default: UInt.zero;
 		}
 	}

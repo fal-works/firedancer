@@ -1,7 +1,7 @@
 package firedancer.assembly.types;
 
 import firedancer.bytecode.types.FireArgument;
-import firedancer.bytecode.internal.Constants.*;
+import firedancer.bytecode.Constants.*;
 
 @:using(firedancer.assembly.types.FireType.FireTypeExtension)
 enum FireType {
@@ -24,9 +24,9 @@ class FireTypeExtension {
 	public static function bytecodeLength(_this: FireType): UInt {
 		return switch _this {
 		case Simple: UInt.zero;
-		case Complex(_): LEN32;
-		case SimpleWithCode(_): LEN32;
-		case ComplexWithCode(_, _): LEN32 + LEN32;
+		case Complex(_): IntSize;
+		case SimpleWithCode(_): IntSize;
+		case ComplexWithCode(_, _): IntSize + IntSize;
 		}
 	}
 }

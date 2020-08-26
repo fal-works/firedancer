@@ -4,7 +4,7 @@ import firedancer.assembly.Instruction;
 import firedancer.assembly.AssemblyCode;
 import firedancer.assembly.types.ActorProperty.create as prop;
 import firedancer.assembly.types.ActorPropertyType;
-import firedancer.bytecode.internal.Constants.LEN32;
+import firedancer.bytecode.Constants.IntSize;
 import firedancer.script.expression.*;
 
 /**
@@ -155,7 +155,7 @@ class SetActorPropertyLinear extends AstNode {
 
 			divChange = getDivChange(true);
 			pushChange = Push(Vec(Reg));
-			peekChange = Peek(Vec, LEN32); // skip the loop counter
+			peekChange = Peek(Vec, IntSize); // skip the loop counter
 			dropChange = Drop(Vec);
 
 			addFromVolatile = Set(Vec(Reg), prop(propType, Vector));
@@ -166,7 +166,7 @@ class SetActorPropertyLinear extends AstNode {
 		case SetLength(length):
 			divChange = getDivChange(false);
 			pushChange = Push(Float(Reg));
-			peekChange = Peek(Float, LEN32); // skip the loop counter
+			peekChange = Peek(Float, IntSize); // skip the loop counter
 			dropChange = Drop(Float);
 
 			addFromVolatile = Increase(Float(Reg), prop(propType, Length));
@@ -178,7 +178,7 @@ class SetActorPropertyLinear extends AstNode {
 		case SetAngle(angle):
 			divChange = getDivChange(false);
 			pushChange = Push(Float(Reg));
-			peekChange = Peek(Float, LEN32); // skip the loop counter
+			peekChange = Peek(Float, IntSize); // skip the loop counter
 			dropChange = Drop(Float);
 
 			addFromVolatile = Increase(Float(Reg), prop(propType, Angle));

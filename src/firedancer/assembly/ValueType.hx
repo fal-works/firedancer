@@ -1,6 +1,6 @@
 package firedancer.assembly;
 
-import firedancer.bytecode.internal.Constants.*;
+import firedancer.bytecode.Constants.*;
 
 enum abstract ValueType(Int) {
 	final Int;
@@ -22,9 +22,9 @@ enum abstract ValueType(Int) {
 
 	extern inline function get_size(): UInt {
 		return switch (cast this : ValueType) {
-		case Int: LEN32;
-		case Float: LEN64;
-		case Vec: LEN64 + LEN64;
+		case Int: IntSize;
+		case Float: FloatSize;
+		case Vec: VecSize;
 		}
 	}
 }
