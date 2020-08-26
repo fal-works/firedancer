@@ -7,6 +7,12 @@ import sneaker.exception.NotOverriddenException;
 **/
 class EventHandler {
 	/**
+		Creates a null object of `EventHandler`.
+	**/
+	public static function createNull(): NullEventHandler
+		return new NullEventHandler();
+
+	/**
 		Called every time a global event is invoked.
 
 		This method must be overridden by an user-defined sub-class.

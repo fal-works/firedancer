@@ -7,6 +7,12 @@ import sneaker.exception.NotOverriddenException;
 **/
 class Emitter {
 	/**
+		Creates a null object of `Emitter`.
+	**/
+	public static function createNull(): NullEmitter
+		return new NullEmitter();
+
+	/**
 		Emits an actor.
 
 		This method must be overridden by an user-defined sub-class.

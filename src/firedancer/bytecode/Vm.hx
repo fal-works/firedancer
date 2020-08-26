@@ -4,8 +4,6 @@ import banker.vector.Vector as RVec;
 import banker.vector.WritableVector as Vec;
 import reckoner.Random;
 import firedancer.bytecode.Constants.*;
-import firedancer.bytecode.EventHandler;
-import firedancer.bytecode.Emitter;
 import firedancer.bytecode.operation.GeneralOperation;
 import firedancer.bytecode.operation.CalcOperation;
 import firedancer.bytecode.operation.ReadOperation;
@@ -647,7 +645,7 @@ class Vm {
 		entryBytecodeName: String,
 		memoryCapacity: UInt = 256
 	): Void {
-		final eventHandler = new NullEventHandler();
+		final eventHandler = EventHandler.createNull();
 		final threads = new ThreadList(1, memoryCapacity);
 		final bytecode = pkg.getProgramByName(entryBytecodeName);
 		threads.set(bytecode);
@@ -657,7 +655,7 @@ class Vm {
 		final vyVec = Vec.fromArrayCopy([0.0]);
 		final originPositionRefVec: Vec<Maybe<PositionRef>> = new Vec(UInt.one);
 		final vecIndex = UInt.zero;
-		final emitter = new NullEmitter();
+		final emitter = Emitter.createNull();
 		final targetPositionRef = PositionRef.createZero();
 
 		var frame = UInt.zero;
