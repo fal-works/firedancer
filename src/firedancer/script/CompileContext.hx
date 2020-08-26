@@ -107,17 +107,18 @@ class CompileContext {
 	/**
 		Creates a `ProgramPackage` instance.
 	**/
-	public function createPackage(): ProgramPackage {
-		final optimized = this.codeList.map(Optimizer.optimize);
+	public function createPackage(optimize = true): ProgramPackage {
+		var codeList = this.codeList;
+		if (optimize) codeList = codeList.map(Optimizer.optimize);
 
 		#if debug
-		for (id in 0...optimized.length) {
+		for (id in 0...codeList.length) {
 			println('[ASSEMBLY] ID: $id');
-			println('${optimized[id].toString()}\n');
+			println('${codeList[id].toString()}\n');
 		}
 		#end
 
-		final assembled = optimized.map(Assembler.assemble);
+		final assembled = codeList.map(Assembler.assemble);
 		final bytecodeList = Vector.fromArrayCopy(assembled);
 
 		return new ProgramPackage(bytecodeList, this.nameIndexMap);

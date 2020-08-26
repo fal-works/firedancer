@@ -8,14 +8,6 @@ which can be run on Firedancer Virtual Machine.
 Inspired by [BulletML](http://www.asahi-net.or.jp/~cs8k-cyu/bulletml/index_e.html).
 
 
-## Compiler flags
-
-|flag|description|
-|---|---|
-|firedancer_verbose|Emits verbose log.|
-|firedancer_no_optimization|Disables the optimization of virtual assembly language code.|
-
-
 ## Dependencies
 
 - [sinker](https://github.com/fal-works/sinker) v0.4.0 or compatible

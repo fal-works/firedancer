@@ -9,7 +9,6 @@ class Optimizer {
 	static extern inline final waitUnrollThreshold = 32;
 
 	public static function optimize(code: AssemblyCode): AssemblyCode {
-		#if !firedancer_no_optimization
 		var cnt = 0;
 
 		code = code.copy();
@@ -23,7 +22,6 @@ class Optimizer {
 
 			if (1024 < ++cnt) throw "Detected infinite loop in the optimization process.";
 		}
-		#end
 
 		return code;
 	}
