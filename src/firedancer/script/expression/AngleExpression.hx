@@ -2,7 +2,6 @@ package firedancer.script.expression;
 
 import reckoner.Geometry.DEGREES_TO_RADIANS;
 import firedancer.types.Angle;
-import firedancer.script.api_components.ActorPropertyApiComponent;
 import firedancer.script.expression.FloatLikeExpressionData;
 
 /**
@@ -35,14 +34,6 @@ abstract AngleExpression(
 
 	@:from static extern inline function fromInt(value: Int): AngleExpression
 		return fromFloat(value);
-
-	@:access(firedancer.script.api_components.ActorPropertyApiComponent)
-	@:from static extern inline function fromActorProperty(
-		apiCmp: ActorPropertyApiComponent
-	): AngleExpression {
-		return
-			FloatLikeExpressionEnum.Runtime(RuntimeExpressionEnum.Variable(Get(apiCmp.property)));
-	}
 
 	@:op(-A)
 	extern inline function unaryMinus(): AngleExpression

@@ -1,5 +1,7 @@
 package firedancer.script.api_components;
 
+import firedancer.script.expression.FloatLikeExpressionData;
+
 /**
 	Provides features for operating actor's shot velocity.
 **/
@@ -55,7 +57,43 @@ class CartesianShotVelocity {
 /**
 	Provides functions for operating the length of actor's shot velocity vector.
 **/
-class ShotSpeed extends ActorPropertyApiComponent {
+@:notNull @:forward
+abstract ShotSpeed(ShotSpeedImpl) {
+	public inline function new()
+		this = new ShotSpeedImpl();
+
+	@:access(firedancer.script.api_components.ActorPropertyApiComponent)
+	@:to function toExpression(): FloatExpression {
+		return
+			FloatLikeExpressionEnum.Runtime(RuntimeExpressionEnum.Variable(Get(this.property)));
+	}
+
+	@:op(-A)
+	inline function minus(): FloatExpression
+		return -toExpression();
+
+	@:commutative @:op(A + B)
+	static inline function addExpr(a: ShotSpeed, b: FloatExpression): FloatExpression
+		return a.toExpression() + b;
+
+	@:op(A - B)
+	static inline function subtractExpr(a: ShotSpeed, b: FloatExpression): FloatExpression
+		return a.toExpression() - b;
+
+	@:commutative @:op(A * B)
+	static inline function multiplyExpr(a: ShotSpeed, b: FloatExpression): FloatExpression
+		return a.toExpression() * b;
+
+	@:op(A / B)
+	static inline function divideExpr(a: ShotSpeed, b: FloatExpression): FloatExpression
+		return a.toExpression() / b;
+
+	@:op(A % B)
+	static inline function moduloExpr(a: ShotSpeed, b: FloatExpression): FloatExpression
+		return a.toExpression() % b;
+}
+
+private class ShotSpeedImpl extends ActorPropertyApiComponent {
 	public function new()
 		super({ type: ShotVelocity, component: Length });
 
@@ -77,7 +115,43 @@ class ShotSpeed extends ActorPropertyApiComponent {
 /**
 	Provides functions for operating the angle of actor's shot velocity vector.
 **/
-class ShotDirection extends ActorPropertyApiComponent {
+@:notNull @:forward
+abstract ShotDirection(ShotDirectionImpl) {
+	public inline function new()
+		this = new ShotDirectionImpl();
+
+	@:access(firedancer.script.api_components.ActorPropertyApiComponent)
+	@:to function toExpression(): AngleExpression {
+		return
+			FloatLikeExpressionEnum.Runtime(RuntimeExpressionEnum.Variable(Get(this.property)));
+	}
+
+	@:op(-A)
+	inline function minus(): AngleExpression
+		return -toExpression();
+
+	@:commutative @:op(A + B)
+	static inline function addExpr(a: ShotDirection, b: AngleExpression): AngleExpression
+		return a.toExpression() + b;
+
+	@:op(A - B)
+	static inline function subtractExpr(a: ShotDirection, b: AngleExpression): AngleExpression
+		return a.toExpression() - b;
+
+	@:commutative @:op(A * B)
+	static inline function multiplyExpr(a: ShotDirection, b: FloatExpression): AngleExpression
+		return a.toExpression() * b;
+
+	@:op(A / B)
+	static inline function divideExpr(a: ShotDirection, b: FloatExpression): AngleExpression
+		return a.toExpression() / b;
+
+	@:op(A % B)
+	static inline function moduloExpr(a: ShotDirection, b: FloatExpression): AngleExpression
+		return a.toExpression() % b;
+}
+
+private class ShotDirectionImpl extends ActorPropertyApiComponent {
 	public function new()
 		super({ type: ShotVelocity, component: Angle });
 

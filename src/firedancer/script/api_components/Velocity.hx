@@ -1,5 +1,7 @@
 package firedancer.script.api_components;
 
+import firedancer.script.expression.FloatLikeExpressionData;
+
 /**
 	Provides features for operating actor's velocity.
 **/
@@ -55,7 +57,43 @@ class CartesianVelocity {
 /**
 	Provides functions for operating the length of actor's velocity vector.
 **/
-class Speed extends ActorPropertyApiComponent {
+@:notNull @:forward
+abstract Speed(SpeedImpl) {
+	public inline function new()
+		this = new SpeedImpl();
+
+	@:access(firedancer.script.api_components.ActorPropertyApiComponent)
+	@:to function toExpression(): FloatExpression {
+		return
+			FloatLikeExpressionEnum.Runtime(RuntimeExpressionEnum.Variable(Get(this.property)));
+	}
+
+	@:op(-A)
+	inline function minus(): FloatExpression
+		return -toExpression();
+
+	@:commutative @:op(A + B)
+	static inline function addExpr(a: Speed, b: FloatExpression): FloatExpression
+		return a.toExpression() + b;
+
+	@:op(A - B)
+	static inline function subtractExpr(a: Speed, b: FloatExpression): FloatExpression
+		return a.toExpression() - b;
+
+	@:commutative @:op(A * B)
+	static inline function multiplyExpr(a: Speed, b: FloatExpression): FloatExpression
+		return a.toExpression() * b;
+
+	@:op(A / B)
+	static inline function divideExpr(a: Speed, b: FloatExpression): FloatExpression
+		return a.toExpression() / b;
+
+	@:op(A % B)
+	static inline function moduloExpr(a: Speed, b: FloatExpression): FloatExpression
+		return a.toExpression() % b;
+}
+
+private class SpeedImpl extends ActorPropertyApiComponent {
 	public function new()
 		super({ type: Velocity, component: Length });
 
@@ -77,7 +115,43 @@ class Speed extends ActorPropertyApiComponent {
 /**
 	Provides functions for operating the angle of actor's velocity vector.
 **/
-class Direction extends ActorPropertyApiComponent {
+@:notNull @:forward
+abstract Direction(DirectionImpl) {
+	public inline function new()
+		this = new DirectionImpl();
+
+	@:access(firedancer.script.api_components.ActorPropertyApiComponent)
+	@:to function toExpression(): AngleExpression {
+		return
+			FloatLikeExpressionEnum.Runtime(RuntimeExpressionEnum.Variable(Get(this.property)));
+	}
+
+	@:op(-A)
+	inline function minus(): AngleExpression
+		return -toExpression();
+
+	@:commutative @:op(A + B)
+	static inline function addExpr(a: Direction, b: AngleExpression): AngleExpression
+		return a.toExpression() + b;
+
+	@:op(A - B)
+	static inline function subtractExpr(a: Direction, b: AngleExpression): AngleExpression
+		return a.toExpression() - b;
+
+	@:commutative @:op(A * B)
+	static inline function multiplyExpr(a: Direction, b: FloatExpression): AngleExpression
+		return a.toExpression() * b;
+
+	@:op(A / B)
+	static inline function divideExpr(a: Direction, b: FloatExpression): AngleExpression
+		return a.toExpression() / b;
+
+	@:op(A % B)
+	static inline function moduloExpr(a: Direction, b: FloatExpression): AngleExpression
+		return a.toExpression() % b;
+}
+
+private class DirectionImpl extends ActorPropertyApiComponent {
 	public function new()
 		super({ type: Velocity, component: Angle });
 

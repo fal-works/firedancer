@@ -1,5 +1,7 @@
 package firedancer.script.api_components;
 
+import firedancer.script.expression.FloatLikeExpressionData;
+
 /**
 	Provides features for operating actor's position.
 **/
@@ -55,7 +57,43 @@ class CartesianPosition {
 /**
 	Provides functions for operating the length of actor's position vector.
 **/
-class Distance extends ActorPropertyApiComponent {
+@:notNull @:forward
+abstract Distance(DistanceImpl) {
+	public inline function new()
+		this = new DistanceImpl();
+
+	@:access(firedancer.script.api_components.ActorPropertyApiComponent)
+	@:to function toExpression(): FloatExpression {
+		return
+			FloatLikeExpressionEnum.Runtime(RuntimeExpressionEnum.Variable(Get(this.property)));
+	}
+
+	@:op(-A)
+	inline function minus(): FloatExpression
+		return -toExpression();
+
+	@:commutative @:op(A + B)
+	static inline function addExpr(a: Distance, b: FloatExpression): FloatExpression
+		return a.toExpression() + b;
+
+	@:op(A - B)
+	static inline function subtractExpr(a: Distance, b: FloatExpression): FloatExpression
+		return a.toExpression() - b;
+
+	@:commutative @:op(A * B)
+	static inline function multiplyExpr(a: Distance, b: FloatExpression): FloatExpression
+		return a.toExpression() * b;
+
+	@:op(A / B)
+	static inline function divideExpr(a: Distance, b: FloatExpression): FloatExpression
+		return a.toExpression() / b;
+
+	@:op(A % B)
+	static inline function moduloExpr(a: Distance, b: FloatExpression): FloatExpression
+		return a.toExpression() % b;
+}
+
+private class DistanceImpl extends ActorPropertyApiComponent {
 	public function new()
 		super({ type: Position, component: Length });
 
@@ -77,7 +115,43 @@ class Distance extends ActorPropertyApiComponent {
 /**
 	Provides functions for operating the angle of actor's position vector.
 **/
-class Bearing extends ActorPropertyApiComponent {
+@:notNull @:forward
+abstract Bearing(BearingImpl) {
+	public inline function new()
+		this = new BearingImpl();
+
+	@:access(firedancer.script.api_components.ActorPropertyApiComponent)
+	@:to function toExpression(): AngleExpression {
+		return
+			FloatLikeExpressionEnum.Runtime(RuntimeExpressionEnum.Variable(Get(this.property)));
+	}
+
+	@:op(-A)
+	inline function minus(): AngleExpression
+		return -toExpression();
+
+	@:commutative @:op(A + B)
+	static inline function addExpr(a: Bearing, b: AngleExpression): AngleExpression
+		return a.toExpression() + b;
+
+	@:op(A - B)
+	static inline function subtractExpr(a: Bearing, b: AngleExpression): AngleExpression
+		return a.toExpression() - b;
+
+	@:commutative @:op(A * B)
+	static inline function multiplyExpr(a: Bearing, b: FloatExpression): AngleExpression
+		return a.toExpression() * b;
+
+	@:op(A / B)
+	static inline function divideExpr(a: Bearing, b: FloatExpression): AngleExpression
+		return a.toExpression() / b;
+
+	@:op(A % B)
+	static inline function moduloExpr(a: Bearing, b: FloatExpression): AngleExpression
+		return a.toExpression() % b;
+}
+
+private class BearingImpl extends ActorPropertyApiComponent {
 	public function new()
 		super({ type: Position, component: Angle });
 

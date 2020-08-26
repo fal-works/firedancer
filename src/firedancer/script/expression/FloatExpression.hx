@@ -1,6 +1,5 @@
 package firedancer.script.expression;
 
-import firedancer.script.api_components.ActorPropertyApiComponent;
 import firedancer.script.expression.FloatLikeExpressionData;
 
 /**
@@ -30,14 +29,6 @@ abstract FloatExpression(
 
 	@:from static extern inline function fromInt(value: Int): FloatExpression
 		return fromFloat(value);
-
-	@:access(firedancer.script.api_components.ActorPropertyApiComponent)
-	@:from static extern inline function fromActorProperty(
-		apiCmp: ActorPropertyApiComponent
-	): FloatExpression {
-		return
-			FloatLikeExpressionEnum.Runtime(RuntimeExpressionEnum.Variable(Get(apiCmp.property)));
-	}
 
 	@:op(-A)
 	extern inline function unaryMinus(): FloatExpression

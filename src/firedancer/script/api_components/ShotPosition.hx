@@ -1,5 +1,7 @@
 package firedancer.script.api_components;
 
+import firedancer.script.expression.FloatLikeExpressionData;
+
 /**
 	Provides features for operating actor's shot position.
 **/
@@ -55,7 +57,43 @@ class CartesianShotPosition {
 /**
 	Provides functions for operating the length of actor's shot position vector.
 **/
-class ShotDistance extends ActorPropertyApiComponent {
+@:notNull @:forward
+abstract ShotDistance(ShotDistanceImpl) {
+	public inline function new()
+		this = new ShotDistanceImpl();
+
+	@:access(firedancer.script.api_components.ActorPropertyApiComponent)
+	@:to function toExpression(): FloatExpression {
+		return
+			FloatLikeExpressionEnum.Runtime(RuntimeExpressionEnum.Variable(Get(this.property)));
+	}
+
+	@:op(-A)
+	inline function minus(): FloatExpression
+		return -toExpression();
+
+	@:commutative @:op(A + B)
+	static inline function addExpr(a: ShotDistance, b: FloatExpression): FloatExpression
+		return a.toExpression() + b;
+
+	@:op(A - B)
+	static inline function subtractExpr(a: ShotDistance, b: FloatExpression): FloatExpression
+		return a.toExpression() - b;
+
+	@:commutative @:op(A * B)
+	static inline function multiplyExpr(a: ShotDistance, b: FloatExpression): FloatExpression
+		return a.toExpression() * b;
+
+	@:op(A / B)
+	static inline function divideExpr(a: ShotDistance, b: FloatExpression): FloatExpression
+		return a.toExpression() / b;
+
+	@:op(A % B)
+	static inline function moduloExpr(a: ShotDistance, b: FloatExpression): FloatExpression
+		return a.toExpression() % b;
+}
+
+private class ShotDistanceImpl extends ActorPropertyApiComponent {
 	public function new()
 		super({ type: ShotPosition, component: Length });
 
@@ -77,7 +115,43 @@ class ShotDistance extends ActorPropertyApiComponent {
 /**
 	Provides functions for operating the angle of actor's shot position vector.
 **/
-class ShotBearing extends ActorPropertyApiComponent {
+@:notNull @:forward
+abstract ShotBearing(ShotBearingImpl) {
+	public inline function new()
+		this = new ShotBearingImpl();
+
+	@:access(firedancer.script.api_components.ActorPropertyApiComponent)
+	@:to function toExpression(): AngleExpression {
+		return
+			FloatLikeExpressionEnum.Runtime(RuntimeExpressionEnum.Variable(Get(this.property)));
+	}
+
+	@:op(-A)
+	inline function minus(): AngleExpression
+		return -toExpression();
+
+	@:commutative @:op(A + B)
+	static inline function addExpr(a: ShotBearing, b: AngleExpression): AngleExpression
+		return a.toExpression() + b;
+
+	@:op(A - B)
+	static inline function subtractExpr(a: ShotBearing, b: AngleExpression): AngleExpression
+		return a.toExpression() - b;
+
+	@:commutative @:op(A * B)
+	static inline function multiplyExpr(a: ShotBearing, b: FloatExpression): AngleExpression
+		return a.toExpression() * b;
+
+	@:op(A / B)
+	static inline function divideExpr(a: ShotBearing, b: FloatExpression): AngleExpression
+		return a.toExpression() / b;
+
+	@:op(A % B)
+	static inline function moduloExpr(a: ShotBearing, b: FloatExpression): AngleExpression
+		return a.toExpression() % b;
+}
+
+private class ShotBearingImpl extends ActorPropertyApiComponent {
 	public function new()
 		super({ type: ShotPosition, component: Angle });
 
