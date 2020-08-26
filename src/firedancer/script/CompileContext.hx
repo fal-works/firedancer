@@ -1,16 +1,10 @@
 package firedancer.script;
 
-import banker.vector.Vector;
-import firedancer.vm.ProgramPackage;
 import firedancer.assembly.Instruction;
 import firedancer.assembly.AssemblyCode;
 import firedancer.assembly.ValueType;
-import firedancer.assembly.Optimizer;
-import firedancer.assembly.Assembler;
+import firedancer.assembly.AssemblyCodePackage;
 import firedancer.script.expression.GenericExpression;
-#if debug
-import sneaker.print.Printer.println;
-#end
 
 /**
 	Context for compiling bullet patterns.
@@ -105,23 +99,13 @@ class CompileContext {
 		this.injectionStack.pop();
 
 	/**
-		Creates a `ProgramPackage` instance.
+		Creates an `AssemblyCodePackage` instance.
 	**/
-	public function createPackage(optimize = true): ProgramPackage {
-		var codeList = this.codeList;
-		if (optimize) codeList = codeList.map(Optimizer.optimize);
-
-		#if debug
-		for (id in 0...codeList.length) {
-			println('[ASSEMBLY] ID: $id');
-			println('${codeList[id].toString()}\n');
-		}
-		#end
-
-		final assembled = codeList.map(Assembler.assemble);
-		final bytecodeList = Vector.fromArrayCopy(assembled);
-
-		return new ProgramPackage(bytecodeList, this.nameIndexMap);
+	public function createPackage(): AssemblyCodePackage {
+		return {
+			codeList: this.codeList,
+			nameIndexMap: this.nameIndexMap
+		};
 	}
 }
 

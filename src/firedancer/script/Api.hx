@@ -2,6 +2,7 @@ package firedancer.script;
 
 import firedancer.vm.DebugCode;
 import firedancer.vm.ProgramPackage;
+import firedancer.assembly.AssemblyCodePackage;
 import firedancer.script.nodes.*;
 import firedancer.script.api_components.Position;
 import firedancer.script.api_components.Velocity;
@@ -177,9 +178,12 @@ class Api {
 		return new Debug(debugCode);
 
 	/**
-		@return New `ProgramPackage` instance that contains all `Program` compiled.
+		Creates an `AssemblyCodePackage` instance that contains all `AssemblyCode` compiled.
 	**/
-	public static inline function compile(namedAstMap: Map<String, Ast>): ProgramPackage {
+	public static inline function compileToAssembly(
+		namedAstMap: Map<String, Ast>,
+		optimize = true
+	): AssemblyCodePackage {
 		final compileContext = new CompileContext();
 
 		for (name => ast in namedAstMap) {
@@ -187,6 +191,23 @@ class Api {
 			compileContext.setNamedCode(assemblyCode, name);
 		}
 
-		return compileContext.createPackage();
+		var pkg = compileContext.createPackage();
+		if (optimize) pkg = pkg.optimize();
+
+		#if debug
+		pkg.printAll();
+		#end
+
+		return pkg;
+	}
+
+	/**
+		Creates a `ProgramPackage` instance that contains all `Program` compiled & assembled.
+	**/
+	public static inline function compile(
+		namedAstMap: Map<String, Ast>,
+		optimize = true
+	): ProgramPackage {
+		return compileToAssembly(namedAstMap, optimize).assemble();
 	}
 }
