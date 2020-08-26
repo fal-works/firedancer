@@ -1,11 +1,11 @@
 package firedancer.bytecode.internal;
 
 import haxe.Int32;
-import firedancer.assembly.Opcode;
+import firedancer.bytecode.Opcode;
 import firedancer.bytecode.Constants.*;
 
 #if firedancer_verbose
-using firedancer.assembly.OpcodeExtension;
+using firedancer.bytecode.OpcodeExtension;
 #end
 
 /**

@@ -1,9 +1,10 @@
 package firedancer.assembly;
 
+import firedancer.bytecode.Opcode;
+import firedancer.bytecode.operation.GeneralOperation;
+import firedancer.bytecode.operation.CalcOperation;
+import firedancer.bytecode.operation.ReadOperation;
 import firedancer.assembly.Word;
-import firedancer.assembly.operation.GeneralOperation;
-import firedancer.assembly.operation.CalcOperation;
-import firedancer.assembly.operation.ReadOperation;
 
 class InstructionAssembler {
 	public static function toWordArray(

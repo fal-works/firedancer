@@ -1,9 +1,9 @@
-package firedancer.assembly.operation;
+package firedancer.bytecode.operation;
 
 /**
 	Value that specifies a calc operation.
 **/
-@:using(firedancer.assembly.operation.CalcOperation.CalcOperationExtension)
+@:using(firedancer.bytecode.operation.CalcOperation.CalcOperationExtension)
 enum abstract CalcOperation(Int) to Int {
 	static function error(v: Int): String
 		return 'Unknown calc operation: $v';

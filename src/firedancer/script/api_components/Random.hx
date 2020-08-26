@@ -1,6 +1,5 @@
 package firedancer.script.api_components;
 
-import firedancer.assembly.operation.CalcOperation;
 import firedancer.script.expression.IntExpression;
 import firedancer.script.expression.FloatExpression;
 

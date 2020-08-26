@@ -1,9 +1,9 @@
-package firedancer.assembly.operation;
+package firedancer.bytecode.operation;
 
 /**
 	Value that specifies a general operation.
 **/
-@:using(firedancer.assembly.operation.GeneralOperation.GeneralOperationExtension)
+@:using(firedancer.bytecode.operation.GeneralOperation.GeneralOperationExtension)
 enum abstract GeneralOperation(Int) to Int {
 	static function error(v: Int): String
 		return 'Unknown general operation: $v';

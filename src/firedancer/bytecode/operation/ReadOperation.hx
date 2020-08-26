@@ -1,9 +1,9 @@
-package firedancer.assembly.operation;
+package firedancer.bytecode.operation;
 
 /**
-	Value that specifies an operation to be performed.
+	Value that specifies a read operation.
 **/
-@:using(firedancer.assembly.operation.ReadOperation.ReadOperationExtension)
+@:using(firedancer.bytecode.operation.ReadOperation.ReadOperationExtension)
 enum abstract ReadOperation(Int) to Int {
 	static function error(v: Int): String
 		return 'Unknown read operation: $v';

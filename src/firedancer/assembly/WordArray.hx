@@ -3,8 +3,8 @@ package firedancer.assembly;
 import haxe.Int32;
 import banker.binary.Bytes;
 import firedancer.bytecode.Program;
+import firedancer.bytecode.Opcode;
 import firedancer.bytecode.Constants.*;
-import firedancer.assembly.Opcode;
 import firedancer.assembly.Word.WordEnum;
 
 private typedef Data = Array<Word>;

@@ -1,6 +1,6 @@
-package firedancer.assembly;
+package firedancer.bytecode;
 
-import firedancer.assembly.operation.*;
+import firedancer.bytecode.operation.*;
 
 /**
 	Static extension for `Opcode`.

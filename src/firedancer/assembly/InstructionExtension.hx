@@ -1,5 +1,6 @@
 package firedancer.assembly;
 
+import firedancer.bytecode.Opcode;
 import firedancer.bytecode.Constants.*;
 import firedancer.assembly.OperandTools.*;
 

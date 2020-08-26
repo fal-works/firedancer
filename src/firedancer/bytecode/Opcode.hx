@@ -1,6 +1,6 @@
-package firedancer.assembly;
+package firedancer.bytecode;
 
-import firedancer.assembly.operation.*;
+import firedancer.bytecode.operation.*;
 
 /**
 	Value that specifies an operation to be performed.

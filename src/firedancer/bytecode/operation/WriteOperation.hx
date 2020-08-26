@@ -1,9 +1,9 @@
-package firedancer.assembly.operation;
+package firedancer.bytecode.operation;
 
 /**
-	Value that specifies an operation to be performed.
+	Value that specifies a write operation.
 **/
-@:using(firedancer.assembly.operation.WriteOperation.WriteOperationExtension)
+@:using(firedancer.bytecode.operation.WriteOperation.WriteOperationExtension)
 enum abstract WriteOperation(Int) to Int {
 	static function error(v: Int): String
 		return 'Unknown write operation: $v';

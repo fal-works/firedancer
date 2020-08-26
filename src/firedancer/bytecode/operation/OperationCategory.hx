@@ -1,4 +1,4 @@
-package firedancer.assembly.operation;
+package firedancer.bytecode.operation;
 
 /**
 	Value that specifies the category of an operation.
@@ -8,6 +8,10 @@ enum abstract OperationCategory(Int) {
 	final Calc = 1;
 	final Read = 2;
 	final Write = 3;
-	public inline function int()
+
+	/**
+		Explicitly casts `this` to `Int`.
+	**/
+	public inline function int(): Int
 		return this;
 }
