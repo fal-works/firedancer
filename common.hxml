@@ -15,7 +15,8 @@
 
 -D windowTitle=firedancer
 
---debug
+-D sneaker_assertion_disable
 -D broker_catch_disable
 -D firedancer_positionref_type=broker_BatchSprite
-# -D firedancer_no_optimization
+
+--debug
