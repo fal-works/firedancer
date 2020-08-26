@@ -27,25 +27,11 @@ class AssemblyCodePackage {
 		};
 	}
 
+	/**
+		Creates a `ProgramPackage` that contains all `Program` instances assembled from `this` package.
+	**/
 	public function assemble(): ProgramPackage {
 		final assembled = this.codeList.map(Assembler.assemble);
-		final bytecodeList = Vector.fromArrayCopy(assembled);
-
-		return new ProgramPackage(bytecodeList, this.nameIndexMap);
-	}
-
-	/**
-		Creates a `ProgramPackage` instance.
-	**/
-	public function createPackage(optimize = true): ProgramPackage {
-		var codeList = this.codeList;
-		if (optimize) codeList = codeList.map(Optimizer.optimize);
-
-		#if debug
-		this.printAll();
-		#end
-
-		final assembled = codeList.map(Assembler.assemble);
 		final bytecodeList = Vector.fromArrayCopy(assembled);
 
 		return new ProgramPackage(bytecodeList, this.nameIndexMap);
