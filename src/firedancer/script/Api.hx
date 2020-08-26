@@ -59,39 +59,39 @@ class Api {
 	/**
 		Waits `frames`.
 	**/
-	public static inline function wait(frames: IntExpression): Wait
+	public static function wait(frames: IntExpression): Wait
 		return new Wait(frames);
 
 	/**
 		Loops a given pattern endlessly.
 	**/
-	public static inline function loop(ast: Ast): Loop
+	public static function loop(ast: Ast): Loop
 		return new Loop(ast);
 
 	/**
 		Repeats a given pattern `count` times.
 	**/
-	public static inline function rep(count: IntExpression, ast: Ast): Repeat
+	public static function rep(count: IntExpression, ast: Ast): Repeat
 		return new Repeat(ast, count);
 
 	/**
 		Emits a new actor with a pattern represented by the given `ast`.
 	**/
-	public static inline function fire(?ast: Ast): Fire {
+	public static function fire(?ast: Ast): Fire {
 		return new Fire(Maybe.from(ast));
 	}
 
 	/**
 		Sets shot direction to the bearing to the target position.
 	**/
-	public static inline function aim(): Aim {
+	public static function aim(): Aim {
 		return new Aim();
 	}
 
 	/**
 		Runs `ast` every frame within the current node list.
 	**/
-	public static inline function everyFrame(ast: Ast): EachFrame {
+	public static function everyFrame(ast: Ast): EachFrame {
 		return new EachFrame(ast);
 	}
 
@@ -101,7 +101,7 @@ class Api {
 		The initial shot position/veocity are the same as that in the current thread,
 		but any change to shot position/velocity does not affect other threads.
 	**/
-	public static inline function async(ast: Ast): Async {
+	public static function async(ast: Ast): Async {
 		return new Async(ast);
 	}
 
@@ -111,7 +111,7 @@ class Api {
 
 		Any change to shot position/velocity made in a thread does not affect other threads.
 	**/
-	public static inline function parallel(asts: Array<Ast>): Parallel {
+	public static function parallel(asts: Array<Ast>): Parallel {
 		return new Parallel(asts);
 	}
 
@@ -123,52 +123,52 @@ class Api {
 		`end()` is useful for returning another end code so that you can
 		branch the process according to that value (for example: kill the actor if `1` is returned).
 	**/
-	public static inline function end(endCode: Int): End {
+	public static function end(endCode: Int): End {
 		return new End(endCode);
 	}
 
 	/**
 		Refers to a local variable with `name` and interprets it as an integer.
 	**/
-	public static inline function intVar(name: String): IntLocalVariableExpression
+	public static function intVar(name: String): IntLocalVariableExpression
 		return new IntLocalVariableExpression(name);
 
 	/**
 		Refers to a local variable with `name` and interprets it as a float.
 	**/
-	public static inline function floatVar(name: String): FloatLocalVariableExpression
+	public static function floatVar(name: String): FloatLocalVariableExpression
 		return new FloatLocalVariableExpression(name);
 
 	/**
 		Refers to a local variable with `name` and interprets it as an angle.
 	**/
-	public static inline function angleVar(name: String): AngleLocalVariableExpression
+	public static function angleVar(name: String): AngleLocalVariableExpression
 		return new AngleLocalVariableExpression(name);
 
 	/**
 		Calculates the trigonometric sine of `angle`.
 	**/
-	public static inline function sin(angle: AngleExpression): FloatExpression
+	public static function sin(angle: AngleExpression): FloatExpression
 		return angle.sin();
 
 	/**
 		Calculates the trigonometric cosine of `angle`.
 	**/
-	public static inline function cos(angle: AngleExpression): FloatExpression
+	public static function cos(angle: AngleExpression): FloatExpression
 		return angle.cos();
 
 	/**
 		Invokes a global event.
 		@see `firedancer.types.EventHandler`
 	**/
-	public static inline function event(globalEventCode: IntExpression): Event
+	public static function event(globalEventCode: IntExpression): Event
 		return new Event(Global, globalEventCode);
 
 	/**
 		Invokes a local event.
 		@see `firedancer.types.EventHandler`
 	**/
-	public static inline function localEvent(localEventCode: IntExpression): Event
+	public static function localEvent(localEventCode: IntExpression): Event
 		return new Event(Global, localEventCode);
 
 	/**
@@ -180,7 +180,7 @@ class Api {
 	/**
 		Creates an `AssemblyCodePackage` instance that contains all `AssemblyCode` compiled.
 	**/
-	public static inline function compileToAssembly(
+	public static function compileToAssembly(
 		namedAstMap: Map<String, Ast>,
 		optimize = true
 	): AssemblyCodePackage {
@@ -204,7 +204,7 @@ class Api {
 	/**
 		Creates a `ProgramPackage` instance that contains all `Program` compiled & assembled.
 	**/
-	public static inline function compile(
+	public static function compile(
 		namedAstMap: Map<String, Ast>,
 		optimize = true
 	): ProgramPackage {
