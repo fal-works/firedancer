@@ -1,6 +1,6 @@
 package firedancer.assembly.types;
 
-import firedancer.bytecode.types.FireArgument;
+import firedancer.bytecode.FireArgument;
 import firedancer.bytecode.Constants.*;
 
 @:using(firedancer.assembly.types.FireType.FireTypeExtension)

@@ -13,7 +13,7 @@ import firedancer.assembly.operation.CalcOperation;
 import firedancer.assembly.operation.ReadOperation;
 import firedancer.assembly.operation.WriteOperation;
 import firedancer.bytecode.Constants.*;
-import firedancer.bytecode.types.FireArgument;
+import firedancer.bytecode.FireArgument;
 import firedancer.common.Geometry;
 
 /**

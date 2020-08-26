@@ -1,6 +1,6 @@
 package firedancer.assembly;
 
-import firedancer.bytecode.types.FireArgument;
+import firedancer.bytecode.FireArgument;
 import firedancer.script.CompileContext;
 import firedancer.script.expression.IntExpression;
 

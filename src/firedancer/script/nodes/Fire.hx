@@ -1,6 +1,6 @@
 package firedancer.script.nodes;
 
-import firedancer.bytecode.types.FireArgument;
+import firedancer.bytecode.FireArgument;
 
 /**
 	Emits a new actor.

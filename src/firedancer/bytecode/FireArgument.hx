@@ -1,4 +1,4 @@
-package firedancer.bytecode.types;
+package firedancer.bytecode;
 
 import haxe.Int32;
 
