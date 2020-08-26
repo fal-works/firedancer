@@ -1,4 +1,4 @@
-package firedancer.bytecode;
+package firedancer.bytecode.internal;
 
 import banker.vector.WritableVector as Vec;
 

@@ -11,6 +11,7 @@ import firedancer.assembly.operation.WriteOperation;
 import firedancer.bytecode.Constants.*;
 import firedancer.bytecode.EventHandler;
 import firedancer.bytecode.Emitter;
+import firedancer.bytecode.internal.*;
 
 /**
 	Virtual machine for executing bytecode.

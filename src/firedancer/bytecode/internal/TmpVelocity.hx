@@ -1,4 +1,4 @@
-package firedancer.bytecode;
+package firedancer.bytecode.internal;
 
 /**
 	Holds actor's velocity temporarily in the `Vm`.

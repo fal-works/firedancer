@@ -1,5 +1,7 @@
 package firedancer.bytecode;
 
+import firedancer.bytecode.internal.MemoryData;
+
 /**
 	Virtual thread for running firedancer program.
 **/

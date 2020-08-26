@@ -1,4 +1,4 @@
-package firedancer.bytecode;
+package firedancer.bytecode.internal;
 
 import sneaker.string_buffer.StringBuffer;
 import sneaker.print.Printer;
@@ -28,7 +28,7 @@ class Debugger {
 		Printer.println(buf.toString());
 	}
 
-	@:access(firedancer.bytecode.Scanner)
+	@:access(firedancer.bytecode.internal.Scanner)
 	static extern inline function dumpScanner(buf: StringBuffer, scanner: Scanner): Void {
 		buf.addLf("[scanner]");
 
@@ -41,7 +41,7 @@ class Debugger {
 		buf.add(scanner.code.dump(scanner.codeLength, scanner.pc));
 	}
 
-	@:access(firedancer.bytecode.Memory)
+	@:access(firedancer.bytecode.internal.Memory)
 	static extern inline function dumpMemory(buf: StringBuffer, mem: Memory): Void {
 		buf.addLf("\n[memory]");
 

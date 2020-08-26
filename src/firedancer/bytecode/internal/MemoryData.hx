@@ -1,4 +1,4 @@
-package firedancer.bytecode;
+package firedancer.bytecode.internal;
 
 import banker.binary.ByteStackData;
 import banker.binary.BytesData;

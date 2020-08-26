@@ -1,4 +1,4 @@
-package firedancer.bytecode;
+package firedancer.bytecode.internal;
 
 import haxe.Int32;
 import firedancer.assembly.Opcode;

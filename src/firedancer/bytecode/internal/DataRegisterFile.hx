@@ -1,4 +1,4 @@
-package firedancer.bytecode;
+package firedancer.bytecode.internal;
 
 /**
 	Set of virtual data registers used in the `Vm`.
