@@ -1,4 +1,4 @@
-package firedancer.types;
+package firedancer.bytecode;
 
 // @formatter:off
 #if (firedancer_positionref_type == "broker_BatchSprite")

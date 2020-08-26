@@ -1,7 +1,6 @@
-package firedancer.types;
+package firedancer.bytecode;
 
 import sneaker.exception.NotOverriddenException;
-import firedancer.bytecode.Program;
 
 /**
 	Any object that can emit a new actor.

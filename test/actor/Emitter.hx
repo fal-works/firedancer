@@ -1,12 +1,12 @@
 package actor;
 
-import firedancer.types.PositionRef;
+import firedancer.bytecode.PositionRef;
 
 /**
 	Object for emitting new bullet.
 **/
 @:ripper_verified
-class Emitter extends firedancer.types.Emitter implements ripper.Data {
+class Emitter extends firedancer.bytecode.Emitter implements ripper.Data {
 	final aosoa: ActorAosoa;
 
 	override public function emit(

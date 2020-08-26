@@ -1,7 +1,6 @@
 package firedancer.bytecode;
 
 import banker.vector.WritableVector as Vec;
-import firedancer.types.PositionRef;
 
 /**
 	Holds actor's position (relative from the origin) temporarily in the `Vm`.

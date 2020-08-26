@@ -1,7 +1,6 @@
-package firedancer.types;
+package firedancer.bytecode;
 
 import sneaker.exception.NotOverriddenException;
-import firedancer.bytecode.Thread;
 
 /**
 	Object for defining the behavior of various events when they are called.

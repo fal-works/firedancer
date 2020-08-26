@@ -35,7 +35,7 @@ class Actor extends broker.entity.BasicBatchEntity {
 
 	/**
 		Reference to the origin point.
-		@see `firedancer.types.Emitter`
+		@see `firedancer.bytecode.Emitter`
 	**/
 	var originPositionRef: Maybe<PositionRef> = Maybe.none();
 

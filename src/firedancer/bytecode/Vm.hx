@@ -3,16 +3,14 @@ package firedancer.bytecode;
 import banker.vector.Vector as RVec;
 import banker.vector.WritableVector as Vec;
 import reckoner.Random;
-import firedancer.types.PositionRef;
-import firedancer.types.Emitter;
-import firedancer.types.EventHandler;
-import firedancer.types.DebugCode;
 import firedancer.assembly.Opcode;
 import firedancer.assembly.operation.GeneralOperation;
 import firedancer.assembly.operation.CalcOperation;
 import firedancer.assembly.operation.ReadOperation;
 import firedancer.assembly.operation.WriteOperation;
 import firedancer.bytecode.Constants.*;
+import firedancer.bytecode.EventHandler;
+import firedancer.bytecode.Emitter;
 
 /**
 	Virtual machine for executing bytecode.

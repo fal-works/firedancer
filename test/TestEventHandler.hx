@@ -1,4 +1,4 @@
-import firedancer.types.EventHandler;
+import firedancer.bytecode.EventHandler;
 import sneaker.print.Printer;
 
 class TestEventHandler extends EventHandler {

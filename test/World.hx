@@ -6,7 +6,7 @@ import broker.draw.TileDraw;
 import broker.draw.BatchDraw;
 import reckoner.TmpVec2D;
 import firedancer.types.Azimuth;
-import firedancer.types.PositionRef;
+import firedancer.bytecode.PositionRef;
 import actor.*;
 
 class World {
