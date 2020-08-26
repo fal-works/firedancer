@@ -1,6 +1,5 @@
 package firedancer.bytecode;
 
-import firedancer.common.Geometry;
 import banker.vector.WritableVector as Vec;
 import firedancer.types.PositionRef;
 

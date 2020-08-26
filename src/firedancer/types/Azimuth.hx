@@ -2,7 +2,7 @@ package firedancer.types;
 
 import reckoner.TmpVec2D;
 import reckoner.Numeric.nearlyEqual;
-import firedancer.common.Geometry;
+import firedancer.bytecode.Geometry;
 
 /**
 	Azimuth value in degrees (north-based and clockwise, 360 for a full rotation).

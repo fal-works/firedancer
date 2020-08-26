@@ -1,7 +1,5 @@
 package firedancer.bytecode;
 
-import firedancer.common.Geometry;
-
 /**
 	Virtual thread for running firedancer program.
 **/

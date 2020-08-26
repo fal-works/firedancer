@@ -1,7 +1,5 @@
 package firedancer.bytecode;
 
-import firedancer.common.Geometry;
-
 /**
 	Holds actor's velocity temporarily in the `Vm`.
 **/

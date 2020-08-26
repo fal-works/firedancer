@@ -1,4 +1,4 @@
-package firedancer.common;
+package firedancer.bytecode;
 
 import reckoner.TmpVec2D;
 import reckoner.Geometry.hypot;
