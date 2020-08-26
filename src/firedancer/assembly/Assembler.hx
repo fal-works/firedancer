@@ -1,6 +1,5 @@
 package firedancer.assembly;
 
-import firedancer.bytecode.WordArray;
 import firedancer.bytecode.Program;
 
 class Assembler {

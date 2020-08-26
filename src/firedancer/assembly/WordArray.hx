@@ -1,10 +1,11 @@
-package firedancer.bytecode;
+package firedancer.assembly;
 
 import haxe.Int32;
 import banker.binary.Bytes;
-import firedancer.assembly.Opcode;
+import firedancer.bytecode.Program;
 import firedancer.bytecode.Constants.*;
-import firedancer.bytecode.Word.WordEnum;
+import firedancer.assembly.Opcode;
+import firedancer.assembly.Word.WordEnum;
 
 private typedef Data = Array<Word>;
 
@@ -44,7 +45,7 @@ abstract WordArray(Data) from Data to Data {
 		return this.map(word -> word.toString()).join(" ");
 
 	/**
-		Compiles `this` words to `Program`.
+		Compiles `this` words to firedancer `Program`.
 	**/
 	public inline function toProgram(): Program {
 		final bytes = Bytes.alloc(getLengthInBytes());

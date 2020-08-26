@@ -1,11 +1,11 @@
-package firedancer.bytecode;
+package firedancer.assembly;
 
 import haxe.Int32;
 import firedancer.assembly.Opcode;
 import firedancer.assembly.OpcodeExtension;
 
 /**
-	Data unit in `Bytecode`.
+	Data unit in firedancer `Program`.
 **/
 abstract Word(WordEnum) from WordEnum {
 	@:from public static inline function fromOpcode(opcode: Opcode): Word

@@ -1,7 +1,6 @@
 package firedancer.assembly;
 
-import firedancer.bytecode.Word;
-import firedancer.bytecode.WordArray;
+import firedancer.assembly.Word;
 import firedancer.assembly.operation.GeneralOperation;
 import firedancer.assembly.operation.CalcOperation;
 import firedancer.assembly.operation.ReadOperation;
