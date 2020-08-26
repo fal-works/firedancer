@@ -1,10 +1,9 @@
 package firedancer.assembly;
 
+import sneaker.string_buffer.StringBuffer;
+import sneaker.print.Printer;
 import banker.vector.Vector;
 import firedancer.vm.ProgramPackage;
-#if debug
-import sneaker.print.Printer.println;
-#end
 
 @:structInit
 class AssemblyCodePackage {
@@ -17,16 +16,6 @@ class AssemblyCodePackage {
 		Mapping from names to ID numbers of `AssemblyCode` instances.
 	**/
 	final nameIndexMap: Map<String, UInt>;
-
-	/**
-		Prints all `AssemblyCode` in `this` package.
-	**/
-	public function printAll(): Void {
-		for (id in 0...codeList.length) {
-			println('[ASSEMBLY] ID: $id');
-			println('${codeList[id].toString()}\n');
-		}
-	}
 
 	/**
 		@return New `AssemblyCodePackage` with all `AssemblyCode` optimized.
@@ -61,4 +50,26 @@ class AssemblyCodePackage {
 
 		return new ProgramPackage(bytecodeList, this.nameIndexMap);
 	}
+
+	/**
+		Converts all `AssemblyCode` in `this` package into a `String`.
+	**/
+	public function toString(): String {
+		final buf = new StringBuffer();
+
+		final lastId = codeList.length - 1;
+		for (id in 0...codeList.length) {
+			buf.addLf('[ASSEMBLY] ID: $id');
+			buf.add('${codeList[id].toString()}');
+			if (id < lastId) buf.lf();
+		}
+
+		return buf.toString();
+	}
+
+	/**
+		Prints all `AssemblyCode` in `this` package.
+	**/
+	public function printAll(): Void
+		Printer.print(this.toString());
 }

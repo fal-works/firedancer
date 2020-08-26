@@ -25,5 +25,5 @@ abstract AssemblyCode(Data) from Data to Data {
 		@return `this` in `String` representation.
 	**/
 	public function toString(): String
-		return this.map(instruction -> instruction.toString()).join("\n");
+		return this.map(instruction -> instruction.toString()).join("\n") + "\n";
 }
