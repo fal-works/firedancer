@@ -5,6 +5,7 @@ import firedancer.bytecode.Opcode;
 import firedancer.bytecode.Constants.*;
 
 #if firedancer_verbose
+import sneaker.print.Printer;
 using firedancer.bytecode.OpcodeExtension;
 #end
 
@@ -13,11 +14,6 @@ using firedancer.bytecode.OpcodeExtension;
 **/
 @:nullSafety(Off)
 class Scanner {
-	#if firedancer_verbose
-	static function println(s: String): Void
-		sneaker.print.Printer.println(s);
-	#end
-
 	/**
 		The program counter.
 		Indicates the current position in the bytecode.
@@ -110,4 +106,9 @@ class Scanner {
 		if (threshold < scanCount) throw "Detected infinite loop.";
 		#end
 	}
+
+	#if firedancer_verbose
+	static function println(s: String): Void
+		Printer.println(s);
+	#end
 }
