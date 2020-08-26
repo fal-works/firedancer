@@ -30,7 +30,7 @@ class Scanner {
 	**/
 	var code: Bytecode;
 
-	#if debug
+	#if (debug || firedancer_debug)
 	/**
 		Number of instructions that have been executed in the current frame.
 		Used for detecting infinite loop in debug mode.
@@ -48,7 +48,7 @@ class Scanner {
 		this.codeLength = thread.codeLength;
 		this.code = thread.code.unwrap();
 
-		#if debug
+		#if (debug || firedancer_debug)
 		this.scanCount = UInt.zero;
 		#end
 	}
@@ -65,7 +65,7 @@ class Scanner {
 
 		pc += Opcode.size;
 
-		#if debug
+		#if (debug || firedancer_debug)
 		scanCount += 1;
 		#end
 
@@ -76,7 +76,7 @@ class Scanner {
 		Reads the next integer immediate.
 	**/
 	public extern inline function int(): Int32 {
-		final value = untyped $bgeti32(code, pc);
+		final value: Int32 = untyped $bgeti32(code, pc);
 		pc += IntSize;
 		return value;
 	}
@@ -85,7 +85,7 @@ class Scanner {
 		Reads the next float immediate.
 	**/
 	public extern inline function float(): Float {
-		final value = untyped $bgetf64(code, pc);
+		final value: Float = untyped $bgetf64(code, pc);
 		pc += FloatSize;
 		return value;
 	}
@@ -99,10 +99,10 @@ class Scanner {
 	/**
 		Throws error if `opcode()` is called more times than `threshold`.
 
-		No effect `#if !debug`.
+		No effect `#if (!debug && !firedancer_debug)`.
 	**/
 	public extern inline function checkInfinite(threshold: UInt): Void {
-		#if debug
+		#if (debug || firedancer_debug)
 		if (threshold < scanCount) throw "Detected infinite loop.";
 		#end
 	}
