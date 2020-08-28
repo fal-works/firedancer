@@ -8,11 +8,6 @@ import firedancer.script.expression.IntExpression;
 @:ripper_verified
 class Wait extends AstNode implements ripper.Data {
 	/**
-		The maximum length in bytes of an unrolled block of `AssemblyCode`.
-	**/
-	public static var unrollThreshold: UInt = 32;
-
-	/**
 		Wait duration in frames.
 	**/
 	public final frames: IntExpression;
