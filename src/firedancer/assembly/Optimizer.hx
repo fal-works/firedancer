@@ -49,19 +49,23 @@ class Optimizer {
 			var curInst = code[i];
 			var optimizedCur = false;
 
+			inline function replaceCurInst(newInst: Instruction): Void {
+				curInst = code[i] = newInst;
+			}
+
 			switch curInst {
 			case Load(input):
 				switch input {
 				case Int(operand):
 					switch operand {
-					case Reg: code[i] = None;
-					case RegBuf: if (justSyncedIntReg) code[i] = None;
+					case Reg: replaceCurInst(None);
+					case RegBuf: if (justSyncedIntReg) replaceCurInst(None);
 					default:
 					}
 				case Float(operand):
 					switch operand {
-					case Reg: code[i] = None;
-					case RegBuf: if (justSyncedFloatReg) code[i] = None;
+					case Reg: replaceCurInst(None);
+					case RegBuf: if (justSyncedFloatReg) replaceCurInst(None);
 					default:
 					}
 				default:
@@ -71,14 +75,14 @@ class Optimizer {
 				switch input {
 				case Int(operand):
 					switch operand {
-					case Reg: if (justSyncedIntReg) code[i] = None;
-					case RegBuf: code[i] = None;
+					case Reg: if (justSyncedIntReg) replaceCurInst(None);
+					case RegBuf: replaceCurInst(None);
 					default:
 					}
 				case Float(operand):
 					switch operand {
-					case Reg: if (justSyncedFloatReg) code[i] = None;
-					case RegBuf: code[i] = None;
+					case Reg: if (justSyncedFloatReg) replaceCurInst(None);
+					case RegBuf: replaceCurInst(None);
 					default:
 					}
 				default:
@@ -101,7 +105,7 @@ class Optimizer {
 					default: Maybe.none();
 					}
 					if (optimizedInst.isSome()) {
-						code[i] = optimizedInst.unwrap();
+						replaceCurInst(optimizedInst.unwrap());
 						result = optimizedCur = true;
 					}
 				}
@@ -121,7 +125,7 @@ class Optimizer {
 						maybeImmB
 					);
 					if (optimizedInst.isSome()) {
-						code[i] = optimizedInst.unwrap();
+						replaceCurInst(optimizedInst.unwrap());
 						result = optimizedCur = true;
 					}
 				}
@@ -166,7 +170,7 @@ class Optimizer {
 						regOrRegBuf
 					);
 					if (optimizedInst.isSome()) {
-						code[i] = optimizedInst.unwrap();
+						replaceCurInst(optimizedInst.unwrap());
 						result = optimizedCur = true;
 					}
 				}
@@ -195,18 +199,15 @@ class Optimizer {
 				}
 			}
 
-			curInst = code[i];
 			if (!tryPropagateConstantAll()) tryReplaceUnnecessaryCalcAll();
 
-			curInst = code[i];
 			final folded = curInst.tryFoldConstants();
 			if (folded.isSome()) {
-				code[i] = folded.unwrap();
+				replaceCurInst(folded.unwrap());
 				optimizedCur = true;
 			}
 
 			// update current registers
-			curInst = code[i];
 			if (curInst.readsReg(Int)) curIntReg.maybeRead = true;
 			if (curInst.readsReg(Float)) curFloatReg.maybeRead = true;
 			if (curInst.readsReg(Vec)) curVecReg.maybeRead = true;
@@ -307,6 +308,11 @@ class Optimizer {
 		while (i < code.length) {
 			var curInst = code[i];
 
+			inline function replaceInst(index: UInt, newInst: Instruction): Void {
+				code[i] = newInst;
+				if (i == index) curInst = newInst;
+			}
+
 			switch curInst {
 			case Push(input):
 				curStacked.push({ operand: input, pushedIndex: i });
@@ -316,8 +322,8 @@ class Optimizer {
 					// replace if the pushed value is never read before `Pop` ...
 					if (stackTop.operand.getKind() == Imm || stackTop.pushedIndex == i - 1) {
 						// ... and is either an immediate or pushed just before the current `Pop` (which means that the value is not changed).
-						code[i] = Load(stackTop.operand);
-						code[stackTop.pushedIndex] = None;
+						replaceInst(i, Load(stackTop.operand)); // Pop => Load
+						replaceInst(stackTop.pushedIndex, None); // Push => None
 						optimizedAny = true;
 					}
 				}
@@ -365,6 +371,9 @@ class Optimizer {
 		var optimizedAny = false;
 
 		var i = UInt.one;
+		inline function replaceInst(index: UInt, newInst: Instruction): Void {
+			code[index] = newInst;
+		}
 		while (i < code.length) {
 			switch code[i] {
 			case CountDownBreak:
@@ -374,8 +383,8 @@ class Optimizer {
 					if (constWaitCount.isSome()) {
 						final waitCount = constWaitCount.unwrap();
 						if (waitCount <= waitUnrollThreshold) {
-							code[i - 1] = None;
-							code[i] = None;
+							replaceInst(i - 1, None); // Push => None
+							replaceInst(i, None); // CountDownBreak => None
 							for (k in 0...waitCount) code.insert(i, Break);
 							optimizedAny = true;
 							i += waitCount;
