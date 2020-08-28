@@ -20,6 +20,8 @@ class Optimizer {
 			optimized = tryOptimizeWait(code) || optimized;
 			if (!optimized) break;
 
+			code.removeAll(inst -> inst == None);
+
 			if (1024 < ++cnt) throw "Detected infinite loop in the optimization process.";
 		}
 
@@ -45,27 +47,35 @@ class Optimizer {
 		var justSyncedFloatReg = false;
 
 		var i = UInt.zero;
-		while (i < code.length) {
-			var curInst = code[i];
-			var optimizedCur = false;
+		var curInst: Instruction;
+		var gotoNext: Bool;
 
-			inline function replaceCurInst(newInst: Instruction): Void {
-				curInst = code[i] = newInst;
+		inline function replaceInst(index: UInt, newInst: Instruction): Void {
+			code[index] = newInst;
+			if (index == i) {
+				curInst = newInst;
+				gotoNext = false;
 			}
+			optimizedAny = true;
+		}
+
+		while (i < code.length) {
+			curInst = code[i];
+			gotoNext = true;
 
 			switch curInst {
 			case Load(input):
 				switch input {
 				case Int(operand):
 					switch operand {
-					case Reg: replaceCurInst(None);
-					case RegBuf: if (justSyncedIntReg) replaceCurInst(None);
+					case Reg: replaceInst(i, None);
+					case RegBuf: if (justSyncedIntReg) replaceInst(i, None);
 					default:
 					}
 				case Float(operand):
 					switch operand {
-					case Reg: replaceCurInst(None);
-					case RegBuf: if (justSyncedFloatReg) replaceCurInst(None);
+					case Reg: replaceInst(i, None);
+					case RegBuf: if (justSyncedFloatReg) replaceInst(i, None);
 					default:
 					}
 				default:
@@ -75,14 +85,14 @@ class Optimizer {
 				switch input {
 				case Int(operand):
 					switch operand {
-					case Reg: if (justSyncedIntReg) replaceCurInst(None);
-					case RegBuf: replaceCurInst(None);
+					case Reg: if (justSyncedIntReg) replaceInst(i, None);
+					case RegBuf: replaceInst(i, None);
 					default:
 					}
 				case Float(operand):
 					switch operand {
-					case Reg: if (justSyncedFloatReg) replaceCurInst(None);
-					case RegBuf: replaceCurInst(None);
+					case Reg: if (justSyncedFloatReg) replaceInst(i, None);
+					case RegBuf: replaceInst(i, None);
 					default:
 					}
 				default:
@@ -105,8 +115,8 @@ class Optimizer {
 					default: Maybe.none();
 					}
 					if (optimizedInst.isSome()) {
-						replaceCurInst(optimizedInst.unwrap());
-						result = optimizedCur = true;
+						replaceInst(i, optimizedInst.unwrap());
+						result = true;
 					}
 				}
 				return result;
@@ -125,8 +135,8 @@ class Optimizer {
 						maybeImmB
 					);
 					if (optimizedInst.isSome()) {
-						replaceCurInst(optimizedInst.unwrap());
-						result = optimizedCur = true;
+						replaceInst(i, optimizedInst.unwrap());
+						result = true;
 					}
 				}
 				return result;
@@ -170,8 +180,8 @@ class Optimizer {
 						regOrRegBuf
 					);
 					if (optimizedInst.isSome()) {
-						replaceCurInst(optimizedInst.unwrap());
-						result = optimizedCur = true;
+						replaceInst(i, optimizedInst.unwrap());
+						result = true;
 					}
 				}
 				return result;
@@ -202,10 +212,7 @@ class Optimizer {
 			if (!tryPropagateConstantAll()) tryReplaceUnnecessaryCalcAll();
 
 			final folded = curInst.tryFoldConstants();
-			if (folded.isSome()) {
-				replaceCurInst(folded.unwrap());
-				optimizedCur = true;
-			}
+			if (folded.isSome()) replaceInst(i, folded.unwrap());
 
 			// update current registers
 			if (curInst.readsReg(Int)) curIntReg.maybeRead = true;
@@ -217,30 +224,41 @@ class Optimizer {
 			if (writeRegType.isSome()) {
 				switch writeRegType.unwrap() {
 				case Int:
-					curIntReg.tryEliminateFrom(code, i);
+					if (curIntReg.isEliminatable(i))
+						replaceInst(curIntReg.loadedIndex.unwrap(), None);
 					switch curInst {
 					case Load(loaded):
 						curIntReg = { loadedIndex: i, operand: loaded };
 						justSyncedIntReg = loaded.isRegBuf();
+					case Pop(_):
+						curIntReg = { loadedIndex: i, eliminatable: false };
+						justSyncedIntReg = false;
 					default:
 						curIntReg = { loadedIndex: i };
 						justSyncedIntReg = false;
 					}
 				case Float:
-					curFloatReg.tryEliminateFrom(code, i);
+					if (curFloatReg.isEliminatable(i))
+						replaceInst(curFloatReg.loadedIndex.unwrap(), None);
 					switch curInst {
 					case Load(loaded):
 						curFloatReg = { loadedIndex: i, operand: loaded };
 						justSyncedFloatReg = loaded.isRegBuf();
+					case Pop(_):
+						curFloatReg = { loadedIndex: i, eliminatable: false };
+						justSyncedIntReg = false;
 					default:
 						curFloatReg = { loadedIndex: i };
 						justSyncedFloatReg = false;
 					}
 				case Vec:
-					curVecReg.tryEliminateFrom(code, i);
+					if (curVecReg.isEliminatable(i))
+						replaceInst(curVecReg.loadedIndex.unwrap(), None);
 					switch curInst {
 					case Load(loaded):
 						curVecReg = { loadedIndex: i, operand: loaded };
+					case Pop(_):
+						curIntReg = { loadedIndex: i, eliminatable: false };
 					default:
 						curVecReg = { loadedIndex: i };
 					}
@@ -250,7 +268,8 @@ class Optimizer {
 			if (writeRegBufType.isSome()) {
 				switch writeRegBufType.unwrap() {
 				case Int:
-					curIntRegBuf.tryEliminateFrom(code, i);
+					if (curIntRegBuf.isEliminatable(i))
+						replaceInst(curIntRegBuf.loadedIndex.unwrap(), None);
 					switch curInst {
 					case Save(saved):
 						curIntRegBuf = { loadedIndex: i, operand: saved };
@@ -260,7 +279,8 @@ class Optimizer {
 						justSyncedIntReg = false;
 					}
 				case Float:
-					curFloatRegBuf.tryEliminateFrom(code, i);
+					if (curFloatRegBuf.isEliminatable(i))
+						replaceInst(curFloatRegBuf.loadedIndex.unwrap(), None);
 					switch curInst {
 					case Save(saved):
 						curFloatRegBuf = { loadedIndex: i, operand: saved };
@@ -273,17 +293,19 @@ class Optimizer {
 				}
 			}
 
-			if (!optimizedCur) ++i;
-			optimizedAny = optimizedAny || optimizedCur;
+			if (gotoNext) ++i;
 		}
 
-		curIntReg.tryEliminateFrom(code, code.length);
-		curFloatReg.tryEliminateFrom(code, code.length);
-		curVecReg.tryEliminateFrom(code, code.length);
-		curIntRegBuf.tryEliminateFrom(code, code.length);
-		curFloatRegBuf.tryEliminateFrom(code, code.length);
-
-		optimizedAny = code.removeAll(inst -> inst == None) || optimizedAny;
+		if (curIntReg.isEliminatable(code.length))
+			replaceInst(curIntReg.loadedIndex.unwrap(), None);
+		if (curFloatReg.isEliminatable(code.length))
+			replaceInst(curFloatReg.loadedIndex.unwrap(), None);
+		if (curVecReg.isEliminatable(code.length))
+			replaceInst(curVecReg.loadedIndex.unwrap(), None);
+		if (curIntRegBuf.isEliminatable(code.length))
+			replaceInst(curIntRegBuf.loadedIndex.unwrap(), None);
+		if (curFloatRegBuf.isEliminatable(code.length))
+			replaceInst(curFloatRegBuf.loadedIndex.unwrap(), None);
 
 		return optimizedAny;
 	}
@@ -309,8 +331,9 @@ class Optimizer {
 			var curInst = code[i];
 
 			inline function replaceInst(index: UInt, newInst: Instruction): Void {
-				code[i] = newInst;
+				code[index] = newInst;
 				if (i == index) curInst = newInst;
+				optimizedAny = true;
 			}
 
 			switch curInst {
@@ -324,7 +347,6 @@ class Optimizer {
 						// ... and is either an immediate or pushed just before the current `Pop` (which means that the value is not changed).
 						replaceInst(i, Load(stackTop.operand)); // Pop => Load
 						replaceInst(stackTop.pushedIndex, None); // Push => None
-						optimizedAny = true;
 					}
 				}
 			case Drop(_):
@@ -361,8 +383,6 @@ class Optimizer {
 			++i;
 		}
 
-		optimizedAny = code.removeAll(inst -> inst == None) || optimizedAny;
-
 		return optimizedAny;
 	}
 
@@ -375,6 +395,7 @@ class Optimizer {
 		var i = UInt.one;
 		inline function replaceInst(index: UInt, newInst: Instruction): Void {
 			code[index] = newInst;
+			optimizedAny = true;
 		}
 		while (i < code.length) {
 			switch code[i] {
@@ -388,7 +409,6 @@ class Optimizer {
 							replaceInst(i - 1, None); // Push => None
 							replaceInst(i, None); // CountDownBreak => None
 							for (k in 0...waitCount) code.insert(i, Break);
-							optimizedAny = true;
 							i += waitCount;
 						}
 					}
@@ -406,15 +426,17 @@ class Optimizer {
 @:structInit
 private class RegContent {
 	public static function createNull(): RegContent
-		return { loadedIndex: MaybeUInt.none };
+		return { loadedIndex: MaybeUInt.none, eliminatable: false };
 
 	public final operand: Maybe<Operand> = Maybe.none();
 	public final loadedIndex: MaybeUInt;
 	public var maybeRead: Bool = false;
+	final eliminatable: Bool;
 
-	public function new(?operand: Operand, loadedIndex: MaybeUInt) {
+	public function new(?operand: Operand, loadedIndex: MaybeUInt, eliminatable: Bool = true) {
 		this.operand = Maybe.from(operand);
 		this.loadedIndex = loadedIndex;
+		this.eliminatable = eliminatable;
 	}
 
 	public function getMaybeImm(): Maybe<Operand> {
@@ -425,14 +447,14 @@ private class RegContent {
 		} else Maybe.none();
 	}
 
-	public function tryEliminateFrom(code: AssemblyCode, currentIndex: UInt): Bool {
+	public function isEliminatable(currentIndex: UInt): Bool {
+		if (!this.eliminatable) return false;
 		if (this.maybeRead) return false;
 
 		final loadedIndex = this.loadedIndex;
 		if (loadedIndex.isNone()) return false;
 		if (loadedIndex.unwrap() == currentIndex) return false;
 
-		code[loadedIndex.unwrap()] = None;
 		return true;
 	}
 }
