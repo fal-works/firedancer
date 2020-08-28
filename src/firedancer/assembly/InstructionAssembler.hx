@@ -431,7 +431,7 @@ class InstructionAssembler {
 				switch operandA {
 				case Imm(aVal):
 					switch inputB {
-					case Int(operandB):
+					case Float(operandB):
 						switch operandB {
 						case Reg: [op(DivFloatCRR), aVal];
 						default: throw unsupported();
@@ -511,7 +511,7 @@ class InstructionAssembler {
 				switch operandA {
 				case Imm(aVal):
 					switch inputB {
-					case Int(operandB):
+					case Float(operandB):
 						switch operandB {
 						case Reg: [op(ModFloatCRR), aVal];
 						default: throw unsupported();
