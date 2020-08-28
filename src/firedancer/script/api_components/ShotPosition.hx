@@ -77,11 +77,17 @@ abstract ShotDistance(ShotDistanceImpl) {
 		return a.toExpression() + b;
 
 	@:op(A - B)
-	static inline function subtractExpr(a: ShotDistance, b: FloatExpression): FloatExpression
+	static inline function subtractExpr(
+		a: ShotDistance,
+		b: FloatExpression
+	): FloatExpression
 		return a.toExpression() - b;
 
 	@:commutative @:op(A * B)
-	static inline function multiplyExpr(a: ShotDistance, b: FloatExpression): FloatExpression
+	static inline function multiplyExpr(
+		a: ShotDistance,
+		b: FloatExpression
+	): FloatExpression
 		return a.toExpression() * b;
 
 	@:op(A / B)
@@ -135,11 +141,17 @@ abstract ShotBearing(ShotBearingImpl) {
 		return a.toExpression() + b;
 
 	@:op(A - B)
-	static inline function subtractExpr(a: ShotBearing, b: AngleExpression): AngleExpression
+	static inline function subtractExpr(
+		a: ShotBearing,
+		b: AngleExpression
+	): AngleExpression
 		return a.toExpression() - b;
 
 	@:commutative @:op(A * B)
-	static inline function multiplyExpr(a: ShotBearing, b: FloatExpression): AngleExpression
+	static inline function multiplyExpr(
+		a: ShotBearing,
+		b: FloatExpression
+	): AngleExpression
 		return a.toExpression() * b;
 
 	@:op(A / B)

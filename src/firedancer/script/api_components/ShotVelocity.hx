@@ -135,19 +135,31 @@ abstract ShotDirection(ShotDirectionImpl) {
 		return a.toExpression() + b;
 
 	@:op(A - B)
-	static inline function subtractExpr(a: ShotDirection, b: AngleExpression): AngleExpression
+	static inline function subtractExpr(
+		a: ShotDirection,
+		b: AngleExpression
+	): AngleExpression
 		return a.toExpression() - b;
 
 	@:commutative @:op(A * B)
-	static inline function multiplyExpr(a: ShotDirection, b: FloatExpression): AngleExpression
+	static inline function multiplyExpr(
+		a: ShotDirection,
+		b: FloatExpression
+	): AngleExpression
 		return a.toExpression() * b;
 
 	@:op(A / B)
-	static inline function divideExpr(a: ShotDirection, b: FloatExpression): AngleExpression
+	static inline function divideExpr(
+		a: ShotDirection,
+		b: FloatExpression
+	): AngleExpression
 		return a.toExpression() / b;
 
 	@:op(A % B)
-	static inline function moduloExpr(a: ShotDirection, b: FloatExpression): AngleExpression
+	static inline function moduloExpr(
+		a: ShotDirection,
+		b: FloatExpression
+	): AngleExpression
 		return a.toExpression() % b;
 }
 

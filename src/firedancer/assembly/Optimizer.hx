@@ -431,9 +431,14 @@ private class RegContent {
 	public final operand: Maybe<Operand> = Maybe.none();
 	public final loadedIndex: MaybeUInt;
 	public var maybeRead: Bool = false;
+
 	final eliminatable: Bool;
 
-	public function new(?operand: Operand, loadedIndex: MaybeUInt, eliminatable: Bool = true) {
+	public function new(
+		?operand: Operand,
+		loadedIndex: MaybeUInt,
+		eliminatable: Bool = true
+	) {
 		this.operand = Maybe.from(operand);
 		this.loadedIndex = loadedIndex;
 		this.eliminatable = eliminatable;
