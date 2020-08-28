@@ -199,17 +199,12 @@ class BulletPatterns {
 		final dupTest = [
 			shot.velocity.set(4, 180),
 			loop([
-				comment("start dup"),
-				dup(
-					nWay(fire(), { ways: 5, angle: 90 }),
-					{
-						count: 8,
-						intervalFrames: 4,
-						shotSpeedChange: 8,
-						shotDirectionRange: { start: -6, end: 6 }
-					}
-				),
-				comment("end dup"),
+				nWay(fire(), { ways: 5, angle: 90 }).dup({
+					count: 8,
+					intervalFrames: 4,
+					shotSpeedChange: 8,
+					shotDirectionRange: { start: -6, end: 6 }
+				}),
 				wait(30)
 			])
 		];

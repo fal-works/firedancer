@@ -2,12 +2,19 @@ package firedancer.script;
 
 import sneaker.exception.NotOverriddenException;
 import firedancer.assembly.AssemblyCode;
+import firedancer.script.nodes.Duplicate;
 
 /**
 	A node of AST (abstract syntax tree) that represents a bullet hell pattern.
 **/
 class AstNode {
 	var nodeType(default, null): AstNodeType = Other;
+
+	/**
+		Duplicates `this` pattern. Same effect as `Api.dup()`.
+	**/
+	public inline function dup(params: DuplicateParameters): Duplicate
+		return Api.dup(this, params);
 
 	/**
 		Checks that `this` node contains any `Wait` element or kind of that.
