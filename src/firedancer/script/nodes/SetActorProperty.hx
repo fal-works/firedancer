@@ -41,8 +41,8 @@ class SetActorProperty extends AstNode implements ripper.Data {
 			case SetVector(e, mat):
 				if (mat != null) e = e.transform(mat);
 				e.use(c, Set(Vec(Reg), prop(Velocity, Vector)));
-			case SetLength(e): e.use(c, Set(Vec(Reg), prop(Velocity, Length)));
-			case SetAngle(e): e.use(c, Set(Vec(Reg), prop(Velocity, Angle)));
+			case SetLength(e): e.use(c, Set(Float(Reg), prop(Velocity, Length)));
+			case SetAngle(e): e.use(c, Set(Float(Reg), prop(Velocity, Angle)));
 			}
 		case ShotPosition:
 			switch operation {
@@ -57,8 +57,8 @@ class SetActorProperty extends AstNode implements ripper.Data {
 			case SetVector(e, mat):
 				if (mat != null) e = e.transform(mat);
 				e.use(c, Set(Vec(Reg), prop(ShotVelocity, Vector)));
-			case SetLength(e): e.use(c, Set(Vec(Reg), prop(ShotVelocity, Length)));
-			case SetAngle(e): e.use(c, Set(Vec(Reg), prop(ShotVelocity, Angle)));
+			case SetLength(e): e.use(c, Set(Float(Reg), prop(ShotVelocity, Length)));
+			case SetAngle(e): e.use(c, Set(Float(Reg), prop(ShotVelocity, Angle)));
 			}
 		}
 	}
