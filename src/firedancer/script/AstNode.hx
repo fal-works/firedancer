@@ -7,7 +7,7 @@ import firedancer.assembly.AssemblyCode;
 	A node of AST (abstract syntax tree) that represents a bullet hell pattern.
 **/
 class AstNode {
-	public var nodeType(default, null): AstNodeType = Other;
+	var nodeType(default, null): AstNodeType = Other;
 
 	/**
 		Checks that `this` node contains any `Wait` element or kind of that.
@@ -17,13 +17,13 @@ class AstNode {
 
 		@return `true` if `this` or any descendant node contains `Wait` element or kind of that.
 	**/
-	public function containsWait(): Bool
+	function containsWait(): Bool
 		throw new NotOverriddenException();
 
 	/**
 		Converts the AST starting from `this` node into code in a virtual assembly language.
 	**/
-	public function toAssembly(context: CompileContext): AssemblyCode
+	function toAssembly(context: CompileContext): AssemblyCode
 		throw new NotOverriddenException();
 }
 

@@ -212,6 +212,7 @@ class Api {
 	/**
 		Creates an `AssemblyCodePackage` instance that contains all `AssemblyCode` compiled.
 	**/
+	@:access(firedancer.script.AstNode)
 	public static function compileToAssembly(
 		namedAstMap: Map<String, Ast>,
 		optimize = true
