@@ -353,8 +353,10 @@ class Optimizer {
 			}
 
 			final stackTop = curStacked.getLastSafe();
-			if (stackTop.isSome())
-				curInst.tryReplaceStackWithImm(stackTop.unwrap().operand);
+			if (stackTop.isSome()) {
+				final optimizedInst = curInst.tryReplaceStackWithImm(stackTop.unwrap().operand);
+				if (optimizedInst.isSome()) replaceInst(i, optimizedInst.unwrap());
+			}
 
 			++i;
 		}
