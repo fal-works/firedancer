@@ -187,6 +187,15 @@ class Api {
 		return new Debug(debugCode);
 
 	/**
+		Inserts a comment.
+
+		This is only used for debugging the assembly code.
+		It has no effect when running the pattern because comments are removed when assembling into bytecode.
+	**/
+	public static function comment(text: String): Comment
+		return new Comment(text);
+
+	/**
 		Creates an `AssemblyCodePackage` instance that contains all `AssemblyCode` compiled.
 	**/
 	public static function compileToAssembly(

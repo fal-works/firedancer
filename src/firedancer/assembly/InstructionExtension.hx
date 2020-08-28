@@ -181,6 +181,9 @@ class InstructionExtension {
 
 			// ----
 
+		case Comment(text):
+			final lines = text.split("\n");
+			lines.map(line -> "// " + line).join("\n");
 		case None:
 			"none";
 		}
@@ -254,7 +257,7 @@ class InstructionExtension {
 
 			// ----
 
-		case None: UInt.zero;
+		case Comment(_) | None: UInt.zero;
 		}
 	}
 

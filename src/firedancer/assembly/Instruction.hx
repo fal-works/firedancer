@@ -52,6 +52,7 @@ enum Instruction {
 	// ---- write actor data ----------------------------------------------------
 	Set(input: Operand, property: ActorProperty);
 	Increase(input: Operand, property: ActorProperty);
-	// ---- none ----------------------------------------------------------------
+	// ---- no effects ----------------------------------------------------------
+	Comment(text: String);
 	None;
 }

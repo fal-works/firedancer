@@ -679,7 +679,7 @@ class InstructionAssembler {
 			default: throw unsupported();
 			}
 
-		case None:
+		case Comment(_) | None:
 			op(NoOperation);
 		}
 	}
