@@ -3,6 +3,7 @@ package firedancer.assembly;
 import sneaker.string_buffer.StringBuffer;
 import sneaker.print.Printer;
 import banker.vector.Vector;
+import banker.vector.WritableVector;
 import firedancer.vm.ProgramPackage;
 
 @:structInit
@@ -41,11 +42,21 @@ class AssemblyCodePackage {
 		Converts all `AssemblyCode` in `this` package into a `String`.
 	**/
 	public function toString(): String {
+		final codeList = this.codeList;
+		final names = new WritableVector<Null<String>>(codeList.length);
+		for (name => id in this.nameIndexMap) names[id] = name;
+
 		final buf = new StringBuffer();
 
 		final lastId = codeList.length - 1;
 		for (id in 0...codeList.length) {
-			buf.addLf('[ASSEMBLY] ID: $id');
+			buf.add('[ASSEMBLY] ID: $id');
+			final name = names[id];
+			if (name != null) {
+				buf.add(", name: ");
+				buf.add(name);
+			}
+			buf.lf();
 			buf.add('${codeList[id].toString()}');
 			if (id < lastId) buf.lf();
 		}
