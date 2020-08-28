@@ -4,6 +4,7 @@ import firedancer.vm.DebugCode;
 import firedancer.vm.ProgramPackage;
 import firedancer.assembly.AssemblyCodePackage;
 import firedancer.script.nodes.*;
+import firedancer.script.nodes.Duplicate;
 import firedancer.script.api_components.Position;
 import firedancer.script.api_components.Velocity;
 import firedancer.script.api_components.Shot;
@@ -75,6 +76,13 @@ class Api {
 		return new Repeat(ast, count);
 
 	/**
+		Duplicates a given pattern.
+	**/
+	public static function dup(ast: Ast, params: DuplicateParameters): Duplicate {
+		return new Duplicate(ast, params);
+	}
+
+	/**
 		Emits a new actor with a pattern represented by the given `ast`.
 	**/
 	public static function fire(?ast: Ast): Fire {
@@ -138,18 +146,24 @@ class Api {
 
 	/**
 		Refers to a local variable with `name` and interprets it as an integer.
+		@param name Any string.
+		However avoid using names which begins with double underscores `__` as they may be reserved for internal use.
 	**/
 	public static function intVar(name: String): IntLocalVariableExpression
 		return new IntLocalVariableExpression(name);
 
 	/**
 		Refers to a local variable with `name` and interprets it as a float.
+		@param name Any string.
+		However avoid using names which begins with double underscores `__` as they may be reserved for internal use.
 	**/
 	public static function floatVar(name: String): FloatLocalVariableExpression
 		return new FloatLocalVariableExpression(name);
 
 	/**
 		Refers to a local variable with `name` and interprets it as an angle.
+		@param name Any string.
+		However avoid using names which begins with double underscores `__` as they may be reserved for internal use.
 	**/
 	public static function angleVar(name: String): AngleLocalVariableExpression
 		return new AngleLocalVariableExpression(name);

@@ -195,7 +195,22 @@ class BulletPatterns {
 			])
 		];
 
-		final testAst = test(readActorProp); // Change this for testing
+		final dupTest = [
+			shot.velocity.set(4, 180),
+			loop([
+				comment("start dup"),
+				dup(fire(), {
+					count: 8,
+					intervalFrames: 4,
+					shotSpeedChange: 8,
+					shotDirectionRange: { start: -12, end: 12 }
+				}),
+				comment("end dup"),
+				wait(30)
+			])
+		];
+
+		final testAst = test(dupTest); // Change this for testing
 
 		this.programPackage = compile(["test" => testAst]);
 		this.testPattern = this.programPackage.getProgramByName("test");
