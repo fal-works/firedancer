@@ -2,7 +2,6 @@ import firedancer.vm.Program;
 import firedancer.vm.ProgramPackage;
 import firedancer.script.Api.*;
 import firedancer.script.Ast;
-import FdEndCode.*;
 
 class BulletPatterns {
 	public function new() {
@@ -48,7 +47,7 @@ class BulletPatterns {
 				]),
 				wait(30)
 			]),
-			end(VANISH) // Here the origin of children is set to (0, 0)
+			vanish() // Here the origin of children is set to (0, 0)
 		];
 
 		final everyFrameTest = [
@@ -93,7 +92,7 @@ class BulletPatterns {
 			loop([
 				fire([
 					wait(30),
-					end(VANISH)
+					vanish()
 				]),
 				shot.direction.add(12),
 				wait(1)

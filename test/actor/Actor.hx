@@ -184,7 +184,7 @@ class Actor extends broker.entity.BasicBatchEntity {
 			);
 
 			switch endCode {
-				case VANISH: dead[i] = true;
+				case -1: dead[i] = true;
 				default:
 			}
 		}

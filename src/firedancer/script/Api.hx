@@ -116,16 +116,25 @@ class Api {
 	}
 
 	/**
-		Ends running the bullet pattern with a specific end code
-		so that the end code is returned from the VM.
+		Ends running the bullet pattern with a specific end code.
 
 		Normally the VM returns a default end code `0`.
 		`end()` is useful for returning another end code so that you can
-		branch the process according to that value (for example: kill the actor if `1` is returned).
+		branch the process according to that value.
+
+		@param endCode The value to be returned from the VM.
+		`0` for the default behavior, `-1` for killing the actor, or any other value for user-defined behaviors.
+		@see `vanish()`
 	**/
 	public static function end(endCode: Int): End {
 		return new End(endCode);
 	}
+
+	/**
+		Calls `end()` with a special end code `-1`, which should kill the actor itself.
+	**/
+	public static function vanish(): End
+		return end(-1);
 
 	/**
 		Refers to a local variable with `name` and interprets it as an integer.
