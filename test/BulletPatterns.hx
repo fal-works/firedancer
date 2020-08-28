@@ -1,6 +1,7 @@
 import firedancer.vm.Program;
 import firedancer.vm.ProgramPackage;
 import firedancer.script.Api.*;
+import firedancer.script.ApiEx.*;
 import firedancer.script.Ast;
 
 class BulletPatterns {
@@ -199,12 +200,15 @@ class BulletPatterns {
 			shot.velocity.set(4, 180),
 			loop([
 				comment("start dup"),
-				dup(fire(), {
-					count: 8,
-					intervalFrames: 4,
-					shotSpeedChange: 8,
-					shotDirectionRange: { start: -12, end: 12 }
-				}),
+				dup(
+					nWay(fire(), { ways: 5, angle: 90 }),
+					{
+						count: 8,
+						intervalFrames: 4,
+						shotSpeedChange: 8,
+						shotDirectionRange: { start: -6, end: 6 }
+					}
+				),
 				comment("end dup"),
 				wait(30)
 			])
