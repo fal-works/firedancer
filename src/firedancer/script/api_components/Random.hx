@@ -23,7 +23,7 @@ class Random {
 		Gets a random value between `0` and `1`.
 	**/
 	public inline function ratio(): FloatExpression
-		return FloatExpression.fromEnum(Runtime(Variable(RandomRatio)));
+		return FloatExpression.fromEnum(Runtime(Inst(RandomRatio)));
 
 	/**
 		Gets a random value between `min` and `max`.

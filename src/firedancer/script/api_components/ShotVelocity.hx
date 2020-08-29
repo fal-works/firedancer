@@ -65,7 +65,7 @@ abstract ShotSpeed(ShotSpeedImpl) {
 	@:access(firedancer.script.api_components.ActorPropertyApiComponent)
 	@:to function toExpression(): FloatExpression {
 		return
-			FloatLikeExpressionEnum.Runtime(RuntimeExpressionEnum.Variable(Get(this.property)));
+			FloatLikeExpressionEnum.Runtime(RuntimeExpressionEnum.Inst(Get(this.property)));
 	}
 
 	@:op(-A)
@@ -123,7 +123,7 @@ abstract ShotDirection(ShotDirectionImpl) {
 	@:access(firedancer.script.api_components.ActorPropertyApiComponent)
 	@:to function toExpression(): AngleExpression {
 		return
-			FloatLikeExpressionEnum.Runtime(RuntimeExpressionEnum.Variable(Get(this.property)));
+			FloatLikeExpressionEnum.Runtime(RuntimeExpressionEnum.Inst(Get(this.property)));
 	}
 
 	@:op(-A)

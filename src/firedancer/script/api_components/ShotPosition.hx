@@ -65,7 +65,7 @@ abstract ShotDistance(ShotDistanceImpl) {
 	@:access(firedancer.script.api_components.ActorPropertyApiComponent)
 	@:to function toExpression(): FloatExpression {
 		return
-			FloatLikeExpressionEnum.Runtime(RuntimeExpressionEnum.Variable(Get(this.property)));
+			FloatLikeExpressionEnum.Runtime(RuntimeExpressionEnum.Inst(Get(this.property)));
 	}
 
 	@:op(-A)
@@ -129,7 +129,7 @@ abstract ShotBearing(ShotBearingImpl) {
 	@:access(firedancer.script.api_components.ActorPropertyApiComponent)
 	@:to function toExpression(): AngleExpression {
 		return
-			FloatLikeExpressionEnum.Runtime(RuntimeExpressionEnum.Variable(Get(this.property)));
+			FloatLikeExpressionEnum.Runtime(RuntimeExpressionEnum.Inst(Get(this.property)));
 	}
 
 	@:op(-A)

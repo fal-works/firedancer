@@ -13,8 +13,8 @@ abstract FloatLikeRuntimeExpression(
 ) from FloatLikeRuntimeExpressionEnum to FloatLikeRuntimeExpressionEnum {
 	@:to public function toString(): String {
 		return switch this {
-		case Variable(loadV):
-			'Var(${loadV.toString()})';
+		case Inst(loadV):
+			'Inst(${loadV.toString()})';
 		case UnaryOperation(_, operand):
 			'UnOp(${operand.toString()})';
 		case BinaryOperation(_, operandA, operandB):
@@ -29,7 +29,7 @@ abstract FloatLikeRuntimeExpression(
 	**/
 	public function loadToVolatile(context: CompileContext): AssemblyCode {
 		return switch this {
-		case Variable(loadV):
+		case Inst(loadV):
 			loadV;
 
 		case UnaryOperation(instruction, operandExpr):

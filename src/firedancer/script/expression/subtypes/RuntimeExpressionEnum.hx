@@ -10,7 +10,7 @@ enum RuntimeExpressionEnum<C, E> {
 	/**
 		@param loadV `Instruction` for loading the value to the current volatile value.
 	**/
-	Variable(loadV: Instruction);
+	Inst(loadV: Instruction);
 
 	/**
 		@param operand An expression to be operated.
