@@ -388,8 +388,8 @@ class Optimizer {
 	}
 
 	/**
-		- Replaces unnecessary `Push`/`Pop` with `None`/`Load`.
-		- Replaces instructions that reads a variable if the last assigned value is an immediate.
+		- Replaces instructions that read any variable of which the last assigned value is an immediate.
+		- Removes instructions that assign values to any variable which is never read.
 	**/
 	public static function tryOptimizeVar(code: AssemblyCode): Bool {
 		if (code.length <= UInt.one) return false;
