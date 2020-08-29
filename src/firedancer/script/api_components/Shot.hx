@@ -35,4 +35,9 @@ class Shot {
 		Provides functions for operating the angle of shot velocity vector.
 	**/
 	public final direction = new ShotDirection();
+
+	/**
+		Angle from the current shot position to the current target position.
+	**/
+	public final angleToTarget = AngleExpression.fromEnum(Runtime(Inst(GetTarget(AngleFromShotPosition))));
 }

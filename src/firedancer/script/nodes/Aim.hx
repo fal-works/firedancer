@@ -1,6 +1,5 @@
 package firedancer.script.nodes;
 
-import firedancer.script.expression.AngleExpression;
 import firedancer.script.expression.FloatExpression;
 
 /**
@@ -22,11 +21,10 @@ class Aim extends AstNode implements ripper.Data {
 		return false;
 
 	override public function toAssembly(context: CompileContext): AssemblyCode {
-		final angleToTarget = AngleExpression.fromEnum(Runtime(Inst(GetTarget(AngleFromShotPosition))));
 		final node = new SetActorProperty(ShotVelocity, if (speed.isSome()) {
-			SetVector({ length: speed.unwrap(), angle: angleToTarget });
+			SetVector({ length: speed.unwrap(), angle: Api.shot.angleToTarget });
 		} else {
-			SetAngle(angleToTarget);
+			SetAngle(Api.shot.angleToTarget);
 		});
 
 		return node.toAssembly(context);
