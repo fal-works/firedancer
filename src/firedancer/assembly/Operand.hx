@@ -312,20 +312,20 @@ class OperandExtension {
 	}
 
 	/**
-		If `this` refers to a variable and its content is an immediate (according to `curVariables`),
+		If `this` refers to a variable and its content is an immediate (according to `variables`),
 		returns that immediate as an `Operand`.
 	**/
 	public static function tryReplaceVarWithImm(
 		_this: Operand,
-		curVariables: Map<UInt, Optimizer.VariableElement>
+		variables: Optimizer.Variables
 	): Maybe<Operand> {
 		final newOperand: Null<Operand> = switch _this {
 		case Null: null;
 		case Int(thisOperand):
 			switch thisOperand {
 			case Var(address):
-				final variable = curVariables.get(address);
-				if (variable != null && variable.operand.isSome()) {
+				final variable = variables.get(address);
+				if (variable.operand.isSome()) {
 					switch variable.operand.unwrap() {
 						case Int(maybeIntImm):
 							switch maybeIntImm {
@@ -340,10 +340,10 @@ class OperandExtension {
 		case Float(thisOperand):
 			switch thisOperand {
 			case Var(address):
-				final variable = curVariables.get(address);
-				if (variable != null && variable.operand.isSome()) {
+				final variable = variables.get(address);
+				if (variable.operand.isSome()) {
 					switch variable.operand.unwrap() {
-					case Int(maybeIntImm):
+					case Float(maybeIntImm):
 						switch maybeIntImm {
 						case Imm(_): variable.operand.unwrap();
 						default: null;
@@ -549,7 +549,7 @@ enum IntOperand {
 	Reg;
 	RegBuf;
 	Stack;
-	Var(address: UInt);
+	Var(key: String);
 }
 
 class IntOperandExtension {
@@ -606,7 +606,7 @@ enum FloatOperand {
 	Reg;
 	RegBuf;
 	Stack;
-	Var(address: UInt);
+	Var(key: String);
 }
 
 class FloatOperandExtension {

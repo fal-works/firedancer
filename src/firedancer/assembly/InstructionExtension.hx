@@ -41,8 +41,15 @@ class InstructionExtension {
 		case Save(input):
 			final output = DataRegisterSpecifier.get(input.getType()).getBuffer();
 			'save ${input.toString()} -> ${output.toString()}';
-		case Store(input, address):
-			'store ${input.toString()} -> ${varToString(address, input.getType())}';
+
+			// ---- variables --------------------------------------------------
+
+		case Let(varKey, type):
+			'let ${varToString(varKey, type)}';
+		case Store(input, varKey):
+			'store ${input.toString()} -> ${varToString(varKey, input.getType())}';
+		case Free(varKey, type):
+			'free ${varToString(varKey, type)}';
 
 			// ---- read/write stack ---------------------------------------------
 
@@ -205,7 +212,12 @@ class InstructionExtension {
 
 		case Load(input): input.bytecodeLength();
 		case Save(input): input.bytecodeLength();
-		case Store(input, address): input.bytecodeLength() + IntSize;
+
+		// ---- variables --------------------------------------------------
+
+		case Let(_): -Opcode.size;
+		case Store(input, _): input.bytecodeLength() + IntSize; // input + address
+		case Free(_): -Opcode.size;
 
 			// ---- read/write stack ---------------------------------------------
 
@@ -257,7 +269,7 @@ class InstructionExtension {
 
 			// ----
 
-		case Comment(_) | None: UInt.zero;
+		case Comment(_) | None: -Opcode.size;
 		}
 	}
 
@@ -381,9 +393,9 @@ class InstructionExtension {
 	}
 
 	/**
-		@return The output `address` if the output of `this` is `Var`.
+		@return The key of the output variable if the output of `this` is `Var`.
 	**/
-	public static function tryGetReadVarAddress(inst: Instruction): Maybe<UInt> {
+	public static function tryGetReadVarKey(inst: Instruction): Maybe<String> {
 		return Maybe.from(switch inst {
 		case Load(input) | Save(input) | Store(input, _) | Push(input) | Minus(input) |
 			Mult(input, _) | Div(input, _) | Mod(input, _) | GetDiff(input, _) |
@@ -391,12 +403,12 @@ class InstructionExtension {
 			switch input {
 			case Int(operand):
 				switch operand {
-				case Var(address): address;
+				case Var(key): key;
 				default: null;
 				}
 			case Float(operand):
 				switch operand {
-				case Var(address): address;
+				case Var(key): key;
 				default: null;
 				}
 			default: null;
@@ -405,34 +417,34 @@ class InstructionExtension {
 			switch input {
 			case Int(a, b):
 				switch a {
-				case Var(address): address;
+				case Var(key): key;
 				default: null;
 				}
 			case Float(a, b):
 				switch a {
-				case Var(address): address;
+				case Var(key): key;
 				default: null;
 				}
 			default: null;
 			}
-		case Increment(address) | Decrement(address): address;
+		case Increment(varKey) | Decrement(varKey): varKey;
 		default: null;
 		});
 	}
 
-	public static function tryGetWriteVarAddress(inst: Instruction): Maybe<UInt> {
+	public static function tryGetWriteVarKey(inst: Instruction): Maybe<String> {
 		return Maybe.from(switch inst {
-		case Store(input, address): address;
+		case Store(input, varKey): varKey;
 		case Add(input) | Sub(input):
 			switch input {
 			case Int(a, b):
 				switch a {
-				case Var(address): address;
+				case Var(key): key;
 				default: null;
 				}
 			case Float(a, b):
 				switch a {
-				case Var(address): address;
+				case Var(key): key;
 				default: null;
 				}
 			default: null;
@@ -441,17 +453,17 @@ class InstructionExtension {
 			switch input {
 			case Int(operand):
 				switch operand {
-				case Var(address): address;
+				case Var(key): key;
 				default: null;
 				}
 			case Float(operand):
 				switch operand {
-				case Var(address): address;
+				case Var(key): key;
 				default: null;
 				}
 			default: null;
 			}
-		case Increment(address) | Decrement(address): address;
+		case Increment(varKey) | Decrement(varKey): varKey;
 		default: null;
 		});
 	}

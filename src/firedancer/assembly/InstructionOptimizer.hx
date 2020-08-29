@@ -982,7 +982,7 @@ class InstructionOptimizer {
 	**/
 	public static function tryReplaceVariable(
 		inst: Instruction,
-		variables: Map<UInt, Optimizer.VariableElement>
+		variables: Optimizer.Variables
 	): Maybe<Instruction> {
 		final newInst: Null<Instruction> = switch inst {
 		case Load(input):
@@ -1009,22 +1009,18 @@ class InstructionOptimizer {
 			switch nextOperands {
 			case Int(a, b):
 				switch a {
-				case Var(address):
-					final variable = variables.get(address);
-					if (variable != null) {
-						final imm = variable.tryGetIntImm();
-						if (imm.isSome()) Add(Int(Imm(imm.unwrap()), b)) else null;
-					} else null;
+				case Var(key):
+					final variable = variables.get(key);
+					final imm = variable.tryGetIntImm();
+					if (imm.isSome()) Add(Int(Imm(imm.unwrap()), b)) else null;
 				default: null;
 				}
 			case Float(a, b):
 				switch a {
-				case Var(address):
-					final variable = variables.get(address);
-					if (variable != null) {
-						final imm = variable.tryGetFloatImm();
-						if (imm.isSome()) Add(Float(Imm(imm.unwrap()), b)) else null;
-					} else null;
+				case Var(key):
+					final variable = variables.get(key);
+					final imm = variable.tryGetFloatImm();
+					if (imm.isSome()) Add(Float(Imm(imm.unwrap()), b)) else null;
 				default: null;
 				}
 			default: null;
@@ -1034,22 +1030,18 @@ class InstructionOptimizer {
 			switch nextOperands {
 			case Int(a, b):
 				switch a {
-				case Var(address):
-					final variable = variables.get(address);
-					if (variable != null) {
-						final imm = variable.tryGetIntImm();
-						if (imm.isSome()) Sub(Int(Imm(imm.unwrap()), b)) else null;
-					} else null;
+				case Var(key):
+					final variable = variables.get(key);
+					final imm = variable.tryGetIntImm();
+					if (imm.isSome()) Sub(Int(Imm(imm.unwrap()), b)) else null;
 				default: null;
 				}
 			case Float(a, b):
 				switch a {
-				case Var(address):
-					final variable = variables.get(address);
-					if (variable != null) {
-						final imm = variable.tryGetFloatImm();
-						if (imm.isSome()) Sub(Float(Imm(imm.unwrap()), b)) else null;
-					} else null;
+				case Var(key):
+					final variable = variables.get(key);
+					final imm = variable.tryGetFloatImm();
+					if (imm.isSome()) Sub(Float(Imm(imm.unwrap()), b)) else null;
 				default: null;
 				}
 			default: null;

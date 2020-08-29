@@ -19,7 +19,10 @@ enum Instruction {
 	// ---- move values ---------------------------------------------------------
 	Load(input: Operand);
 	Save(input: Operand);
-	Store(input: Operand, address: UInt);
+	// ---- variables -----------------------------------------------------------
+	Let(varKey: String, type: ValueType);
+	Store(input: Operand, varKey: String);
+	Free(varKey: String, type: ValueType);
 	// ---- read/write stack ----------------------------------------------------
 	Push(input: Operand);
 	Pop(type: ValueType);
@@ -43,8 +46,8 @@ enum Instruction {
 	RandomSigned(maxMagnitude: Operand);
 	Sin;
 	Cos;
-	Increment(address: UInt);
-	Decrement(address: UInt);
+	Increment(address: String);
+	Decrement(address: String);
 	// ---- read actor data -----------------------------------------------------
 	Get(property: ActorProperty);
 	GetTarget(prop: TargetProperty);

@@ -113,24 +113,18 @@ class LocalVariableTable {
 	/**
 		Stack of `LocalVariable` instances.
 	**/
-	final addressStack: Array<LocalVariable>;
+	final variableStack: Array<LocalVariable>;
 
 	/**
-		Stack for storing the size of `addressStack` at the beginning of each scope.
+		Stack for storing the size of `variableStack` at the beginning of each scope.
 	**/
 	final variableCountStack: Array<UInt>;
-
-	/**
-		Address offset value for the next pushed variable.
-	**/
-	var address: UInt;
 
 	final context: CompileContext;
 
 	public function new(context: CompileContext) {
-		this.addressStack = [];
+		this.variableStack = [];
 		this.variableCountStack = [];
-		this.address = UInt.zero;
 		this.context = context;
 	}
 
@@ -138,38 +132,37 @@ class LocalVariableTable {
 		Starts a new scope.
 	**/
 	public function startScope(): Void
-		this.variableCountStack.push(this.addressStack.length);
+		this.variableCountStack.push(this.variableStack.length);
 
 	/**
 		Ends the current scope.
 		Pops all variables that were pushed after the last call of `startScope()`.
+		@return `AssemblyCode` that frees variables that have been declared in the current scope.
 	**/
-	public function endScope(): Void {
+	public function endScope(): AssemblyCode {
 		final maybeTargetSize = variableCountStack.pop();
 		if (maybeTargetSize.isNone()) throw "Called endScope() before startScope().";
 		final targetSize = maybeTargetSize.unwrap();
 
-		final addressStack = this.addressStack;
-		while (targetSize < addressStack.length) addressStack.pop();
+		final freeInstructions: AssemblyCode = [];
+		final variableStack = this.variableStack;
+		while (targetSize < variableStack.length) {
+			final variable = variableStack.pop().unwrap();
+			freeInstructions.push(Free(variable.name, variable.type));
+		}
+
+		return freeInstructions;
 	}
 
 	/**
 		Registers a local variable that is valid in the current scope.
-		@return The address that can be used for the registered local variable.
 	**/
-	public function push(name: String, type: ValueType): UInt {
-		final address = this.address;
-
-		this.addressStack.push({
+	public function push(name: String, type: ValueType): Void {
+		this.variableStack.push({
 			name: name,
 			type: type,
-			address: address,
 			context: this.context
 		});
-
-		this.address = address + type.size;
-
-		return address;
 	}
 
 	/**
@@ -177,11 +170,11 @@ class LocalVariableTable {
 		Throws error if a variable with `name` was never declared.
 	**/
 	public function get(name: String): LocalVariable {
-		final addressStack = this.addressStack;
-		var i = addressStack.length.int() - 1;
+		final variableStack = this.variableStack;
+		var i = variableStack.length.int() - 1;
 
 		while (i >= 0) {
-			final variable = addressStack[i];
+			final variable = variableStack[i];
 			if (variable.name == name) return variable;
 			--i;
 		}
@@ -190,10 +183,10 @@ class LocalVariableTable {
 	}
 }
 
-@:structInit class LocalVariable {
+@:structInit
+class LocalVariable {
 	public final name: String;
 	public final type: ValueType;
-	public final address: UInt;
 
 	final context: CompileContext;
 
@@ -203,8 +196,8 @@ class LocalVariableTable {
 	**/
 	public function loadToVolatile(): AssemblyCode {
 		return switch this.type {
-		case Int: [Load(Int(Var(address)))];
-		case Float: [Load(Float(Var(address)))];
+		case Int: [Load(Int(Var(this.name)))];
+		case Float: [Load(Float(Var(this.name)))];
 		case Vec: throw "Local variable of vector type is not supported.";
 		};
 	}
@@ -217,9 +210,9 @@ class LocalVariableTable {
 	public function setValue(value: GenericExpression): AssemblyCode {
 		final store: Instruction = switch this.type {
 		case Int:
-			Store(Int(Reg), address);
+			Store(Int(Reg), this.name);
 		case Float:
-			Store(Float(Reg), address);
+			Store(Float(Reg), this.name);
 		case Vec:
 			throw "Local variable of vector type is not supported.";
 		}
@@ -236,9 +229,9 @@ class LocalVariableTable {
 	public function addValue(value: GenericExpression): AssemblyCode {
 		final store: Instruction = switch this.type {
 		case Int:
-			Add(Int(Var(address), Reg));
+			Add(Int(Var(this.name), Reg));
 		case Float:
-			Add(Float(Var(address), Reg));
+			Add(Float(Var(this.name), Reg));
 		case Vec:
 			throw "Local variable of vector type is not supported.";
 		}
@@ -260,7 +253,7 @@ class LocalVariableTable {
 		default: throw "Cannot increment local variable that is not an integer.";
 		}
 
-		return [Increment(address)];
+		return [Increment(this.name)];
 	}
 
 	/**
@@ -274,6 +267,6 @@ class LocalVariableTable {
 		default: throw "Cannot decrement local variable that is not an integer.";
 		}
 
-		return [Decrement(address)];
+		return [Decrement(this.name)];
 	}
 }

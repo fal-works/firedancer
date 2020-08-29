@@ -37,7 +37,8 @@ class List extends AstNode implements ripper.Data {
 			codeList.push(node.toAssembly(context));
 		}
 
-		context.localVariables.endScope();
+		final completion = context.localVariables.endScope();
+		codeList.push(completion);
 
 		for (_ in 0...everyFrameNodeCount) context.popInjectionCode();
 

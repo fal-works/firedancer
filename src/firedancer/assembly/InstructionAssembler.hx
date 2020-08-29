@@ -9,7 +9,8 @@ import firedancer.assembly.Word;
 class InstructionAssembler {
 	public static function toWordArray(
 		inst: Instruction,
-		labelAddressMap: Map<UInt, UInt>
+		labelPositionMap: Map<UInt, UInt>,
+		variableTable: Assembler.VariableTable
 	): WordArray {
 		inline function op(opcode: Opcode): Word
 			return OpcodeWord(opcode);
@@ -22,13 +23,13 @@ class InstructionAssembler {
 		case Label(_):
 			throw 'Labels must be consumed before converting to WordArray.';
 		case GotoLabel(labelId):
-			final address = labelAddressMap.get(labelId);
-			if (address == null) throw 'Unknown label ID: $labelId';
-			[op(Goto), address];
+			final pos = labelPositionMap.get(labelId);
+			if (pos == null) throw 'Unknown label ID: $labelId';
+			[op(Goto), pos];
 		case CountDownGotoLabel(labelId):
-			final address = labelAddressMap.get(labelId);
-			if (address == null) throw 'Unknown label ID: $labelId';
-			[op(CountDownGoto), address];
+			final pos = labelPositionMap.get(labelId);
+			if (pos == null) throw 'Unknown label ID: $labelId';
+			[op(CountDownGoto), pos];
 		case UseThread(programId, output):
 			switch output {
 			case Null: [op(UseThread), programId];
@@ -53,7 +54,7 @@ class InstructionAssembler {
 				case Imm(value): [op(LoadIntCR), value];
 				case Reg: [];
 				case RegBuf: op(LoadIntBR);
-				case Var(address): [op(LoadIntVR), address];
+				case Var(key): [op(LoadIntVR), variableTable.getAddress(key)];
 				default: throw unsupported();
 				}
 			case Float(operand):
@@ -61,7 +62,7 @@ class InstructionAssembler {
 				case Imm(value): [op(LoadFloatCR), value];
 				case Reg: [];
 				case RegBuf: op(LoadFloatBR);
-				case Var(address): [op(LoadFloatVR), address];
+				case Var(key): [op(LoadFloatVR), variableTable.getAddress(key)];
 				default: throw unsupported();
 				}
 			case Vec(operand):
@@ -93,7 +94,15 @@ class InstructionAssembler {
 				}
 			default: throw unsupported();
 			}
-		case Store(input, address):
+
+			// ---- variables --------------------------------------------------
+
+		case Let(varKey, type):
+			variableTable.let(varKey, type);
+			[];
+
+		case Store(input, varKey):
+			final address = variableTable.getAddress(varKey);
 			switch input {
 			case Int(operand):
 				switch operand {
@@ -118,6 +127,10 @@ class InstructionAssembler {
 
 			default: throw unsupported();
 			}
+
+		case Free(varKey, _):
+			variableTable.free(varKey);
+			[];
 
 			// ---- read/write stack ---------------------------------------------
 
@@ -208,7 +221,8 @@ class InstructionAssembler {
 					case Reg: op(AddIntRRR);
 					default: throw unsupported();
 					}
-				case Var(address):
+				case Var(key):
+					final address = variableTable.getAddress(key);
 					switch b {
 					case Imm(bVal): [
 							op(AddIntVCV),
@@ -237,7 +251,8 @@ class InstructionAssembler {
 					case Reg: op(AddFloatRRR);
 					default: throw unsupported();
 					}
-				case Var(address):
+				case Var(key):
+					final address = variableTable.getAddress(key);
 					switch b {
 					case Imm(bVal): [
 							op(AddFloatVCV),
@@ -588,10 +603,10 @@ class InstructionAssembler {
 		case Cos:
 			op(CosRR);
 
-		case Increment(address):
-			[op(IncrementVV), address];
-		case Decrement(address):
-			[op(DecrementVV), address];
+		case Increment(varKey):
+			[op(IncrementVV), variableTable.getAddress(varKey)];
+		case Decrement(varKey):
+			[op(DecrementVV), variableTable.getAddress(varKey)];
 
 			// ---- read actor data
 
@@ -680,7 +695,7 @@ class InstructionAssembler {
 			}
 
 		case Comment(_) | None:
-			op(NoOperation);
+			[];
 		}
 	}
 

@@ -396,7 +396,7 @@ class Optimizer {
 
 		var optimizedAny = false;
 
-		final variables = new Map<UInt, VariableElement>();
+		final variables = new Variables();
 
 		var i = UInt.zero;
 		var curInst: Instruction;
@@ -410,35 +410,49 @@ class Optimizer {
 		while (i < code.length) {
 			curInst = code[i];
 
-			final newInst = curInst.tryReplaceVariable(variables);
-			if (newInst.isSome()) replaceInst(i, newInst.unwrap());
-
-			// Not sure if we have to analyze the control flow wih `Goto` etc.
-
-			final readVarAddress = curInst.tryGetReadVarAddress();
-			if (readVarAddress.isSome()) {
-				final variable = variables.get(readVarAddress.unwrap());
-				if (variable != null) variable.maybeRead = true;
-			}
-
-			final writeVarAddress = curInst.tryGetWriteVarAddress();
-			if (writeVarAddress.isSome()) {
-				final variable = variables.get(writeVarAddress.unwrap());
-				if (variable != null && !variable.maybeRead)
-					replaceInst(variable.lastWrittenIndex, None);
-
-				final variableElement: VariableElement = switch curInst {
-					case Store(input, _): { lastWrittenIndex: i, operand: input };
-					default: { lastWrittenIndex: i };
+			switch curInst {
+			case Let(varKey, _):
+				variables.let(varKey, i);
+			case Free(varKey, _):
+				final variable = variables.get(varKey);
+				if (!variable.maybeRead) {
+					final assignedIndex = variable.lastAssignedIndex;
+					if (assignedIndex.isSome())
+						replaceInst(assignedIndex.unwrap(), None);
 				}
-				variables.set(writeVarAddress.unwrap(), variableElement);
+				if (!variable.isUsed) {
+					replaceInst(variable.declaredIndex, None); // Let => None
+					replaceInst(i, None); // Free => None
+				}
+				variables.free(varKey);
+			default:
+				final newInst = curInst.tryReplaceVariable(variables);
+				if (newInst.isSome()) replaceInst(i, newInst.unwrap());
+
+				final readVarKey = curInst.tryGetReadVarKey();
+				if (readVarKey.isSome()) {
+					final variable = variables.get(readVarKey.unwrap());
+					variable.maybeRead = true;
+					variable.isUsed = true;
+				}
+
+				final writeVarKey = curInst.tryGetWriteVarKey();
+				if (writeVarKey.isSome()) {
+					final variable = variables.get(writeVarKey.unwrap());
+					if (!variable.maybeRead) {
+						final assignedIndex = variable.lastAssignedIndex;
+						if (assignedIndex.isSome())
+							replaceInst(assignedIndex.unwrap(), None);
+					}
+
+					switch curInst {
+					case Store(input, _): variables.assign(writeVarKey.unwrap(), i, input);
+					default: variables.assign(writeVarKey.unwrap(), i);
+					}
+				}
 			}
 
 			++i;
-		}
-
-		for (variable in variables) {
-			if (!variable.maybeRead) replaceInst(variable.lastWrittenIndex, None);
 		}
 
 		return optimizedAny;
@@ -531,25 +545,37 @@ class StackElement {
 
 @:structInit
 class VariableElement {
-	public final lastWrittenIndex: UInt;
+	public final declaredIndex: UInt;
+	public var lastAssignedIndex: MaybeUInt;
 	public var operand: Maybe<Operand>;
+	public var isUsed: Bool = false;
 	public var maybeRead: Bool = false;
 
-	public function new(lastWrittenIndex: UInt, ?operand: Operand, maybeRead = false) {
-		this.lastWrittenIndex = lastWrittenIndex;
+	public function toString(): String {
+		return
+			'{\n  declaredIndex: $declaredIndex,\n  lastAssignedIndex: $lastAssignedIndex,\n  isUsed: $isUsed,\n  maybeRead: $maybeRead\n}';
+	}
+
+	public function new(
+		declaredIndex: UInt,
+		?lastAssignedIndex: UInt,
+		?operand: Operand
+	) {
+		this.declaredIndex = declaredIndex;
+		this.lastAssignedIndex = if (lastAssignedIndex != null) lastAssignedIndex else
+			MaybeUInt.none;
 		this.operand = Maybe.from(operand);
-		this.maybeRead = maybeRead;
 	}
 
 	public function tryGetIntImm(): Maybe<Int> {
 		return if (this.operand.isSome()) {
 			switch this.operand.unwrap() {
-				case Int(operand):
-					switch operand {
-						case Imm(value): Maybe.from(value);
-						default: Maybe.none();
-					}
+			case Int(operand):
+				switch operand {
+				case Imm(value): Maybe.from(value);
 				default: Maybe.none();
+				}
+			default: Maybe.none();
 			}
 		} else Maybe.none();
 	}
@@ -557,13 +583,52 @@ class VariableElement {
 	public function tryGetFloatImm(): Maybe<Float> {
 		return if (this.operand.isSome()) {
 			switch this.operand.unwrap() {
-				case Float(operand):
-					switch operand {
-						case Imm(value): Maybe.from(value);
-						default: Maybe.none();
-					}
+			case Float(operand):
+				switch operand {
+				case Imm(value): Maybe.from(value);
 				default: Maybe.none();
+				}
+			default: Maybe.none();
 			}
 		} else Maybe.none();
+	}
+}
+
+class Variables {
+	final variableStackMap = new Map<String, Array<VariableElement>>();
+
+	public function new() {}
+
+	public function let(varKey: String, declaredIndex: UInt): Void {
+		final stack = this.variableStackMap.get(varKey);
+		final variable: VariableElement = { declaredIndex: declaredIndex };
+		if (stack == null) this.variableStackMap.set(varKey, [variable]);
+		else stack.push(variable);
+	}
+
+	public function assign(
+		varKey: String,
+		lastAssignedIndex: UInt,
+		?operand: Operand
+	): Void {
+		final stack = this.variableStackMap.get(varKey);
+		if (stack != null) {
+			final variable = stack.getLast();
+			variable.lastAssignedIndex = lastAssignedIndex;
+			variable.operand = Maybe.from(operand);
+			variable.maybeRead = false;
+			variable.isUsed = true;
+		}
+	}
+
+	public inline function get(varKey: String): VariableElement {
+		final stack = this.variableStackMap.get(varKey);
+		if (stack == null) throw 'Variable not declared: $varKey';
+		return stack.getLast();
+	}
+
+	public function free(varKey: String): Void {
+		final stack = this.variableStackMap.get(varKey);
+		if (stack != null) stack.pop();
 	}
 }

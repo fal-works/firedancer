@@ -6,13 +6,13 @@ class OperandTools {
 	public static function ftoa(v: Float): String
 		return if (Floats.toInt(v) == v) '$v.0' else Std.string(v);
 
-	public static function varToString(address: UInt, type: ValueType): String {
+	public static function varToString(key: String, type: ValueType): String {
 		final typeChar = switch type {
 		case Int: "i";
 		case Float: "f";
 		case Vec: "v";
 		};
-		return '${typeChar}var($address)';
+		return '${typeChar}var($key)';
 	}
 
 	public static function tryGetOperandPair(a: Operand, b: Operand): Maybe<OperandPair> {

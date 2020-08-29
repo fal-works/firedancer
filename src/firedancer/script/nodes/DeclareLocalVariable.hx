@@ -53,20 +53,27 @@ class DeclareLocalVariable extends AstNode {
 		return false;
 
 	override public function toAssembly(context: CompileContext): AssemblyCode {
-		inline function getAddress(valueType: ValueType): UInt
-			return context.localVariables.push(this.name, valueType);
+		final name = this.name;
 
-		final storeRL: Instruction = switch initialValue.toEnum() {
+		var storeRL: Instruction;
+		var letVar: Instruction;
+
+		switch initialValue.toEnum() {
 		case IntExpr(_):
-			Store(Int(Reg), getAddress(Int));
-		case FloatExpr(_) | AngleExpr(_):
-			Store(Float(Reg), getAddress(Float));
+			letVar = Let(name, Int);
+			storeRL = Store(Int(Reg), name);
+			context.localVariables.push(name, Int);
+			case FloatExpr(_) | AngleExpr(_):
+			letVar = Let(name, Float);
+			storeRL = Store(Float(Reg), name);
+			context.localVariables.push(name, Float);
 		case VecExpr(_):
 			throw "Local variable of vector type is not supported.";
 		}
 
 		return {
 			[
+				[letVar],
 				initialValue.loadToVolatile(context),
 				[storeRL]
 			].flatten();
