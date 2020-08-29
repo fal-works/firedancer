@@ -27,7 +27,7 @@ class Duplicate extends AstNode {
 		final interval: Array<AstNode> = [];
 		final completion: Array<AstNode> = [];
 
-		final varCount = Api.intVar("__loopCount");
+		final varCount = Api.intVar("__loopCnt");
 		preparation.push(varCount.let(params.count - 1));
 
 		if (params.intervalFrames != null) {
@@ -36,8 +36,8 @@ class Duplicate extends AstNode {
 
 		if (params.shotDistanceChange != null) {
 			final shotDistanceChange = params.shotDistanceChange;
-			final varInitialShotDistance = Api.floatVar("__initialShotDistance");
-			final varShotDistanceChangeRate = Api.floatVar("__shotDistanceChangeRate");
+			final varInitialShotDistance = Api.floatVar("__sDstBuf");
+			final varShotDistanceChangeRate = Api.floatVar("__sDstChgRt");
 			preparation.push(varInitialShotDistance.let(Api.shot.distance));
 			preparation.push(
 				varShotDistanceChangeRate.let(shotDistanceChange / varCount)
@@ -48,8 +48,8 @@ class Duplicate extends AstNode {
 
 		if (params.shotBearingRange != null) {
 			final range: AngleRange = params.shotBearingRange;
-			final varInitialShotBearing = Api.angleVar("__initialShotBearing");
-			final varShotBearingChangeRate = Api.angleVar("__shotBearingChangeRate");
+			final varInitialShotBearing = Api.angleVar("__sBrgBuf");
+			final varShotBearingChangeRate = Api.angleVar("__sBrgChgRt");
 			preparation.push(varInitialShotBearing.let(Api.shot.bearing));
 			preparation.push(Api.shot.bearing.add(range.start));
 			preparation.push(
@@ -61,8 +61,8 @@ class Duplicate extends AstNode {
 
 		if (params.shotSpeedChange != null) {
 			final shotSpeedChange = params.shotSpeedChange;
-			final varInitialShotSpeed = Api.floatVar("__initialShotSpeed");
-			final varShotSpeedChangeRate = Api.floatVar("__shotSpeedChangeRate");
+			final varInitialShotSpeed = Api.floatVar("__sSpdBuf");
+			final varShotSpeedChangeRate = Api.floatVar("__sSpdChgRt");
 			preparation.push(varInitialShotSpeed.let(Api.shot.speed));
 			preparation.push(varShotSpeedChangeRate.let(shotSpeedChange / varCount));
 			interval.push(Api.shot.speed.add(varShotSpeedChangeRate));
@@ -71,8 +71,8 @@ class Duplicate extends AstNode {
 
 		if (params.shotDirectionRange != null) {
 			final range: AngleRange = params.shotDirectionRange;
-			final varInitialShotDirection = Api.angleVar("__initialShotDirection");
-			final varShotDirectionChangeRate = Api.angleVar("__shotDirectionChangeRate");
+			final varInitialShotDirection = Api.angleVar("__sDirBuf");
+			final varShotDirectionChangeRate = Api.angleVar("__sDirChgRt");
 			preparation.push(varInitialShotDirection.let(Api.shot.direction));
 			preparation.push(Api.shot.direction.add(range.start));
 			preparation.push(
