@@ -402,8 +402,6 @@ class Optimizer {
 		var curInst: Instruction;
 
 		inline function replaceInst(index: UInt, newInst: Instruction): Void {
-			Sys.println('[$index] before: ${code[index].toString()}');
-			Sys.println('[$index]  after: ${newInst.toString()}');
 			code[index] = newInst;
 			if (i == index) curInst = newInst;
 			optimizedAny = true;
