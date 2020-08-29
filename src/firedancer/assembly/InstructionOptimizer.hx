@@ -975,4 +975,124 @@ class InstructionOptimizer {
 		}
 		return Maybe.from(newInst);
 	}
+
+	/**
+		If `inst` reads a variable and its content is an immediate (according to `variables`),
+		returns a new `Instruction` with the input replaced with that immediate.
+	**/
+	public static function tryReplaceVariable(
+		inst: Instruction,
+		variables: Map<UInt, Optimizer.VariableElement>
+	): Maybe<Instruction> {
+		final newInst: Null<Instruction> = switch inst {
+		case Load(input):
+			final newInput = input.tryReplaceVarWithImm(variables);
+			if (newInput.isSome()) Load(newInput.unwrap()) else null;
+
+		case Store(input, address):
+			final newInput = input.tryReplaceVarWithImm(variables);
+			if (newInput.isSome()) Store(newInput.unwrap(), address) else null;
+
+		case Save(input):
+			final newInput = input.tryReplaceVarWithImm(variables);
+			if (newInput.isSome()) Save(newInput.unwrap()) else null;
+
+		case Push(input):
+			final newInput = input.tryReplaceVarWithImm(variables);
+			if (newInput.isSome()) Push(newInput.unwrap()) else null;
+
+		case Minus(input):
+			final newInput = input.tryReplaceVarWithImm(variables);
+			if (newInput.isSome()) Minus(newInput.unwrap()) else null;
+
+		case Add(nextOperands):
+			switch nextOperands {
+			case Int(a, b):
+				switch a {
+				case Var(address):
+					final variable = variables.get(address);
+					if (variable != null) {
+						final imm = variable.tryGetIntImm();
+						if (imm.isSome()) Add(Int(Imm(imm.unwrap()), b)) else null;
+					} else null;
+				default: null;
+				}
+			case Float(a, b):
+				switch a {
+				case Var(address):
+					final variable = variables.get(address);
+					if (variable != null) {
+						final imm = variable.tryGetFloatImm();
+						if (imm.isSome()) Add(Float(Imm(imm.unwrap()), b)) else null;
+					} else null;
+				default: null;
+				}
+			default: null;
+			}
+
+		case Sub(nextOperands):
+			switch nextOperands {
+			case Int(a, b):
+				switch a {
+				case Var(address):
+					final variable = variables.get(address);
+					if (variable != null) {
+						final imm = variable.tryGetIntImm();
+						if (imm.isSome()) Sub(Int(Imm(imm.unwrap()), b)) else null;
+					} else null;
+				default: null;
+				}
+			case Float(a, b):
+				switch a {
+				case Var(address):
+					final variable = variables.get(address);
+					if (variable != null) {
+						final imm = variable.tryGetFloatImm();
+						if (imm.isSome()) Sub(Float(Imm(imm.unwrap()), b)) else null;
+					} else null;
+				default: null;
+				}
+			default: null;
+			}
+
+		case Mult(inputA, inputB):
+			final newInputA = inputA.tryReplaceVarWithImm(variables);
+			if (newInputA.isSome()) {
+				Instruction.Mult(newInputA.unwrap(), inputB);
+			} else null;
+
+		case Div(inputA, inputB):
+			final newInputA = inputA.tryReplaceVarWithImm(variables);
+			if (newInputA.isSome()) {
+				Instruction.Div(newInputA.unwrap(), inputB);
+			} else null;
+
+		case Mod(inputA, inputB):
+			final newInputA = inputA.tryReplaceVarWithImm(variables);
+			if (newInputA.isSome()) {
+				Instruction.Mod(newInputA.unwrap(), inputB);
+			} else null;
+
+		case GetDiff(input, prop):
+			final newInput = input.tryReplaceVarWithImm(variables);
+			if (newInput.isSome()) {
+				GetDiff(newInput.unwrap(), prop);
+			} else null;
+
+		case Set(input, prop):
+			final newInput = input.tryReplaceVarWithImm(variables);
+			if (newInput.isSome()) {
+				Set(newInput.unwrap(), prop);
+			} else null;
+
+		case Increase(input, prop):
+			final newInput = input.tryReplaceVarWithImm(variables);
+			if (newInput.isSome()) {
+				Increase(newInput.unwrap(), prop);
+			} else null;
+
+		default: null;
+		}
+		return Maybe.from(newInst);
+	}
 }

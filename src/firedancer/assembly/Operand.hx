@@ -312,6 +312,54 @@ class OperandExtension {
 	}
 
 	/**
+		If `this` refers to a variable and its content is an immediate (according to `curVariables`),
+		returns that immediate as an `Operand`.
+	**/
+	public static function tryReplaceVarWithImm(
+		_this: Operand,
+		curVariables: Map<UInt, Optimizer.VariableElement>
+	): Maybe<Operand> {
+		final newOperand: Null<Operand> = switch _this {
+		case Null: null;
+		case Int(thisOperand):
+			switch thisOperand {
+			case Var(address):
+				final variable = curVariables.get(address);
+				if (variable != null && variable.operand.isSome()) {
+					switch variable.operand.unwrap() {
+						case Int(maybeIntImm):
+							switch maybeIntImm {
+							case Imm(_): variable.operand.unwrap();
+							default: null;
+							}
+					default: null;
+					}
+				} else null;
+			default: null;
+			}
+		case Float(thisOperand):
+			switch thisOperand {
+			case Var(address):
+				final variable = curVariables.get(address);
+				if (variable != null && variable.operand.isSome()) {
+					switch variable.operand.unwrap() {
+					case Int(maybeIntImm):
+						switch maybeIntImm {
+						case Imm(_): variable.operand.unwrap();
+						default: null;
+						}
+					default: null;
+					}
+				} else null;
+			default: null;
+			}
+		default: null;
+		}
+
+		return Maybe.from(newOperand);
+	}
+
+	/**
 		@return `true` if `this` is (nearly) an immediate value `0`.
 	**/
 	public static function isZero(_this: Operand): Bool {

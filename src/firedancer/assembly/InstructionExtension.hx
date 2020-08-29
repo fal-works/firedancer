@@ -380,6 +380,82 @@ class InstructionExtension {
 		});
 	}
 
+	/**
+		@return The output `address` if the output of `this` is `Var`.
+	**/
+	public static function tryGetReadVarAddress(inst: Instruction): Maybe<UInt> {
+		return Maybe.from(switch inst {
+		case Load(input) | Save(input) | Store(input, _) | Push(input) | Minus(input) |
+			Mult(input, _) | Div(input, _) | Mod(input, _) | GetDiff(input, _) |
+			Set(input, _) | Increase(input, _):
+			switch input {
+			case Int(operand):
+				switch operand {
+				case Var(address): address;
+				default: null;
+				}
+			case Float(operand):
+				switch operand {
+				case Var(address): address;
+				default: null;
+				}
+			default: null;
+			}
+		case Add(input) | Sub(input):
+			switch input {
+			case Int(a, b):
+				switch a {
+				case Var(address): address;
+				default: null;
+				}
+			case Float(a, b):
+				switch a {
+				case Var(address): address;
+				default: null;
+				}
+			default: null;
+			}
+		case Increment(address) | Decrement(address): address;
+		default: null;
+		});
+	}
+
+	public static function tryGetWriteVarAddress(inst: Instruction): Maybe<UInt> {
+		return Maybe.from(switch inst {
+		case Store(input, address): address;
+		case Add(input) | Sub(input):
+			switch input {
+			case Int(a, b):
+				switch a {
+				case Var(address): address;
+				default: null;
+				}
+			case Float(a, b):
+				switch a {
+				case Var(address): address;
+				default: null;
+				}
+			default: null;
+			}
+		case Minus(input) | Mult(input, _) | Div(input, _) | Mod(input, _):
+			switch input {
+			case Int(operand):
+				switch operand {
+				case Var(address): address;
+				default: null;
+				}
+			case Float(operand):
+				switch operand {
+				case Var(address): address;
+				default: null;
+				}
+			default: null;
+			}
+		case Increment(address) | Decrement(address): address;
+		default: null;
+		});
+	}
+
 	static function unsupported(): String
 		return "Unsupported operation.";
 }

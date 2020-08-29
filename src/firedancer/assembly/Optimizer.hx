@@ -17,6 +17,7 @@ class Optimizer {
 			var optimized = false;
 			optimized = tryOptimizeCalc(code) || optimized;
 			optimized = tryOptimizeStack(code) || optimized;
+			optimized = tryOptimizeVar(code) || optimized;
 			optimized = tryOptimizeWait(code) || optimized;
 			if (!optimized) break;
 
@@ -312,7 +313,7 @@ class Optimizer {
 
 	/**
 		- Replaces unnecessary `Push`/`Pop` with `None`/`Load`.
-		- Replaces instructions that peeks from the stack if the last pushed value is an immediate.
+		- Replaces instructions that peek from the stack if the last pushed value is an immediate.
 	**/
 	public static function tryOptimizeStack(code: AssemblyCode): Bool {
 		if (code.length <= UInt.one) return false;
@@ -381,6 +382,65 @@ class Optimizer {
 			}
 
 			++i;
+		}
+
+		return optimizedAny;
+	}
+
+	/**
+		- Replaces unnecessary `Push`/`Pop` with `None`/`Load`.
+		- Replaces instructions that reads a variable if the last assigned value is an immediate.
+	**/
+	public static function tryOptimizeVar(code: AssemblyCode): Bool {
+		if (code.length <= UInt.one) return false;
+
+		var optimizedAny = false;
+
+		final variables = new Map<UInt, VariableElement>();
+
+		var i = UInt.zero;
+		var curInst: Instruction;
+
+		inline function replaceInst(index: UInt, newInst: Instruction): Void {
+			Sys.println('[$index] before: ${code[index].toString()}');
+			Sys.println('[$index]  after: ${newInst.toString()}');
+			code[index] = newInst;
+			if (i == index) curInst = newInst;
+			optimizedAny = true;
+		}
+
+		while (i < code.length) {
+			curInst = code[i];
+
+			final newInst = curInst.tryReplaceVariable(variables);
+			if (newInst.isSome()) replaceInst(i, newInst.unwrap());
+
+			// Not sure if we have to analyze the control flow wih `Goto` etc.
+
+			final readVarAddress = curInst.tryGetReadVarAddress();
+			if (readVarAddress.isSome()) {
+				final variable = variables.get(readVarAddress.unwrap());
+				if (variable != null) variable.maybeRead = true;
+			}
+
+			final writeVarAddress = curInst.tryGetWriteVarAddress();
+			if (writeVarAddress.isSome()) {
+				final variable = variables.get(writeVarAddress.unwrap());
+				if (variable != null && !variable.maybeRead)
+					replaceInst(variable.lastWrittenIndex, None);
+
+				final variableElement: VariableElement = switch curInst {
+					case Store(input, _): { lastWrittenIndex: i, operand: input };
+					default: { lastWrittenIndex: i };
+				}
+				variables.set(writeVarAddress.unwrap(), variableElement);
+			}
+
+			++i;
+		}
+
+		for (variable in variables) {
+			if (!variable.maybeRead) replaceInst(variable.lastWrittenIndex, None);
 		}
 
 		return optimizedAny;
@@ -465,8 +525,47 @@ private class RegContent {
 }
 
 @:structInit
-private class StackElement {
+class StackElement {
 	public final operand: Operand;
 	public final pushedIndex: UInt;
 	public var maybeRead: Bool = false;
+}
+
+@:structInit
+class VariableElement {
+	public final lastWrittenIndex: UInt;
+	public var operand: Maybe<Operand>;
+	public var maybeRead: Bool = false;
+
+	public function new(lastWrittenIndex: UInt, ?operand: Operand, maybeRead = false) {
+		this.lastWrittenIndex = lastWrittenIndex;
+		this.operand = Maybe.from(operand);
+		this.maybeRead = maybeRead;
+	}
+
+	public function tryGetIntImm(): Maybe<Int> {
+		return if (this.operand.isSome()) {
+			switch this.operand.unwrap() {
+				case Int(operand):
+					switch operand {
+						case Imm(value): Maybe.from(value);
+						default: Maybe.none();
+					}
+				default: Maybe.none();
+			}
+		} else Maybe.none();
+	}
+
+	public function tryGetFloatImm(): Maybe<Float> {
+		return if (this.operand.isSome()) {
+			switch this.operand.unwrap() {
+				case Float(operand):
+					switch operand {
+						case Imm(value): Maybe.from(value);
+						default: Maybe.none();
+					}
+				default: Maybe.none();
+			}
+		} else Maybe.none();
+	}
 }
