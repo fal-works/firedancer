@@ -37,7 +37,7 @@ class InstructionExtension {
 
 		case Load(input):
 			final output = DataRegisterSpecifier.get(input.getType());
-			'load ${input.toString()} -> $output';
+			'load ${input.toString()} -> ${output.toString()}';
 		case Save(input):
 			final output = DataRegisterSpecifier.get(input.getType()).getBuffer();
 			'save ${input.toString()} -> ${output.toString()}';
@@ -56,11 +56,11 @@ class InstructionExtension {
 		case Push(input):
 			'push ${input.toString()} -> s';
 		case Pop(type):
-			final output = DataRegisterSpecifier.get(type).toString();
-			'pop s -> $output';
+			final outputStr = DataRegisterSpecifier.get(type).toString();
+			'pop s -> $outputStr';
 		case Peek(type, bytesToSkip):
-			final output = DataRegisterSpecifier.get(type).toString();
-			'peek ${type.toString()} s, $bytesToSkip -> $output';
+			final outputStr = DataRegisterSpecifier.get(type).toString();
+			'peek ${type.toString()} s, $bytesToSkip -> $outputStr';
 		case Drop(type):
 			'drop ${type.toString()}';
 

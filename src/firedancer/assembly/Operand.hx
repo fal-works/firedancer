@@ -559,7 +559,7 @@ class IntOperandExtension {
 		case Reg: "ri";
 		case RegBuf: "rib";
 		case Stack: "s";
-		case Var(address): 'ivar($address)';
+		case Var(key): varToString(key, Int);
 		}
 	}
 
@@ -616,7 +616,7 @@ class FloatOperandExtension {
 		case Reg: "rf";
 		case RegBuf: "rfb";
 		case Stack: "s";
-		case Var(address): 'fvar($address)';
+		case Var(key): varToString(key, Float);
 		}
 	}
 

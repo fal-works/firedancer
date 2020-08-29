@@ -7,12 +7,15 @@ class OperandTools {
 		return if (Floats.toInt(v) == v) '$v.0' else Std.string(v);
 
 	public static function varToString(key: String, type: ValueType): String {
+		if (key.getIndexOf("\"").isSome())
+			throw 'Invalid variable key. Contains double quote: $key';
+
 		final typeChar = switch type {
 		case Int: "i";
 		case Float: "f";
 		case Vec: "v";
 		};
-		return '${typeChar}var($key)';
+		return '${typeChar}var[\"$key\"]';
 	}
 
 	public static function tryGetOperandPair(a: Operand, b: Operand): Maybe<OperandPair> {
