@@ -1,7 +1,5 @@
 package firedancer.assembly;
 
-import firedancer.assembly.Operand;
-
 class OperandTools {
 	public static function ftoa(v: Float): String
 		return if (Floats.toInt(v) == v) '$v.0' else Std.string(v);
