@@ -1,7 +1,6 @@
 package firedancer.script.expression.subtypes;
 
 import firedancer.assembly.AssemblyCode;
-import firedancer.assembly.Instruction;
 
 typedef IntLikeRuntimeExpressionEnum = RuntimeExpressionEnum<IntLikeConstant, IntLikeExpressionData>;
 
