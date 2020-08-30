@@ -203,23 +203,23 @@ class BulletPatterns {
 	}
 
 	public static function randomTest(): ProgramPackage {
-		final main = [
+		final main = loop([
 			shot.velocity.set(
 				random.between(1, 4),
 				180 + (random.angle.grouping(90))
 			),
 			fire(),
 			wait(2)
-		];
+		]);
 
-		final text = "[
+		final text = "loop([
   shot.velocity.set(
     random.between(1, 4),
     180 + (random.angle.grouping(90)) // 180 ± 45
   ),
   fire(),
   wait(2)
-];";
+]);";
 
 		return asMain(main, text);
 	}
