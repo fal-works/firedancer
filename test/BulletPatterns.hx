@@ -1,12 +1,11 @@
-import firedancer.vm.Program;
 import firedancer.vm.ProgramPackage;
 import firedancer.script.Api.*;
 import firedancer.script.ApiEx.*;
 import firedancer.script.Ast;
 
 class BulletPatterns {
-	public function new() {
-		final aimPlayer = [
+	public static function aimPlayer(): ProgramPackage {
+		final main = [
 			aim().shotSpeed(5),
 			loop([
 				fire(),
@@ -14,7 +13,11 @@ class BulletPatterns {
 			])
 		];
 
-		final spiral = [
+		return asMain(main);
+	}
+
+	public static function spiral(): ProgramPackage {
+		final main = [
 			shot.velocity.set(5, 180),
 			loop([
 				fire(),
@@ -23,7 +26,11 @@ class BulletPatterns {
 			])
 		];
 
-		final fireWithPattern = [
+		return asMain(main);
+	}
+
+	public static function fireWithPattern(): ProgramPackage {
+		final main = [
 			shot.velocity.set(5, 180),
 			loop([
 				fire([
@@ -35,7 +42,11 @@ class BulletPatterns {
 			])
 		];
 
-		final fireBound = [
+		return asMain(main);
+	}
+
+	public static function fireBound(): ProgramPackage {
+		final main = [
 			shot.position.set(5, 180),
 			rep(4, [
 				rep(12, [
@@ -51,7 +62,11 @@ class BulletPatterns {
 			vanish() // Here the origin of children is set to (0, 0)
 		];
 
-		final everyFrameTest = [
+		return asMain(main);
+	}
+
+	public static function everyFrameTest(): ProgramPackage {
+		final main = [
 			shot.velocity.set(5, 180),
 			everyFrame(shot.direction.add(4)),
 			loop([
@@ -60,7 +75,11 @@ class BulletPatterns {
 			])
 		];
 
-		final asyncTest = [
+		return asMain(main);
+	}
+
+	public static function asyncTest(): ProgramPackage {
+		final main = [
 			shot.velocity.set(5, 180),
 			async(loop([
 				fire(),
@@ -73,7 +92,10 @@ class BulletPatterns {
 			])
 		];
 
-		final parallelTest = [
+		return asMain(main);
+	}
+	public static function parallelTest(): ProgramPackage {
+		final main = [
 			shot.velocity.set(5, 180),
 			parallel([
 				loop([
@@ -88,7 +110,11 @@ class BulletPatterns {
 			])
 		];
 
-		final vanishTest = [
+		return asMain(main);
+	}
+
+	public static function vanishTest(): ProgramPackage {
+		final main = [
 			shot.velocity.set(5, 180),
 			loop([
 				fire([
@@ -100,16 +126,24 @@ class BulletPatterns {
 			])
 		];
 
-		final randomTest = loop([
+		return asMain(main);
+	}
+
+	public static function randomTest(): ProgramPackage {
+		final main = [
 			shot.velocity.set(
 				random.between(1, 4),
 				180 + (random.angle.signed(45) * 1)
 			),
 			fire(),
 			wait(2)
-		]);
+		];
 
-		final randomIntTest = loop([
+		return asMain(main);
+	}
+
+	public static function randomIntTest(): ProgramPackage {
+		final main = [
 			shot.velocity.set(
 				5,
 				180 + random.int.signed(4) * 30
@@ -119,11 +153,15 @@ class BulletPatterns {
 				wait(random.int.between(1, 5) * 4)
 			]),
 			wait(16)
-		]);
+		];
 
+		return asMain(main);
+	}
+
+	public static function localVar(): ProgramPackage {
 		final cnt = intVar("cnt");
 
-		final localVarTest = [
+		final main = [
 			shot.velocity.set(5, 180),
 			cnt.let(),
 			loop([
@@ -134,12 +172,22 @@ class BulletPatterns {
 			])
 		];
 
-		final eventTest = loop([
+		return asMain(main);
+	}
+
+	public static function eventTest(): ProgramPackage {
+		final main = [
 			event(random.int.between(0, 10)),
 			wait(60)
-		]);
+		];
 
-		final dumpTest = [
+		return asMain(main);
+	}
+
+	public static function dump(): ProgramPackage {
+		final cnt = intVar("cnt");
+
+		final main = [
 			shot.velocity.set(5, 180),
 			cnt.let(),
 			rep(2, [
@@ -151,10 +199,15 @@ class BulletPatterns {
 			])
 		];
 
+		return asMain(main);
+	}
+
+
+	public static function transform(): ProgramPackage {
 		final bearingVar = angleVar("bearing");
 		final rotationVar = angleVar("rotation");
 
-		final transformTest = [
+		final main = [
 			rep(24, [
 				fire([
 					bearingVar.let(),
@@ -170,7 +223,13 @@ class BulletPatterns {
 			])
 		];
 
-		final sinCosTest = [
+		return asMain(main);
+	}
+
+	public static function sinCos(): ProgramPackage {
+		final bearingVar = angleVar("bearing");
+
+		final main = [
 			rep(16, [
 				fire([
 					bearingVar.let(),
@@ -187,7 +246,11 @@ class BulletPatterns {
 			])
 		];
 
-		final readActorProp = [
+		return asMain(main);
+	}
+
+	public static function readActor(): ProgramPackage {
+		final main = [
 			shot.velocity.set(4, 180),
 			loop([
 				fire(),
@@ -196,7 +259,11 @@ class BulletPatterns {
 			])
 		];
 
-		final dupTest = [
+		return asMain(main);
+	}
+
+	public static function dupTest(): ProgramPackage {
+		final main = [
 			shot.velocity.set(4, 180),
 			loop([
 				comment("start nway & dup --------------------------------"),
@@ -211,21 +278,9 @@ class BulletPatterns {
 			])
 		];
 
-		final testAst = test(dupTest); // Change this for testing
-
-		this.programPackage = compile(["test" => testAst]);
-		this.testPattern = this.programPackage.getProgramByName("test");
+		return asMain(main);
 	}
 
-	public final programPackage: ProgramPackage;
-	public final testPattern: Program;
-
-	function test(ast: Ast): Ast {
-		return [
-			// position.cartesian.add(-120, 0),
-			velocity.set(10, 180),
-			speed.add(-10).frames(60),
-			ast
-		];
-	}
+	static function asMain(ast: Ast): ProgramPackage
+		return compile(["main" => ast]);
 }

@@ -15,7 +15,12 @@ class Army implements ripper.Data {
 		this.bullets.synchronize();
 	}
 
-	public inline function newAgent(
+	public function crashAll() {
+		this.agents.crashAll();
+		this.bullets.crashAll();
+	}
+
+	public function newAgent(
 		x: Float,
 		y: Float,
 		vx: Float,
@@ -25,7 +30,7 @@ class Army implements ripper.Data {
 		this.agents.use(x, y, vx, vy, fdProgram, Maybe.none());
 	}
 
-	public inline function newBullet(
+	public function newBullet(
 		x: Float,
 		y: Float,
 		vx: Float,

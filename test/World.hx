@@ -3,16 +3,15 @@ import broker.image.Tile;
 import broker.draw.DrawArea;
 import broker.draw.TileDraw;
 import broker.draw.BatchDraw;
-import reckoner.TmpVec2D;
+import firedancer.vm.Program;
 import firedancer.vm.ProgramPackage;
 import firedancer.vm.PositionRef;
-import firedancer.types.Azimuth;
 import actor.*;
 
 class World {
 	public static inline final worldWidth: UInt = Global.width;
 	public static inline final worldHeight: UInt = Global.height;
-	static inline final maxAgentCount: UInt = 256;
+	static inline final maxAgentCount: UInt = 64;
 	static inline final maxBulletCount: UInt = 4096;
 
 	/**
@@ -20,7 +19,9 @@ class World {
 	**/
 	public final area: DrawArea;
 
-	final army: Army;
+	final armiesContainer: Object;
+
+	var army: Army;
 
 	public function new() {
 		final area = this.area = new DrawArea(worldWidth, worldHeight);
@@ -29,34 +30,30 @@ class World {
 		final background = new TileDraw(backgroundTile);
 		area.add(background);
 
-		final armies = new Object();
-		armies.setPosition(worldWidth / 2, 0);
-		area.add(armies);
+		armiesContainer = new Object();
+		armiesContainer.setPosition(worldWidth / 2, 0);
+		area.add(armiesContainer);
+		// armiesContainer.setFilter(new h2d.filter.Glow(0xFFFFFF, 1.0, 50, 0.5, 0.5, true));
 
-		// armies.setFilter(new h2d.filter.Glow(0xFFFFFF, 1.0, 50, 0.5, 0.5, true));
+		final programPackage = BulletPatterns.dupTest();
+		this.resetAgent(programPackage, programPackage.getProgramByName("main"));
+	}
 
+	public function resetAgent(programPackage: ProgramPackage, program: Program): Void {
 		final targetPositionRef = PositionRef.createImmutable(0, 0.75 * worldHeight);
-
-		final patterns = new BulletPatterns();
-
 		army = WorldBuilder.createArmy(
-			armies,
+			this.armiesContainer,
 			targetPositionRef,
 			worldWidth,
 			worldHeight,
-			patterns.programPackage
+			programPackage
 		);
 
-		// first agent
-		final position = new TmpVec2D(0, -32);
-		final velocity = Azimuth.fromDegrees(180).toVec2D(3);
-		army.newAgent(
-			position.x,
-			position.y,
-			velocity.x,
-			velocity.y,
-			patterns.testPattern
-		);
+		army.crashAll();
+
+		final x = 0.0;
+		final y = 200.0;
+		army.newAgent(x, y, 0.0, 0.0, program);
 	}
 
 	public function update(): Void {
