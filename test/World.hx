@@ -35,11 +35,13 @@ class World {
 		area.add(armiesContainer);
 		// armiesContainer.setFilter(new h2d.filter.Glow(0xFFFFFF, 1.0, 50, 0.5, 0.5, true));
 
-		final programPackage = BulletPatterns.dupTest();
-		this.resetAgent(programPackage, programPackage.getProgramByName("main"));
+		final programPackage = BulletPatterns.defaultPattern();
+		this.reset(programPackage, programPackage.getProgramByName("main"));
 	}
 
-	public function resetAgent(programPackage: ProgramPackage, program: Program): Void {
+	public function reset(programPackage: ProgramPackage, mainProgram: Program): Void {
+		this.armiesContainer.removeChildren();
+
 		final targetPositionRef = PositionRef.createImmutable(0, 0.75 * worldHeight);
 		army = WorldBuilder.createArmy(
 			this.armiesContainer,
@@ -53,7 +55,7 @@ class World {
 
 		final x = 0.0;
 		final y = 200.0;
-		army.newAgent(x, y, 0.0, 0.0, program);
+		army.newAgent(x, y, 0.0, 0.0, mainProgram);
 	}
 
 	public function update(): Void {
