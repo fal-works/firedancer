@@ -14,6 +14,7 @@ class BulletPatterns {
 			case "random": randomTest();
 			case "sin-cos": sinCos();
 			case "transform": transform();
+			case "radial": radialTest();
 			case "nway-dup": nwayDup();
 			default: null;
 		});
@@ -21,6 +22,22 @@ class BulletPatterns {
 
 	public static function defaultPattern(): ProgramPackage
 		return nwayDup();
+
+	public static function radialTest(): ProgramPackage {
+		final main = loop([
+			shot.velocity.set(4, 0),
+			radial(fire(), { ways: 36 }),
+			wait(60)
+		]);
+
+		final text = "loop([
+  shot.velocity.set(4, 0),
+  radial(fire(), { ways: 36 }),
+  wait(60)
+]);";
+
+		return asMain(main, text);
+	}
 
 	public static function aimPlayer(): ProgramPackage {
 		final main = [
