@@ -30,10 +30,8 @@
             <p class="description">Language for defining bullet-hell patterns.</p>
 
             <div>
-                <a href="https://github.com/fal-works/firedancer" class="link-button">View on GitHub</a>
+                <a href="https://github.com/fal-works/firedancer" class="link-button">GitHub repo</a>
             </div>
-
-            <hr>
 
             <select name="demo-selector" id="demo-selector">
                 <option value="default">---- SELECT EXAMPLE ----</option>
@@ -49,13 +47,19 @@
             </select>
 
             <div>
-                <h4 class="caption">Script:</h4>
-                <textarea id="script" rows="15"></textarea>
-                <h4 class="caption">Compiled virtual assembly code:</h4>
-                <textarea id="assembly" rows="7"></textarea>
-                <h4 class="caption">Assembled program for <a href="https://github.com/fal-works/firedancer-vm">Firedancer VM</a>:
+                <h4 class="caption">
+                    Script
                 </h4>
-                <textarea id="program" rows="6"></textarea>
+                <textarea id="script" rows="14"></textarea>
+                <h4 class="caption">
+                    Virtual assembly code <span class="weak">(compiled from the above)</span>
+                </h4>
+                <textarea id="assembly" rows="6"></textarea>
+                <h4 class="caption">
+                    Program for <a href="https://github.com/fal-works/firedancer-vm">Firedancer VM</a>
+                    <span class="weak">(assembled from the above)</span>
+                </h4>
+                <textarea id="program" rows="5"></textarea>
             </div>
 
             <hr>

@@ -39,7 +39,7 @@ h1 {
 	font-size: 400%;
 	font-weight: 100;
 	letter-spacing: 0.05em;
-	margin: 0;
+	margin: 0.5rem 0;
 }
 
 .description {
@@ -49,8 +49,14 @@ h1 {
 	margin-bottom: 1rem;
 }
 
+.weak {
+	color: #404040;
+	font-weight: normal;
+	font-size: small;
+}
+
 .caption {
-	margin-bottom: 0.2em;
+	margin-bottom: 0.3em;
 }
 
 textarea {
@@ -70,6 +76,10 @@ textarea:focus {
 	outline: 0;
 }
 
+textarea#program {
+	white-space: pre-wrap;
+}
+
 select {
 	font-family: inherit;
 	font-weight: bold;
@@ -77,8 +87,12 @@ select {
 	padding: 0.3rem;
 }
 
+select#demo-selector {
+	margin-top: 1.8rem;
+}
+
 .link-button {
-	padding: 10px;
+	padding: 6px;
 	text-decoration: none;
 	display: inline-block;
 	color: rgba(0, 0, 0, 0.9);
