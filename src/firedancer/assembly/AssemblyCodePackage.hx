@@ -50,13 +50,8 @@ class AssemblyCodePackage {
 
 		final lastId = codeList.length - 1;
 		for (id in 0...codeList.length) {
-			buf.add('[ASSEMBLY] ID: $id');
-			final name = names[id];
-			if (name != null) {
-				buf.add(", name: ");
-				buf.add(name);
-			}
-			buf.lf();
+			final name = Nulls.coalesce(names[id], "(anonymous)");
+			buf.addLf('[ASSEMBLY CODE] ID: $id, name: $name');
 			buf.add('${codeList[id].toString()}');
 			if (id < lastId) buf.lf();
 		}
