@@ -13,6 +13,8 @@ class PlayScene extends Scene {
 		final worldArea = this.world.area;
 		worldArea.setCenterPosition(App.width / 2, App.height / 2);
 		this.layers.main.add(worldArea);
+
+		Global.world = Maybe.from(this.world);
 	}
 
 	override function update(): Void {
@@ -28,6 +30,7 @@ class PlayScene extends Scene {
 
 	override function destroy(): Void {
 		this.world.dispose();
+		Global.world = Maybe.none();
 	}
 
 	function newPlayScene(): Void {

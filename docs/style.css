@@ -1,0 +1,118 @@
+body {
+	margin: 0;
+	padding: 0;
+	font-family: Montserrat;
+}
+
+.entire {
+	margin: 0;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 0;
+	max-width: 1280px;
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-around;
+}
+
+.pane {
+	padding: 0;
+}
+
+div#main {
+	width: 480px;
+	padding-left: 1rem;
+	padding-right: 1rem;
+}
+
+canvas#webgl {
+	padding: 0;
+	width: 75vh;
+	height: 100vh;
+}
+
+h1 {
+	font-size: 400%;
+	font-weight: 100;
+	letter-spacing: 0.05em;
+	margin: 0;
+}
+
+.description {
+	line-height: 1;
+	color: #404040;
+	margin-top: 0;
+	margin-bottom: 1rem;
+}
+
+.caption {
+	margin-bottom: 0.2em;
+}
+
+textarea {
+	white-space: pre;
+	width: 100%;
+	display: block;
+	padding: 8px;
+	color: #606060;
+	font-family: 'Consolas', 'Roboto Mono', monospace;
+	border: solid;
+	border-color: #e0e0e0;
+	border-width: 1px;
+	box-sizing: border-box;
+}
+
+textarea:focus {
+	outline: 0;
+}
+
+select {
+	font-family: inherit;
+	font-weight: bold;
+	color: #404040;
+	padding: 0.3rem;
+}
+
+.link-button {
+	padding: 10px;
+	text-decoration: none;
+	display: inline-block;
+	color: rgba(0, 0, 0, 0.9);
+	background-color: rgba(0, 0, 64, 0.02);
+	border-color: rgba(0, 0, 64, 0.2);
+	border-style: solid;
+	border-width: 1px;
+	border-radius: 0.3rem;
+	transition: color 0.2s, background-color 0.2s, border-color 0.2s
+}
+
+.link-button:hover {
+	color: rgba(0, 0, 64, 0.8);
+	background-color: rgba(0, 0, 64, 0.1);
+	border-color: rgba(0, 0, 64, 0.3)
+}
+
+hr {
+	height: 1px;
+	background-color: rgba(0, 0, 32, 0.3);
+	margin-top: 1.5rem;
+	margin-bottom: 1.5rem;
+	border: none;
+}
+
+.logo {
+	height: 40px;
+}
+
+a {
+	color: inherit;
+	text-decoration: none;
+}
+
+a:hover {
+	color: #ff4080;
+}

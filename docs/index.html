@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Firedancer</title>
+
+    <meta charset="utf-8" />
+
+    <meta name="description" content="Haxe-based language for defining 2D shmups bullet-hell patterns." />
+    <meta property="og:title" content="Firedancer" />
+    <meta property="og:site_name" content="Firedancer" />
+    <meta property="og:description" content="Language for defining bullet-hell patterns." />
+    <!-- <meta property="og:url" content="https://www.fal-works.com" /> -->
+    <!-- <meta property="og:image" content="https://www.image-grid-generator.com/images/ogp-image.png" /> -->
+    <meta property="og:type" content="website" />
+
+    <script type="text/javascript" src="main.min.js" defer></script>
+
+    <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap" rel="stylesheet">
+    <link href="./style.css" rel="stylesheet">
+
+    <link rel="icon" href="./images/favicon.ico">
+</head>
+
+<body>
+    <div class="entire">
+        <div class="pane" id="main">
+            <h1>Firedancer</h1>
+            <p class="description">Language for defining bullet-hell patterns.</p>
+
+            <div>
+                <a href="https://github.com/fal-works/firedancer" class="link-button">View on GitHub</a>
+            </div>
+
+            <hr>
+
+            <select name="demo-selector" id="demo-selector">
+                <option value="default">---- SELECT EXAMPLE ----</option>
+                <option value="spiral">spiral</option>
+                <option value="aim">aim</option>
+                <option value="random">random</option>
+                <option value="parallel">parallel</option>
+                <option value="vanish">vanish</option>
+                <option value="sin-cos">sin/cos</option>
+                <option value="transform">transform</option>
+                <option value="nway-dup">example: nway + dup</option>
+            </select>
+
+            <div>
+                <h4 class="caption">Script:</h4>
+                <textarea id="script" rows="15"></textarea>
+                <h4 class="caption">Compiled virtual assembly code:</h4>
+                <textarea id="assembly" rows="7"></textarea>
+                <h4 class="caption">Assembled program for <a href="https://github.com/fal-works/firedancer-vm">Firedancer VM</a>:
+                </h4>
+                <textarea id="program" rows="6"></textarea>
+            </div>
+
+            <hr>
+
+            <div>
+                <a href="https://www.fal-works.com/">
+                    <img class="logo" src="./images/fal-works-logo.png" alt="FAL Works">
+                </a>
+            </div>
+
+        </div>
+
+        <canvas class="pane" id="webgl"></canvas>
+    </div>
+</body>
+
+</html>
