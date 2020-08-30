@@ -31,9 +31,9 @@ class BulletPatterns {
 		]);
 
 		final text = "loop([
-  shot.velocity.set(4, 0),
-  radial(fire(), { ways: 36 }),
-  wait(60)
+	shot.velocity.set(4, 0),
+	radial(fire(), { ways: 36 }),
+	wait(60)
 ]);";
 
 		return asMain(main, text);
@@ -49,11 +49,11 @@ class BulletPatterns {
 		];
 
 		final text = "[
-  aim().shotSpeed(5),
-  loop([
-    fire(),
-    wait(8)
-  ])
+	aim().shotSpeed(5),
+	loop([
+		fire(),
+		wait(8)
+	])
 ];";
 
 		return asMain(main, text);
@@ -70,12 +70,12 @@ class BulletPatterns {
 		];
 
 		final text = "[
-  shot.velocity.set(5, 180),
-  loop([
-    fire(),
-    shot.direction.add(12),
-    wait(1)
-  ])
+	shot.velocity.set(5, 180),
+	loop([
+		fire(),
+		shot.direction.add(12),
+		wait(1)
+	])
 ];";
 
 		return asMain(main, text);
@@ -174,18 +174,18 @@ class BulletPatterns {
 		];
 
 		final text = "[
-  shot.velocity.set(5, 180),
-  parallel([
-    loop([
-      fire(),
-      wait(8)
-    ]),
-    loop([
-      fire(),
-      shot.direction.add(32),
-      wait(4)
-    ])
-  ])
+	shot.velocity.set(5, 180),
+	parallel([
+		loop([
+			fire(),
+			wait(8)
+		]),
+		loop([
+			fire(),
+			shot.direction.add(32),
+			wait(4)
+		])
+	])
 ];";
 
 		return asMain(main, text);
@@ -205,15 +205,15 @@ class BulletPatterns {
 		];
 
 		final text = "[
-  shot.velocity.set(5, 180),
-  loop([
-    fire([
-      wait(30),
-      vanish()
-    ]),
-    shot.direction.add(12),
-    wait(1)
-  ])
+	shot.velocity.set(5, 180),
+	loop([
+		fire([
+			wait(30),
+			vanish()
+		]),
+		shot.direction.add(12),
+		wait(1)
+	])
 ];";
 
 		return asMain(main, text);
@@ -230,12 +230,12 @@ class BulletPatterns {
 		]);
 
 		final text = "loop([
-  shot.velocity.set(
-    random.between(1, 4),
-    180 + (random.angle.grouping(90)) // 180 ± 45
-  ),
-  fire(),
-  wait(2)
+	shot.velocity.set(
+		random.between(1, 4),
+		180 + (random.angle.grouping(90)) // 180 ± 45
+	),
+	fire(),
+	wait(2)
 ]);";
 
 		return asMain(main, text);
@@ -325,20 +325,20 @@ class BulletPatterns {
 		final text = 'final varBearing = angleVar("bearing");
 
 [
-  rep(16, [
-    fire([
-      varBearing.let(),
-      loop([
-        position.cartesian.set(
-          300 * cos(varBearing),
-          60 * sin(varBearing)
-        ),
-        wait(1),
-        varBearing.add(4)
-      ])
-    ]).bind(),
-    wait(4)
-  ])
+	rep(16, [
+		fire([
+			varBearing.let(),
+			loop([
+				position.cartesian.set(
+					300 * cos(varBearing),
+					60 * sin(varBearing)
+				),
+				wait(1),
+				varBearing.add(4)
+			])
+		]).bind(),
+		wait(4)
+	])
 ];';
 
 		return asMain(main, text);
@@ -368,21 +368,21 @@ class BulletPatterns {
 final varRotation = angleVar("rotation");
 
 [
-  rep(24, [
-    fire([
-      varBearing.let(),
-      varRotation.let(),
-      loop([
-        position.set(150, varBearing)
-          .rotate(varRotation)
-          .scale(1.0, 0.3),
-        wait(1),
-        varBearing.add(4),
-        varRotation.add(2)
-      ])
-    ]).bind(),
-    wait(6)
-  ])
+	rep(24, [
+		fire([
+			varBearing.let(),
+			varRotation.let(),
+			loop([
+				position.set(150, varBearing)
+					.rotate(varRotation)
+					.scale(1.0, 0.3),
+				wait(1),
+				varBearing.add(4),
+				varRotation.add(2)
+			])
+		]).bind(),
+		wait(6)
+	])
 ];';
 
 		return asMain(main, text);
@@ -418,22 +418,23 @@ final varRotation = angleVar("rotation");
 		];
 
 		final text = "[
-  shot.velocity.set(4, 180),
-  loop([
-    nWay(fire(), { ways: 5, angle: 90 }).dup({
-      count: 8,
-      intervalFrames: 4,
-      shotSpeedChange: 8,
-      shotDirectionRange: { start: -6, end: 6 }
-    }),
-    wait(30)
-  ])
+	shot.velocity.set(4, 180),
+	loop([
+		nWay(fire(), { ways: 5, angle: 90 }).dup({
+			count: 8,
+			intervalFrames: 4,
+			shotSpeedChange: 8,
+			shotDirectionRange: { start: -6, end: 6 }
+		}),
+		wait(30)
+	])
 ];";
 
 		return asMain(main, text);
 	}
 
 	static function asMain(ast: Ast, script: String = ""): ProgramPackage {
+		script = StringTools.replace(script, "\t", "  ");
 		Dom.script(script);
 
 		final assembly = compileToAssembly(["main" => ast], true);
