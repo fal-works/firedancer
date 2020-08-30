@@ -411,6 +411,8 @@ class Optimizer {
 			curInst = code[i];
 
 			switch curInst {
+			case Label(_) | GotoLabel(_) | CountDownGotoLabel(_):
+				variables.allMayBeReadOrAssigned();
 			case Let(varKey, _):
 				variables.let(varKey, i);
 			case Free(varKey, _):
@@ -630,5 +632,16 @@ class Variables {
 	public function free(varKey: String): Void {
 		final stack = this.variableStackMap.get(varKey);
 		if (stack != null) stack.pop();
+	}
+
+	public function allMayBeReadOrAssigned(): Void {
+		for (stack in this.variableStackMap) {
+			final v = stack.getLastSafe();
+			if (v.isNone()) continue;
+			final variable = v.unwrap();
+			variable.maybeRead = true;
+			variable.lastAssignedIndex = MaybeUInt.none;
+			variable.operand = Maybe.none();
+		}
 	}
 }
