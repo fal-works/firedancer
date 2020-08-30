@@ -324,7 +324,7 @@ class BulletPatterns {
   ])
 ];';
 
-		return asMain(main);
+		return asMain(main, text);
 	}
 
 	public static function transform(): ProgramPackage {
