@@ -415,6 +415,14 @@ class OperandPairExtension {
 		}
 	}
 
+	public static function getFirstOperand(_this: OperandPair): Operand {
+		return switch _this {
+			case Int(a, b): Int(a);
+			case Float(a, b): Float(a);
+			case Vec(a, b): Vec(a);
+		};
+	}
+
 	/**
 		@return `ValueType` if `this` contains `Reg`.
 	**/

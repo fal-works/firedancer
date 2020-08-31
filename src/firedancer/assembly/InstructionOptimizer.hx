@@ -785,6 +785,8 @@ class InstructionOptimizer {
 			});
 		}
 
+		final maybeImmType = maybeImm.getType();
+
 		final newInst: Null<Instruction> = switch inst {
 		case Minus(input):
 			inline function tryMinusImm(): Null<Instruction> {
@@ -816,7 +818,7 @@ class InstructionOptimizer {
 		case Add(nextOperands):
 			switch nextOperands {
 			case Int(a, b):
-				if (maybeImm.isZero()) {
+				if (maybeImmType == Int && maybeImm.isZero()) {
 					switch regOrRegBuf {
 					case Reg:
 						if (a.isReg()) Load(Int(b)) else if (b.isReg()) Load(Int(a)) else null;
@@ -828,7 +830,7 @@ class InstructionOptimizer {
 					null;
 				};
 			case Float(a, b):
-				if (maybeImm.isZero()) {
+				if (maybeImmType == Float && maybeImm.isZero()) {
 					switch regOrRegBuf {
 					case Reg:
 						if (a.isReg()) Load(Float(b)) else if (b.isReg()) Load(Float(a)) else null;
@@ -841,7 +843,7 @@ class InstructionOptimizer {
 					null;
 				};
 			case Vec(a, b):
-				if (maybeImm.isZero()) {
+				if (maybeImmType == Vec && maybeImm.isZero()) {
 					switch regOrRegBuf {
 					case Reg:
 						if (a.isReg()) Load(Vec(b)) else if (b.isReg()) Load(Vec(a)) else null;
@@ -856,7 +858,7 @@ class InstructionOptimizer {
 		case Sub(nextOperands):
 			switch nextOperands {
 			case Int(a, b):
-				if (maybeImm.isZero()) {
+				if (maybeImmType == Int && maybeImm.isZero()) {
 					switch regOrRegBuf {
 					case Reg:
 						if (a.isReg()) Minus(Int(b)) else if (b.isReg()) Load(Int(a)) else null;
@@ -868,7 +870,7 @@ class InstructionOptimizer {
 					null;
 				}
 			case Float(a, b):
-				if (maybeImm.isZero()) {
+				if (maybeImmType == Float && maybeImm.isZero()) {
 					switch regOrRegBuf {
 					case Reg:
 						if (a.isReg()) Minus(Float(b)) else if (b.isReg()) Load(Float(a)) else null;
@@ -881,7 +883,7 @@ class InstructionOptimizer {
 					null;
 				}
 			case Vec(a, b):
-				if (maybeImm.isZero()) {
+				if (maybeImmType == Vec && maybeImm.isZero()) {
 					switch regOrRegBuf {
 					case Reg:
 						if (a.isReg()) Minus(Vec(b)) else if (b.isReg()) Load(Vec(a)) else null;
@@ -893,25 +895,25 @@ class InstructionOptimizer {
 			}
 
 		case Mult(inputA, inputB):
-			final type = inputA.getType();
+			final outputType = inputA.getType();
 			if (maybeImm.isZero()) {
 				switch regOrRegBuf {
 				case Reg:
-					if (inputA.isReg() || (inputA.isRegBuf() && inputB.isReg()))
-						loadZero(type) else null;
+					if (inputA.tryGetRegType() == maybeImmType || (inputA.isRegBuf() && inputB.tryGetRegType() == maybeImmType))
+						loadZero(outputType) else null;
 				case RegBuf:
-					if (inputA.isRegBuf() || (inputA.isReg() && inputB.isRegBuf()))
-						loadZero(type) else null;
+					if (inputA.tryGetRegBufType() == maybeImmType || (inputA.isReg() && inputB.tryGetRegBufType() == maybeImmType))
+						loadZero(outputType) else null;
 				default: null;
 				}
 			} else if (maybeImm.isOne()) {
 				switch regOrRegBuf {
 				case Reg:
-					if (inputB.isReg()) {
+					if (inputB.tryGetRegType() == maybeImmType) {
 						if (inputA.isReg()) None else Load(inputA);
 					} else null;
 				case RegBuf:
-					if (inputB.isRegBuf()) {
+					if (inputB.tryGetRegBufType() == maybeImmType) {
 						if (inputA.isReg()) None else Load(inputA);
 					} else null;
 				default: null;
@@ -921,23 +923,23 @@ class InstructionOptimizer {
 			}
 
 		case Div(inputA, inputB):
-			final type = inputA.getType();
+			final outputType = inputA.getType();
 			if (maybeImm.isZero()) {
 				switch regOrRegBuf {
 				case Reg:
-					if (inputA.isReg()) loadZero(type) else null;
+					if (inputA.tryGetRegType() == maybeImmType) loadZero(outputType) else null;
 				case RegBuf:
-					if (inputA.isRegBuf()) loadZero(type) else null;
+					if (inputA.tryGetRegBufType() == maybeImmType) loadZero(outputType) else null;
 				default: null;
 				}
 			} else if (maybeImm.isOne()) {
 				switch regOrRegBuf {
 				case Reg:
-					if (inputB.isReg()) {
+					if (inputB.tryGetRegType() == maybeImmType) {
 						if (inputA.isReg()) None else Load(inputA);
 					} else null;
 				case RegBuf:
-					if (inputB.isRegBuf()) {
+					if (inputB.tryGetRegType() == maybeImmType) {
 						if (inputA.isReg()) None else Load(inputA);
 					} else null;
 				default: null;
@@ -947,13 +949,13 @@ class InstructionOptimizer {
 			}
 
 		case Mod(inputA, inputB):
-			final type = inputA.getType();
+			final outputType = inputA.getType();
 			if (maybeImm.isZero()) {
 				switch regOrRegBuf {
 				case Reg:
-					if (inputA.isReg()) loadZero(type) else null;
+					if (inputA.tryGetRegType() == maybeImmType) loadZero(outputType) else null;
 				case RegBuf:
-					if (inputA.isRegBuf()) loadZero(type) else null;
+					if (inputA.tryGetRegBufType() == maybeImmType) loadZero(outputType) else null;
 				default: null;
 				}
 			} else {
@@ -963,9 +965,9 @@ class InstructionOptimizer {
 		case Increase(input, _):
 			if (maybeImm.isZero()) switch regOrRegBuf {
 			case Reg:
-				if (input.isReg()) None else null;
+				if (input.tryGetRegType() == maybeImmType) None else null;
 			case RegBuf:
-				if (input.isRegBuf()) None else null;
+				if (input.tryGetRegBufType() == maybeImmType) None else null;
 			default: null;
 			} else {
 				null;
