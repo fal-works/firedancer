@@ -63,7 +63,7 @@ class DeclareLocalVariable extends AstNode {
 			letVar = Let(name, Int);
 			storeRL = Store(Int(Reg), name);
 			context.localVariables.push(name, Int);
-			case FloatExpr(_) | AngleExpr(_):
+		case FloatExpr(_) | AngleExpr(_):
 			letVar = Let(name, Float);
 			storeRL = Store(Float(Reg), name);
 			context.localVariables.push(name, Float);

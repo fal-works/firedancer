@@ -899,10 +899,12 @@ class InstructionOptimizer {
 			if (maybeImm.isZero()) {
 				switch regOrRegBuf {
 				case Reg:
-					if (inputA.tryGetRegType() == maybeImmType || (inputA.isRegBuf() && inputB.tryGetRegType() == maybeImmType))
+					if (inputA.tryGetRegType() == maybeImmType
+						|| (inputA.isRegBuf() && inputB.tryGetRegType() == maybeImmType))
 						loadZero(outputType) else null;
 				case RegBuf:
-					if (inputA.tryGetRegBufType() == maybeImmType || (inputA.isReg() && inputB.tryGetRegBufType() == maybeImmType))
+					if (inputA.tryGetRegBufType() == maybeImmType
+						|| (inputA.isReg() && inputB.tryGetRegBufType() == maybeImmType))
 						loadZero(outputType) else null;
 				default: null;
 				}

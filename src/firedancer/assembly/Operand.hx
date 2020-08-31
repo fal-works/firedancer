@@ -327,11 +327,11 @@ class OperandExtension {
 				final variable = variables.get(address);
 				if (variable.operand.isSome()) {
 					switch variable.operand.unwrap() {
-						case Int(maybeIntImm):
-							switch maybeIntImm {
-							case Imm(_): variable.operand.unwrap();
-							default: null;
-							}
+					case Int(maybeIntImm):
+						switch maybeIntImm {
+						case Imm(_): variable.operand.unwrap();
+						default: null;
+						}
 					default: null;
 					}
 				} else null;
@@ -417,9 +417,9 @@ class OperandPairExtension {
 
 	public static function getFirstOperand(_this: OperandPair): Operand {
 		return switch _this {
-			case Int(a, b): Int(a);
-			case Float(a, b): Float(a);
-			case Vec(a, b): Vec(a);
+		case Int(a, b): Int(a);
+		case Float(a, b): Float(a);
+		case Vec(a, b): Vec(a);
 		};
 	}
 

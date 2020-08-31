@@ -150,8 +150,8 @@ class InstructionAssembler {
 				}
 			case Vec(operand):
 				switch operand {
-					case Imm(x, y): [op(PushVecC), x, y];
-					case Reg: op(PushVecR);
+				case Imm(x, y): [op(PushVecC), x, y];
+				case Reg: op(PushVecR);
 				default: throw unsupported();
 				}
 			default: throw unsupported();

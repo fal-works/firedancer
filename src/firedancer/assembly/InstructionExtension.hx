@@ -213,7 +213,7 @@ class InstructionExtension {
 		case Load(input): input.bytecodeLength();
 		case Save(input): input.bytecodeLength();
 
-		// ---- variables --------------------------------------------------
+			// ---- variables --------------------------------------------------
 
 		case Let(_): -Opcode.size;
 		case Store(input, _): input.bytecodeLength() + IntSize; // input + address
@@ -358,18 +358,18 @@ class InstructionExtension {
 		case Add(input) | Sub(input):
 			final inputA = input.getFirstOperand();
 			switch inputA.getKind() {
-				case Imm | Reg | RegBuf: inputA.getType();
-				default: null;
+			case Imm | Reg | RegBuf: inputA.getType();
+			default: null;
 			}
 		case Minus(input):
 			switch input.getKind() {
-				case Imm | Reg | RegBuf: input.getType();
-				default: null;
+			case Imm | Reg | RegBuf: input.getType();
+			default: null;
 			}
 		case Mult(inputA, _) | Div(inputA, _) | Mod(inputA, _):
 			switch inputA.getKind() {
-				case Imm | Reg | RegBuf: inputA.getType();
-				default: null;
+			case Imm | Reg | RegBuf: inputA.getType();
+			default: null;
 			}
 
 		case Cast(castType): castType.getOutputType();
