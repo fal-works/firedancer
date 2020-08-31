@@ -6,60 +6,141 @@ import firedancer.script.Ast;
 class BulletPatterns {
 	public static function get(patternName: String): Maybe<ProgramPackage> {
 		return Maybe.from(switch patternName {
-			case "default": defaultPattern();
-			case "spiral": spiral();
-			case "aim": aimPlayer();
-			case "parallel": parallelTest();
-			case "vanish": vanishTest();
-			case "random": randomTest();
-			case "sin-cos": sinCos();
-			case "transform": transform();
-			case "radial": radialTest();
-			case "nway-dup": nwayDup();
-			default: null;
+		case "default": defaultPattern();
+		case "control-flow": controlFlow();
+		case "move": move();
+		case "move-2": move2();
+		case "shot-speed": shotSpeed();
+		case "shot-direction": shotDirection();
+		case "shot-position": shotPosition();
+		case "nway-radial-line": nwayRadialLine();
+		case "random": randomDemo();
+		case "aim": aimDemo();
+		case "parallel": parallelDemo();
+		case "fire-with-pattern": fireWithPattern();
+		case "bind-position": bindPosition();
+		case "vanish": vanishDemo();
+		case "variables": variables();
+		case "sin-cos": sinCos();
+		case "transform": transform();
+		case "nway-whip": nWayWhip();
+		default: null;
 		});
 	}
 
 	public static function defaultPattern(): ProgramPackage
-		return nwayDup();
+		return bindPosition();
 
-	public static function radialTest(): ProgramPackage {
-		final main = loop([
-			shot.velocity.set(4, 0),
-			radial(fire(), { ways: 36 }),
-			wait(60)
-		]);
-
-		final text = "loop([
-	shot.velocity.set(4, 0),
-	radial(fire(), { ways: 36 }),
-	wait(60)
-]);";
-
-		return asMain(main, text);
-	}
-
-	public static function aimPlayer(): ProgramPackage {
+	public static function controlFlow(): ProgramPackage {
 		final main = [
-			aim().shotSpeed(5),
+			// Elements in an array are executed sequentially
+			shot.velocity.set(4, 180), // (see other examples)
 			loop([
-				fire(),
-				wait(8)
+				// infinite loop
+				wait(60), // wait 60 frames = 1 second
+				rep(8, [
+					// repeat 8 times
+					fire(), // emit a new actor (= bullet, enemy etc.)
+					wait(10)
+				])
 			])
 		];
 
-		final text = "[
-	aim().shotSpeed(5),
-	loop([
-		fire(),
-		wait(8)
+		final text = "// Elements in an array are executed sequentially.
+
+[
+	shot.velocity.set(4, 180), // (see other examples)
+	loop([ // infinite loop
+		wait(60), // wait 60 frames = 1 second
+		rep(8, [ // repeat 8 times
+			fire(), // emit a new actor (= bullet, enemy etc.)
+			wait(10)
+		])
 	])
 ];";
 
 		return asMain(main, text);
 	}
 
-	public static function spiral(): ProgramPackage {
+	public static function move(): ProgramPackage {
+		final main = loop([
+			velocity.set(8, 180), // polar coords (length, angle) at default
+			wait(30),
+			velocity.add(16, 0), // you can either set or add
+			wait(30),
+			speed.set(0), // set/add length or angle independently
+			wait(60)
+		]);
+
+		final text = "/*
+	Terminology:
+		position = { r: distance, θ: bearing }
+		velocity = { r: speed,  θ: direction }
+
+	Angle values are in degrees, north-based and clockwise.
+*/
+
+loop([
+	velocity.set(8, 180), // polar coords (length, angle) at default
+	wait(30),
+	velocity.add(16, 0), // you can either set or add
+	wait(30),
+	speed.set(0), // set/add length or angle independently
+	wait(30),
+	fire(),
+	wait(30)
+]);";
+
+		return asMain(main, text);
+	}
+
+	public static function move2(): ProgramPackage {
+		final main = loop([
+			velocity.set(16, 180).frames(60), // change gradually
+			speed.set(0),
+			wait(30),
+			velocity.cartesian.set(0, -16), // cartesian coords
+			speed.set(0).frames(60),
+			wait(30),
+		]);
+
+		final text = "loop([
+	velocity.set(16, 180).frames(60), // change gradually
+	speed.set(0),
+	wait(30),
+	velocity.cartesian.set(0, -16), // cartesian coords
+	speed.set(0).frames(60),
+	wait(30),
+]);";
+
+		return asMain(main, text);
+	}
+
+	public static function shotSpeed(): ProgramPackage {
+		final main = loop([
+			shot.velocity.set(3, 180),
+			rep(20, [
+				fire(),
+				shot.speed.add(0.5),
+				wait(4)
+			]),
+			wait(60)
+		]);
+
+		final text = "loop([
+	shot.velocity.set(5, 180),
+	rep(30, [
+		fire(),
+		shot.speed.add(1),
+		wait(1)
+	]),
+	wait(60)
+]);";
+
+		return asMain(main, text);
+	}
+
+	public static function shotDirection(): ProgramPackage {
 		final main = [
 			shot.velocity.set(5, 180),
 			loop([
@@ -81,6 +162,83 @@ class BulletPatterns {
 		return asMain(main, text);
 	}
 
+	public static function shotPosition(): ProgramPackage {
+		final main = loop([
+			shot.velocity.set(6, 180), // { speed: 6, direction: 180 }
+			shot.position.set(150, 180), // { distance: 150, bearing: 180 }
+			loop([
+				fire(),
+				shot.bearing.add(8),
+				wait(2)
+			])
+		]);
+
+		final text = "loop([
+			shot.velocity.set(6, 180), // { speed: 6, direction: 180 }
+			shot.position.set(150, 180), // { distance: 150, bearing: 180 }
+			loop([
+				fire(),
+				shot.bearing.add(8),
+				wait(2)
+			])
+		]);";
+
+		return asMain(main, text);
+	}
+
+	public static function nwayRadialLine(): ProgramPackage {
+		final main = loop([
+			shot.velocity.set(4, 180),
+			nWay(fire(), { ways: 10, angle: 90 }),
+			wait(60),
+			radial(fire(), { ways: 36 }),
+			wait(60),
+			line(fire(), { count: 10, shotSpeedChange: 10 }),
+			wait(60)
+		]);
+
+		final text = "loop([
+	shot.velocity.set(4, 180),
+	nWay(fire(), { ways: 10, angle: 90 }),
+	wait(60),
+	radial(fire(), { ways: 36 }),
+	wait(60),
+	line(fire(), { count: 10, shotSpeedChange: 10 }),
+	wait(60)
+]);
+
+/*
+	nWay() and line() are shorthands for dup() with limited parameters.
+*/
+";
+
+		return asMain(main, text);
+	}
+
+	public static function aimDemo(): ProgramPackage {
+		final main = [
+			shot.speed.set(8),
+			loop([
+				shot.position.set(150, random.angle.between(0, 360)),
+				aim(), // sets shot direction to the angle to the target
+				line(fire(), { count: 8, shotSpeedChange: 6 }),
+				wait(10)
+			])
+		];
+
+		final text = "[
+	shot.speed.set(8),
+	loop([
+		shot.position.set(150, random.angle.between(0, 360)),
+		aim(), // sets shot direction to the angle to the target
+		line(fire(), { count: 8, shotSpeedChange: 6 }),
+		wait(10)
+	])
+];";
+
+		return asMain(main, text);
+	}
+
 	public static function fireWithPattern(): ProgramPackage {
 		final main = [
 			shot.velocity.set(5, 180),
@@ -94,70 +252,62 @@ class BulletPatterns {
 			])
 		];
 
-		return asMain(main);
+		final text = "[
+	shot.velocity.set(5, 180),
+	loop([
+		fire([
+			wait(30),
+			direction.add(-120)
+		]),
+		shot.direction.add(36),
+		wait(8)
+	])
+];";
+
+		return asMain(main, text);
 	}
 
-	public static function fireBound(): ProgramPackage {
+	public static function bindPosition(): ProgramPackage {
 		final main = [
-			shot.position.set(5, 180),
-			rep(
-				4,
-				[
-					rep(
-						12,
-						[
-							fire(
-								loop(
-									[
-										distance.add(4),
-										bearing.add(1),
-										wait(1)
-									]
-								)
-							).bind(),
-							shot.bearing.add(30),
-						]
-					),
-					wait(30)
-				]
-			),
-			vanish() // Here the origin of children is set to (0, 0)
-		];
-
-		return asMain(main);
-	}
-
-	public static function everyFrameTest(): ProgramPackage {
-		final main = [
-			shot.velocity.set(5, 180),
-			everyFrame(shot.direction.add(4)),
+			shot.position.set(30, 180),
 			loop([
-				fire(),
-				wait(8)
+				rep(12, [
+					fire(loop([
+						distance.add(4),
+						bearing.add(1),
+						wait(1)
+					])).bind(),
+					shot.bearing.add(30),
+				]),
+				wait(30)
 			])
 		];
 
-		return asMain(main);
+		final text = "/*
+	If you call bind() after fire(),
+	the position of fired actor will be
+	relative from the actor that fired it.
+*/
+
+[
+	shot.position.set(30, 180),
+	loop([
+		rep(12, [
+			fire(loop([
+				distance.add(4),
+				bearing.add(1),
+				wait(1)
+			])).bind(),
+			shot.bearing.add(30),
+		]),
+		wait(30)
+	])
+];";
+
+		return asMain(main, text);
 	}
 
-	public static function asyncTest(): ProgramPackage {
-		final main = [
-			shot.velocity.set(5, 180),
-			async(loop([
-				fire(),
-				wait(8)
-			])),
-			loop([
-				fire(),
-				shot.direction.add(32),
-				wait(4)
-			])
-		];
-
-		return asMain(main);
-	}
-
-	public static function parallelTest(): ProgramPackage {
+	public static function parallelDemo(): ProgramPackage {
 		final main = [
 			shot.velocity.set(5, 180),
 			parallel([
@@ -173,7 +323,12 @@ class BulletPatterns {
 			])
 		];
 
-		final text = "[
+		final text = "/*
+	parallel() waits until all threads are completed, while
+	async() does not.
+*/
+
+[
 	shot.velocity.set(5, 180),
 	parallel([
 		loop([
@@ -191,7 +346,7 @@ class BulletPatterns {
 		return asMain(main, text);
 	}
 
-	public static function vanishTest(): ProgramPackage {
+	public static function vanishDemo(): ProgramPackage {
 		final main = [
 			shot.velocity.set(5, 180),
 			loop([
@@ -219,7 +374,7 @@ class BulletPatterns {
 		return asMain(main, text);
 	}
 
-	public static function randomTest(): ProgramPackage {
+	public static function randomDemo(): ProgramPackage {
 		final main = loop([
 			shot.velocity.set(
 				random.between(1, 4),
@@ -241,28 +396,12 @@ class BulletPatterns {
 		return asMain(main, text);
 	}
 
-	public static function randomIntTest(): ProgramPackage {
-		final main = [
-			shot.velocity.set(
-				5,
-				180 + random.int.signed(4) * 30
-			),
-			rep(random.int.between(1, 5), [
-				fire(),
-				wait(random.int.between(1, 5) * 4)
-			]),
-			wait(16)
-		];
-
-		return asMain(main);
-	}
-
-	public static function localVar(): ProgramPackage {
+	public static function variables(): ProgramPackage {
 		final cnt = intVar("cnt");
 
 		final main = [
 			shot.velocity.set(5, 180),
-			cnt.let(),
+			cnt.let(), // declare int variable "cnt"
 			loop([
 				shot.direction.set(cnt * 20),
 				fire(),
@@ -271,36 +410,33 @@ class BulletPatterns {
 			])
 		];
 
-		return asMain(main);
+		final text = '/*
+	You can define any local variable with
+	intVar(), floatVar() or angleVar().
+
+	Each array behaves as a scope.
+	Shadowing is allowed.
+
+	You can change the assigned value by
+	set(), add(), increment() or decrement()
+	(the latter two are only for integer variables).
+*/
+
+final cnt = intVar("cnt");
+
+[
+	shot.velocity.set(5, 180),
+	cnt.let(), // declare in the current scope
+	loop([
+		shot.direction.set(cnt * 20),
+		fire(),
+		wait(4),
+		cnt.increment()
+	])
+];';
+
+		return asMain(main, text);
 	}
-
-	public static function eventTest(): ProgramPackage {
-		final main = [
-			event(random.int.between(0, 10)),
-			wait(60)
-		];
-
-		return asMain(main);
-	}
-
-	public static function dump(): ProgramPackage {
-		final cnt = intVar("cnt");
-
-		final main = [
-			shot.velocity.set(5, 180),
-			cnt.let(),
-			rep(2, [
-				shot.direction.set(cnt * 20),
-				fire(),
-				debug(Dump),
-				wait(4),
-				cnt.increment()
-			])
-		];
-
-		return asMain(main);
-	}
-
 
 	public static function sinCos(): ProgramPackage {
 		final varBearing = angleVar("bearing");
@@ -388,20 +524,7 @@ final varRotation = angleVar("rotation");
 		return asMain(main, text);
 	}
 
-	public static function readActor(): ProgramPackage {
-		final main = [
-			shot.velocity.set(4, 180),
-			loop([
-				fire(),
-				shot.velocity.set(shot.speed, 180 + random.angle.grouping(90)),
-				wait(4)
-			])
-		];
-
-		return asMain(main);
-	}
-
-	public static function nwayDup(): ProgramPackage {
+	public static function nWayWhip(): ProgramPackage {
 		final main = [
 			shot.velocity.set(4, 180),
 			loop([
@@ -431,6 +554,92 @@ final varRotation = angleVar("rotation");
 ];";
 
 		return asMain(main, text);
+	}
+
+	public static function everyFrameTest(): ProgramPackage {
+		final main = [
+			shot.velocity.set(5, 180),
+			everyFrame(shot.direction.add(4)),
+			loop([
+				fire(),
+				wait(8)
+			])
+		];
+
+		return asMain(main);
+	}
+
+	public static function asyncTest(): ProgramPackage {
+		final main = [
+			shot.velocity.set(5, 180),
+			async(loop([
+				fire(),
+				wait(8)
+			])),
+			loop([
+				fire(),
+				shot.direction.add(32),
+				wait(4)
+			])
+		];
+
+		return asMain(main);
+	}
+
+	public static function randomIntTest(): ProgramPackage {
+		final main = [
+			shot.velocity.set(
+				5,
+				180 + random.int.signed(4) * 30
+			),
+			rep(random.int.between(1, 5), [
+				fire(),
+				wait(random.int.between(1, 5) * 4)
+			]),
+			wait(16)
+		];
+
+		return asMain(main);
+	}
+
+	public static function readActorTest(): ProgramPackage {
+		final main = [
+			shot.velocity.set(4, 180),
+			loop([
+				fire(),
+				shot.velocity.set(shot.speed, 180 + random.angle.grouping(90)),
+				wait(4)
+			])
+		];
+
+		return asMain(main);
+	}
+
+	public static function eventTest(): ProgramPackage {
+		final main = [
+			event(random.int.between(0, 10)),
+			wait(60)
+		];
+
+		return asMain(main);
+	}
+
+	public static function dumpTest(): ProgramPackage {
+		final cnt = intVar("cnt");
+
+		final main = [
+			shot.velocity.set(5, 180),
+			cnt.let(),
+			rep(2, [
+				shot.direction.set(cnt * 20),
+				fire(),
+				debug(Dump),
+				wait(4),
+				cnt.increment()
+			])
+		];
+
+		return asMain(main);
 	}
 
 	static function asMain(ast: Ast, script: String = ""): ProgramPackage {
