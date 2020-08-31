@@ -42,7 +42,7 @@ class CartesianVelocity {
 	**/
 	public inline function set(vx: FloatExpression, vy: FloatExpression) {
 		final vec: VecExpression = { x: vx, y: vy };
-		return new SetActorVector(ShotVelocity, vec);
+		return new SetActorVector(Velocity, vec);
 	}
 
 	/**
@@ -50,7 +50,7 @@ class CartesianVelocity {
 	**/
 	public inline function add(vx: FloatExpression, vy: FloatExpression) {
 		final vec: VecExpression = { x: vx, y: vy };
-		return new AddActorProperty(ShotVelocity, AddVector(vec));
+		return new AddActorProperty(Velocity, AddVector(vec));
 	}
 }
 
