@@ -150,7 +150,8 @@ class InstructionAssembler {
 				}
 			case Vec(operand):
 				switch operand {
-				case Reg: op(PushVecR);
+					case Imm(x, y): [op(PushVecC), x, y];
+					case Reg: op(PushVecR);
 				default: throw unsupported();
 				}
 			default: throw unsupported();
@@ -480,6 +481,7 @@ class InstructionAssembler {
 					case Float(operandB):
 						switch operandB {
 						case Reg: op(DivVecRRR);
+						case Imm(value): [op(MultVecRCR), 1 / value]; // Multiply by the reciprocal
 						default: throw unsupported();
 						}
 					default: throw unsupported();
