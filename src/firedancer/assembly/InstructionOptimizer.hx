@@ -939,7 +939,7 @@ class InstructionOptimizer {
 						if (inputA.isReg()) None else Load(inputA);
 					} else null;
 				case RegBuf:
-					if (inputB.tryGetRegType() == maybeImmType) {
+					if (inputB.tryGetRegBufType() == maybeImmType) {
 						if (inputA.isReg()) None else Load(inputA);
 					} else null;
 				default: null;
