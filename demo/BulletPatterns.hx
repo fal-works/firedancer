@@ -37,16 +37,16 @@ class BulletPatterns {
 			shot.speed.set(3),
 			parallel([
 				loop([
-					radial(nWay(fire(), { ways: 4, angle: 30 }), { ways: 2 }),
+					radial(nWay(fire(), { ways: 7, angle: 30 }), { ways: 2 }),
 					shot.direction.add(30),
-					wait(20)
+					wait(15)
 				]),
 				[
 					shot.direction.add(90),
 					loop([
-						radial(line(fire(), { count: 4, shotSpeedChange: 2 }), { ways: 2 }),
+						radial(line(fire(), { count: 7, shotSpeedChange: 1.2 }), { ways: 2 }),
 						shot.direction.add(30),
-						wait(20)
+						wait(15)
 					])
 				]
 			])
