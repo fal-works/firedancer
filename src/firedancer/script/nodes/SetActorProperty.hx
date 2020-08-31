@@ -158,7 +158,7 @@ class SetActorPropertyLinear extends AstNode {
 			peekChange = Peek(Vec, IntSize); // skip the loop counter
 			dropChange = Drop(Vec);
 
-			addFromVolatile = Set(Vec(Reg), prop(propType, Vector));
+			addFromVolatile = Increase(Vec(Reg), prop(propType, Vector));
 
 			final getDiffRR:Instruction = GetDiff(Vec(Reg), prop(propType, Vector));
 			getDiff = [vec.loadToVolatile(context), [getDiffRR]].flatten();
