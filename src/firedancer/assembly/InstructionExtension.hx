@@ -355,15 +355,22 @@ class InstructionExtension {
 		case Pop(type): type;
 		case Peek(type, _): type;
 
-		case Add(input): input.tryGetRegType().nullable();
-		case Sub(input): input.tryGetRegType().nullable();
-		case Minus(input): input.tryGetRegType().nullable();
-		case Mult(inputA, _):
-			inputA.tryGetRegType().coalesce(inputA.tryGetRegBufType()).nullable();
-		case Div(inputA, _):
-			inputA.tryGetRegType().coalesce(inputA.tryGetRegBufType()).nullable();
-		case Mod(inputA, _):
-			inputA.tryGetRegType().coalesce(inputA.tryGetRegBufType()).nullable();
+		case Add(input) | Sub(input):
+			final inputA = input.getFirstOperand();
+			switch inputA.getKind() {
+				case Imm | Reg | RegBuf: inputA.getType();
+				default: null;
+			}
+		case Minus(input):
+			switch input.getKind() {
+				case Imm | Reg | RegBuf: input.getType();
+				default: null;
+			}
+		case Mult(inputA, _) | Div(inputA, _) | Mod(inputA, _):
+			switch inputA.getKind() {
+				case Imm | Reg | RegBuf: inputA.getType();
+				default: null;
+			}
 
 		case Cast(castType): castType.getOutputType();
 
