@@ -1,5 +1,0 @@
-# Build with HL/C
-
-common-heaps-hl.hxml
--hl out/c/main.c
--D sneaker_assertion_disable

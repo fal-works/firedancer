@@ -1,7 +1,0 @@
-# Build and Test with HL/C (Mac)
-
-heaps-hl-c.hxml
-
---cmd rm -r out/bin
---cmd haxelib run hlc-compiler --srcDir out/c/ --outDir out/bin/ --copyRuntimeFiles --saveCmd out/compile-hlc --verbose -w -mwindows
---cmd out/bin/main

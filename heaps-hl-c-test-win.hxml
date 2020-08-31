@@ -1,7 +1,0 @@
-# Build and Test with HL/C (Windows)
-
-heaps-hl-c.hxml
-
---cmd if exist out\bin rmdir /s /q out\bin
---cmd haxelib run hlc-compiler --srcDir out\c --outDir out\bin --copyRuntimeFiles --saveCmd out\compile-hlc --verbose -w -mwindows --exFile C:\Windows\System32\dbghelp.dll
---cmd out\bin\main
