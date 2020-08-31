@@ -1,7 +1,7 @@
 # Common Build arguments
 
 -cp src
--cp test
+-cp demo
 -dce full
 
 --macro nullSafety("firedancer", Strict)
