@@ -85,6 +85,8 @@ class Actor extends broker.entity.BasicBatchEntity {
 		dead[i] = false;
 		usedSprites[usedCount] = sprite;
 		++usedCount;
+
+		sprite.rotation = 0.0;
 	}
 
 	@:banker_useEntity
@@ -123,6 +125,8 @@ class Actor extends broker.entity.BasicBatchEntity {
 		dead[i] = false;
 		usedSprites[usedCount] = sprite;
 		++usedCount;
+
+		sprite.rotation = 0.0;
 	}
 
 	/**

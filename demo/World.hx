@@ -26,7 +26,7 @@ class World {
 	public function new() {
 		final area = this.area = new DrawArea(worldWidth, worldHeight);
 
-		final backgroundTile = Tile.fromArgb(0xfffcf8ff, area.width, area.height);
+		final backgroundTile = Tile.fromArgb(0xfffefdff, area.width, area.height);
 		final background = new TileDraw(backgroundTile);
 		area.add(background);
 
