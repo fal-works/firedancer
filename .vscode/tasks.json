@@ -4,7 +4,7 @@
     {
       "label": "Build and Test",
       "type": "hxml",
-      "file": "heaps-hl-jit-test.hxml",
+      "file": "hl-jit-test.hxml",
       "problemMatcher": [
         "$haxe-absolute",
         "$haxe",
@@ -19,7 +19,7 @@
     {
       "label": "Build",
       "type": "hxml",
-      "file": "heaps-hl-jit.hxml",
+      "file": "hl-jit.hxml",
       "problemMatcher": [
         "$haxe-absolute",
         "$haxe",

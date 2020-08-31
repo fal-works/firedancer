@@ -1,4 +1,8 @@
 # Build with HL/JIT
 
-common-heaps-hl.hxml
+common.hxml
+
+-lib hldx
+# -lib hlsdl
+
 -hl out/main.hl
