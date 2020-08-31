@@ -10,6 +10,9 @@ class Main extends broker.App {
 	var sceneStack: SceneStack;
 
 	override function initialize(): Void {
+		hxd.Res.initEmbed();
+		broker.App.data.engine.backgroundColor = 0xffffffff;
+
 		final initialScene = new scenes.PlayScene();
 		initialScene.fadeInFrom(ArgbColor.WHITE, 30, true);
 		sceneStack = new SceneStack(initialScene, 16).newTag("scene stack");

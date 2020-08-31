@@ -26,7 +26,7 @@ class World {
 	public function new() {
 		final area = this.area = new DrawArea(worldWidth, worldHeight);
 
-		final backgroundTile = Tile.fromArgb(0xff101010, area.width, area.height);
+		final backgroundTile = Tile.fromArgb(0xfffcf8ff, area.width, area.height);
 		final background = new TileDraw(backgroundTile);
 		area.add(background);
 
@@ -78,7 +78,7 @@ private class WorldBuilder {
 		areaHeight: UInt,
 		programPackage: ProgramPackage
 	) {
-		final agentTile = Tile.fromRgb(0xf0f0f0, 48, 48).toCentered();
+		final agentTile = Tile.fromImage(hxd.Res.agent).toCentered();
 		final agentBatch = new BatchDraw(
 			agentTile.getTexture(),
 			areaWidth,
@@ -86,7 +86,7 @@ private class WorldBuilder {
 		);
 		parent.addChild(agentBatch);
 
-		final bulletTile = Tile.fromRgb(0xf0f0f0, 16, 16).toCentered();
+		final bulletTile = Tile.fromImage(hxd.Res.bullet).toCentered();
 		final bulletBatch = new BatchDraw(
 			bulletTile.getTexture(),
 			areaWidth,
