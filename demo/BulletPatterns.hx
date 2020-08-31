@@ -44,7 +44,16 @@ class BulletPatterns {
 				[
 					shot.direction.add(90),
 					loop([
-						radial(line(fire(), { count: 7, shotSpeedChange: 1.2 }), { ways: 2 }),
+						radial(
+							line(
+								fire(),
+								{
+									count: 7,
+									shotSpeedChange: 1.2
+								}
+							),
+							{ ways: 2 }
+						),
 						shot.direction.add(30),
 						wait(15)
 					])

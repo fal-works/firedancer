@@ -33,7 +33,6 @@ class Assembler {
 			words.pushFromArray(curWords);
 		}
 
-
 		return words.toProgram();
 	}
 }
@@ -46,7 +45,7 @@ class VariableTable {
 		List of variable records.
 		Should be sorted by `address` in ascending order.
 	**/
-	final table: Array<{ key: String, address:UInt, type: ValueType }> = [];
+	final table: Array<{key: String, address: UInt, type: ValueType }> = [];
 
 	final addressStackMap = new Map<String, Array<UInt>>();
 
