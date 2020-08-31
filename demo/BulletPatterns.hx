@@ -6,7 +6,7 @@ import firedancer.script.Ast;
 class BulletPatterns {
 	public static function get(patternName: String): Maybe<ProgramPackage> {
 		return Maybe.from(switch patternName {
-		case "default": defaultPattern();
+		case "default": firedancerDemo();
 		case "control-flow": controlFlow();
 		case "move": move();
 		case "move-2": move2();
@@ -24,12 +24,38 @@ class BulletPatterns {
 		case "sin-cos": sinCos();
 		case "transform": transform();
 		case "nway-whip": nWayWhip();
+		case "laundry": laundry();
 		default: null;
 		});
 	}
 
 	public static function defaultPattern(): ProgramPackage
-		return bindPosition();
+		return firedancerDemo();
+
+	public static function firedancerDemo(): ProgramPackage {
+		final main = [
+			shot.speed.set(3),
+			parallel([
+				loop([
+					radial(nWay(fire(), { ways: 4, angle: 30 }), { ways: 2 }),
+					shot.direction.add(30),
+					wait(20)
+				]),
+				[
+					shot.direction.add(90),
+					loop([
+						radial(line(fire(), { count: 4, shotSpeedChange: 2 }), { ways: 2 }),
+						shot.direction.add(30),
+						wait(20)
+					])
+				]
+			])
+		];
+
+		final text = "";
+
+		return asMain(main, text);
+	}
 
 	public static function controlFlow(): ProgramPackage {
 		final main = [
@@ -550,6 +576,52 @@ final varRotation = angleVar("rotation");
 			shotDirectionRange: { start: -6, end: 6 }
 		}),
 		wait(30)
+	])
+];";
+
+		return asMain(main, text);
+	}
+
+	public static function laundry(): ProgramPackage {
+		final main = [
+			shot.speed.set(12),
+			parallel([
+				loop([
+					radial(fire(), { ways: 10 }),
+					shot.direction.add(8),
+					wait(4)
+				]),
+				loop([
+					radial(fire(), { ways: 4 }),
+					shot.direction.add(4),
+					wait(2)
+				]),
+				loop([
+					radial(fire(), { ways: 4 }),
+					shot.direction.add(-4),
+					wait(2)
+				])
+			])
+		];
+
+		final text = "[
+	shot.speed.set(12),
+	parallel([
+		loop([
+			radial(fire(), { ways: 10 }),
+			shot.direction.add(8),
+			wait(4)
+		]),
+		loop([
+			radial(fire(), { ways: 4 }),
+			shot.direction.add(4),
+			wait(2)
+		]),
+		loop([
+			radial(fire(), { ways: 4 }),
+			shot.direction.add(-4),
+			wait(2)
+		])
 	])
 ];";
 
