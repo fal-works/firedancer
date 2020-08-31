@@ -80,6 +80,7 @@ textarea#program {
 }
 
 select {
+	font-size: large;
 	font-family: inherit;
 	font-weight: bold;
 	color: #404040;
