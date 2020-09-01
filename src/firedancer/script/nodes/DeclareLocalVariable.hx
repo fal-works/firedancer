@@ -4,7 +4,6 @@ import firedancer.assembly.Instruction;
 import firedancer.script.expression.AngleExpression;
 import firedancer.script.expression.FloatExpression;
 import firedancer.script.expression.IntExpression;
-import firedancer.assembly.ValueType;
 import firedancer.script.expression.GenericExpression;
 
 /**
@@ -49,10 +48,10 @@ class DeclareLocalVariable extends AstNode {
 		this.initialValue = initialValue;
 	}
 
-	override public inline function containsWait(): Bool
+	override inline function containsWait(): Bool
 		return false;
 
-	override public function toAssembly(context: CompileContext): AssemblyCode {
+	override function toAssembly(context: CompileContext): AssemblyCode {
 		final name = this.name;
 
 		var storeRL: Instruction;

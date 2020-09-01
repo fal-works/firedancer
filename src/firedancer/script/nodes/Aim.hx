@@ -17,10 +17,10 @@ class Aim extends AstNode implements ripper.Data {
 		return this;
 	}
 
-	override public inline function containsWait(): Bool
+	override inline function containsWait(): Bool
 		return false;
 
-	override public function toAssembly(context: CompileContext): AssemblyCode {
+	override function toAssembly(context: CompileContext): AssemblyCode {
 		final node = new SetActorProperty(ShotVelocity, if (speed.isSome()) {
 			SetVector({ length: speed.unwrap(), angle: Api.shot.angleToTarget });
 		} else {

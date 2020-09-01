@@ -31,10 +31,10 @@ class Fire extends AstNode implements ripper.Data {
 		return this;
 	}
 
-	override public inline function containsWait(): Bool
+	override inline function containsWait(): Bool
 		return false;
 
-	override public function toAssembly(context: CompileContext): AssemblyCode {
+	override function toAssembly(context: CompileContext): AssemblyCode {
 		final fireArgument: Maybe<FireArgument> = if (this.pattern.isNone()) {
 			Maybe.none();
 		} else {

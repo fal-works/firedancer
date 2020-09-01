@@ -23,10 +23,10 @@ class OperateLocalVariable extends AstNode {
 		this.value = Maybe.from(value);
 	}
 
-	override public function containsWait(): Bool
+	override function containsWait(): Bool
 		return false;
 
-	override public function toAssembly(context: CompileContext): AssemblyCode {
+	override function toAssembly(context: CompileContext): AssemblyCode {
 		final variable = context.localVariables.get(this.name);
 
 		return switch this.operation {

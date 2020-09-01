@@ -5,9 +5,9 @@ package firedancer.script.nodes;
 **/
 @:ripper_verified
 class List extends AstNode implements ripper.Data {
-	public final nodes: Array<AstNode>;
+	final nodes: Array<AstNode>;
 
-	override public function containsWait(): Bool {
+	override function containsWait(): Bool {
 		final nodes = this.nodes;
 		var found = false;
 		for (i in 0...nodes.length) if (nodes[i].containsWait()) {
@@ -17,7 +17,7 @@ class List extends AstNode implements ripper.Data {
 		return found;
 	}
 
-	override public function toAssembly(context: CompileContext): AssemblyCode {
+	override function toAssembly(context: CompileContext): AssemblyCode {
 		final codeList: Array<AssemblyCode> = [];
 		final nodes = this.nodes;
 		var everyFrameNodeCount = UInt.zero;

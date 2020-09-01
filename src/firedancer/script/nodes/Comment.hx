@@ -7,10 +7,10 @@ package firedancer.script.nodes;
 class Comment extends AstNode implements ripper.Data {
 	final text: String;
 
-	override public inline function containsWait(): Bool
+	override inline function containsWait(): Bool
 		return false;
 
-	override public function toAssembly(context: CompileContext): AssemblyCode {
+	override function toAssembly(context: CompileContext): AssemblyCode {
 		return [Comment(text)];
 	}
 }

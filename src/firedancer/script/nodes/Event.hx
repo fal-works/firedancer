@@ -12,10 +12,10 @@ class Event extends AstNode implements ripper.Data {
 	final eventType: EventType;
 	final eventCode: IntExpression;
 
-	override public inline function containsWait(): Bool
+	override inline function containsWait(): Bool
 		return false;
 
-	override public function toAssembly(context: CompileContext): AssemblyCode {
+	override function toAssembly(context: CompileContext): AssemblyCode {
 		final instruction: Instruction = Event(eventType);
 
 		final code = eventCode.loadToVolatile(context);

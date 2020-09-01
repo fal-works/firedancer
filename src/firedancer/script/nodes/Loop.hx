@@ -5,13 +5,13 @@ package firedancer.script.nodes;
 **/
 @:ripper_verified
 class Loop extends AstNode implements ripper.Data {
-	public final node: AstNode;
+	final node: AstNode;
 
-	override public inline function containsWait(): Bool {
+	override inline function containsWait(): Bool {
 		return this.node.containsWait();
 	}
 
-	override public function toAssembly(context: CompileContext): AssemblyCode {
+	override function toAssembly(context: CompileContext): AssemblyCode {
 		if (!this.containsWait()) throw "Infinite loop must contain Wait.";
 
 		final nextLabelIdStack = context.nextLabelIdStack;

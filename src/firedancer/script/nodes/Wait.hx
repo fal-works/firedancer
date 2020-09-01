@@ -10,12 +10,12 @@ class Wait extends AstNode implements ripper.Data {
 	/**
 		Wait duration in frames.
 	**/
-	public final frames: IntExpression;
+	final frames: IntExpression;
 
-	override public inline function containsWait(): Bool
+	override inline function containsWait(): Bool
 		return true;
 
-	override public function toAssembly(context: CompileContext): AssemblyCode {
+	override function toAssembly(context: CompileContext): AssemblyCode {
 		final injectionCode = context.getInjectionCode();
 		final loopBody: AssemblyCode = injectionCode.concat([Break]);
 

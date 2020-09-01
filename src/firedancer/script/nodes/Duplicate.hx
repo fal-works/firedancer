@@ -9,9 +9,9 @@ import firedancer.script.expression.AngleExpression;
 	and then resets all changes made during the duplication.
 **/
 class Duplicate extends AstNode {
-	public final node: AstNode;
+	final node: AstNode;
 	final count: IntExpression;
-	public final params: DuplicateParameters;
+	final params: DuplicateParameters;
 
 	public function new(node: AstNode, count: IntExpression, params: DuplicateParameters) {
 		this.node = node;
@@ -19,11 +19,11 @@ class Duplicate extends AstNode {
 		this.params = params;
 	}
 
-	override public inline function containsWait(): Bool {
+	override inline function containsWait(): Bool {
 		return this.node.containsWait() || this.params.intervalFrames != null;
 	}
 
-	override public function toAssembly(context: CompileContext): AssemblyCode {
+	override function toAssembly(context: CompileContext): AssemblyCode {
 		final params = this.params;
 		final preparation: Array<AstNode> = [];
 		final interval: Array<AstNode> = [];

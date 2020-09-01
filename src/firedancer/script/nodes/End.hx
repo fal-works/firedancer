@@ -8,9 +8,9 @@ package firedancer.script.nodes;
 class End extends AstNode implements ripper.Data {
 	final endCode: Int;
 
-	override public inline function containsWait(): Bool
+	override inline function containsWait(): Bool
 		return false;
 
-	override public function toAssembly(context: CompileContext): AssemblyCode
+	override function toAssembly(context: CompileContext): AssemblyCode
 		return [End(endCode)];
 }
