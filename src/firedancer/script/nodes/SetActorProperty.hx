@@ -101,25 +101,15 @@ class SetActorPropertyLinear extends AstNode {
 	final propType: ActorPropertyType;
 	final operation: ActorPropertySetOperation;
 	final frames: IntExpression;
-	final loopUnrolling: Bool;
 
 	public function new(
 		propType: ActorPropertyType,
 		operation: ActorPropertySetOperation,
-		frames: IntExpression,
-		loopUnrolling = false
+		frames: IntExpression
 	) {
 		this.propType = propType;
 		this.operation = operation;
 		this.frames = frames;
-		this.loopUnrolling = loopUnrolling;
-	}
-
-	/**
-		Unrolls iteration when converting to `AssemblyCode`.
-	**/
-	public function unroll(): SetActorPropertyLinear {
-		return new SetActorPropertyLinear(propType, operation, frames, true);
 	}
 
 	override inline function containsWait(): Bool {
@@ -129,7 +119,6 @@ class SetActorPropertyLinear extends AstNode {
 
 	override function toAssembly(context: CompileContext): AssemblyCode {
 		final frames = this.frames;
-		final constFrames = frames.tryGetConstant();
 
 		inline function getDivChange(isVec: Bool): AssemblyCode {
 			return {
@@ -195,17 +184,8 @@ class SetActorPropertyLinear extends AstNode {
 			peekChange,
 			addFromVolatile
 		];
-		final loopedBody = if (constFrames.isSome()) {
-			if (this.loopUnrolling) {
-				loopUnrolled(0...constFrames.unwrap(), _ -> body);
-			} else {
-				final pushLoopCount = Push(Int(Imm(constFrames.unwrap())));
-				constructLoop(context, pushLoopCount, body);
-			}
-		} else {
-			// frames should be already loaded to int register in getDivChange() if it's not a constant
-			constructLoop(context, Push(Int(Reg)), body);
-		};
+		// frames should be already loaded to int register in getDivChange()
+		final loopedBody = constructLoop(context, Push(Int(Reg)), body);
 
 		final complete: AssemblyCode = [dropChange];
 
@@ -223,22 +203,9 @@ class SetActorVectorLinear extends SetActorPropertyLinear implements ripper.Data
 		propType: ActorPropertyType,
 		vec: VecExpression,
 		frames: IntExpression,
-		loopUnrolling: Bool,
 		?matrix: Transformation
 	) {
 		super(propType, SetVector(vec, matrix), frames);
-	}
-
-	/**
-		Unrolls iteration when converting to `AssemblyCode`.
-	**/
-	override public function unroll(): SetActorPropertyLinear {
-		return switch operation {
-		case SetVector(arg, mat):
-			new SetActorVectorLinear(propType, arg, frames, true, mat);
-		default:
-			throw "Invalid operation in SetActorVectorLinear class.";
-		}
 	}
 
 	/**
@@ -251,7 +218,6 @@ class SetActorVectorLinear extends SetActorPropertyLinear implements ripper.Data
 				propType,
 				vec,
 				frames,
-				loopUnrolling,
 				if (mat != null) Transformation.multiply(mat, matrix) else matrix
 			);
 		default:
