@@ -3,6 +3,7 @@ package firedancer.script;
 import sneaker.exception.NotOverriddenException;
 import firedancer.assembly.AssemblyCode;
 import firedancer.script.nodes.Duplicate;
+import firedancer.script.expression.IntExpression;
 
 /**
 	A node of AST (abstract syntax tree) that represents a bullet hell pattern.
@@ -12,9 +13,10 @@ class AstNode {
 
 	/**
 		Duplicates `this` pattern. Same effect as `Api.dup()`.
+		@param count The repetition count. If the evaluated value is `0` or less, the result is unspecified.
 	**/
-	public inline function dup(params: DuplicateParameters): Duplicate
-		return Api.dup(this, params);
+	public inline function dup(count: IntExpression, params: DuplicateParameters): Duplicate
+		return Api.dup(count, params, this);
 
 	/**
 		Checks that `this` node contains any `Wait` element or kind of that.

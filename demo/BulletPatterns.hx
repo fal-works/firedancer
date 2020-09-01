@@ -37,23 +37,15 @@ class BulletPatterns {
 			shot.speed.set(3),
 			parallel([
 				loop([
-					radial(nWay(fire(), { ways: 7, angle: 30 }), { ways: 2 }),
+					radial(2, nWay(7, { angle: 30 })),
 					shot.direction.add(30),
 					wait(15)
 				]),
 				[
 					shot.direction.add(90),
 					loop([
-						radial(
-							line(
-								fire(),
-								{
-									count: 7,
-									shotSpeedChange: 1.2
-								}
-							),
-							{ ways: 2 }
-						),
+						radial(2, line(7, {
+							shotSpeedChange: 1.2 })),
 						shot.direction.add(30),
 						wait(15)
 					])
@@ -66,10 +58,7 @@ class BulletPatterns {
 	parallel([
 		[
 			loop([
-				radial(
-					nWay(fire(), { ways: 7, angle: 30 }),
-					{ ways: 2 }
-				),
+				radial(2, nWay(7, { angle: 30 })),
 				shot.direction.add(30),
 				wait(15)
 			])
@@ -77,10 +66,7 @@ class BulletPatterns {
 		[
 			shot.direction.add(90),
 			loop([
-				radial(
-					line(fire(), { count: 7, shotSpeedChange: 1.2 }),
-					{ ways: 2 }
-				),
+				radial(2, line(7, { shotSpeedChange: 1.2 })),
 				shot.direction.add(30),
 				wait(15)
 			])
@@ -249,21 +235,21 @@ loop([
 	public static function nwayRadialLine(): ProgramPackage {
 		final main = loop([
 			shot.velocity.set(4, 180),
-			nWay(fire(), { ways: 10, angle: 90 }),
+			nWay(10, { angle: 90 }),
 			wait(60),
-			radial(fire(), { ways: 36 }),
+			radial(36),
 			wait(60),
-			line(fire(), { count: 10, shotSpeedChange: 10 }),
+			line(10, { shotSpeedChange: 10 }),
 			wait(60)
 		]);
 
 		final text = "loop([
 	shot.velocity.set(4, 180),
-	nWay(fire(), { ways: 10, angle: 90 }),
+	nWay(10, { angle: 90 }),
 	wait(60),
-	radial(fire(), { ways: 36 }),
+	radial(36),
 	wait(60),
-	line(fire(), { count: 10, shotSpeedChange: 10 }),
+	line(10, { shotSpeedChange: 10 }),
 	wait(60)
 ]);
 
@@ -281,7 +267,7 @@ loop([
 			loop([
 				shot.position.set(150, random.angle.between(0, 360)),
 				aim(), // sets shot direction to the angle to the target
-				line(fire(), { count: 8, shotSpeedChange: 6 }),
+				line(8, { shotSpeedChange: 6 }),
 				wait(10)
 			])
 		];
@@ -291,7 +277,7 @@ loop([
 	loop([
 		shot.position.set(150, random.angle.between(0, 360)),
 		aim(), // sets shot direction to the angle to the target
-		line(fire(), { count: 8, shotSpeedChange: 6 }),
+		line(8, { shotSpeedChange: 6 }),
 		wait(10)
 	])
 ];";
@@ -591,10 +577,7 @@ final varRotation = angleVar("rotation");
 		final main = [
 			shot.velocity.set(4, 180),
 			loop([
-				nWay(fire(), {
-					ways: 5,
-					angle: 90 }).dup({
-					count: 8,
+				nWay(5, { angle: 90 }).dup(8, {
 					intervalFrames: 4,
 					shotSpeedChange: 8,
 					shotDirectionRange: { start: -6, end: 6 }
@@ -606,8 +589,7 @@ final varRotation = angleVar("rotation");
 		final text = "[
 	shot.velocity.set(4, 180),
 	loop([
-		nWay(fire(), { ways: 5, angle: 90 }).dup({
-			count: 8,
+		nWay(5, { angle: 90 }).dup(8, {
 			intervalFrames: 4,
 			shotSpeedChange: 8,
 			shotDirectionRange: { start: -6, end: 6 }
@@ -624,17 +606,17 @@ final varRotation = angleVar("rotation");
 			shot.speed.set(12),
 			parallel([
 				loop([
-					radial(fire(), { ways: 10 }),
+					radial(10),
 					shot.direction.add(8),
 					wait(4)
 				]),
 				loop([
-					radial(fire(), { ways: 4 }),
+					radial(4),
 					shot.direction.add(4),
 					wait(2)
 				]),
 				loop([
-					radial(fire(), { ways: 4 }),
+					radial(4),
 					shot.direction.add(-4),
 					wait(2)
 				])
@@ -645,17 +627,17 @@ final varRotation = angleVar("rotation");
 	shot.speed.set(12),
 	parallel([
 		loop([
-			radial(fire(), { ways: 10 }),
+			radial(10),
 			shot.direction.add(8),
 			wait(4)
 		]),
 		loop([
-			radial(fire(), { ways: 4 }),
+			radial(4),
 			shot.direction.add(4),
 			wait(2)
 		]),
 		loop([
-			radial(fire(), { ways: 4 }),
+			radial(4),
 			shot.direction.add(-4),
 			wait(2)
 		])

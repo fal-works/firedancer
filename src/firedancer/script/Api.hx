@@ -77,9 +77,17 @@ class Api {
 
 	/**
 		Duplicates a given pattern.
+		@param count The repetition count. If the evaluated value is `0` or less, the result is unspecified.
+		@param ast `fire()` at default.
 	**/
-	public static function dup(ast: Ast, params: DuplicateParameters): Duplicate {
-		return new Duplicate(ast, params);
+	public static function dup(
+		count: IntExpression,
+		params: DuplicateParameters,
+		?ast: Ast
+	): Duplicate {
+		if (ast == null) ast = fire();
+
+		return new Duplicate(ast, count, params);
 	}
 
 	/**
