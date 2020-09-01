@@ -7,11 +7,12 @@
     <meta charset="utf-8" />
 
     <meta name="description" content="Haxe-based language for defining 2D shmups bullet-hell patterns." />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta property="og:title" content="Firedancer" />
     <meta property="og:site_name" content="Firedancer" />
-    <meta property="og:description" content="Language for defining bullet-hell patterns." />
-    <!-- <meta property="og:url" content="https://www.fal-works.com" /> -->
-    <!-- <meta property="og:image" content="https://www.image-grid-generator.com/images/ogp-image.png" /> -->
+    <meta property="og:description" content="Haxe-based language for defining 2D shmups bullet-hell patterns." />
+    <meta property="og:url" content="https://firedancer-lang.com" />
+    <meta property="og:image" content="https://firedancer-lang.com/images/firedancer-ogp.png" />
     <meta property="og:type" content="website" />
 
     <script type="text/javascript" src="main.min.js" defer></script>
@@ -26,7 +27,10 @@
 <body>
     <div class="entire">
         <div class="pane" id="main">
-            <h1><a href="https://firedancer-lang.com/">Firedancer</a></h1>
+            <div class="horizontal-container">
+                <h1><a href="https://firedancer-lang.com/">Firedancer</a></h1>
+                <p class="weak version">v0.1.0</span>
+            </div>
             <p class="description">Language for defining bullet-hell patterns.</p>
 
             <div>
@@ -35,15 +39,15 @@
 
             <select name="demo-selector" id="demo-selector">
                 <option value="default">SELECT EXAMPLE ...</option>
-                <option value="(separator)">---- basics ----</option>
+                <option value="(separator)">---- basics ------------</option>
                 <option value="control-flow">control flow</option>
                 <option value="move">move</option>
                 <option value="move-2">move (2)</option>
                 <option value="shot-speed">shot speed</option>
                 <option value="shot-direction">shot direction</option>
                 <option value="shot-position">shot position</option>
-                <option value="(separator)">---- features ----</option>
-                <option value="nway-radial-line">nway/radial/line</option>
+                <option value="(separator)">---- features ------------</option>
+                <option value="nway-radial-line">nway / radial / line</option>
                 <option value="random">random</option>
                 <option value="aim">aim</option>
                 <option value="parallel">parallel</option>
@@ -51,9 +55,9 @@
                 <option value="bind-position">bind position</option>
                 <option value="vanish">vanish</option>
                 <option value="variables">variables</option>
-                <option value="sin-cos">sin/cos</option>
+                <option value="sin-cos">sin / cos</option>
                 <option value="transform">transform</option>
-                <option value="(separator)">---- examples ----</option>
+                <option value="(separator)">---- examples ------------</option>
                 <option value="nway-whip">nway whip</option>
                 <option value="laundry">laundry</option>
             </select>
@@ -82,7 +86,9 @@
 
         </div>
 
-        <canvas class="pane" id="webgl"></canvas>
+        <div id="canvas-container">
+            <canvas class="pane" id="webgl" width="600px" height="800px"></canvas>
+        </div>
     </div>
 </body>
 

@@ -61,7 +61,32 @@ class BulletPatterns {
 			])
 		];
 
-		final text = "";
+		final text = "[
+	shot.speed.set(3),
+	parallel([
+		[
+			loop([
+				radial(
+					nWay(fire(), { ways: 7, angle: 30 }),
+					{ ways: 2 }
+				),
+				shot.direction.add(30),
+				wait(15)
+			])
+		],
+		[
+			shot.direction.add(90),
+			loop([
+				radial(
+					line(fire(), { count: 7, shotSpeedChange: 1.2 }),
+					{ ways: 2 }
+				),
+				shot.direction.add(30),
+				wait(15)
+			])
+		]
+	])
+];";
 
 		return asMain(main, text);
 	}
@@ -477,12 +502,13 @@ final cnt = intVar("cnt");
 		final varBearing = angleVar("bearing");
 
 		final main = [
+			shot.position.cartesian.set(270, 0),
 			rep(16, [
 				fire([
 					varBearing.let(),
 					loop([
 						position.cartesian.set(
-							300 * cos(varBearing),
+							270 * cos(varBearing),
 							60 * sin(varBearing)
 						),
 						wait(1),
@@ -496,12 +522,13 @@ final cnt = intVar("cnt");
 		final text = 'final varBearing = angleVar("bearing");
 
 [
+	shot.position.cartesian.set(270, 0),
 	rep(16, [
 		fire([
 			varBearing.let(),
 			loop([
 				position.cartesian.set(
-					300 * cos(varBearing),
+					270 * cos(varBearing),
 					60 * sin(varBearing)
 				),
 				wait(1),
@@ -520,6 +547,7 @@ final cnt = intVar("cnt");
 		final varRotation = angleVar("rotation");
 
 		final main = [
+			shot.position.set(150, 90),
 			rep(24, [
 				fire([
 					varBearing.let(),

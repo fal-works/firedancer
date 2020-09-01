@@ -5,10 +5,9 @@ body {
 }
 
 .entire {
-	margin: 0;
-	margin-left: auto;
-	margin-right: auto;
-	padding: 0;
+	margin: 0 auto;
+	padding: 1rem 2rem 1rem 2rem;
+	min-width: 1000px;
 	max-width: 1280px;
 	display: -webkit-flex;
 	display: -moz-flex;
@@ -24,21 +23,38 @@ body {
 }
 
 div#main {
-	width: 480px;
-	padding-left: 1rem;
 	padding-right: 1rem;
+	min-width: 360px;
+	max-width: 500px;
+	flex: auto;
 }
 
-canvas#webgl {
+/*
+div#canvas-container {
+}
+ */
+
+canvas {
 	padding: 0;
-	width: 75vh;
-	height: 100vh;
+	border: solid;
+	border-width: 1px;
+	border-color: #e8e0f0;
+}
+
+div.horizontal-container {
+	display: flex;
+	flex-direction: row;
+	justify-content: normal;
 }
 
 h1 {
 	font-size: 400%;
 	letter-spacing: 0.05em;
-	margin: 0.5rem 0;
+	margin: 0 0 0.5rem 0;
+}
+
+.version {
+	margin-left: 0.5rem;
 }
 
 .description {
@@ -55,7 +71,8 @@ h1 {
 }
 
 .caption {
-	margin-bottom: 0.3em;
+	margin-top: 1.75em;
+	margin-bottom: 0.4em;
 }
 
 textarea {
