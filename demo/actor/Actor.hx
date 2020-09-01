@@ -174,8 +174,8 @@ class Actor extends broker.entity.BasicBatchEntity {
 			final endCode = Vm.run(
 				programTable,
 				eventHandler,
-				threads,
 				MEMORY_CAPACITY,
+				threads,
 				x,
 				y,
 				vx,
