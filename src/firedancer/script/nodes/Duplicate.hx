@@ -10,10 +10,12 @@ import firedancer.script.expression.AngleExpression;
 **/
 class Duplicate extends AstNode {
 	public final node: AstNode;
+	final count: IntExpression;
 	public final params: DuplicateParameters;
 
-	public function new(node: AstNode, params: DuplicateParameters) {
+	public function new(node: AstNode, count: IntExpression, params: DuplicateParameters) {
 		this.node = node;
+		this.count = count;
 		this.params = params;
 	}
 
@@ -28,7 +30,7 @@ class Duplicate extends AstNode {
 		final completion: Array<AstNode> = [];
 
 		final varCount = Api.intVar("__loopCnt");
-		preparation.push(varCount.let(params.count - 1));
+		preparation.push(varCount.let(this.count - 1));
 
 		if (params.intervalFrames != null) {
 			interval.push(Api.wait(params.intervalFrames));
@@ -96,11 +98,6 @@ class Duplicate extends AstNode {
 private typedef AngleRange = { start: AngleExpression, end: AngleExpression };
 
 typedef DuplicateParameters = {
-	/**
-		The repetition count. If the evaluated value is `0` or less, the result is unspecified.
-	**/
-	final count: IntExpression;
-
 	/**
 		Number of interval frames to wait.
 	**/
