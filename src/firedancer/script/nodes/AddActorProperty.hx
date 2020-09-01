@@ -21,10 +21,10 @@ class AddActorProperty extends AstNode implements ripper.Data {
 	public inline function frames(frames: IntExpression)
 		return new AddActorPropertyLinear(propType, operation, frames);
 
-	override public inline function containsWait(): Bool
+	override inline function containsWait(): Bool
 		return false;
 
-	override public function toAssembly(context: CompileContext): AssemblyCode {
+	override function toAssembly(context: CompileContext): AssemblyCode {
 		final c = context;
 		return switch propType {
 		case Position:
@@ -61,12 +61,12 @@ class AddActorPropertyLinear extends AstNode implements ripper.Data {
 	final operation: ActorPropertyAddOperation;
 	final frames: IntExpression;
 
-	override public inline function containsWait(): Bool {
+	override inline function containsWait(): Bool {
 		final constFrames = this.frames.tryGetConstant();
 		return if (constFrames.isSome()) 0 < constFrames.unwrap() else true;
 	}
 
-	override public function toAssembly(context: CompileContext): AssemblyCode {
+	override function toAssembly(context: CompileContext): AssemblyCode {
 		final frames = this.frames;
 
 		inline function getDivChange(isVec: Bool): AssemblyCode {

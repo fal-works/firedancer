@@ -6,12 +6,12 @@ package firedancer.script.nodes;
 **/
 @:ripper_verified
 class Parallel extends AstNode implements ripper.Data {
-	public final array: Array<Ast>;
+	final array: Array<Ast>;
 
-	override public inline function containsWait(): Bool
+	override inline function containsWait(): Bool
 		return false;
 
-	override public function toAssembly(context: CompileContext): AssemblyCode {
+	override function toAssembly(context: CompileContext): AssemblyCode {
 		final mainNode = array.shift();
 		if (mainNode.isNone()) return [];
 

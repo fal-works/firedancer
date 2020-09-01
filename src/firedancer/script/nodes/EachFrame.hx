@@ -8,9 +8,9 @@ class EachFrame extends AstNode {
 	public function new(astToBeInjected: Ast)
 		this.nodeType = EachFrame(astToBeInjected);
 
-	override public inline function containsWait(): Bool
+	override inline function containsWait(): Bool
 		return false;
 
-	override public inline function toAssembly(context: CompileContext): AssemblyCode
+	override inline function toAssembly(context: CompileContext): AssemblyCode
 		return [];
 }

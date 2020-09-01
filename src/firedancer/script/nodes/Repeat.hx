@@ -7,11 +7,11 @@ import firedancer.script.expression.IntExpression;
 **/
 @:ripper_verified
 class Repeat extends AstNode implements ripper.Data {
-	public final node: AstNode;
-	public final repetitionCount: IntExpression;
-	public var unrolling: Bool = false;
+	final node: AstNode;
+	final repetitionCount: IntExpression;
+	var unrolling: Bool = false;
 
-	override public inline function containsWait(): Bool {
+	override inline function containsWait(): Bool {
 		return this.node.containsWait();
 	}
 
@@ -24,7 +24,7 @@ class Repeat extends AstNode implements ripper.Data {
 		return this;
 	}
 
-	override public function toAssembly(context: CompileContext): AssemblyCode {
+	override function toAssembly(context: CompileContext): AssemblyCode {
 		final count = this.repetitionCount;
 		final body = this.node.toAssembly(context);
 

@@ -21,10 +21,10 @@ class SetActorProperty extends AstNode implements ripper.Data {
 	public function frames(frames: IntExpression)
 		return new SetActorPropertyLinear(propType, operation, frames);
 
-	override public inline function containsWait(): Bool
+	override inline function containsWait(): Bool
 		return false;
 
-	override public function toAssembly(context: CompileContext): AssemblyCode {
+	override function toAssembly(context: CompileContext): AssemblyCode {
 		final c = context;
 
 		return switch propType {
@@ -122,12 +122,12 @@ class SetActorPropertyLinear extends AstNode {
 		return new SetActorPropertyLinear(propType, operation, frames, true);
 	}
 
-	override public inline function containsWait(): Bool {
+	override inline function containsWait(): Bool {
 		final constFrames = this.frames.tryGetConstant();
 		return if (constFrames.isSome()) 0 < constFrames.unwrap() else true;
 	}
 
-	override public function toAssembly(context: CompileContext): AssemblyCode {
+	override function toAssembly(context: CompileContext): AssemblyCode {
 		final frames = this.frames;
 		final constFrames = frames.tryGetConstant();
 
