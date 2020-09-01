@@ -7,6 +7,9 @@ which can be run on [Firedancer VM](https://github.com/fal-works/firedancer-vm).
 
 Inspired by [BulletML](http://www.asahi-net.or.jp/~cs8k-cyu/bulletml/index_e.html).
 
+Requires **Haxe 4** (developed with v4.1.3).
+
+
 ## Demo
 
 [https://firedancer-lang.com/](https://firedancer-lang.com/)
@@ -48,8 +51,8 @@ _Note: Firedancer is not a game engine. You have to prepare your own program to 
 
 ## Dependencies
 
--   [sinker](https://github.com/fal-works/sinker) v0.4.0 or compatible
--   [sneaker](https://github.com/fal-works/sneaker) v0.10.0 or compatible
+-   [sinker](https://github.com/fal-works/sinker) v0.5.0 or compatible
+-   [sneaker](https://github.com/fal-works/sneaker) v0.11.0 or compatible
 -   [ripper](https://github.com/fal-works/ripper) v0.4.0 or compatible
 -   [banker](https://github.com/fal-works/banker) v0.7.0 or compatible
 -   [reckoner](https://github.com/fal-works/banker) v0.2.0 or compatible
