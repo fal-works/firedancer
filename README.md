@@ -2,6 +2,8 @@
 
 A Haxe based language for defining 2D shmups bullet-hell patterns.
 
+![firedancer_v0_1_0](https://user-images.githubusercontent.com/33595446/91944104-8398c480-ed38-11ea-927e-f0f107977e98.gif)
+
 You can write any bullet pattern in Haxe and compile it into bytecode programs,  
 which can be run on [Firedancer VM](https://github.com/fal-works/firedancer-vm).
 
