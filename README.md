@@ -23,14 +23,18 @@ First install [Haxe 4](https://haxe.org/).
 
 Then install Firedancer:
 
-  haxelib install firedancer
+```sh
+haxelib install firedancer
+```
 
 ### Create bullet patterns
 
-Import top-level properties and functions:
+Import top-level properties and functions in your Haxe project:
 
-  import firedancer.script.Api.*;
-  import firedancer.script.ApiEx.*;
+```haxe
+import firedancer.script.Api.*;
+import firedancer.script.ApiEx.*;
+```
 
 Using that API of Firedancer (see also [Wiki](https://github.com/fal-works/firedancer/wiki)),  
 define your own bullet patterns and compile them into a `ProgramPackage`.
