@@ -129,6 +129,14 @@ select#demo-selector {
 
 .footer {
 	margin-top: 2rem;
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center; /* flex-end */
 }
 
 hr {
