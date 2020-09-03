@@ -745,6 +745,6 @@ final varRotation = angleVar("rotation");
 
 		Dom.program(programPackage.toString());
 
-		return assembly.assemble();
+		return programPackage;
 	}
 }
