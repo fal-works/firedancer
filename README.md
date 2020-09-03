@@ -11,9 +11,11 @@ Inspired by [BulletML](http://www.asahi-net.or.jp/~cs8k-cyu/bulletml/index_e.htm
 
 Requires **Haxe 4** (developed with v4.1.3).
 
+
 ## Demo
 
 [https://firedancer-lang.com/](https://firedancer-lang.com/)
+
 
 ## Usage
 
@@ -45,14 +47,24 @@ Attach any `Program` instance(s) to your actor(s) and run them on [Firedancer VM
 
 *Note: Firedancer is not a game engine. You have to prepare your own program to create/update/render your actors.*
 
+
+## Example Project
+
+Here is a minimum Haxe project using Firedancer and [Heaps.io](https://heaps.io/):
+
+[Firedancer Template (with Heaps.io)](https://github.com/fal-works/firedancer-heaps-template)
+
+
 ## Documentation
 
 [Firedancer Wiki](https://github.com/fal-works/firedancer/wiki)
+
 
 ## Caveats
 
 - It's still alpha and quite unstable. Everything may change in future.
 - A bunch of spaghetti code!! Much more to be refactored/optimized.
+
 
 ## Dependencies
 
