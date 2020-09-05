@@ -13,20 +13,16 @@ class ArmyBuilder {
 		programPackage: ProgramPackage,
 		batch: BatchDraw,
 		tile: Tile,
-		?bullets: ActorAosoa
+		eventHandler: EventHandler,
+		emitter: Emitter
 	): ActorAosoa {
 		final chunkCapacity = UInts.min(defaultChunkCapacity, maxEntityCount);
 		final chunkCount = Math.ceil(maxEntityCount / chunkCapacity);
 
-		var aosoa: ActorAosoa;
-
 		final spriteFactory = () -> new BatchSprite(tile);
-
 		final programTable = programPackage.programTable;
-		final eventHandler = new TestEventHandler();
-		final emitter = new Emitter(Nulls.coalesce(bullets, aosoa));
 
-		aosoa = new ActorAosoa(
+		final aosoa = new ActorAosoa(
 			chunkCapacity,
 			chunkCount,
 			batch,
@@ -35,6 +31,7 @@ class ArmyBuilder {
 			eventHandler,
 			emitter
 		);
+
 		return aosoa;
 	}
 }
