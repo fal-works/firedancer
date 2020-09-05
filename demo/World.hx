@@ -94,11 +94,16 @@ private class WorldBuilder {
 		);
 		parent.addChild(bulletBatch);
 
+		final eventHandler = new TestEventHandler();
+		final emitter = new Emitter();
+
 		final bullets = ArmyBuilder.createActors(
 			World.maxBulletCount,
 			programPackage,
 			bulletBatch,
-			bulletTile
+			bulletTile,
+			eventHandler,
+			emitter
 		);
 
 		final agents = ArmyBuilder.createActors(
@@ -106,8 +111,11 @@ private class WorldBuilder {
 			programPackage,
 			agentBatch,
 			agentTile,
-			bullets
+			eventHandler,
+			emitter
 		);
+
+		emitter.initialize(bullets);
 
 		return new Army(agents, bullets, targetPositionRef);
 	}
