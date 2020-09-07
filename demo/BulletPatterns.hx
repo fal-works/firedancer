@@ -25,6 +25,8 @@ class BulletPatterns {
 		case "transform": transform();
 		case "nway-whip": nWayWhip();
 		case "laundry": laundry();
+		case "pods": pods();
+		case "static-geometric": staticGeometric();
 		default: null;
 		});
 	}
@@ -641,6 +643,68 @@ final varRotation = angleVar("rotation");
 			shot.direction.add(-4),
 			wait(2)
 		])
+	])
+];";
+
+		return asMain(main, text);
+	}
+
+	public static function pods(): ProgramPackage {
+		final main = [
+			shot.velocity.set(10, 0),
+			radial(2, fire([
+				shot.velocity.set(2, direction),
+				speed.set(0).frames(30),
+				loop([
+					fire(),
+					bearing.add(-3),
+					shot.direction.add(12),
+					wait(1)
+				])
+			]).bind())
+		];
+
+		final text = "[
+	shot.velocity.set(10, 0),
+	radial(2, fire([
+		shot.velocity.set(2, direction),
+		speed.set(0).frames(30),
+		loop([
+			fire(),
+			bearing.add(-3),
+			shot.direction.add(12),
+			wait(1)
+		])
+	]).bind())
+];";
+
+		return asMain(main, text);
+	}
+
+	public static function staticGeometric(): ProgramPackage {
+		final main = [
+			shot.velocity.set(6, 0),
+			loop([
+				radial(8, fire([
+					wait(20),
+					shot.velocity.set(6, direction),
+					nWay(2, { angle: 120 }),
+					vanish()
+				])),
+				wait(4)
+			])
+		];
+
+		final text ="[
+	shot.velocity.set(6, 0),
+	loop([
+		radial(8, fire([
+			wait(20),
+			shot.velocity.set(6, direction),
+			nWay(2, { angle: 120 }),
+			vanish()
+		])),
+		wait(4)
 	])
 ];";
 
