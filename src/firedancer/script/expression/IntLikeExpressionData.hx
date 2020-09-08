@@ -44,8 +44,8 @@ class IntLikeExpressionData implements ExpressionData {
 	}
 
 	/**
-		Creates an `AssemblyCode` that runs either `constantOpcode` or `volatileOpcode`
-		receiving `this` value as argument.
+		Creates an `AssemblyCode` that runs `instruction`
+		receiving `this` value as argument via register.
 	**/
 	public function use(context: CompileContext, instruction: Instruction): AssemblyCode
 		return [load(context), [instruction]].flatten();

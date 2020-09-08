@@ -31,9 +31,8 @@ class VecExpressionData implements ExpressionData {
 		throw new NotOverriddenException();
 
 	/**
-		Creates an `AssemblyCode` that runs either `processConstantVector` or `processVolatileVector`
-		receiving `this` value as argument.
-		@param instruction Any `Instruction` that uses the volatile vector.
+		Creates an `AssemblyCode` that runs `instruction`
+		receiving `this` value as argument via register.
 	**/
 	public function use(context: CompileContext, instruction: Instruction): AssemblyCode {
 		final code = load(context);
