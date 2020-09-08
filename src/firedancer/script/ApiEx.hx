@@ -21,7 +21,7 @@ class ApiEx {
 
 		return [
 			loopCount.let(ways),
-			shotDirectionChangeRate.let(360 / loopCount),
+			shotDirectionChangeRate.let((360.0 : AngleExpression) / loopCount),
 			Api.rep(loopCount, [
 				ast,
 				Api.shot.direction.add(shotDirectionChangeRate)

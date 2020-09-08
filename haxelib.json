@@ -6,7 +6,7 @@
 	"description": "Haxe based language for defining 2D shmup bullet-hell patterns. ",
 	"version": "0.1.1-alpha",
 	"classPath": "src/",
-	"releasenote": "",
+	"releasenote": "Bug fix in radial().",
 	"contributors": [
 		"fal-works"
 	],
