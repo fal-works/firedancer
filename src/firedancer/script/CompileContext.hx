@@ -48,7 +48,7 @@ class CompileContext {
 	public function setCode(code: AssemblyCode): UInt {
 		final codeList = this.codeList;
 
-		final existingId = codeList.indexOf(code, 0);
+		final existingId = codeList.indexOfFirst(cur -> cur.equals(code));
 		if (existingId.isSome()) return existingId.unwrap();
 
 		final id = codeList.length;
