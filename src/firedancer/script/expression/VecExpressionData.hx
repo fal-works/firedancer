@@ -149,6 +149,10 @@ class CartesianVecExpressionData extends VecExpressionData {
 			]
 		].flatten();
 
+		#if js
+		loadVecWithoutDivisor.length; // Workaround for terser --mangle bug
+		#end
+
 		if (divisor.isNone()) {
 			// rVec
 			return loadVecWithoutDivisor;
