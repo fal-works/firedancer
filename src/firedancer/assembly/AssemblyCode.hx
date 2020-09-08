@@ -22,6 +22,19 @@ abstract AssemblyCode(Data) from Data to Data {
 	}
 
 	/**
+		Deeply compares `this` and `other`.
+	**/
+	public function equals(other: AssemblyCode): Bool {
+		if (this == other) return true;
+		if (this.length != other.length) return false;
+
+		for (i in 0...this.length)
+			if (!this[i].equals(other[i])) return false;
+
+		return true;
+	}
+
+	/**
 		@return `this` in `String` representation.
 	**/
 	public function toString(): String

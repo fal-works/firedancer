@@ -4,6 +4,8 @@ import firedancer.vm.Opcode;
 import firedancer.vm.Constants.*;
 import firedancer.assembly.OperandTools.*;
 
+using haxe.EnumTools;
+
 class InstructionExtension {
 	public static function toString(inst: Instruction): String {
 		inline function itoa(v: Int): String
@@ -272,6 +274,12 @@ class InstructionExtension {
 		case Comment(_) | None: -Opcode.size;
 		}
 	}
+
+	/**
+		Recursively compares `this` and `other`.
+	**/
+	public static inline function equals(_this: Instruction, other: Instruction): Bool
+		return _this.equals(other);
 
 	/**
 		@return `true` if `this` receives `Reg` with `regType` as input.
