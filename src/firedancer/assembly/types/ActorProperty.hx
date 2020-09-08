@@ -1,15 +1,22 @@
 package firedancer.assembly.types;
 
-@:structInit
+@:notNull @:forward
 @:using(firedancer.assembly.types.ActorPropertyExtension)
-class ActorProperty {
+abstract ActorProperty(Data) from Data {
 	public static function create(
 		type: ActorPropertyType,
 		component: ActorPropertyComponent
 	): ActorProperty {
-		return { type: type, component: component };
+		final data: Data = { type: type, component: component };
+		return data;
 	}
 
+	@:op(A == B) inline function equals(other: ActorProperty): Bool
+		return this.type == other.type && this.component == other.component;
+}
+
+@:structInit
+private class Data {
 	public final type: ActorPropertyType;
 	public final component: ActorPropertyComponent;
 
