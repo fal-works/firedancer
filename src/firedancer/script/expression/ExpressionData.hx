@@ -5,9 +5,9 @@ import firedancer.assembly.AssemblyCode;
 
 interface ExpressionData {
 	/**
-		Creates an `AssemblyCode` that assigns `this` value to the current volatile float.
+		Creates an `AssemblyCode` that assigns `this` value to the register.
 	**/
-	public function loadToVolatile(context: CompileContext): AssemblyCode;
+	public function load(context: CompileContext): AssemblyCode;
 
 	/**
 		Creates an `AssemblyCode` that runs `instruction` receiving `this` value as argument.

@@ -73,7 +73,7 @@ class DeclareLocalVariable extends AstNode {
 		return {
 			[
 				[letVar],
-				initialValue.loadToVolatile(context),
+				initialValue.load(context),
 				[storeRL]
 			].flatten();
 		}

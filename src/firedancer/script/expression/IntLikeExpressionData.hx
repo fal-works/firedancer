@@ -32,14 +32,14 @@ class IntLikeExpressionData implements ExpressionData {
 		return this.toFloatLikeExpressionData(AngleExpression.constantFactor);
 
 	/**
-		Creates an `AssemblyCode` that assigns `this` value to the current volatile float.
+		Creates an `AssemblyCode` that assigns `this` value to the int register.
 	**/
-	public function loadToVolatile(context: CompileContext): AssemblyCode {
+	public function load(context: CompileContext): AssemblyCode {
 		return switch this.data {
 		case Constant(value):
 			Load(Int(Imm(value.toImmediateValue())));
 		case Runtime(expression):
-			expression.loadToVolatile(context);
+			expression.load(context);
 		}
 	}
 
@@ -48,7 +48,7 @@ class IntLikeExpressionData implements ExpressionData {
 		receiving `this` value as argument.
 	**/
 	public function use(context: CompileContext, instruction: Instruction): AssemblyCode
-		return [loadToVolatile(context), [instruction]].flatten();
+		return [load(context), [instruction]].flatten();
 
 	public function tryGetConstant(): Maybe<Int> {
 		return switch this.data {
@@ -115,7 +115,7 @@ class IntLikeExpressionData implements ExpressionData {
 
 	function toFloatLikeExpressionData(constantFactor: Float): FloatLikeExpressionData {
 		final loadAsFloat: (context: CompileContext) -> AssemblyCode = context -> [
-			this.loadToVolatile(context),
+			this.load(context),
 			[Cast(IntToFloat)],
 			if (constantFactor == 1.0) [] else {
 				[Mult(Float(Reg), Float(Imm(constantFactor)))];

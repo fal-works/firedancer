@@ -124,7 +124,7 @@ class SetActorPropertyLinear extends AstNode {
 			return {
 				final divRRR: Instruction = Div(isVec ? Vec(Reg) : Float(RegBuf), Float(Reg));
 				final code: AssemblyCode = isVec ? [] : [Save(Float(Reg))];
-				final loadFramesAsFloat = (frames : FloatExpression).loadToVolatile(context);
+				final loadFramesAsFloat = (frames : FloatExpression).load(context);
 				code.pushFromArray(loadFramesAsFloat);
 				code.push(divRRR);
 				code;
@@ -150,7 +150,7 @@ class SetActorPropertyLinear extends AstNode {
 			addFromVolatile = Increase(Vec(Reg), prop(propType, Vector));
 
 			final getDiffRR:Instruction = GetDiff(Vec(Reg), prop(propType, Vector));
-			getDiff = [vec.loadToVolatile(context), [getDiffRR]].flatten();
+			getDiff = [vec.load(context), [getDiffRR]].flatten();
 
 		case SetLength(length):
 			divChange = getDivChange(false);
@@ -161,7 +161,7 @@ class SetActorPropertyLinear extends AstNode {
 			addFromVolatile = Increase(Float(Reg), prop(propType, Length));
 
 			final getDiffRR:Instruction = GetDiff(Float(Reg), prop(propType, Length));
-			getDiff = length.loadToVolatile(context);
+			getDiff = length.load(context);
 			getDiff.push(getDiffRR);
 
 		case SetAngle(angle):
@@ -173,7 +173,7 @@ class SetActorPropertyLinear extends AstNode {
 			addFromVolatile = Increase(Float(Reg), prop(propType, Angle));
 
 			final getDiffRR:Instruction = GetDiff(Float(Reg), prop(propType, Angle));
-			getDiff = angle.loadToVolatile(context);
+			getDiff = angle.load(context);
 			getDiff.push(getDiffRR);
 		}
 

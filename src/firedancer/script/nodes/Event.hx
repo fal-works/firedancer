@@ -18,7 +18,7 @@ class Event extends AstNode implements ripper.Data {
 	override function toAssembly(context: CompileContext): AssemblyCode {
 		final instruction: Instruction = Event(eventType);
 
-		final code = eventCode.loadToVolatile(context);
+		final code = eventCode.load(context);
 		code.push(instruction);
 		return code;
 	}

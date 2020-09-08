@@ -11,7 +11,7 @@ abstract FloatLocalVariableExpression(String) {
 	@:to function toFloatExpression(): FloatExpression {
 		return FloatExpression.fromEnum(FloatLikeExpressionEnum.Runtime(Custom(context -> {
 			final variable = context.localVariables.get(this);
-			final code = variable.loadToVolatile();
+			final code = variable.load();
 			switch variable.type {
 			case Int: code.push(Cast(IntToFloat));
 			case Float:

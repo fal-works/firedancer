@@ -72,7 +72,7 @@ class AddActorPropertyLinear extends AstNode implements ripper.Data {
 		inline function getDivChange(isVec: Bool): AssemblyCode {
 			final divRRR: Instruction = Div(isVec ? Vec(Reg) : Float(RegBuf), Float(Reg));
 			final code: AssemblyCode = isVec ? [] : [Save(Float(Reg))];
-			final loadFramesAsFloat = (frames : FloatExpression).loadToVolatile(context);
+			final loadFramesAsFloat = (frames : FloatExpression).load(context);
 			code.pushFromArray(loadFramesAsFloat);
 			code.push(divRRR);
 			return code;
@@ -87,7 +87,7 @@ class AddActorPropertyLinear extends AstNode implements ripper.Data {
 
 		switch operation {
 		case AddVector(vec):
-			loadChange = vec.loadToVolatile(context);
+			loadChange = vec.load(context);
 			divChange = getDivChange(true);
 			pushChange = Push(Vec(Reg));
 			peekChange = Peek(Vec, IntSize); // skip the loop counter
@@ -95,7 +95,7 @@ class AddActorPropertyLinear extends AstNode implements ripper.Data {
 			dropChange = Drop(Vec);
 
 		case AddLength(length):
-			loadChange = length.loadToVolatile(context);
+			loadChange = length.load(context);
 			divChange = getDivChange(false);
 			pushChange = Push(Float(Reg));
 			peekChange = Peek(Float, IntSize); // skip the loop counter
@@ -103,7 +103,7 @@ class AddActorPropertyLinear extends AstNode implements ripper.Data {
 			dropChange = Drop(Float);
 
 		case AddAngle(angle):
-			loadChange = angle.loadToVolatile(context);
+			loadChange = angle.load(context);
 			divChange = getDivChange(false);
 			pushChange = Push(Float(Reg));
 			peekChange = Peek(Float, IntSize); // skip the loop counter

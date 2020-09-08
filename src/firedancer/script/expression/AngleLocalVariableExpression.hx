@@ -11,7 +11,7 @@ abstract AngleLocalVariableExpression(String) {
 	@:to function toAngleExpression(): AngleExpression {
 		return AngleExpression.fromEnum(FloatLikeExpressionEnum.Runtime(Custom(context -> {
 			final variable = context.localVariables.get(this);
-			final code = variable.loadToVolatile();
+			final code = variable.load();
 			switch variable.type {
 			case Int:
 				code.push(Cast(IntToFloat));
