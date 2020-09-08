@@ -14,14 +14,14 @@ Requires **Haxe 4** (developed with v4.1.3).
 
 ## Demo
 
-[https://firedancer-lang.com/](https://firedancer-lang.com/)
+[https://firedancer-lang.com](https://firedancer-lang.com)
 
 
 ## Usage
 
 ### Install
 
-First install [Haxe 4](https://haxe.org/).
+First install [Haxe 4](https://haxe.org).
 
 Then install Firedancer:
 
@@ -50,7 +50,7 @@ Attach any `Program` instance(s) to your actor(s) and run them on [Firedancer VM
 
 ## Example Project
 
-Here is a minimum Haxe project using Firedancer and [Heaps.io](https://heaps.io/):
+Here is a minimum Haxe project using Firedancer and [Heaps.io](https://heaps.io):
 
 [Firedancer Template (with Heaps.io)](https://github.com/fal-works/firedancer-heaps-template)
 
