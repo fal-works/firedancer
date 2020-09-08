@@ -4,9 +4,9 @@
 	"license": "MIT",
 	"tags": ["game"],
 	"description": "Haxe based language for defining 2D shmup bullet-hell patterns. ",
-	"version": "0.1.1-alpha",
+	"version": "0.1.1",
 	"classPath": "src/",
-	"releasenote": "Bug fix in radial().",
+	"releasenote": "Bug fix in radial(). Minor refactoring.",
 	"contributors": [
 		"fal-works"
 	],
