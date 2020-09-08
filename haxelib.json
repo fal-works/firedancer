@@ -4,9 +4,9 @@
 	"license": "MIT",
 	"tags": ["game"],
 	"description": "Haxe based language for defining 2D shmup bullet-hell patterns. ",
-	"version": "0.1.2-alpha",
+	"version": "0.1.2",
 	"classPath": "src/",
-	"releasenote": "",
+	"releasenote": "Bug fix in parallel(). Reduced generation of duplicate programs in the compilation process.",
 	"contributors": [
 		"fal-works"
 	],
