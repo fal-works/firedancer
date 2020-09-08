@@ -192,9 +192,9 @@ class LocalVariable {
 
 	/**
 		Creates an `AssemblyCode` that assigns the value of `this` local variable
-		to the current volatile int/float.
+		to the int/float register.
 	**/
-	public function loadToVolatile(): AssemblyCode {
+	public function load(): AssemblyCode {
 		return switch this.type {
 		case Int: [Load(Int(Var(this.name)))];
 		case Float: [Load(Float(Var(this.name)))];
@@ -218,7 +218,7 @@ class LocalVariable {
 		}
 
 		return [
-			value.loadToVolatile(context),
+			value.load(context),
 			[store]
 		].flatten();
 	}
@@ -237,7 +237,7 @@ class LocalVariable {
 		}
 
 		return [
-			value.loadToVolatile(context),
+			value.load(context),
 			[store]
 		].flatten();
 	}

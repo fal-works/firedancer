@@ -27,5 +27,5 @@ enum RuntimeExpressionEnum<C, E> {
 		operandB: E
 	);
 
-	Custom(loadToVolatile: (context: CompileContext) -> AssemblyCode);
+	Custom(load: (context: CompileContext) -> AssemblyCode);
 }

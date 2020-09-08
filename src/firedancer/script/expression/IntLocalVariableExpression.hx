@@ -14,7 +14,7 @@ abstract IntLocalVariableExpression(String) {
 	@:to function toIntExpression(): IntExpression {
 		return IntExpression.fromEnum(IntLikeExpressionEnum.Runtime(Custom(context -> {
 			final variable = context.localVariables.get(this);
-			final code = variable.loadToVolatile();
+			final code = variable.load();
 			switch variable.type {
 			case Int:
 			case Float: throw "Cannot cast float to int.";

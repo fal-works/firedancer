@@ -25,30 +25,30 @@ abstract FloatLikeRuntimeExpression(
 	}
 
 	/**
-		Creates an `AssemblyCode` that assigns `this` value to the current volatile float.
+		Creates an `AssemblyCode` that assigns `this` value to the float register.
 	**/
-	public function loadToVolatile(context: CompileContext): AssemblyCode {
+	public function load(context: CompileContext): AssemblyCode {
 		return switch this {
 		case Inst(loadV):
 			loadV;
 
 		case UnaryOperation(instruction, operandExpr):
-			final code = operandExpr.loadToVolatile(context);
+			final code = operandExpr.load(context);
 			code.push(instruction);
 			code;
 
 		case BinaryOperation(instruction, operandExprA, operandExprB):
 			final code:AssemblyCode = [];
-			code.pushFromArray(operandExprB.loadToVolatile(context));
+			code.pushFromArray(operandExprB.load(context));
 			code.push(Push(Float(Reg)));
-			code.pushFromArray(operandExprA.loadToVolatile(context));
+			code.pushFromArray(operandExprA.load(context));
 			code.push(Save(Float(Reg)));
 			code.push(Pop(Float));
 			code.push(instruction);
 			code;
 
-		case Custom(loadToVolatile):
-			loadToVolatile(context);
+		case Custom(load):
+			load(context);
 		}
 	}
 

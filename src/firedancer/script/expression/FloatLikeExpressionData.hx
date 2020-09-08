@@ -30,14 +30,14 @@ class FloatLikeExpressionData implements ExpressionData {
 	public final data: FloatLikeExpressionEnum;
 
 	/**
-		Creates an `AssemblyCode` that assigns `this` value to the current volatile float.
+		Creates an `AssemblyCode` that assigns `this` value to the float register.
 	**/
-	public function loadToVolatile(context: CompileContext): AssemblyCode {
+	public function load(context: CompileContext): AssemblyCode {
 		return switch this.data {
 		case Constant(value):
 			Load(Float(Imm(value.toImmediateValue())));
 		case Runtime(expression):
-			expression.loadToVolatile(context);
+			expression.load(context);
 		}
 	}
 
@@ -47,7 +47,7 @@ class FloatLikeExpressionData implements ExpressionData {
 	**/
 	public function use(context: CompileContext, instruction: Instruction): AssemblyCode {
 		return [
-			loadToVolatile(context),
+			load(context),
 			[instruction]
 		].flatten();
 	}

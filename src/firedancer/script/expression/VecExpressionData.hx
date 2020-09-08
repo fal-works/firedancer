@@ -27,7 +27,7 @@ class VecExpressionData implements ExpressionData {
 	public function divideByFloat(divisor: Float): VecExpressionData
 		throw new NotOverriddenException();
 
-	public function loadToVolatile(context: CompileContext): AssemblyCode
+	public function load(context: CompileContext): AssemblyCode
 		throw new NotOverriddenException();
 
 	/**
@@ -36,7 +36,7 @@ class VecExpressionData implements ExpressionData {
 		@param instruction Any `Instruction` that uses the volatile vector.
 	**/
 	public function use(context: CompileContext, instruction: Instruction): AssemblyCode {
-		final code = loadToVolatile(context);
+		final code = load(context);
 		code.push(instruction);
 		return code;
 	}
@@ -123,7 +123,7 @@ class CartesianVecExpressionData extends VecExpressionData {
 	override public function divideByFloat(divisor: Float): CartesianVecExpressionData
 		return divide(divisor);
 
-	override public function loadToVolatile(context: CompileContext): AssemblyCode {
+	override public function load(context: CompileContext): AssemblyCode {
 		var x = this.x;
 		var y = this.y;
 
@@ -139,9 +139,9 @@ class CartesianVecExpressionData extends VecExpressionData {
 		final divisor = this.divisor;
 
 		final loadVecWithoutDivisor = [
-			y.loadToVolatile(context),
+			y.load(context),
 			[Push(Float(Reg))],
-			x.loadToVolatile(context),
+			x.load(context),
 			[
 				Save(Float(Reg)),
 				Pop(Float),
@@ -160,7 +160,7 @@ class CartesianVecExpressionData extends VecExpressionData {
 			// rVec / rDiv
 			return [
 				loadVecWithoutDivisor,
-				divisor.unwrap().loadToVolatile(context),
+				divisor.unwrap().load(context),
 				[Div(Vec(Reg), Float(Reg))]
 			].flatten();
 		}
@@ -230,14 +230,14 @@ class PolarVecExpressionData extends VecExpressionData {
 	override public function divideByFloat(divisor: Float): PolarVecExpressionData
 		return divide(divisor);
 
-	override public function loadToVolatile(context: CompileContext): AssemblyCode {
+	override public function load(context: CompileContext): AssemblyCode {
 		var length = this.length;
 		final angle = this.angle;
 
 		final loadVecWithoutDivisor = [
-			angle.loadToVolatile(context),
+			angle.load(context),
 			[Push(Float(Reg))],
-			length.loadToVolatile(context),
+			length.load(context),
 			[
 				Save(Float(Reg)),
 				Pop(Float),
@@ -252,7 +252,7 @@ class PolarVecExpressionData extends VecExpressionData {
 			// rVec / rDiv
 			return [
 				loadVecWithoutDivisor,
-				divisor.unwrap().loadToVolatile(context),
+				divisor.unwrap().load(context),
 				[Div(Vec(Reg), Float(Reg))]
 			].flatten();
 		}

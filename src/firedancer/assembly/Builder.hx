@@ -46,7 +46,7 @@ class Builder {
 		body: AssemblyCode,
 		count: IntExpression
 	): AssemblyCode {
-		final pushLoopCount: AssemblyCode = count.loadToVolatile(context);
+		final pushLoopCount: AssemblyCode = count.load(context);
 		pushLoopCount.push(Push(Int(Reg)));
 
 		return constructLoop(context, pushLoopCount, body);

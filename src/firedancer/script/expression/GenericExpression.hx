@@ -57,14 +57,14 @@ abstract GenericExpression(Data) from Data {
 	}
 
 	/**
-		Creates an `AssemblyCode` that assigns `this` value to the current volatile float.
+		Creates an `AssemblyCode` that assigns `this` value to the register.
 	**/
-	public function loadToVolatile(context: CompileContext): AssemblyCode {
+	public function load(context: CompileContext): AssemblyCode {
 		return switch this {
-		case IntExpr(expr): expr.loadToVolatile(context);
-		case FloatExpr(expr): expr.loadToVolatile(context);
-		case AngleExpr(expr): expr.loadToVolatile(context);
-		case VecExpr(expr): expr.loadToVolatile(context);
+		case IntExpr(expr): expr.load(context);
+		case FloatExpr(expr): expr.load(context);
+		case AngleExpr(expr): expr.load(context);
+		case VecExpr(expr): expr.load(context);
 		}
 	}
 
