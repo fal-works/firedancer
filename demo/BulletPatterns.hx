@@ -27,6 +27,7 @@ class BulletPatterns {
 		case "laundry": laundry();
 		case "pods": pods();
 		case "static-geometric": staticGeometric();
+		case "flower": flower();
 		default: null;
 		});
 	}
@@ -707,6 +708,46 @@ final varRotation = angleVar("rotation");
 		wait(4)
 	])
 ];";
+
+		return asMain(main, text);
+	}
+
+	public static function flower(): ProgramPackage {
+		final main = loop([
+			shot.velocity.set(4, 180),
+			shot.position.set(80, 180),
+			dup(32, {shotBearingRange: {start: 0, end: 360}, shotDirectionRange: {start: 0, end: 360}}, [
+				shot.direction.add(90),
+				nWay(9, {angle: 90}, fire([
+					speed.set(1).frames(30),
+					parallel([direction.add(210).frames(60), speed.set(2).frames(60)])
+				]))
+			]),
+			wait(240)
+		]);
+
+		final text = "loop([
+	shot.velocity.set(4, 180),
+	shot.position.set(80, 180),
+	dup(
+		32,
+		{
+			shotBearingRange: { start: 0, end: 360 },
+			shotDirectionRange: { start: 0, end: 360 }
+		},
+		[
+			shot.direction.add(90),
+			nWay(9, { angle: 90 }, fire([
+				speed.set(1).frames(30),
+				parallel([
+					direction.add(210).frames(60),
+					speed.set(2).frames(60)
+				])
+			]))
+		]
+	),
+	wait(240)
+])";
 
 		return asMain(main, text);
 	}
