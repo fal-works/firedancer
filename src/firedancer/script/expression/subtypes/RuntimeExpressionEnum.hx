@@ -8,7 +8,7 @@ import firedancer.assembly.Instruction;
 **/
 enum RuntimeExpressionEnum<C, E> {
 	/**
-		@param loadV `Instruction` for loading the value to the current volatile value.
+		@param loadV `Instruction` for loading the value to a register.
 	**/
 	Inst(loadV: Instruction);
 
