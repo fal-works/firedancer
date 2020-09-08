@@ -12,15 +12,16 @@ class Parallel extends AstNode implements ripper.Data {
 		return false;
 
 	override function toAssembly(context: CompileContext): AssemblyCode {
-		final mainNode = array.shift();
+		var nodes = this.array.copy();
+		final mainNode = nodes.shift();
 		if (mainNode.isNone()) return [];
 
 		final main = mainNode.unwrap().toAssembly(context);
-		final invokeSub: AssemblyCode = array.map(node -> {
+		final invokeSub: AssemblyCode = nodes.map(node -> {
 			final programId = context.setCode(node.toAssembly(context));
 			return UseThread(programId, Int(Stack));
 		});
-		final awaitSub: AssemblyCode = array.map(_ -> AwaitThread);
+		final awaitSub: AssemblyCode = nodes.map(_ -> AwaitThread);
 
 		return [
 			invokeSub,
