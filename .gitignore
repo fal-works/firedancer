@@ -1,7 +1,5 @@
+.DS_Store
+/.VSCodeCounter/
+/web/
 /out/
 /dump/
-/.VSCodeCounter/
-.DS_Store
-hlprofile.*
-fps_log.csv
-/web/
