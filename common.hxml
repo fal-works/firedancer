@@ -1,11 +1,10 @@
 # Common Build arguments
 
--cp src
--cp demo
--dce full
+--class-path demo
+--main Main
 
+--dce full
 --macro nullSafety("firedancer", Strict)
--main Main
 
 -lib broker
 -lib reckoner
@@ -14,7 +13,7 @@
 
 -lib heaps
 
--D windowTitle=firedancer
+-D windowTitle=Firedancer
 
 -D sneaker_assertion_disable
 -D broker_catch_disable
