@@ -14,7 +14,7 @@ Requires **Haxe 4** (developed with v4.1.3).
 
 ## Demo
 
-**[https://firedancer-lang.com](https://firedancer-lang.com)**
+**[firedancer-lang.com](https://firedancer-lang.com)**
 
 (Repository for the website: [firedancer-web](https://github.com/fal-works/firedancer-web))
 
