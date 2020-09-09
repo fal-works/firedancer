@@ -1,6 +1,6 @@
 # Common Build arguments
 
---class-path demo
+--class-path demo/src
 --main Main
 
 --dce full
