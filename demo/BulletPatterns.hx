@@ -28,6 +28,7 @@ class BulletPatterns {
 		case "pods": pods();
 		case "static-geometric": staticGeometric();
 		case "flower": flower();
+		case "seeds": seeds();
 		default: null;
 		});
 	}
@@ -748,6 +749,60 @@ final varRotation = angleVar("rotation");
 	),
 	wait(240)
 ])";
+
+		return asMain(main, text);
+	}
+
+	public static function seeds(): ProgramPackage {
+		// You can freely structure your code within the Haxe syntax.
+
+		final lineSeed = [
+			shot.velocity.set(1, shot.angleToTarget),
+			speed.set(1).frames(30),
+			line(12, { shotSpeedChange: 6 }, fire([ wait(15), speed.add(5).frames(60) ])),
+			vanish()
+		];
+
+		final nWaySeed = [
+			speed.set(1).frames(30),
+			shot.velocity.set(8, shot.angleToTarget),
+			nWay(5, { angle: 150 }, fire(lineSeed)),
+			vanish()
+		];
+
+		final main = loop([
+			shot.velocity.set(random.between(6, 9), 90 + random.angle.grouping(90)),
+			fire(nWaySeed),
+			wait(30),
+			shot.velocity.set(random.between(6, 9), 270 + random.angle.grouping(90)),
+			fire(nWaySeed),
+			wait(30)
+		]);
+
+		final text = "// You can freely structure your code within the Haxe syntax.
+
+final lineSeed = [
+	shot.velocity.set(1, shot.angleToTarget),
+	speed.set(1).frames(30),
+	line(12, { shotSpeedChange: 6 }, fire([ wait(15), speed.add(5).frames(60) ])),
+	vanish()
+];
+
+final nWaySeed = [
+	speed.set(1).frames(30),
+	shot.velocity.set(8, shot.angleToTarget),
+	nWay(5, { angle: 150 }, fire(lineSeed)),
+	vanish()
+];
+
+loop([
+	shot.velocity.set(random.between(6, 9), 90 + random.angle.grouping(90)),
+	fire(nWaySeed),
+	wait(30),
+	shot.velocity.set(random.between(6, 9), 270 + random.angle.grouping(90)),
+	fire(nWaySeed),
+	wait(30)
+]);";
 
 		return asMain(main, text);
 	}
