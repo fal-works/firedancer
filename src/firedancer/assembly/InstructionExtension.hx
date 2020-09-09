@@ -278,8 +278,33 @@ class InstructionExtension {
 	/**
 		Recursively compares `this` and `other`.
 	**/
-	public static inline function equals(_this: Instruction, other: Instruction): Bool
-		return _this.equals(other);
+	public static function equals(_this: Instruction, other: Instruction): Bool {
+		// Workaround for ActorProperty as it cannot be compared in EnumValueTools.equals()
+		return switch _this {
+		case Get(propA):
+			switch other {
+			case Get(propB): propA == propB;
+			default: false;
+			}
+		case GetDiff(inputA, propA):
+			switch other {
+			case GetDiff(inputB, propB): inputA.equals(inputB) && propA == propB;
+			default: false;
+			}
+		case Set(inputA, propA):
+			switch other {
+			case Set(inputB, propB): inputA.equals(inputB) && propA == propB;
+			default: false;
+			}
+		case Increase(inputA, propA):
+			switch other {
+			case Increase(inputB, propB): inputA.equals(inputB) && propA == propB;
+			default: false;
+			}
+		default:
+			_this.equals(other);
+		}
+	}
 
 	/**
 		@return `true` if `this` receives `Reg` with `regType` as input.
