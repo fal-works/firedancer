@@ -94,7 +94,7 @@ private class WorldBuilder {
 		);
 		parent.addChild(bulletBatch);
 
-		final eventHandler = new TestEventHandler();
+		final eventHandler = new EventHandler();
 		final emitter = new Emitter();
 
 		final bullets = ArmyBuilder.createActors(

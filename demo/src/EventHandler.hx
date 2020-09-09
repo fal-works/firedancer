@@ -1,7 +1,6 @@
-import firedancer.vm.EventHandler;
 import sneaker.print.Printer;
 
-class TestEventHandler extends EventHandler {
+class EventHandler extends firedancer.vm.EventHandler {
 	public function new() {}
 
 	override public function onGlobalEvent(eventCode: Int): Void {
