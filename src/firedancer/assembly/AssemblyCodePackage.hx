@@ -43,6 +43,8 @@ class AssemblyCodePackage {
 	**/
 	public function toString(): String {
 		final codeList = this.codeList;
+		if (codeList.length.isZero()) return "";
+
 		final names = new WritableVector<Null<String>>(codeList.length);
 		for (name => id in this.nameIndexMap) names[id] = name;
 
