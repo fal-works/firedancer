@@ -3,7 +3,7 @@ package actor;
 @:banker_verified
 class Actor extends broker.entity.BasicBatchEntity {
 	/**
-		Object for emitting new bullet.
+		Firedancer Program table.
 	**/
 	@:banker_chunkLevelFinal
 	var programTable: Vector<Program>;
