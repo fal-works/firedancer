@@ -4,4 +4,3 @@ common.hxml
 -D sneaker_assertion_disable
 -D js-es=6
 -js out/main.js
---cmd terser out/main.js --compress --mangle --ecma 2015 --output web/main.min.js

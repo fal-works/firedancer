@@ -1,0 +1,12 @@
+{
+  "devDependencies": {
+    "@types/node": "^16.6.1",
+    "esbuild": "^0.12.20"
+  },
+  "private": true,
+  "scripts": {
+    "transpile": "haxe js.hxml",
+    "bundle": "node demo/pre-publish/bundle.mjs",
+    "build": "npm run transpile && npm run bundle"
+  }
+}

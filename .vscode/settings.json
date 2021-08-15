@@ -10,4 +10,7 @@
     "editor.quickSuggestions": false,
     "files.trimTrailingWhitespace": false,
   },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
 }
