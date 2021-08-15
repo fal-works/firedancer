@@ -5,7 +5,7 @@ import firedancer.script.expression.FloatLikeExpressionData;
 /**
 	Abstract over `FloatLikeExpressionData` that can be implicitly cast from `Float`.
 **/
-@:notNull @:forward
+@:notNull @:forward @:transitive
 abstract FloatExpression(
 	FloatLikeExpressionData
 ) from FloatLikeExpressionData to FloatLikeExpressionData {

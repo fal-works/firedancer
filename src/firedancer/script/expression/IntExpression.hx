@@ -5,7 +5,7 @@ import firedancer.script.expression.IntLikeExpressionData;
 /**
 	Abstract over `IntLikeExpressionData` that can be implicitly cast from `UInt`.
 **/
-@:notNull @:forward
+@:notNull @:forward @:transitive
 abstract IntExpression(
 	IntLikeExpressionData
 ) from IntLikeExpressionData to IntLikeExpressionData {

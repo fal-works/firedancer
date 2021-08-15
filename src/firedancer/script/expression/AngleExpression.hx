@@ -7,7 +7,7 @@ import firedancer.script.expression.FloatLikeExpressionData;
 /**
 	Abstract over `FloatLikeExpressionData` that can be implicitly converted from `Angle`.
 **/
-@:notNull @:forward
+@:notNull @:forward @:transitive
 abstract AngleExpression(
 	FloatLikeExpressionData
 ) from FloatLikeExpressionData to FloatLikeExpressionData {

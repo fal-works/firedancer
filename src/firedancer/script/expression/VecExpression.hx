@@ -6,7 +6,7 @@ import firedancer.script.expression.VecExpressionData;
 /**
 	Expression representing any 2D vector.
 **/
-@:notNull @:forward
+@:notNull @:forward @:transitive
 abstract VecExpression(VecExpressionData) from VecExpressionData to VecExpressionData {
 	@:from static function fromCartesianConstants(
 		args: { x: Float, y: Float }
