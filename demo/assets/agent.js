@@ -1,3 +1,5 @@
+// Requires: p5.js
+
 function setup() {
   createCanvas(100, 100);
 
