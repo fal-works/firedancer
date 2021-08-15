@@ -5,10 +5,9 @@
   "files.trimTrailingWhitespace": true,
   "files.trimFinalNewlines": true,
   "files.insertFinalNewline": true,
-  "codedox": {
-    "commentbegin": "/**",
-    "commentprefix": "\t",
-    "commentend": "**/",
-    "autoPrefixOnEnter": false
-  }
+  "[markdown]": {
+    "editor.wordWrap": "on",
+    "editor.quickSuggestions": false,
+    "files.trimTrailingWhitespace": false,
+  },
 }
