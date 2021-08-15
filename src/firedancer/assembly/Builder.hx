@@ -27,7 +27,7 @@ class Builder {
 		prepareLoop.push(Label(startLabelId));
 		prepareLoop.push(CountDownGotoLabel(endLabelId));
 
-		final closeLoop: AssemblyCode = [GotoLabel(startLabelId), Label(endLabelId)];
+		final closeLoop = AssemblyCode.fromInstructions([GotoLabel(startLabelId), Label(endLabelId)]);
 
 		return [
 			prepareLoop,

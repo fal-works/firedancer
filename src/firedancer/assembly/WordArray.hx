@@ -53,7 +53,7 @@ abstract WordArray(Data) from Data to Data {
 		var pos = UInt.zero;
 
 		inline function addOpcode(code: Opcode): Void {
-			data.setUI8(pos, code.int());
+			data.setUI8(pos, code.uint8());
 			pos += Opcode.size;
 		}
 

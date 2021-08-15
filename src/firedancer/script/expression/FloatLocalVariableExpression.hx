@@ -4,6 +4,7 @@ import firedancer.script.nodes.DeclareLocalVariable;
 import firedancer.script.nodes.OperateLocalVariable;
 
 @:access(firedancer.script.expression.FloatExpression)
+@:transitive
 abstract FloatLocalVariableExpression(String) {
 	public extern inline function new(name: String)
 		this = name;

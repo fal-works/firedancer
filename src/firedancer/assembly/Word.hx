@@ -17,6 +17,9 @@ abstract Word(WordEnum) from WordEnum {
 	@:from public static inline function fromInt32(value: Int32): Word
 		return IntWord(value);
 
+	@:from public static inline function fromUInt(value: UInt): Word
+		return IntWord(value);
+
 	@:from public static inline function fromFloat(value: Float): Word
 		return FloatWord(value);
 

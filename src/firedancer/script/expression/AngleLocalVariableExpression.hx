@@ -4,6 +4,7 @@ import firedancer.script.nodes.DeclareLocalVariable;
 import firedancer.script.nodes.OperateLocalVariable;
 
 @:access(firedancer.script.expression.AngleExpression)
+@:transitive
 abstract AngleLocalVariableExpression(String) {
 	public extern inline function new(name: String)
 		this = name;

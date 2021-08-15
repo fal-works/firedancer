@@ -55,7 +55,7 @@ class World {
 
 		final x = 0.0;
 		final y = 200.0;
-		army.newAgent(x, y, 0.0, 0.0, mainProgram);
+		army.newAgent(x, y, 0.0, 0.0, Maybe.from(mainProgram));
 	}
 
 	public function update(): Void {

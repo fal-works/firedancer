@@ -6,11 +6,22 @@ private typedef Data = Array<Instruction>;
 	Represents bullet pattern code written in a virtual assembly language.
 **/
 @:notNull @:forward
-abstract AssemblyCode(Data) from Data to Data {
+abstract AssemblyCode(Data) from Data from std.Array<Instruction> to Data {
 	@:from static extern inline function fromInstruction(
 		instruction: Instruction
 	): AssemblyCode
 		return [instruction];
+
+	@:from public static extern inline function fromInstructions(
+		instructions: Array<Instruction>
+	): AssemblyCode
+		return instructions.copy();
+
+	@:op([]) extern inline function get(index: UInt): Instruction
+		return this[index];
+
+	@:op([]) extern inline function set(index: UInt, instruction: Instruction): Void
+		this[index] = instruction;
 
 	/**
 		@return The bytecode length in bytes after assembled.
