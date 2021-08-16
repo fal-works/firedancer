@@ -3,8 +3,7 @@ package firedancer.assembly;
 import firedancer.vm.Opcode;
 import firedancer.vm.Constants.*;
 import firedancer.assembly.OperandTools.*;
-
-using haxe.EnumTools;
+import haxe.EnumTools;
 
 class InstructionExtension {
 	public static function toString(inst: Instruction): String {
@@ -302,7 +301,7 @@ class InstructionExtension {
 			default: false;
 			}
 		default:
-			_this.equals(other);
+			EnumValueTools.equals(_this, other);
 		}
 	}
 
